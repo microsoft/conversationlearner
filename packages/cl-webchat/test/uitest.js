@@ -65,11 +65,13 @@ describe('nightmare UI tests', function () {
 				.click('.wc-send')
 				.wait(3000)
 				.do(function (nightmare) {
-					try {
-						commands[cmd].do.apply(this, arguments);
-					} catch (err) {
-						console.error(err);
-						throw err;
+					if (commands[cmd].do) {
+						try {
+							commands[cmd].do.apply(this, arguments);
+						} catch (err) {
+							console.error(err);
+							throw err;
+						}
 					}
 				})
 				.evaluate(commands[cmd].client);
@@ -77,7 +79,7 @@ describe('nightmare UI tests', function () {
 			return result;
 		}
 
-		//Testing devices and commands 
+		//Testing devices and commands
 		function* testAllCommands() {
 			let success = true;
 
@@ -112,7 +114,12 @@ describe('nightmare UI tests', function () {
 		}
 
 		vo(testAllCommands)(function (err, success) {
-			done(!success);
+			// When test failed, err is string instead of Error
+			if (err || !success) {
+				done(new Error(err || 'one or more tests failed'));
+			} else {
+				done();
+			}
 		});
 	});
 });
