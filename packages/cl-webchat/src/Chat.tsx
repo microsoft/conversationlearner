@@ -1,17 +1,23 @@
 import * as React from 'react';
-import { findDOMNode } from 'react-dom';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
-import { Activity, IBotConnection, User, DirectLine, DirectLineOptions, CardActionTypes } from 'botframework-directlinejs';
-import { createStore, ChatActions, HistoryAction, sendMessage } from './Store';
+
+import { Activity, Media, IBotConnection, User, MediaType, DirectLine, DirectLineOptions, CardActionTypes } from 'botframework-directlinejs';
+import { createStore, ChatActions, HistoryAction } from './Store';
 import { Provider } from 'react-redux';
 import { SpeechOptions } from './SpeechOptions';
 import { Speech } from './SpeechModule';
-import { ActivityOrID, FormatOptions } from './Types';
-import * as konsole from './Konsole';
-import { getTabIndex } from './getTabIndex';
+
+export interface FormatOptions {
+    showHeader?: boolean
+}
+
+export type ActivityOrID = {
+    activity?: Activity
+    id?: string
+}
 
 export interface ChatProps {
     user: User,
@@ -24,12 +30,34 @@ export interface ChatProps {
     selectedActivity?: BehaviorSubject<ActivityOrID>,
     sendTyping?: boolean,
     formatOptions?: FormatOptions,
-    resize?: 'none' | 'window' | 'detect'
+    resize?: 'none' | 'window' | 'detect',
+    hideInput: boolean,  //BLIS addition
+    focusInput: boolean, //BLIS addition
 }
+
+export const sendMessage = (text: string, from: User, locale: string) => ({
+    type: 'Send_Message',
+    activity: {
+        type: "message",
+        text,
+        from,
+        locale,
+        textFormat: 'plain',
+        timestamp: (new Date()).toISOString()
+    }} as ChatActions);
+
+export const sendFiles = (files: FileList, from: User, locale: string) => ({
+    type: 'Send_Message',
+    activity: {
+        type: "message",
+        attachments: attachmentsFromFiles(files),
+        from,
+        locale
+    }} as ChatActions);
 
 import { History } from './History';
 import { MessagePane } from './MessagePane';
-import { Shell, ShellFunctions } from './Shell';
+import { Shell } from './Shell';
 
 export class Chat extends React.Component<ChatProps, {}> {
 
@@ -40,13 +68,9 @@ export class Chat extends React.Component<ChatProps, {}> {
     private activitySubscription: Subscription;
     private connectionStatusSubscription: Subscription;
     private selectedActivitySubscription: Subscription;
-    private shellRef: React.Component & ShellFunctions;
 
     private chatviewPanel: HTMLElement;
     private resizeListener = () => this.setSize();
-
-    private _handleKeyDownCapture = this.handleKeyDownCapture.bind(this);
-    private _saveShellRef = this.saveShellRef.bind(this);
 
     constructor(props: ChatProps) {
         super(props);
@@ -97,34 +121,6 @@ export class Chat extends React.Component<ChatProps, {}> {
             width: this.chatviewPanel.offsetWidth,
             height: this.chatviewPanel.offsetHeight
         });
-    }
-
-    private handleKeyDownCapture(evt: React.KeyboardEvent<HTMLDivElement>) {
-        const target = evt.target as HTMLElement;
-        const tabIndex = getTabIndex(target);
-
-        if (
-            target === findDOMNode(this.chatviewPanel)
-            || typeof tabIndex !== 'number'
-            || tabIndex < 0
-        ) {
-            evt.stopPropagation();
-
-            let key: string;
-
-            // Quirks: onKeyDown we re-focus, but the newly focused element does not receive the subsequent onKeyPress event
-            //         It is working in Chrome/Firefox/IE, confirmed not working in Edge/16
-            //         So we are manually appending the key if they can be inputted in the box
-            if (/(^|\s)Edge\/16\./.test(navigator.userAgent)) {
-                key = inputtableKey(evt.key);
-            }
-
-            this.shellRef.focus(key);
-        }
-    }
-
-    private saveShellRef(shellWrapper: any) {
-        this.shellRef = shellWrapper.getWrappedInstance();
     }
 
     componentDidMount() {
@@ -181,6 +177,14 @@ export class Chat extends React.Component<ChatProps, {}> {
     // 2. To determine the margins of any given carousel (we just render one mock activity so that we can measure it)
     // 3. (this is also the normal re-render case) To render without the mock activity
 
+    //BLIS CHANGE - make public
+    //private setFocus() {
+    public setFocus() {
+        // HUGE HACK - set focus back to input after clicking on an action
+        // React makes this hard to do well, so we just do an end run around them
+        (this.chatviewPanel.querySelector(".wc-shellinput") as HTMLInputElement).focus();
+    }
+
     render() {
         const state = this.store.getState();
         konsole.log("BotChat.Chat state", state);
@@ -196,19 +200,15 @@ export class Chat extends React.Component<ChatProps, {}> {
         if (this.props.resize === 'detect') resize =
             <ResizeDetector onresize={ this.resizeListener } />;
 
+        // BLIS - added hideInput & focusInput below below
         return (
             <Provider store={ this.store }>
-                <div
-                    className="wc-chatview-panel"
-                    onKeyDownCapture={ this._handleKeyDownCapture }
-                    ref={ div => this.chatviewPanel = div }
-                    tabIndex={ 0 }
-                >
+                <div className="wc-chatview-panel" ref={ div => this.chatviewPanel = div }>
                     { header }
-                    <MessagePane>
-                        <History />
+                    <MessagePane setFocus={ () => this.setFocus() }>
+                        <History setFocus={ () => this.setFocus() }/>
                     </MessagePane>
-                    <Shell ref={ this._saveShellRef } />
+                    { this.props.hideInput ? null : <Shell focusInput={this.props.focusInput}/>}  
                     { resize }
                 </div>
             </Provider>
@@ -273,6 +273,19 @@ export const sendPostBack = (botConnection: IBotConnection, text: string, value:
     });
 }
 
+const attachmentsFromFiles = (files: FileList) => {
+    const attachments: Media[] = [];
+    for (let i = 0, numFiles = files.length; i < numFiles; i++) {
+        const file = files[i];
+        attachments.push({
+            contentType: file.type as MediaType,
+            contentUrl: window.URL.createObjectURL(file),
+            name: file.name
+        });
+    }
+    return attachments;
+}
+
 export const renderIfNonempty = (value: any, renderer: (value: any) => JSX.Element ) => {
     if (value !== undefined && value !== null && (typeof value !== 'string' || value.length > 0))
         return renderer(value);
@@ -280,6 +293,13 @@ export const renderIfNonempty = (value: any, renderer: (value: any) => JSX.Eleme
 
 export const classList = (...args:(string | boolean)[]) => {
     return args.filter(Boolean).join(' ');
+}
+
+export const konsole = {
+    log: (message?: any, ... optionalParams: any[]) => {
+        if (typeof(window) !== 'undefined' && (window as any)["botchatDebug"] && message)
+            console.log(message, ... optionalParams);
+    }
 }
 
 // note: container of this element must have CSS position of either absolute or relative
@@ -294,19 +314,3 @@ const ResizeDetector = (props: {
                 frame.contentWindow.onresize = props.onresize;
         } }
     />;
-
-// For auto-focus in some browsers, we synthetically insert keys into the chatbox.
-// By default, we insert keys when:
-// 1. evt.key.length === 1 (e.g. "1", "A", "=" keys), or
-// 2. evt.key is one of the map keys below (e.g. "Add" will insert "+", "Decimal" will insert ".")
-const INPUTTABLE_KEY: { [key: string]: string } = {
-    Add: '+',      // Numpad add key
-    Decimal: '.',  // Numpad decimal key
-    Divide: '/',   // Numpad divide key
-    Multiply: '*', // Numpad multiply key
-    Subtract: '-'  // Numpad subtract key
-};
-
-function inputtableKey(key: string) {
-    return key.length === 1 ? key : INPUTTABLE_KEY[key];
-}

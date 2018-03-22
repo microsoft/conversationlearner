@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as konsole from './Konsole';
+import { konsole } from './Chat';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import 'rxjs/add/observable/fromEvent';

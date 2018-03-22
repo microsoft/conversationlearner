@@ -1,16 +1,20 @@
 import * as React from 'react';
-import { ChatState, FormatState } from './Store';
+import { ChatActions, ChatState, FormatState } from './Store';
 import { User } from 'botframework-directlinejs';
-import { classList } from './Chat';
+import { sendMessage, sendFiles, classList } from './Chat';
 import { Dispatch, connect } from 'react-redux';
 import { Strings } from './Strings';
 import { Speech } from './SpeechModule'
-import { ChatActions, sendMessage, sendFiles } from './Store';
 
-interface Props {
+export interface ReceivedProps {
+    focus: ConstrainBooleanParameters
+}
+
+export interface Props {
     inputText: string,
     strings: Strings,
     listening: boolean,
+    focusInput: boolean, // BLIS addition
 
     onChangeText: (inputText: string) => void
 
@@ -20,16 +24,17 @@ interface Props {
     startListening: () => void
 }
 
-export interface ShellFunctions {
-    focus: (appendKey?: string) => void
-}
-
-class ShellContainer extends React.Component<Props, {}> implements ShellFunctions {
+class ShellContainer extends React.Component<Props, {}> {
     private textInput: HTMLInputElement;
     private fileInput: HTMLInputElement;
 
     constructor(props: Props) {
         super(props);
+    }
+
+    //BLIS new fucntion
+    componentWillReceiveProps() {
+        setTimeout(this.textInput.focus(), 1500);
     }
 
     private sendMessage() {
@@ -43,10 +48,12 @@ class ShellContainer extends React.Component<Props, {}> implements ShellFunction
     }
 
     private onClickSend() {
+        this.textInput.focus();
         this.sendMessage();
     }
 
     private onChangeFile() {
+        this.textInput.focus();
         this.props.sendFiles(this.fileInput.files);
         this.fileInput.value = null;
     }
@@ -66,14 +73,6 @@ class ShellContainer extends React.Component<Props, {}> implements ShellFunction
         }
     }
 
-    public focus(appendKey?: string) {
-        this.textInput.focus();
-
-        if (appendKey) {
-            this.props.onChangeText(this.props.inputText + appendKey);
-        }
-    }
-
     render() {
         let className = 'wc-console';
         if (this.props.inputText.length > 0) className += ' has-text';
@@ -84,7 +83,7 @@ class ShellContainer extends React.Component<Props, {}> implements ShellFunction
             'wc-send',
             showMicButton && 'hidden'
         );
-
+   
         const micButtonClassName = classList(
             'wc-mic',
             !showMicButton && 'hidden',
@@ -136,7 +135,7 @@ export const Shell = connect(
         // passed down to ShellContainer
         inputText: state.shell.input,
         strings: state.format.strings,
-        // only used to create helper functions below
+        // only used to create helper functions below 
         locale: state.format.locale,
         user: state.connection.user,
         listening : state.shell.listening
@@ -159,8 +158,8 @@ export const Shell = connect(
         sendMessage: (text: string) => dispatchProps.sendMessage(text, stateProps.user, stateProps.locale),
         sendFiles: (files: FileList) => dispatchProps.sendFiles(files, stateProps.user, stateProps.locale),
         startListening: () => dispatchProps.startListening(),
-        stopListening: () => dispatchProps.stopListening()
-    }), {
-        withRef: true
-    }
+        stopListening: () => dispatchProps.stopListening(),
+        // Received Props (BLIS)
+        focusInput: ownProps.focusInput
+    })
 )(ShellContainer);
