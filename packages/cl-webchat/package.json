@@ -19,7 +19,8 @@
     "prepublish": "tsc && npm run build-css && webpack --progress --config webpack.production.config.js",
     "start": "http-server -p 8000",
     "test": "concurrently  \"node test/mock_dl/index.js\" \"mocha test\" ",
-    "mock": "node test/mock_dl/index.js"
+    "mock": "node test/mock_dl/index.js",
+    "setpackageversion": "tsc -p ./scripts/tsconfig.json && node ./scripts/setpackageversion.js"
   },
   "repository": {
     "type": "git",
