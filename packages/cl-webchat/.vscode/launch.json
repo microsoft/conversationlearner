@@ -1,6 +1,7 @@
 {
     "version": "0.2.0",
     "configurations": [
+
         {
             "name": "Launch index.html with sourcemaps",
             "type": "chrome",
@@ -16,6 +17,12 @@
             "url": "http://localhost:8000",
             "sourceMaps": true,
             "webRoot": "${workspaceRoot}"
+        },
+        {
+            "name": "PU",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceRoot}\\scripts\\setpackageversion"
         },
         {
             "name": "Attach with sourcemaps",
