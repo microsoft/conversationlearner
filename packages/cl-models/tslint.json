@@ -1,0 +1,10 @@
+{
+  "extends": [
+    "tslint-config-standard",
+    "tslint-config-prettier"
+  ],
+  "rules": {
+    "comment-format": false,
+    "member-ordering": false
+  }
+}
