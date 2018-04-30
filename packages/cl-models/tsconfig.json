@@ -14,7 +14,8 @@
     "outDir": "dist/es",
     "typeRoots": [
       "node_modules/@types"
-    ]
+    ],
+    "alwaysStrict": true
   },
   "include": [
     "src"
