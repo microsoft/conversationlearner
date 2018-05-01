@@ -12,6 +12,7 @@ export enum DialogType {
 
 export interface Session {
   sessionId: string
+  logDialogId: string
   createdDatetime: string
   lastQueryDatetime: string
   packageId: number
