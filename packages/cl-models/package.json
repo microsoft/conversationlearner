@@ -121,7 +121,8 @@
     "validate-commit-msg": "^2.12.2"
   },
   "publishConfig": {
-    "tag": "next"
+    "tag": "next",
+    "access": "public"
   },
   "prettier": {
     "printWidth": 140
