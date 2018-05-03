@@ -1,5 +1,5 @@
 {
-  "name": "conversationlearner-webchat",
+  "name": "@conversationlearner/webchat",
   "version": "0.0.0-development",
   "description": "Embeddable web chat control for the Conversation Learner (fork of Microsoft/BotFramework-WebChat)",
   "main": "built/BotChat.js",
@@ -79,5 +79,8 @@
     "typescript": "2.3",
     "vo": "4.0.2",
     "webpack": "2.3.3"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
