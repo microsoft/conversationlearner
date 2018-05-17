@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import { MemoryValue } from './Memory'
@@ -11,18 +11,20 @@ export interface FilledEntity {
   values: MemoryValue[]
 }
 
-export const filledEntityValueAsString = (fe: FilledEntity): string => {
+export const filledEntityValueAsString = (fe: FilledEntity): string => memoryValuesAsString(fe.values)
+
+export const memoryValuesAsString = (memories: MemoryValue[]): string => {
   // Print out list in friendly manner
   let group = ''
-  for (let key in fe.values) {
+  for (let key in memories) {
     let index = +key
     let prefix = ''
-    if (fe.values.length !== 1 && index === fe.values.length - 1) {
+    if (memories.length !== 1 && index === memories.length - 1) {
       prefix = ' and '
     } else if (index !== 0) {
       prefix = ', '
     }
-    let value = fe.values[key]
+    let value = memories[key]
     let text = value.displayText ? value.displayText : value.userText
     group += `${prefix}${text}`
   }

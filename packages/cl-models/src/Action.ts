@@ -1,8 +1,8 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import EntityIdSerializer from './slateSerializer'
+import EntityIdSerializer, { IOptions } from './slateSerializer'
 import { ScoredAction } from './Score'
 
 export const ActionTypes = {
@@ -47,11 +47,14 @@ export class ActionBase {
       } catch (e) {
         const error = e as Error
         throw new Error(
-          `Error when attempting to parse text action payload. This might be an old action which was saved as a string.  Please create a new action. ${error.message}`
+          `Error when attempting to parse text action payload. This might be an old action which was saved as a string.  Please create a new action. ${
+            error.message
+          }`
         )
       }
     }
-    if (action.actionType !== ActionTypes.TEXT) {
+    // For API or CARD the payload field of the outer payload is the name of API or the filename of the card template without extension
+    else if ([ActionTypes.CARD, ActionTypes.API_LOCAL].includes(action.actionType)) {
       let actionPayload = JSON.parse(action.payload) as ActionPayload
       return actionPayload.payload
     }
@@ -102,8 +105,8 @@ export class ActionArgument {
     this.value = actionArgument.value.json
   }
 
-  renderValue(entityValues: Map<string, string>): string {
-    return EntityIdSerializer.serialize(this.value, entityValues)
+  renderValue(entityValues: Map<string, string>, serializerOptions: Partial<IOptions> = {}): string {
+    return EntityIdSerializer.serialize(this.value, entityValues, serializerOptions)
   }
 }
 
@@ -125,8 +128,8 @@ export class TextAction extends ActionBase {
     this.value = JSON.parse(this.payload).json
   }
 
-  renderValue(entityValues: Map<string, string>): string {
-    return EntityIdSerializer.serialize(this.value, entityValues)
+  renderValue(entityValues: Map<string, string>, serializerOptions: Partial<IOptions> = {}): string {
+    return EntityIdSerializer.serialize(this.value, entityValues, serializerOptions)
   }
 }
 
@@ -146,11 +149,11 @@ export class ApiAction extends ActionBase {
     this.arguments = actionPayload.arguments.map(aa => new ActionArgument(aa))
   }
 
-  renderArguments(entityValues: Map<string, string>): RenderedActionArgument[] {
+  renderArguments(entityValues: Map<string, string>, serializerOptions: Partial<IOptions> = {}): RenderedActionArgument[] {
     return this.arguments.map(aa => {
       let value = null
       try {
-        value = EntityIdSerializer.serialize(aa.value, entityValues)
+        value = EntityIdSerializer.serialize(aa.value, entityValues, serializerOptions)
       } catch (error) {
         // Just return null if argument doesn't have a value
       }
@@ -179,11 +182,11 @@ export class CardAction extends ActionBase {
     this.arguments = actionPayload.arguments.map(aa => new ActionArgument(aa))
   }
 
-  renderArguments(entityValues: Map<string, string>): RenderedActionArgument[] {
+  renderArguments(entityValues: Map<string, string>, serializerOptions: Partial<IOptions> = {}): RenderedActionArgument[] {
     return this.arguments.map(aa => {
       let value = null
       try {
-        value = EntityIdSerializer.serialize(aa.value, entityValues)
+        value = EntityIdSerializer.serialize(aa.value, entityValues, serializerOptions)
       } catch (error) {
         // Just return null if argument doesn't have a value
       }

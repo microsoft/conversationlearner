@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 // TODO: Copied from ConversationLearner-UI. Need to improve Action design to find out how to consolidate knowledge to single layer
@@ -17,15 +17,30 @@ enum NodeTypes {
 
 // Based on: https://github.com/ianstormtaylor/slate/blob/master/packages/slate-plain-serializer/src/index.js
 
-function serialize(value: any, entityValuesMap: Map<string, string>, fallbackToOriginal: boolean = false): string {
+export interface IOptions {
+  fallbackToOriginal: boolean
+  preserveOptionalNodeWrappingCharacters: boolean
+}
+
+const defaultOptions: IOptions = {
+  fallbackToOriginal: false,
+  preserveOptionalNodeWrappingCharacters: false
+}
+
+function serialize(value: any, entityValuesMap: Map<string, string>, userOptions: Partial<IOptions> = {}): string {
+  const options = {
+    ...defaultOptions,
+    ...userOptions
+  }
+
   const valueAsJson = typeof value.toJSON === 'function' ? value.toJSON() : value
   const processedDocument = removeOptionalNodesWithoutEntityValues(valueAsJson.document, Array.from(entityValuesMap.keys()))
-  return serializeNode(processedDocument, entityValuesMap, fallbackToOriginal)
+  return serializeNode(processedDocument, entityValuesMap, options)
 }
 
 /**
  * Given node return filter out optional nodes without matching values provided
- * 
+ *
  * E.g. You are welcome[, $name] -> You are welcome
  * @param node Slate Node
  * @param entityValues Key Value pair of entity id to entity display value
@@ -49,7 +64,7 @@ function getEntityIds(node: any): string[] {
 
   // If current node is inline node which we know to have entityId then save it in the list
   if (node.kind === 'inline' && node.type === NodeTypes.Mention) {
-    // This check is required becuase when input is Slate Value node is Immutable.Map object
+    // This check is required because when input is Slate Value node is Immutable.Map object
     // but it could also be a node from value.toJSON()
     const data = typeof node.data.toJS === 'function' ? node.data.toJS() : node.data
     const option = data.option
@@ -75,22 +90,24 @@ function getEntityIds(node: any): string[] {
   return entityIds
 }
 
-function serializeNode(node: any, entityValues: Map<string, string>, fallbackToOriginal: boolean): string {
+function serializeNode(node: any, entityValues: Map<string, string>, options: IOptions): string {
   if (node.kind === 'text') {
     return node.leaves.map((n: any) => n.text).join('')
   }
 
-  const serializedChildNodes = node.nodes.map((n: any) => serializeNode(n, entityValues, fallbackToOriginal))
+  const serializedChildNodes = node.nodes.map((n: any) => serializeNode(n, entityValues, options))
 
   if (node.kind === 'inline' && node.type === NodeTypes.Mention) {
-    // This check is required becuase when input is Slate Value node is Immutable.Map object
+    // This check is required because when input is Slate Value node is Immutable.Map object
     // but it could also be a node from value.toJSON()
     const data = typeof node.data.toJS === 'function' ? node.data.toJS() : node.data
+
     if (!data.completed) {
       return serializedChildNodes.join('')
     }
 
     const option = data.option
+
     if (!option) {
       throw new Error(`Attempting to serialize inline node but it did not have option`)
     }
@@ -98,7 +115,7 @@ function serializeNode(node: any, entityValues: Map<string, string>, fallbackToO
     const entityId = option.id
     const mapContainsEntity = entityValues.has(entityId)
     if (!mapContainsEntity) {
-      if (fallbackToOriginal) {
+      if (options.fallbackToOriginal) {
         return serializedChildNodes.join('')
       }
 
@@ -119,7 +136,11 @@ function serializeNode(node: any, entityValues: Map<string, string>, fallbackToO
 
   const serializedChildren = serializedChildNodes.join('')
 
-  return node.kind === 'inline' && node.type === NodeTypes.Optional ? serializedChildren.slice(1, -1) : serializedChildren
+  return node.kind === 'inline' && node.type === NodeTypes.Optional
+    ? options.preserveOptionalNodeWrappingCharacters
+      ? serializedChildren
+      : serializedChildren.slice(1, -1)
+    : serializedChildren
 }
 
 export default {
