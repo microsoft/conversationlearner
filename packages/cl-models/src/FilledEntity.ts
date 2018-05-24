@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 import { MemoryValue } from './Memory'
+import { ModelUtils } from './ModelUtils'
 
 const SUBSTITUTE_PREFIX = '$'
 
@@ -36,7 +37,7 @@ export const memoryValuesAsString = (memories: MemoryValue[]): string => {
 // and make code more flexible
 export const getEntityDisplayValueMap = (filledEntityMap: FilledEntityMap): Map<string, string> => {
   return Object.keys(filledEntityMap.map).reduce((m, key) => {
-    const entityDisplayValue = filledEntityMap.EntityValueAsString(key)
+    const entityDisplayValue = filledEntityMap.ValueAsString(key)
 
     // TODO: Required check because poor API from filledEntityMap which can return null
     if (entityDisplayValue) {
@@ -47,7 +48,6 @@ export const getEntityDisplayValueMap = (filledEntityMap: FilledEntityMap): Map<
   }, new Map<string, string>())
 }
 
-// TODO: Refactor to native Map
 export class FilledEntityMap {
   public map: { [key: string]: FilledEntity } = {}
 
@@ -55,7 +55,7 @@ export class FilledEntityMap {
     Object.assign(this, init)
   }
 
-  public EntityValueAsList(entityName: string): string[] {
+  public ValueAsList(entityName: string): string[] {
     if (!this.map[entityName]) {
       return []
     }
@@ -63,13 +63,135 @@ export class FilledEntityMap {
     return this.map[entityName].values.filter(v => typeof v.userText === 'string').map(v => v.userText!)
   }
 
-  public EntityValueAsString(entityName: string): string | null {
+  public ValueAsString(entityName: string): string | null {
     if (!this.map[entityName]) {
       return null
     }
 
     // Print out list in friendly manner
     return filledEntityValueAsString(this.map[entityName])
+  }
+
+  public ValueAsNumber(entityName: string): number | null {
+    const textObj = this.ValueAsString(entityName)
+    let number = Number(textObj)
+    if (isNaN(number)) {
+      return null
+    }
+    return number
+  }
+
+  public ValueAsBoolean(entityName: string): boolean | null {
+    const textObj = this.ValueAsString(entityName)
+    if (textObj) {
+      if (textObj.toLowerCase() === 'true') {
+        return true
+      }
+      if (textObj.toLowerCase() === 'false') {
+        return false
+      }
+    }
+    return null
+  }
+
+  public ValueAsObject<T>(entityName: string): T | null {
+    const textObj = this.ValueAsString(entityName)
+    if (textObj) {
+      return JSON.parse(textObj) as T
+    }
+    return null
+  }
+
+  public ValueAsPrebuilt(entityName: string): MemoryValue[] {
+    if (!this.map[entityName]) {
+      return []
+    }
+    return this.map[entityName].values
+  }
+
+  public Forget(entityName: string, entityValue: string | null = null, isBucket: boolean = false): void {
+    // Check if entity buckets values
+    if (isBucket) {
+      // Entity might not be in memory
+      if (!this.map[entityName]) {
+        return
+      }
+
+      // If no entity Value provide, clear the entity
+      if (!entityValue) {
+        delete this.map[entityName]
+      } else {
+        // Find case insensitive index
+        let lowerCaseNames = this.map[entityName].values.filter(mv => mv.userText).map(mv => mv.userText!.toLowerCase())
+
+        let index = lowerCaseNames.indexOf(entityValue.toLowerCase())
+        if (index > -1) {
+          this.map[entityName].values.splice(index, 1)
+          if (this.map[entityName].values.length === 0) {
+            delete this.map[entityName]
+          }
+        }
+      }
+    } else {
+      delete this.map[entityName]
+    }
+  }
+
+  // Remember multiple values for an entity
+  public RememberMany(
+    entityName: string,
+    entityId: string,
+    entityValues: string[],
+    isBucket: boolean = false,
+    builtinType: string | null = null,
+    resolution: {} | null = null
+  ): void {
+    for (let entityValue of entityValues) {
+      this.Remember(entityName, entityId, entityValue, isBucket, builtinType, resolution)
+    }
+  }
+
+  // Remember value for an entity
+  public Remember(
+    entityName: string,
+    entityId: string,
+    entityValue: string,
+    isBucket: boolean = false,
+    builtinType: string | null = null,
+    resolution: any | null = null
+  ): void {
+    if (!this.map[entityName]) {
+      this.map[entityName] = {
+        entityId: entityId,
+        values: []
+      }
+    }
+
+    let displayText = builtinType ? ModelUtils.PrebuiltDisplayText(builtinType, resolution, entityValue) : entityValue
+
+    const filledEntity = this.map[entityName]
+    // Check if entity buckets values
+    if (isBucket) {
+      // Add if not a duplicate
+      const containsDuplicateValue = filledEntity.values.some(memoryValue => memoryValue.userText === entityValue)
+      if (!containsDuplicateValue) {
+        filledEntity.values.push({
+          userText: entityValue,
+          displayText: displayText,
+          builtinType: builtinType,
+          resolution: resolution
+        })
+      }
+    } else {
+      filledEntity.values = [{ userText: entityValue, displayText: displayText, builtinType: builtinType, resolution: resolution }]
+    }
+  }
+
+  /** Return FilledEntity array for items I've remembered */
+  public FilledEntities(): FilledEntity[] {
+    return Object.keys(this.map).map(val => {
+      return this.map[val]
+    })
   }
 
   public static Split(action: string): string[] {

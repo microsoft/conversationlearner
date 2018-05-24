@@ -7,7 +7,7 @@
   "rules": {
     "comment-format": false,
     "member-ordering": false,
-
+    "cyclomatic-complexity": [true, 30],
     "no-banned-terms": false,
     "no-delete-expression": true,
     "no-document-domain": true,

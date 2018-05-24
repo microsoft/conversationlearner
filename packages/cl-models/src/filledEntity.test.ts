@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import { FilledEntity, FilledEntityMap, filledEntityValueAsString, MemoryValue } from './conversationlearner-models'
@@ -81,21 +81,21 @@ describe('filledEntity', () => {
 
     describe('EntityValueAsList', () => {
       test('given filled entity with no matching entity name return empty array', () => {
-        expect(filledEntityMap.EntityValueAsList('entityName2')).toEqual([])
+        expect(filledEntityMap.ValueAsList('entityName2')).toEqual([])
       })
 
       test('given filled entity with multiple values return userText values', () => {
-        expect(filledEntityMap.EntityValueAsList('entityName1')).toEqual(memoryValues.map(v => v.userText))
+        expect(filledEntityMap.ValueAsList('entityName1')).toEqual(memoryValues.map(v => v.userText))
       })
     })
 
     describe('EntityValueAsString', () => {
       test('given filled entity with no matching entity name return null', () => {
-        expect(filledEntityMap.EntityValueAsString('entityName2')).toEqual(null)
+        expect(filledEntityMap.ValueAsString('entityName2')).toEqual(null)
       })
 
       test('given filled entity with multiple values return displayText/userText values formatted as string', () => {
-        expect(filledEntityMap.EntityValueAsString('entityName1')).toEqual('e1d1, e1d2 and e1d3')
+        expect(filledEntityMap.ValueAsString('entityName1')).toEqual('e1d1, e1d2 and e1d3')
       })
     })
 
