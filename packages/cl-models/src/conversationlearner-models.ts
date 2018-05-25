@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import EntityIdSerializer from './slateSerializer'
@@ -7,6 +7,7 @@ import EntityIdSerializer from './slateSerializer'
 export * from './Action'
 export * from './AppDefinition'
 export * from './App'
+export * from './Banner'
 export * from './BotInfo'
 export * from './CallbackAPI'
 export * from './Entity'

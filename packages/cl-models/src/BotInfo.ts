@@ -1,9 +1,10 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import { Template } from './Template'
 import { CallbackAPI } from './CallbackAPI'
+import { Banner } from './Banner'
 
 export interface IUser {
   name: string
@@ -17,4 +18,5 @@ export interface BotInfo {
   callbacks: CallbackAPI[]
   templates: Template[]
   validationErrors: string[]
+  banner: Banner | null
 }
