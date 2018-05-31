@@ -4,6 +4,8 @@ Models for ConversationLearner
 
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 [![Travis](https://api.travis-ci.com/Microsoft/ConversationLearner-Models.svg?token=x6vFsyYxGQbhsxY6ztLP&branch=master)](https://travis-ci.com/Microsoft/ConversationLearner-Models)
+[![CircleCI](https://circleci.com/gh/Microsoft/ConversationLearner-Models.svg?style=shield)](https://circleci.com/gh/Microsoft/ConversationLearner-Models)
+[![AppVeyor](https://ci.appveyor.com/api/projects/status/github/Microsoft/ConversationLearner-Models?branch=master&svg=true)](https://ci.appveyor.com/project/conversationlearner/conversationlearner-models)
 
 ### Usage
 
