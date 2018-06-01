@@ -1,8 +1,18 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import { ActionArgument, ActionTypes, ActionBase, ActionPayload, TextPayload, IActionArgument } from './Action'
+import {
+  ActionArgument,
+  ActionTypes,
+  ActionBase,
+  ActionPayload,
+  TextPayload,
+  IActionArgument,
+  TextAction,
+  CardAction,
+  ApiAction
+} from './Action'
 
 const createEmptyAction = (): ActionBase => ({
   actionId: '',
@@ -17,6 +27,7 @@ const createEmptyAction = (): ActionBase => ({
   actionType: ActionTypes.TEXT
 })
 
+const expectedSimpleTextPayload = 'simple text payload'
 const textPayloadWithNoEntities: TextPayload = {
   json: {
     kind: 'value',
@@ -35,7 +46,7 @@ const textPayloadWithNoEntities: TextPayload = {
               leaves: [
                 {
                   kind: 'leaf',
-                  text: 'simple text payload',
+                  text: expectedSimpleTextPayload,
                   marks: []
                 }
               ]
@@ -252,9 +263,7 @@ const expectedCardPayloadValue = 'customTemplateName'
 const cardActionArguments: IActionArgument[] = [
   {
     parameter: 'p1',
-    value: {
-      json: {}
-    }
+    value: textPayloadWithNoEntities
   },
   {
     parameter: 'p2',
@@ -274,6 +283,7 @@ const cardAction: ActionBase = {
   } as ActionPayload)
 }
 
+// Test Comment
 const expectedApiPayloadValue = 'myCallback'
 const apiAction: ActionBase = {
   ...createEmptyAction(),
@@ -283,9 +293,7 @@ const apiAction: ActionBase = {
     arguments: [
       {
         parameter: 'p1',
-        value: {
-          json: {}
-        }
+        value: textPayloadWithNoEntities
       },
       {
         parameter: 'p2',
@@ -298,7 +306,75 @@ const apiAction: ActionBase = {
 }
 
 describe('Action', () => {
+  describe('ActionBase', () => {
+    test('given object representing action should assign all properties to object', () => {
+      // Arrange
+      const actionLikeObject: ActionBase = {
+        actionId: 'fake-action-id',
+        actionType: 'fake-action-type',
+        payload: 'fake-action-payload',
+        isTerminal: false,
+        requiredEntities: [],
+        negativeEntities: [],
+        suggestedEntity: 'fake-action',
+        version: 1,
+        packageCreationId: 1,
+        packageDeletionId: 0
+      }
+
+      // Act
+      const action = new ActionBase(actionLikeObject)
+
+      // Assert
+      expect(action.actionId).toEqual(actionLikeObject.actionId)
+    })
+  })
+
   describe('GetPayload', () => {
+    test('given action with invalid payload, should throw exception when attempting to parse it as JSON', () => {
+      // Arrange
+      const corruptAction = new ActionBase({
+        actionId: 'fake-action-id',
+        actionType: ActionTypes.TEXT,
+        payload: 'fake-action-payload',
+        isTerminal: false,
+        requiredEntities: [],
+        negativeEntities: [],
+        suggestedEntity: 'fake-action',
+        version: 1,
+        packageCreationId: 1,
+        packageDeletionId: 0
+      })
+
+      // Act
+      const thrower = () => ActionBase.GetPayload(corruptAction, new Map<string, string>())
+
+      // Assert
+      expect(thrower).toThrowError()
+    })
+
+    test(`given action with unknown type return raw payload since we don't reliably know how to parse it`, () => {
+      // Arrange
+      const unknownAction = new ActionBase({
+        actionId: 'fake-action-id',
+        actionType: 'fake-action-type',
+        payload: 'fake-action-payload',
+        isTerminal: false,
+        requiredEntities: [],
+        negativeEntities: [],
+        suggestedEntity: 'fake-action',
+        version: 1,
+        packageCreationId: 1,
+        packageDeletionId: 0
+      })
+
+      // Act
+      const payload = ActionBase.GetPayload(unknownAction, new Map<string, string>())
+
+      // Assert
+      expect(payload).toEqual(unknownAction.payload)
+    })
+
     test('given text action should return the plain text string', () => {
       // Act
       const actualTextPayloadValue = ActionBase.GetPayload(textAction1, new Map<string, string>())
@@ -350,6 +426,88 @@ describe('Action', () => {
 
       // Assert
       expect(actionArguments).toEqual(expectedCardActionArguments)
+    })
+  })
+
+  describe('ActionArgument', () => {
+    test('given action argument render it with given entity values', () => {
+      const actionArguments = ActionBase.GetActionArguments(cardAction)
+      const renderedValue = actionArguments[0].renderValue(new Map<string, string>())
+      expect(renderedValue).toContain(expectedSimpleTextPayload)
+    })
+  })
+
+  describe('TextAction', () => {
+    test('given action without text type throw exception during construction', () => {
+      const thrower = () => new TextAction(cardAction)
+      expect(thrower).toThrowError()
+    })
+
+    test('given action with text type should parse payload and assign to value', () => {
+      const textAction = new TextAction(textAction1)
+      expect(textAction.value).toBeDefined()
+    })
+
+    test(`given text action render it's value`, () => {
+      const textAction = new TextAction(textAction1)
+      const renderedValue = textAction.renderValue(new Map<string, string>())
+      expect(renderedValue).toContain(expectedSimpleTextPayload)
+    })
+
+    test(`given text action render it's value with options`, () => {
+      const textAction = new TextAction(textAction1)
+      const renderedValue = textAction.renderValue(new Map<string, string>(), { fallbackToOriginal: true })
+      expect(renderedValue).toContain(expectedSimpleTextPayload)
+    })
+  })
+
+  describe('CardAction', () => {
+    test('given action with type mismatch throw exception during construction', () => {
+      const thrower = () => new CardAction(textAction1)
+      expect(thrower).toThrowError()
+    })
+
+    test('given action with card type should parse payload and extract templateName and arguments', () => {
+      const action = new CardAction(cardAction)
+      expect(action.templateName).toBeDefined()
+      expect(action.arguments).toBeDefined()
+    })
+
+    test(`given card action render it's value`, () => {
+      const action = new CardAction(cardAction)
+      const renderedArguments = action.renderArguments(new Map<string, string>())
+      expect(renderedArguments[0].value).toEqual(expectedSimpleTextPayload)
+    })
+
+    test(`given card action render it's value with options`, () => {
+      const action = new CardAction(cardAction)
+      const renderedArguments = action.renderArguments(new Map<string, string>(), { fallbackToOriginal: true })
+      expect(renderedArguments[0].value).toEqual(expectedSimpleTextPayload)
+    })
+  })
+
+  describe('ApiAction', () => {
+    test('given action with type mismatch throw exception during construction', () => {
+      const thrower = () => new ApiAction(textAction1)
+      expect(thrower).toThrowError()
+    })
+
+    test('given action with card type should parse payload and extract name and arguments', () => {
+      const action = new ApiAction(apiAction)
+      expect(action.name).toBeDefined()
+      expect(action.arguments).toBeDefined()
+    })
+
+    test(`given card action render it's value`, () => {
+      const action = new ApiAction(apiAction)
+      const renderedArguments = action.renderArguments(new Map<string, string>())
+      expect(renderedArguments[0].value).toEqual(expectedSimpleTextPayload)
+    })
+
+    test(`given card action render it's value with options`, () => {
+      const action = new ApiAction(apiAction)
+      const renderedArguments = action.renderArguments(new Map<string, string>(), { fallbackToOriginal: true })
+      expect(renderedArguments[0].value).toEqual(expectedSimpleTextPayload)
     })
   })
 })

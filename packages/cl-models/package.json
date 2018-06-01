@@ -78,13 +78,12 @@
     "coverageThreshold": {
       "global": {
         "branches": 30,
-        "functions": 30,
-        "lines": 30,
-        "statements": 30
+        "functions": 50,
+        "lines": 50,
+        "statements": 50
       }
     },
-    "collectCoverage": true,
-    "mapCoverage": true
+    "collectCoverage": true
   },
   "devDependencies": {
     "@types/execa": "^0.8.1",

@@ -2,7 +2,13 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import { FilledEntity, FilledEntityMap, filledEntityValueAsString, MemoryValue } from './conversationlearner-models'
+import {
+  FilledEntity,
+  FilledEntityMap,
+  filledEntityValueAsString,
+  MemoryValue,
+  getEntityDisplayValueMap
+} from './conversationlearner-models'
 
 const createFilledEntity = (values: string[]): FilledEntity => {
   return {
@@ -79,7 +85,15 @@ describe('filledEntity', () => {
       }
     })
 
-    describe('EntityValueAsList', () => {
+    describe('getEntityDisplayValueMap', () => {
+      test('given filledEntityMap should return Map which has entity id to entity display value', () => {
+        const displayFilledEntityName = getEntityDisplayValueMap(filledEntityMap)
+        const entityName = 'entityName1'
+        expect(displayFilledEntityName.get(entityName)).toEqual(filledEntityMap.ValueAsString(entityName))
+      })
+    })
+
+    describe('ValueAsList', () => {
       test('given filled entity with no matching entity name return empty array', () => {
         expect(filledEntityMap.ValueAsList('entityName2')).toEqual([])
       })
@@ -89,13 +103,54 @@ describe('filledEntity', () => {
       })
     })
 
-    describe('EntityValueAsString', () => {
+    describe('ValueAsString', () => {
       test('given filled entity with no matching entity name return null', () => {
         expect(filledEntityMap.ValueAsString('entityName2')).toEqual(null)
       })
 
       test('given filled entity with multiple values return displayText/userText values formatted as string', () => {
         expect(filledEntityMap.ValueAsString('entityName1')).toEqual('e1d1, e1d2 and e1d3')
+      })
+    })
+
+    describe('ValueAsNumber', () => {
+      test('given filled entity with no matching entity name return null', () => {
+        expect(filledEntityMap.ValueAsNumber('entityName1')).toEqual(null)
+      })
+
+      test('given filled entity with non-number value name return null', () => {
+        expect(filledEntityMap.ValueAsNumber('entityName1')).toEqual(null)
+      })
+
+      test('given filled entity number value return number', () => {
+        const filledEntityMapWithNumber = new FilledEntityMap({
+          map: {
+            entityName1: {
+              entityId: 'entityId1',
+              values: [
+                {
+                  userText: '3',
+                  displayText: '3',
+                  builtinType: 'none',
+                  resolution: {}
+                }
+              ]
+            }
+          }
+        })
+
+        expect(filledEntityMapWithNumber.ValueAsNumber('entityName1')).toEqual(3)
+      })
+    })
+
+    describe('FilledEntities', () => {
+      test('given filledEntityMap return values in array', () => {
+        expect(filledEntityMap.FilledEntities()).toEqual([
+          {
+            entityId: 'entityId1',
+            values: memoryValues
+          }
+        ])
       })
     })
 
