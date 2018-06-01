@@ -283,7 +283,6 @@ const cardAction: ActionBase = {
   } as ActionPayload)
 }
 
-// Test Comment
 const expectedApiPayloadValue = 'myCallback'
 const apiAction: ActionBase = {
   ...createEmptyAction(),
