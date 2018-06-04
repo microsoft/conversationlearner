@@ -34,3 +34,13 @@ import * as models from 'conversationlearner-models'
  - `npm run build`: Generate bundles and typings, create docs
  - `npm run lint`: Lints code
  - `npm run commit`: Commit using conventional commit style ([husky](https://github.com/typicode/husky) will tell you to use it if you haven't :wink:)
+
+### Semantic Release
+
+Semantic release works by analyzing all commits that have occurred since the last release, computing the next version to increment based on the most significant commit found, then tagging and publishing a new package with that version.
+
+See: https://semantic-release.gitbooks.io/semantic-release/content/#how-does-it-work
+
+In order to analyze the commit messages reliably they must be in a known format.  To help writing these commits there is a tool at `npm run commit` which acts a wizard walking you through the options.
+
+Video Demo: https://youtu.be/qf7c-KxBBZc?t=37s
