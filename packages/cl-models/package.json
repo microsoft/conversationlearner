@@ -44,7 +44,7 @@
     "precommit": "lint-staged",
     "watch": "rollup -c rollup.config.ts --watch",
     "prepush": "npm run test:prod && npm run build",
-    "commitmsg": "validate-commit-msg"
+    "commitmsg": "commitlint -E GIT_PARAMS"
   },
   "lint-staged": {
     "{src,test}/**/*.ts": [
@@ -55,11 +55,12 @@
   "config": {
     "commitizen": {
       "path": "node_modules/cz-conventional-changelog"
-    },
-    "validate-commit-msg": {
-      "types": "conventional-commit-types",
-      "helpMessage": "Use \"npm run commit\" instead, we use conventional-changelog format :) (https://github.com/commitizen/cz-cli)"
     }
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   },
   "jest": {
     "transform": {
@@ -86,6 +87,8 @@
     "collectCoverage": true
   },
   "devDependencies": {
+    "@commitlint/cli": "7.0.0",
+    "@commitlint/config-conventional": "7.0.1",
     "@types/execa": "^0.8.1",
     "@types/fs-extra": "^5.0.0",
     "@types/jest": "^22.1.0",
@@ -118,8 +121,7 @@
     "tslint-config-standard": "^7.0.0",
     "tslint-microsoft-contrib": "^5.0.3",
     "typedoc": "^0.9.0",
-    "typescript": "2.6.2",
-    "validate-commit-msg": "^2.12.2"
+    "typescript": "2.6.2"
   },
   "publishConfig": {
     "tag": "next",
