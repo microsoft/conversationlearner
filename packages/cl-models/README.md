@@ -43,4 +43,6 @@ See: https://semantic-release.gitbooks.io/semantic-release/content/#how-does-it-
 
 In order to analyze the commit messages reliably they must be in a known format.  To help writing these commits there is a tool at `npm run commit` which acts a wizard walking you through the options.
 
+For most use cases the only change required is to type a special word in front of your normal commit messages. Instead of "add function to compute X" put "feat: add function to compute X".  Based on the rules "feat" is mapped to a "minor" release.
+
 Video Demo: https://youtu.be/qf7c-KxBBZc?t=37s
