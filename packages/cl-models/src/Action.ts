@@ -13,19 +13,30 @@ export const ActionTypes = {
 }
 
 export class ActionBase {
-  public actionId: string
-  public actionType: string
-  public payload: string
-  public isTerminal: boolean
-  public requiredEntities: string[]
-  public negativeEntities: string[]
-  public suggestedEntity: string | null
-  public version: number
-  public packageCreationId: number
-  public packageDeletionId: number
+  actionId: string
+  actionType: string
+  payload: string
+  isTerminal: boolean
+  requiredEntitiesFromPayload: string[]
+  requiredEntities: string[] = []
+  negativeEntities: string[] = []
+  suggestedEntity: string | null = null
+  version: number
+  packageCreationId: number
+  packageDeletionId: number
 
-  public constructor(init?: Partial<ActionBase>) {
-    Object.assign(this, init)
+  constructor(action: ActionBase) {
+    this.actionId = action.actionId
+    this.actionType = action.actionType
+    this.payload = action.payload
+    this.isTerminal = action.isTerminal
+    this.requiredEntitiesFromPayload = action.requiredEntitiesFromPayload || []
+    this.requiredEntities = action.requiredEntities || []
+    this.negativeEntities = action.negativeEntities || []
+    this.suggestedEntity = action.suggestedEntity || null
+    this.version = action.version
+    this.packageCreationId = action.packageCreationId
+    this.packageDeletionId = action.packageDeletionId
   }
 
   // TODO: Refactor away from generic GetPayload for different action types
@@ -33,7 +44,7 @@ export class ActionBase {
   // This causes issue of having to pass in entityValueMap even when it's not required, but making it optional ruins
   // safety for those places which should require it.
   // TODO: Remove ScoredAction since it doesn't have payload
-  public static GetPayload(action: ActionBase | ScoredAction, entityValues: Map<string, string>): string {
+  static GetPayload(action: ActionBase | ScoredAction, entityValues: Map<string, string>): string {
     if (action.actionType === ActionTypes.TEXT) {
       /**
        * For backwards compatibility check if payload is of new TextPayload type
@@ -62,7 +73,7 @@ export class ActionBase {
   }
 
   /** Return arguments for an action */
-  public static GetActionArguments(action: ActionBase | ScoredAction): ActionArgument[] {
+  static GetActionArguments(action: ActionBase | ScoredAction): ActionArgument[] {
     if (action.actionType !== ActionTypes.TEXT) {
       let actionPayload = JSON.parse(action.payload) as ActionPayload
       return actionPayload.arguments.map(aa => new ActionArgument(aa))
