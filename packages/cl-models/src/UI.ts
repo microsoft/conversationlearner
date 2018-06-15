@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import { Memory } from './Memory'
@@ -34,8 +34,9 @@ export interface UIExtractResponse {
   memories: Memory[]
 }
 
-export interface UITeachResponse {
+export interface UIPostScoreResponse {
   teachResponse: TeachResponse
+  isEndTask: Boolean
   memories: Memory[]
 }
 

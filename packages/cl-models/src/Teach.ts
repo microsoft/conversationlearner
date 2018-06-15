@@ -6,11 +6,13 @@ import { Memory } from './Memory'
 import { ScoreResponse, ScoreInput } from './Score'
 import { ReplayError } from './ReplayError'
 import { UIScoreInput } from './UI'
+import { ActionBase } from './Action'
 
 export enum DialogMode {
   Extractor = 'Extract', // Waiting for Extractor feedback
   Scorer = 'Score', // Waiting for Scorer feedback
-  Wait = 'Wait' // Waiting for user input
+  Wait = 'Wait', // Waiting for user input,
+  EndSession = 'EndSession' // Dialog is over - EndSesssion Action has been called
 }
 
 export interface Teach {
@@ -44,6 +46,6 @@ export interface TeachWithHistory {
   scoreResponse: ScoreResponse | undefined
   scoreInput: ScoreInput | undefined
   uiScoreInput: UIScoreInput | undefined
-  isLastActionTerminal: boolean
+  lastAction: ActionBase | null
   replayErrors: ReplayError[]
 }

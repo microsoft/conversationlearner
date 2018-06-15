@@ -9,7 +9,8 @@ export const ActionTypes = {
   TEXT: 'TEXT',
   API_LOCAL: 'API_LOCAL',
   // API_AZURE : "API_AZURE", TODO
-  CARD: 'CARD'
+  CARD: 'CARD',
+  END_SESSION: 'END_SESSION' // LARS TEMP
 }
 
 export class ActionBase {
@@ -63,6 +64,9 @@ export class ActionBase {
           }`
         )
       }
+    } else if (action.actionType === ActionTypes.END_SESSION) {
+      const textPayload = JSON.parse(action.payload) as TextPayload
+      return EntityIdSerializer.serialize(textPayload.json, entityValues)
     }
     // For API or CARD the payload field of the outer payload is the name of API or the filename of the card template without extension
     else if ([ActionTypes.CARD, ActionTypes.API_LOCAL].includes(action.actionType)) {
@@ -207,5 +211,23 @@ export class CardAction extends ActionBase {
         value: value
       }
     })
+  }
+}
+
+export class SessionAction extends ActionBase {
+  value: object // json slate value
+
+  constructor(action: ActionBase) {
+    super(action)
+
+    if (action.actionType !== ActionTypes.END_SESSION) {
+      throw new Error(`You attempted to create session action from action of type: ${action.actionType}`)
+    }
+
+    this.value = JSON.parse(this.payload).json
+  }
+
+  renderValue(entityValues: Map<string, string>, serializerOptions: Partial<IOptions> = {}): string {
+    return EntityIdSerializer.serialize(this.value, entityValues, serializerOptions)
   }
 }
