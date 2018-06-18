@@ -160,14 +160,22 @@ export class FilledEntityMap {
     builtinType: string | null = null,
     resolution: any | null = null
   ): void {
+    // If we don't already have entry in map for this item, create one
     if (!this.map[entityName]) {
       this.map[entityName] = {
-        entityId: entityId,
+        entityId,
         values: []
       }
     }
 
-    let displayText = builtinType ? ModelUtils.PrebuiltDisplayText(builtinType, resolution, entityValue) : entityValue
+    const displayText = builtinType && resolution ? ModelUtils.PrebuiltDisplayText(builtinType, resolution, entityValue) : entityValue
+
+    const newFilledEntityValue = {
+      userText: entityValue,
+      displayText,
+      builtinType,
+      resolution
+    }
 
     const filledEntity = this.map[entityName]
     // Check if entity buckets values
@@ -175,15 +183,10 @@ export class FilledEntityMap {
       // Add if not a duplicate
       const containsDuplicateValue = filledEntity.values.some(memoryValue => memoryValue.userText === entityValue)
       if (!containsDuplicateValue) {
-        filledEntity.values.push({
-          userText: entityValue,
-          displayText: displayText,
-          builtinType: builtinType,
-          resolution: resolution
-        })
+        filledEntity.values.push(newFilledEntityValue)
       }
     } else {
-      filledEntity.values = [{ userText: entityValue, displayText: displayText, builtinType: builtinType, resolution: resolution }]
+      filledEntity.values = [newFilledEntityValue]
     }
   }
 

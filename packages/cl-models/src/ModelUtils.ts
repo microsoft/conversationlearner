@@ -204,12 +204,16 @@ export class ModelUtils {
     }
   }
 
-  public static PrebuiltDisplayText(prebuiltType: string, resolution: any, entityText: string): string {
-    if (prebuiltType.startsWith('builtin.encyclopedia')) {
+  public static PrebuiltDisplayText(builtinType: string, resolution: any, entityText: string): string {
+    if (!builtinType || !resolution) {
       return entityText
     }
 
-    switch (prebuiltType) {
+    if (['builtin.geography', 'builtin.encyclopedia'].some(prefix => builtinType.startsWith(prefix))) {
+      return entityText
+    }
+
+    switch (builtinType) {
       case 'builtin.datetimeV2.date':
         let date = resolution.values[0].value
         if (resolution.values[1]) {
@@ -246,14 +250,6 @@ export class ModelUtils {
         return resolution.value
       case 'builtin.percentage':
         return resolution.value
-      case 'builtin.geography.city':
-        return resolution.value
-      case 'builtin.geography.country':
-        return resolution.value
-      case 'builtin.geography.pointOfInterest':
-        return resolution.value
-      case 'builtin.encyclopedia':
-        return entityText
       default:
         return entityText
     }
