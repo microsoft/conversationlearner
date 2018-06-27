@@ -33,6 +33,7 @@ export interface ChatProps {
     resize?: 'none' | 'window' | 'detect',
     hideInput: boolean,  //BLIS addition
     focusInput: boolean, //BLIS addition
+    disableUpload: boolean, //BLIS addition
 }
 
 export const sendMessage = (text: string, from: User, locale: string) => ({
@@ -208,7 +209,11 @@ export class Chat extends React.Component<ChatProps, {}> {
                     <MessagePane setFocus={ () => this.setFocus() }>
                         <History setFocus={ () => this.setFocus() }/>
                     </MessagePane>
-                    { this.props.hideInput ? null : <Shell focusInput={this.props.focusInput}/>}  
+                    { this.props.hideInput ? null : 
+                        <Shell  
+                            focusInput={this.props.focusInput}  // BLIS addition
+                            disableUpload={this.props.disableUpload}  // BLIS addition
+                    />}  
                     { resize }
                 </div>
             </Provider>

@@ -14,6 +14,7 @@ export interface Props {
     inputText: string,
     strings: Strings,
     listening: boolean,
+    disableUpload: boolean, // BLIS addition
     focusInput: boolean, // BLIS addition
 
     onChangeText: (inputText: string) => void
@@ -94,11 +95,13 @@ class ShellContainer extends React.Component<Props, {}> {
         return (
             <div className={className}>
                 <input id="wc-upload-input" type="file" ref={ input => this.fileInput = input } multiple onChange={ () => this.onChangeFile() } />
-                <label className="wc-upload" htmlFor="wc-upload-input">
-                    <svg>
-                        <path d="M19.96 4.79m-2 0a2 2 0 0 1 4 0 2 2 0 0 1-4 0zM8.32 4.19L2.5 15.53 22.45 15.53 17.46 8.56 14.42 11.18 8.32 4.19ZM1.04 1L1.04 17 24.96 17 24.96 1 1.04 1ZM1.03 0L24.96 0C25.54 0 26 0.45 26 0.99L26 17.01C26 17.55 25.53 18 24.96 18L1.03 18C0.46 18 0 17.55 0 17.01L0 0.99C0 0.45 0.47 0 1.03 0Z" />
-                    </svg>
-                </label>
+                {!this.props.disableUpload &&  // BLIS addition
+                    <label className="wc-upload" htmlFor="wc-upload-input">
+                        <svg>
+                            <path d="M19.96 4.79m-2 0a2 2 0 0 1 4 0 2 2 0 0 1-4 0zM8.32 4.19L2.5 15.53 22.45 15.53 17.46 8.56 14.42 11.18 8.32 4.19ZM1.04 1L1.04 17 24.96 17 24.96 1 1.04 1ZM1.03 0L24.96 0C25.54 0 26 0.45 26 0.99L26 17.01C26 17.55 25.53 18 24.96 18L1.03 18C0.46 18 0 17.55 0 17.01L0 0.99C0 0.45 0.47 0 1.03 0Z" />
+                        </svg>
+                    </label>
+                }
                 <div className="wc-textbox">
                     <input
                         type="text"
@@ -160,6 +163,7 @@ export const Shell = connect(
         startListening: () => dispatchProps.startListening(),
         stopListening: () => dispatchProps.stopListening(),
         // Received Props (BLIS)
-        focusInput: ownProps.focusInput
+        focusInput: ownProps.focusInput, // BLIS addition
+        disableUpload: ownProps.disableUpload,  // BLIS addition
     })
 )(ShellContainer);
