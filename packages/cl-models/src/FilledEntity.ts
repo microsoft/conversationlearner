@@ -4,6 +4,7 @@
  */
 import { MemoryValue } from './Memory'
 import { ModelUtils } from './ModelUtils'
+import { EntityBase } from './Entity'
 
 const SUBSTITUTE_PREFIX = '$'
 
@@ -53,6 +54,17 @@ export class FilledEntityMap {
 
   public constructor(init?: Partial<FilledEntityMap>) {
     Object.assign(this, init)
+  }
+
+  public static FromFilledEntities(filledEntities: FilledEntity[], entities: EntityBase[]) {
+    let filledEntityMap = new FilledEntityMap()
+    for (let filledEntity of filledEntities) {
+      let entity = entities.find(e => e.entityId === filledEntity.entityId)
+      if (entity) {
+        filledEntityMap.map[entity.entityName] = filledEntity
+      }
+    }
+    return filledEntityMap
   }
 
   public ValueAsList(entityName: string): string[] {
