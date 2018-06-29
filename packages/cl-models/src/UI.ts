@@ -13,6 +13,14 @@ import { AppIdList, AppList } from './App'
 export const CL_USER_NAME_ID = 'CLTrainer'
 export const MEMORY_KEY_HEADER_NAME = 'x-conversationlearner-memory-key'
 
+/** Indicates whether END_SESSION was called on the running Session */
+export enum SessionEndState {
+  /** Session ended because END_SESSION activity has been called */
+  COMPLETED = 'completed',
+  /** Session ended because of timeout or new session started w/o END_SESSION activity */
+  OPEN = 'open'
+}
+
 export enum ScoreReason {
   // Action has been masked
   NotAvailable = 'notAvailable',
