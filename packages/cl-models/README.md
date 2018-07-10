@@ -22,7 +22,7 @@ npm test
 ### Importing library
 
 ```typescript
-import * as models from 'conversationlearner-models'
+import * as models from '@conversationlearner/models'
 ```
 
 ### NPM scripts
