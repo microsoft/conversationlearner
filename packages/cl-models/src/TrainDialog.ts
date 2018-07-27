@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import { ScoreInput, ScoredAction } from './Score'
@@ -33,15 +33,18 @@ export interface TrainRound {
   scorerSteps: TrainScorerStep[]
 }
 
-export interface TrainDialog {
-  trainDialogId: string
+export interface TrainDialogInput {
   sourceLogDialogId: string
-  version: number
-  packageCreationId: number
-  packageDeletionId: number
   rounds: TrainRound[]
   definitions?: AppDefinition | null
   invalid?: boolean
+}
+
+export interface TrainDialog extends TrainDialogInput {
+  trainDialogId: string
+  version: number
+  packageCreationId: number
+  packageDeletionId: number
 }
 
 export interface TrainResponse {

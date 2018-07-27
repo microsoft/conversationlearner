@@ -1,11 +1,11 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 export interface AppMetaData {
   botFrameworkApps: string[]
-  markdown: string
-  video: string
+  markdown?: string
+  video?: string
   isLoggingOn: boolean
 }
 
@@ -15,12 +15,12 @@ export interface AppBase {
   locale: string
   luisAppId: string
   metadata: AppMetaData
-  trainingFailureMessage: string
+  trainingFailureMessage: string | null
   trainingStatus: TrainingStatusCode
   datetime: Date
-  packageVersions?: PackageReference[]
-  livePackageId?: string
-  devPackageId?: string
+  packageVersions: PackageReference[]
+  livePackageId: string
+  devPackageId: string
 }
 
 export interface AppList {
@@ -40,7 +40,7 @@ export enum TrainingStatusCode {
 
 export interface TrainingStatus {
   trainingStatus: TrainingStatusCode
-  trainingFailureMessage: string | null | undefined
+  trainingFailureMessage: string | null
 }
 
 export interface PackageReference {

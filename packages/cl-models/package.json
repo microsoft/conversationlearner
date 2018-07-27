@@ -84,7 +84,8 @@
         "statements": 50
       }
     },
-    "collectCoverage": true
+    "collectCoverage": true,
+    "testEnvironment": "node"
   },
   "devDependencies": {
     "@commitlint/cli": "7.0.0",

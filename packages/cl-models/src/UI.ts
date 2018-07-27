@@ -33,7 +33,7 @@ export enum ScoreReason {
 }
 
 export interface UIScoreInput {
-  trainExtractorStep: TrainExtractorStep
+  trainExtractorStep: TrainExtractorStep | null
   extractResponse: ExtractResponse
 }
 
