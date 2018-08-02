@@ -311,7 +311,7 @@ describe('Action', () => {
       // Arrange
       const actionLikeObject: ActionBase = {
         actionId: 'fake-action-id',
-        actionType: 'fake-action-type',
+        actionType: ActionTypes.TEXT,
         payload: 'fake-action-payload',
         isTerminal: false,
         requiredEntitiesFromPayload: [],
@@ -359,7 +359,7 @@ describe('Action', () => {
       // Arrange
       const unknownAction = new ActionBase({
         actionId: 'fake-action-id',
-        actionType: 'fake-action-type',
+        actionType: 'fake-action-type' as ActionTypes,
         payload: 'fake-action-payload',
         isTerminal: false,
         requiredEntitiesFromPayload: [],

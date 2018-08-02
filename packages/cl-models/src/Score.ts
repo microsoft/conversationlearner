@@ -1,7 +1,8 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
+import { ActionTypes } from './Action'
 import { Metrics } from './Metrics'
 import { FilledEntity } from './FilledEntity'
 
@@ -15,7 +16,7 @@ export interface ScoredBase {
   actionId: string
   payload: string
   isTerminal: boolean
-  actionType: string
+  actionType: ActionTypes
 }
 
 export interface UnscoredAction extends ScoredBase {

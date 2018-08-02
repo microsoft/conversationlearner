@@ -5,17 +5,17 @@
 import EntityIdSerializer, { IOptions } from './slateSerializer'
 import { ScoredAction } from './Score'
 
-export const ActionTypes = {
-  TEXT: 'TEXT',
-  API_LOCAL: 'API_LOCAL',
-  // API_AZURE : "API_AZURE", TODO
-  CARD: 'CARD',
-  END_SESSION: 'END_SESSION' // LARS TEMP
+export enum ActionTypes {
+  TEXT = 'TEXT',
+  API_LOCAL = 'API_LOCAL',
+  CARD = 'CARD',
+  END_SESSION = 'END_SESSION',
+  RENDER = 'RENDER'
 }
 
 export class ActionBase {
   actionId: string
-  actionType: string
+  actionType: ActionTypes
   payload: string
   isTerminal: boolean
   requiredEntitiesFromPayload: string[]
@@ -69,7 +69,7 @@ export class ActionBase {
       return EntityIdSerializer.serialize(textPayload.json, entityValues)
     }
     // For API or CARD the payload field of the outer payload is the name of API or the filename of the card template without extension
-    else if ([ActionTypes.CARD, ActionTypes.API_LOCAL].includes(action.actionType)) {
+    else if ([ActionTypes.CARD, ActionTypes.API_LOCAL, ActionTypes.RENDER].includes(action.actionType)) {
       let actionPayload = JSON.parse(action.payload) as ActionPayload
       return actionPayload.payload
     }
@@ -148,15 +148,15 @@ export class TextAction extends ActionBase {
   }
 }
 
-export class ApiAction extends ActionBase {
+export class CodeAction extends ActionBase {
   name: string
   arguments: ActionArgument[]
 
   constructor(action: ActionBase) {
     super(action)
 
-    if (action.actionType !== ActionTypes.API_LOCAL) {
-      throw new Error(`You attempted to create api action from action of type: ${action.actionType}`)
+    if (![ActionTypes.API_LOCAL, ActionTypes.RENDER].includes(action.actionType)) {
+      throw new Error(`You attempted to create code action from action of type: ${action.actionType}`)
     }
 
     const actionPayload: ActionPayload = JSON.parse(this.payload)
@@ -178,6 +178,26 @@ export class ApiAction extends ActionBase {
         value: value
       }
     })
+  }
+}
+
+export class ApiAction extends CodeAction {
+  constructor(action: ActionBase) {
+    if (action.actionType !== ActionTypes.API_LOCAL) {
+      throw new Error(`You attempted to create api action from action of type: ${action.actionType}`)
+    }
+
+    super(action)
+  }
+}
+
+export class RenderAction extends CodeAction {
+  constructor(action: ActionBase) {
+    if (action.actionType !== ActionTypes.RENDER) {
+      throw new Error(`You attempted to create api action from action of type: ${action.actionType}`)
+    }
+
+    super(action)
   }
 }
 

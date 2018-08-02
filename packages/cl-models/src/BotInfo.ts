@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import { Template } from './Template'
-import { CallbackAPI } from './CallbackAPI'
+import { Callback } from './Callback'
 import { Banner } from './Banner'
 
 export interface IUser {
@@ -14,8 +14,8 @@ export interface IUser {
 /** Information about the running bot */
 export interface BotInfo {
   user: IUser
-  /** APICallbacks available to the Conversation Learner App */
-  callbacks: CallbackAPI[]
+  apiCallbacks: Callback[]
+  renderCallbacks: Callback[]
   templates: Template[]
   validationErrors: string[]
   banner: Banner | null
