@@ -14,8 +14,7 @@ export interface IUser {
 /** Information about the running bot */
 export interface BotInfo {
   user: IUser
-  apiCallbacks: Callback[]
-  renderCallbacks: Callback[]
+  callbacks: Callback[]
   templates: Template[]
   validationErrors: string[]
   banner: Banner | null

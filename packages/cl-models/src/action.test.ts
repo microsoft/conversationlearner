@@ -11,7 +11,8 @@ import {
   IActionArgument,
   TextAction,
   CardAction,
-  ApiAction
+  ApiAction,
+  CardPayload
 } from './Action'
 
 const createEmptyAction = (): ActionBase => ({
@@ -281,7 +282,7 @@ const cardAction: ActionBase = {
   payload: JSON.stringify({
     payload: expectedCardPayloadValue,
     arguments: cardActionArguments
-  } as ActionPayload)
+  } as CardPayload)
 }
 
 const expectedApiPayloadValue = 'myCallback'
@@ -290,7 +291,19 @@ const apiAction: ActionBase = {
   actionType: ActionTypes.API_LOCAL,
   payload: JSON.stringify({
     payload: expectedApiPayloadValue,
-    arguments: [
+    logicArguments: [
+      {
+        parameter: 'p1',
+        value: textPayloadWithNoEntities
+      },
+      {
+        parameter: 'p2',
+        value: {
+          json: {}
+        }
+      }
+    ],
+    renderArguments: [
       {
         parameter: 'p1',
         value: textPayloadWithNoEntities
@@ -495,22 +508,27 @@ describe('Action', () => {
       expect(thrower).toThrowError()
     })
 
-    test('given action with card type should parse payload and extract name and arguments', () => {
+    test('given action with api type should parse payload and extract name and arguments', () => {
       const action = new ApiAction(apiAction)
       expect(action.name).toBeDefined()
-      expect(action.arguments).toBeDefined()
+      expect(action.logicArguments).toBeDefined()
+      expect(action.renderArguments).toBeDefined()
     })
 
-    test(`given card action render it's value`, () => {
+    test(`given api action render it's arguments`, () => {
       const action = new ApiAction(apiAction)
-      const renderedArguments = action.renderArguments(new Map<string, string>())
-      expect(renderedArguments[0].value).toEqual(expectedSimpleTextPayload)
+      const renderedLogicArguments = action.renderLogicArguments(new Map<string, string>())
+      const renderedRenderArguments = action.renderRenderArguments(new Map<string, string>())
+      expect(renderedLogicArguments[0].value).toEqual(expectedSimpleTextPayload)
+      expect(renderedRenderArguments[0].value).toEqual(expectedSimpleTextPayload)
     })
 
-    test(`given card action render it's value with options`, () => {
+    test(`given api action render it's value with options`, () => {
       const action = new ApiAction(apiAction)
-      const renderedArguments = action.renderArguments(new Map<string, string>(), { fallbackToOriginal: true })
-      expect(renderedArguments[0].value).toEqual(expectedSimpleTextPayload)
+      const renderedLogicArguments = action.renderLogicArguments(new Map<string, string>(), { fallbackToOriginal: true })
+      const renderedRenderArguments = action.renderRenderArguments(new Map<string, string>(), { fallbackToOriginal: true })
+      expect(renderedLogicArguments[0].value).toEqual(expectedSimpleTextPayload)
+      expect(renderedRenderArguments[0].value).toEqual(expectedSimpleTextPayload)
     })
   })
 })

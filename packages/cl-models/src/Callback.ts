@@ -6,5 +6,6 @@
 
 export interface Callback {
   name: string
-  arguments: string[]
+  logicArguments: string[]
+  renderArguments: string[]
 }

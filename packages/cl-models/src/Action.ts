@@ -9,8 +9,7 @@ export enum ActionTypes {
   TEXT = 'TEXT',
   API_LOCAL = 'API_LOCAL',
   CARD = 'CARD',
-  END_SESSION = 'END_SESSION',
-  RENDER = 'RENDER'
+  END_SESSION = 'END_SESSION'
 }
 
 export class ActionBase {
@@ -69,7 +68,10 @@ export class ActionBase {
       return EntityIdSerializer.serialize(textPayload.json, entityValues)
     }
     // For API or CARD the payload field of the outer payload is the name of API or the filename of the card template without extension
-    else if ([ActionTypes.CARD, ActionTypes.API_LOCAL, ActionTypes.RENDER].includes(action.actionType)) {
+    else if (ActionTypes.CARD === action.actionType) {
+      let cardPayload = JSON.parse(action.payload) as CardPayload
+      return cardPayload.payload
+    } else if (ActionTypes.API_LOCAL === action.actionType) {
       let actionPayload = JSON.parse(action.payload) as ActionPayload
       return actionPayload.payload
     }
@@ -78,9 +80,12 @@ export class ActionBase {
 
   /** Return arguments for an action */
   static GetActionArguments(action: ActionBase | ScoredAction): ActionArgument[] {
-    if (action.actionType !== ActionTypes.TEXT) {
+    if (ActionTypes.CARD === action.actionType) {
+      let cardPayload = JSON.parse(action.payload) as CardPayload
+      return cardPayload.arguments.map(aa => new ActionArgument(aa))
+    } else if (action.actionType === ActionTypes.API_LOCAL) {
       let actionPayload = JSON.parse(action.payload) as ActionPayload
-      return actionPayload.arguments.map(aa => new ActionArgument(aa))
+      return [...actionPayload.logicArguments, ...actionPayload.renderArguments].map(aa => new ActionArgument(aa))
     }
 
     return []
@@ -102,6 +107,12 @@ export interface TextPayload {
 }
 
 export interface ActionPayload {
+  payload: string
+  logicArguments: IActionArgument[]
+  renderArguments: IActionArgument[]
+}
+
+export interface CardPayload {
   payload: string
   arguments: IActionArgument[]
 }
@@ -148,24 +159,37 @@ export class TextAction extends ActionBase {
   }
 }
 
-export class CodeAction extends ActionBase {
+export class ApiAction extends ActionBase {
   name: string
-  arguments: ActionArgument[]
+  logicArguments: ActionArgument[]
+  renderArguments: ActionArgument[]
 
   constructor(action: ActionBase) {
     super(action)
 
-    if (![ActionTypes.API_LOCAL, ActionTypes.RENDER].includes(action.actionType)) {
-      throw new Error(`You attempted to create code action from action of type: ${action.actionType}`)
+    if (action.actionType !== ActionTypes.API_LOCAL) {
+      throw new Error(`You attempted to create api action from action of type: ${action.actionType}`)
     }
 
     const actionPayload: ActionPayload = JSON.parse(this.payload)
     this.name = actionPayload.payload
-    this.arguments = actionPayload.arguments.map(aa => new ActionArgument(aa))
+    this.logicArguments = actionPayload.logicArguments.map(aa => new ActionArgument(aa))
+    this.renderArguments = actionPayload.renderArguments.map(aa => new ActionArgument(aa))
+  }
+  renderLogicArguments(entityValues: Map<string, string>, serializerOptions: Partial<IOptions> = {}): RenderedActionArgument[] {
+    return this.renderArgs(this.logicArguments, entityValues, serializerOptions)
   }
 
-  renderArguments(entityValues: Map<string, string>, serializerOptions: Partial<IOptions> = {}): RenderedActionArgument[] {
-    return this.arguments.map(aa => {
+  renderRenderArguments(entityValues: Map<string, string>, serializerOptions: Partial<IOptions> = {}): RenderedActionArgument[] {
+    return this.renderArgs(this.renderArguments, entityValues, serializerOptions)
+  }
+
+  private renderArgs(
+    args: ActionArgument[],
+    entityValues: Map<string, string>,
+    serializerOptions: Partial<IOptions> = {}
+  ): RenderedActionArgument[] {
+    return args.map(aa => {
       let value = null
       try {
         value = EntityIdSerializer.serialize(aa.value, entityValues, serializerOptions)
@@ -181,26 +205,6 @@ export class CodeAction extends ActionBase {
   }
 }
 
-export class ApiAction extends CodeAction {
-  constructor(action: ActionBase) {
-    if (action.actionType !== ActionTypes.API_LOCAL) {
-      throw new Error(`You attempted to create api action from action of type: ${action.actionType}`)
-    }
-
-    super(action)
-  }
-}
-
-export class RenderAction extends CodeAction {
-  constructor(action: ActionBase) {
-    if (action.actionType !== ActionTypes.RENDER) {
-      throw new Error(`You attempted to create api action from action of type: ${action.actionType}`)
-    }
-
-    super(action)
-  }
-}
-
 export class CardAction extends ActionBase {
   templateName: string
   arguments: ActionArgument[]
@@ -212,9 +216,9 @@ export class CardAction extends ActionBase {
       throw new Error(`You attempted to create card action from action of type: ${action.actionType}`)
     }
 
-    const actionPayload: ActionPayload = JSON.parse(this.payload)
-    this.templateName = actionPayload.payload
-    this.arguments = actionPayload.arguments.map(aa => new ActionArgument(aa))
+    const payload: CardPayload = JSON.parse(this.payload)
+    this.templateName = payload.payload
+    this.arguments = payload.arguments.map(aa => new ActionArgument(aa))
   }
 
   renderArguments(entityValues: Map<string, string>, serializerOptions: Partial<IOptions> = {}): RenderedActionArgument[] {
