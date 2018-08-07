@@ -154,6 +154,7 @@ export class ModelUtils {
       scorerSteps: logRound.scorerSteps.map<TrainScorerStep>(logScorerStep => ({
         input: logScorerStep.input,
         labelAction: logScorerStep.predictedAction,
+        logicResult: undefined,
         scoredAction: undefined
       }))
     }
@@ -166,6 +167,7 @@ export class ModelUtils {
     return {
       input: logScorerStep.input,
       labelAction: logScorerStep.predictedAction,
+      logicResult: undefined,
       scoredAction: undefined
     }
   }

@@ -128,6 +128,7 @@ describe('ModelUtils', () => {
                 context: {},
                 maskedActions: []
               },
+              logicResult: undefined,
               labelAction: 'test',
               scoredAction: undefined
             }
