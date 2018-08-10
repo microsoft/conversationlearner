@@ -24,7 +24,7 @@ export interface TrainScorerStep {
   input: ScoreInput
   // ID of the selected action
   labelAction: string
-  logicResult: any
+  logicResult: string | undefined
   // Score of the selected action
   scoredAction: ScoredAction | undefined
 }
