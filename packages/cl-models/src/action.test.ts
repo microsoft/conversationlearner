@@ -17,6 +17,7 @@ import {
 
 const createEmptyAction = (): ActionBase => ({
   actionId: '',
+  createdDateTime: '',
   payload: '',
   isTerminal: false,
   requiredEntitiesFromPayload: [],
@@ -325,6 +326,7 @@ describe('Action', () => {
       const actionLikeObject: ActionBase = {
         actionId: 'fake-action-id',
         actionType: ActionTypes.TEXT,
+        createdDateTime: new Date().toJSON(),
         payload: 'fake-action-payload',
         isTerminal: false,
         requiredEntitiesFromPayload: [],
@@ -350,6 +352,7 @@ describe('Action', () => {
       const corruptAction = new ActionBase({
         actionId: 'fake-action-id',
         actionType: ActionTypes.TEXT,
+        createdDateTime: new Date().toJSON(),
         payload: 'fake-action-payload',
         isTerminal: false,
         requiredEntitiesFromPayload: [],
@@ -373,6 +376,7 @@ describe('Action', () => {
       const unknownAction = new ActionBase({
         actionId: 'fake-action-id',
         actionType: 'fake-action-type' as ActionTypes,
+        createdDateTime: new Date().toJSON(),
         payload: 'fake-action-payload',
         isTerminal: false,
         requiredEntitiesFromPayload: [],

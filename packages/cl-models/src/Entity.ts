@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 export enum EntityType {
@@ -17,6 +17,7 @@ export interface EntityBase {
   entityId: string
   entityName: string
   entityType: string
+  createdDateTime: string
   version: number | null
   packageCreationId: number | null
   packageDeletionId: number | null

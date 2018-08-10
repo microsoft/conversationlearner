@@ -109,6 +109,7 @@ describe('ModelUtils', () => {
 
   describe('ToCreateTeachParams', () => {
     const trainDialog: TrainDialog = {
+      createdDateTime: new Date().toJSON(),
       trainDialogId: 'trainDialogId',
       sourceLogDialogId: 'sourceLogDialogId',
       version: 1,

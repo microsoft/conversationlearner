@@ -15,6 +15,7 @@ export enum ActionTypes {
 export class ActionBase {
   actionId: string
   actionType: ActionTypes
+  createdDateTime: string
   payload: string
   isTerminal: boolean
   requiredEntitiesFromPayload: string[]
@@ -28,6 +29,7 @@ export class ActionBase {
   constructor(action: ActionBase) {
     this.actionId = action.actionId
     this.actionType = action.actionType
+    this.createdDateTime = action.createdDateTime
     this.payload = action.payload
     this.isTerminal = action.isTerminal
     this.requiredEntitiesFromPayload = action.requiredEntitiesFromPayload || []
