@@ -129,6 +129,7 @@ export class ModelUtils {
 
     return {
       createdDateTime: logDialog.createdDateTime,
+      lastModifiedDateTime: logDialog.lastModifiedDateTime,
       packageCreationId: 0,
       packageDeletionId: 0,
       trainDialogId: '',

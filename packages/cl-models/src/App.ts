@@ -13,6 +13,7 @@ export interface AppBase {
   appName: string
   appId: string
   createdDateTime: string
+  lastModifiedDateTime: string
   locale: string
   luisAppId: string
   metadata: AppMetaData

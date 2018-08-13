@@ -43,6 +43,7 @@ export interface TrainDialogInput {
 
 export interface TrainDialog extends TrainDialogInput {
   createdDateTime: string
+  lastModifiedDateTime: string
   trainDialogId: string
   version: number
   packageCreationId: number
