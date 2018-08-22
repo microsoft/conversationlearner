@@ -108,6 +108,11 @@ export interface TextPayload {
   json: object
 }
 
+export interface ActionPayloadSingleArguments {
+  payload: string
+  arguments: IActionArgument[]
+}
+
 export interface ActionPayload {
   payload: string
   logicArguments: IActionArgument[]
