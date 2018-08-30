@@ -280,17 +280,15 @@ export class WrappedActivity extends React.Component<WrappedActivityProps, {}> {
             else if (this.props.activity.channelData.highlight === "error") {
                 wrapperClassName += ' wc-message-error-from-' + who;
             }
+            if (this.props.selected) {
+                wrapperClassName += 'selected'
+            }
         };
-
-        const contentClassName = classList(
-            'wc-message-content',
-            this.props.selected && 'selected'
-        );
 
         return (
             <div data-activity-id={ this.props.activity.id } className={ wrapperClassName } onClick={ this.props.onClickActivity }>
                 <div className={ 'wc-message wc-message-from-' + who } ref={ div => this.messageDiv = div }>
-                    <div className={ contentClassName }>
+                    <div className={ 'wc-message-content' }>
                         <svg className="wc-message-callout">
                             <path className="point-left" d="m0,6 l6 6 v-12 z" />
                             <path className="point-right" d="m6,6 l-6 6 v-12 z" />
