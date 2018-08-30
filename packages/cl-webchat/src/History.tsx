@@ -298,7 +298,7 @@ export class WrappedActivity extends React.Component<WrappedActivityProps, {}> {
                         { this.props.children }
                     </div>
                 </div>
-                {this.props.renderSelectedActivity && this.props.renderSelectedActivity(this.props.activity)}
+                {this.props.selected && this.props.renderSelectedActivity && this.props.renderSelectedActivity(this.props.activity)}
                 <div className={ 'wc-message-from wc-message-from-' + who }>{ timeLine }</div>
             </div>
         );
