@@ -281,7 +281,7 @@ export class WrappedActivity extends React.Component<WrappedActivityProps, {}> {
                 wrapperClassName += ' wc-message-error-from-' + who;
             }
             if (this.props.selected) {
-                wrapperClassName += 'selected'
+                wrapperClassName += ' wc-message-selected'
             }
         };
 
