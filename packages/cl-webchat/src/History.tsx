@@ -14,6 +14,7 @@ export interface HistoryProps {
     onClickRetry: (activity: Activity) => void,
     onClickCardAction: () => void,
     setFocus: () => void,
+    renderSelectedActivity: (activity: Activity) => JSX.Element | null
 
     isFromMe: (activity: Activity) => boolean,
     isSelected: (activity: Activity) => boolean,
@@ -91,6 +92,7 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
             fromMe={ false }
             onClickActivity={ null }
             onClickRetry={ null }
+            renderSelectedActivity= { null } // BLIS ADD
             selected={ false }
             showTimestamp={ false }
         >
@@ -125,6 +127,7 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
                         showTimestamp={ index === this.props.activities.length - 1 || (index + 1 < this.props.activities.length && suitableInterval(activity, this.props.activities[index + 1])) }
                         selected={ this.props.isSelected(activity) }
                         fromMe={ this.props.isFromMe(activity) }
+                        renderSelectedActivity={this.props.renderSelectedActivity}
                         onClickActivity={ this.props.onClickActivity(activity) }
                         onClickRetry={ e => {
                             // Since this is a click on an anchor, we need to stop it
@@ -186,6 +189,7 @@ export const History = connect(
         onClickCardAction: dispatchProps.onClickCardAction,
         // from ownProps
         setFocus: ownProps.setFocus,
+        renderSelectedActivity: ownProps.renderSelectedActivity,  // BLIS ADD
         // helper functions
         doCardAction: doCardAction(stateProps.botConnection, stateProps.user, stateProps.format.locale, dispatchProps.sendMessage),
         isFromMe: (activity: Activity) => activity.from.id === stateProps.user.id,
@@ -223,7 +227,9 @@ export interface WrappedActivityProps {
     fromMe: boolean,
     format: FormatState,
     onClickActivity: React.MouseEventHandler<HTMLDivElement>,
-    onClickRetry: React.MouseEventHandler<HTMLAnchorElement>
+    onClickRetry: React.MouseEventHandler<HTMLAnchorElement>,
+    // BLIS ADD
+    renderSelectedActivity: ((activity: Activity) => JSX.Element) | null
 }
 
 export class WrappedActivity extends React.Component<WrappedActivityProps, {}> {
@@ -292,6 +298,7 @@ export class WrappedActivity extends React.Component<WrappedActivityProps, {}> {
                         { this.props.children }
                     </div>
                 </div>
+                {this.props.renderSelectedActivity && this.props.renderSelectedActivity(this.props.activity)}
                 <div className={ 'wc-message-from wc-message-from-' + who }>{ timeLine }</div>
             </div>
         );

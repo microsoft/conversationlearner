@@ -34,6 +34,7 @@ export interface ChatProps {
     hideInput: boolean,  //BLIS addition
     focusInput: boolean, //BLIS addition
     disableUpload: boolean, //BLIS addition
+    renderSelectedActivity?: ((a: Activity) => JSX.Element) | null
 }
 
 export const sendMessage = (text: string, from: User, locale: string) => ({
@@ -207,7 +208,10 @@ export class Chat extends React.Component<ChatProps, {}> {
                 <div className="wc-chatview-panel" ref={ div => this.chatviewPanel = div }>
                     { header }
                     <MessagePane setFocus={ () => this.setFocus() }>
-                        <History setFocus={ () => this.setFocus() }/>
+                        <History 
+                            setFocus={ () => this.setFocus()}
+                            renderSelectedActivity={ this.props.renderSelectedActivity }
+                         />
                     </MessagePane>
                     { this.props.hideInput ? null : 
                         <Shell  
