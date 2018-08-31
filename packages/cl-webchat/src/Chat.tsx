@@ -128,7 +128,7 @@ export class Chat extends React.Component<ChatProps, {}> {
 
     componentWillReceiveProps(nextProps: ChatProps) {
         // Handle activity selection from outside WebChat
-        if (this.props.selectedActivityIndex !== nextProps.selectedActivityIndex) {
+        if (nextProps.selectedActivityIndex) {
 
             this.store.dispatch<ChatActions>({
                 type: 'Select_Activity',
