@@ -35,7 +35,7 @@ export interface ChatProps {
     focusInput: boolean, //BLIS addition
     disableUpload: boolean, //BLIS addition
     renderSelectedActivity?: ((a: Activity) => JSX.Element) | null  // BLIS addition
-    selectedActivityIndex?: string | null // BLIS addition
+    selectedActivityIndex?: number | null // BLIS addition
 }
 
 export const sendMessage = (text: string, from: User, locale: string) => ({
