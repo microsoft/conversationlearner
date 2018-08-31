@@ -14,7 +14,7 @@ export interface HistoryProps {
     onClickRetry: (activity: Activity) => void,
     onClickCardAction: () => void,
     setFocus: () => void,
-    renderSelectedActivity: (activity: Activity) => JSX.Element | null
+    renderSelectedActivity: (activity: Activity) => JSX.Element | null // BLIS addition
 
     isFromMe: (activity: Activity) => boolean,
     isSelected: (activity: Activity) => boolean,
@@ -285,6 +285,7 @@ export class WrappedActivity extends React.Component<WrappedActivityProps, {}> {
             }
         };
 
+        // BLIS add renderSelectedActivity
         return (
             <div data-activity-id={ this.props.activity.id } className={ wrapperClassName } onClick={ this.props.onClickActivity }>
                 <div className={ 'wc-message wc-message-from-' + who } ref={ div => this.messageDiv = div }>
