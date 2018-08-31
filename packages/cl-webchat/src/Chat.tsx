@@ -35,7 +35,7 @@ export interface ChatProps {
     focusInput: boolean, //BLIS addition
     disableUpload: boolean, //BLIS addition
     renderSelectedActivity?: ((a: Activity) => JSX.Element) | null  // BLIS addition
-    selectedActivityId?: string | null // BLIS addition
+    selectedActivityIndex?: string | null // BLIS addition
 }
 
 export const sendMessage = (text: string, from: User, locale: string) => ({
@@ -128,11 +128,11 @@ export class Chat extends React.Component<ChatProps, {}> {
 
     componentWillReceiveProps(nextProps: ChatProps) {
         // Handle activity selection from outside WebChat
-        if (this.props.selectedActivityId !== nextProps.selectedActivityId) {
+        if (this.props.selectedActivityIndex !== nextProps.selectedActivityIndex) {
 
             this.store.dispatch<ChatActions>({
                 type: 'Select_Activity',
-                selectedActivity: this.store.getState().history.activities.find(activity => activity.id === nextProps.selectedActivityId)
+                selectedActivity: this.store.getState().history.activities[nextProps.selectedActivityIndex]
             });
         }
     }
