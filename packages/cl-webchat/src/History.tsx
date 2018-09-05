@@ -14,7 +14,8 @@ export interface HistoryProps {
     onClickRetry: (activity: Activity) => void,
     onClickCardAction: () => void,
     setFocus: () => void,
-    renderSelectedActivity: (activity: Activity) => JSX.Element | null // BLIS addition
+    renderSelectedActivity?: (activity: Activity) => JSX.Element | null // BLIS addition
+    highlightClassName?: string
 
     isFromMe: (activity: Activity) => boolean,
     isSelected: (activity: Activity) => boolean,
@@ -92,7 +93,6 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
             fromMe={ false }
             onClickActivity={ null }
             onClickRetry={ null }
-            renderSelectedActivity= { null } // BLIS ADD
             selected={ false }
             showTimestamp={ false }
         >
@@ -128,6 +128,7 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
                         selected={ this.props.isSelected(activity) }
                         fromMe={ this.props.isFromMe(activity) }
                         renderSelectedActivity={this.props.renderSelectedActivity}
+                        highlightClassName={this.props.highlightClassName}
                         onClickActivity={ this.props.onClickActivity(activity) }
                         onClickRetry={ e => {
                             // Since this is a click on an anchor, we need to stop it
@@ -190,6 +191,7 @@ export const History = connect(
         // from ownProps
         setFocus: ownProps.setFocus,
         renderSelectedActivity: ownProps.renderSelectedActivity,  // BLIS ADD
+        highlightClassName: ownProps.higlightClassName,  // BLIS ADD
         // helper functions
         doCardAction: doCardAction(stateProps.botConnection, stateProps.user, stateProps.format.locale, dispatchProps.sendMessage),
         isFromMe: (activity: Activity) => activity.from.id === stateProps.user.id,
@@ -228,8 +230,9 @@ export interface WrappedActivityProps {
     format: FormatState,
     onClickActivity: React.MouseEventHandler<HTMLDivElement>,
     onClickRetry: React.MouseEventHandler<HTMLAnchorElement>,
-    // BLIS ADD
-    renderSelectedActivity: ((activity: Activity) => JSX.Element) | null
+
+    renderSelectedActivity?: ((activity: Activity) => JSX.Element) | null     // BLIS ADD
+    highlightClassName?: string    // BLIS ADD
 }
 
 export class WrappedActivity extends React.Component<WrappedActivityProps, {}> {
@@ -280,8 +283,9 @@ export class WrappedActivity extends React.Component<WrappedActivityProps, {}> {
             else if (this.props.activity.channelData.highlight === "error") {
                 wrapperClassName += ' wc-message-error-from-' + who;
             }
-            if (this.props.selected) {
-                wrapperClassName += ' wc-message-selected'
+            // BLIS add
+            if (this.props.selected && this.props.highlightClassName) {
+                wrapperClassName += ` ${this.props.highlightClassName}`
             }
         };
 

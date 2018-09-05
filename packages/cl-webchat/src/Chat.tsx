@@ -34,7 +34,8 @@ export interface ChatProps {
     hideInput: boolean,  //BLIS addition
     focusInput: boolean, //BLIS addition
     disableUpload: boolean, //BLIS addition
-    renderSelectedActivity?: ((a: Activity) => JSX.Element) | null  // BLIS addition
+    renderSelectedActivity?: ((a: Activity) => JSX.Element) // BLIS addition
+    highlightClassName?: string // BLIS addition
     selectedActivityIndex?: number | null // BLIS addition
 }
 
@@ -171,7 +172,6 @@ export class Chat extends React.Component<ChatProps, {}> {
                 });
             });
         }
-/* LARS
         // BLIS add
         if (this.props.selectedActivityIndex) {
 
@@ -180,7 +180,6 @@ export class Chat extends React.Component<ChatProps, {}> {
                 selectedActivity: this.store.getState().history.activities[this.props.selectedActivityIndex]
             });
         }
-    */
     }
 
     componentWillUnmount() {
@@ -230,6 +229,7 @@ export class Chat extends React.Component<ChatProps, {}> {
                         <History 
                             setFocus={ () => this.setFocus()}
                             renderSelectedActivity={ this.props.renderSelectedActivity }
+                            highlightClassName={ this.props.highlightClassName }
                          />
                     </MessagePane>
                     { this.props.hideInput ? null : 
