@@ -85,6 +85,14 @@ export class Chat extends React.Component<ChatProps, {}> {
                 type: 'Set_History',
                 activities: props.history
             });
+
+            // BLIS add
+            if (props.selectedActivityIndex) {
+                this.store.dispatch<ChatActions>({
+                    type: 'Select_Activity',
+                    selectedActivity: props.history[this.props.selectedActivityIndex]
+                });
+            }
         }
 
         this.store.dispatch<ChatActions>({
@@ -126,17 +134,6 @@ export class Chat extends React.Component<ChatProps, {}> {
         });
     }
 
-    componentWillReceiveProps(nextProps: ChatProps) {
-        // Handle activity selection from outside WebChat
-        if (nextProps.selectedActivityIndex) {
-
-            this.store.dispatch<ChatActions>({
-                type: 'Select_Activity',
-                selectedActivity: this.store.getState().history.activities[nextProps.selectedActivityIndex]
-            });
-        }
-    }
-
     componentDidMount() {
         // Now that we're mounted, we know our dimensions. Put them in the store (this will force a re-render)
         this.setSize();
@@ -174,6 +171,16 @@ export class Chat extends React.Component<ChatProps, {}> {
                 });
             });
         }
+/* LARS
+        // BLIS add
+        if (this.props.selectedActivityIndex) {
+
+            this.store.dispatch<ChatActions>({
+                type: 'Select_Activity',
+                selectedActivity: this.store.getState().history.activities[this.props.selectedActivityIndex]
+            });
+        }
+    */
     }
 
     componentWillUnmount() {
