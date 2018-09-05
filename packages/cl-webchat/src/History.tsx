@@ -191,7 +191,7 @@ export const History = connect(
         // from ownProps
         setFocus: ownProps.setFocus,
         renderSelectedActivity: ownProps.renderSelectedActivity,  // BLIS ADD
-        highlightClassName: ownProps.higlightClassName,  // BLIS ADD
+        highlightClassName: ownProps.highlightClassName,  // BLIS ADD
         // helper functions
         doCardAction: doCardAction(stateProps.botConnection, stateProps.user, stateProps.format.locale, dispatchProps.sendMessage),
         isFromMe: (activity: Activity) => activity.from.id === stateProps.user.id,
@@ -231,7 +231,7 @@ export interface WrappedActivityProps {
     onClickActivity: React.MouseEventHandler<HTMLDivElement>,
     onClickRetry: React.MouseEventHandler<HTMLAnchorElement>,
 
-    renderSelectedActivity?: ((activity: Activity) => JSX.Element) | null     // BLIS ADD
+    renderSelectedActivity?: ((activity: Activity) => JSX.Element)     // BLIS ADD
     highlightClassName?: string    // BLIS ADD
 }
 
