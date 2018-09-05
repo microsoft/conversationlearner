@@ -14,7 +14,7 @@ export interface HistoryProps {
     onClickRetry: (activity: Activity) => void,
     onClickCardAction: () => void,
     setFocus: () => void,
-    renderSelectedActivity?: (activity: Activity) => JSX.Element | null // BLIS addition
+    renderSelectedActivity?: (activity: Activity) => (JSX.Element | null) // BLIS addition
     highlightClassName?: string
 
     isFromMe: (activity: Activity) => boolean,
@@ -231,7 +231,7 @@ export interface WrappedActivityProps {
     onClickActivity: React.MouseEventHandler<HTMLDivElement>,
     onClickRetry: React.MouseEventHandler<HTMLAnchorElement>,
 
-    renderSelectedActivity?: ((activity: Activity) => JSX.Element)     // BLIS ADD
+    renderSelectedActivity?: (activity: Activity) => (JSX.Element | null)     // BLIS ADD
     highlightClassName?: string    // BLIS ADD
 }
 

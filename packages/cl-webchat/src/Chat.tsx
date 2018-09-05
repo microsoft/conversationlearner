@@ -34,7 +34,7 @@ export interface ChatProps {
     hideInput: boolean,  //BLIS addition
     focusInput: boolean, //BLIS addition
     disableUpload: boolean, //BLIS addition
-    renderSelectedActivity?: ((a: Activity) => JSX.Element) // BLIS addition
+    renderSelectedActivity?: ((a: Activity) => (JSX.Element | null)) // BLIS addition
     highlightClassName?: string // BLIS addition
     selectedActivityIndex?: number | null // BLIS addition
 }
