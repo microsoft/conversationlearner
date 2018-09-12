@@ -107,7 +107,7 @@ describe('ModelUtils', () => {
     })
   })
 
-  describe('ToCreateTeachParams', () => {
+  describe('Params', () => {
     const trainDialog: TrainDialog = {
       createdDateTime: new Date().toJSON(),
       lastModifiedDateTime: new Date().toJSON(),
@@ -118,6 +118,7 @@ describe('ModelUtils', () => {
       packageDeletionId: 2,
       definitions: null,
       invalid: false,
+      initialFilledEntities: [],
       rounds: [
         {
           extractorStep: {
@@ -143,7 +144,8 @@ describe('ModelUtils', () => {
 
     expect(createTeachParams).toEqual({
       contextDialog: trainDialog.rounds,
-      sourceLogDialogId: trainDialog.sourceLogDialogId
+      sourceLogDialogId: trainDialog.sourceLogDialogId,
+      initialFilledEntities: trainDialog.initialFilledEntities
     })
   })
 })

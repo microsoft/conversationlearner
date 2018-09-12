@@ -1,8 +1,9 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import { LogRound } from './LogDialog'
+import { FilledEntity } from './FilledEntity'
 
 export enum DialogType {
   TEACH = 'teach',
@@ -31,4 +32,5 @@ export interface SessionCreateParams {
   contextDialog?: LogRound[]
   packageId?: string
   saveToLog: boolean
+  initialFilledEntities: FilledEntity[]
 }

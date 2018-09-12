@@ -56,6 +56,7 @@ export interface UIScoreResponse {
 
 export interface UITrainScorerStep {
   trainScorerStep: TrainScorerStep
+  channelData: {}
   entities: EntityBase[]
 }
 

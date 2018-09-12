@@ -5,6 +5,7 @@
 import { ScoreInput, ScoredAction } from './Score'
 import { LabeledEntity } from './Entity'
 import { AppDefinition } from './AppDefinition'
+import { FilledEntity } from './FilledEntity'
 
 export enum SenderType {
   User = 0,
@@ -23,7 +24,7 @@ export interface TrainExtractorStep {
 export interface TrainScorerStep {
   input: ScoreInput
   // ID of the selected action
-  labelAction: string
+  labelAction: string | undefined
   logicResult: string | undefined
   // Score of the selected action
   scoredAction: ScoredAction | undefined
@@ -48,6 +49,7 @@ export interface TrainDialog extends TrainDialogInput {
   version: number
   packageCreationId: number
   packageDeletionId: number
+  initialFilledEntities: FilledEntity[]
 }
 
 export interface TrainResponse {
@@ -68,4 +70,5 @@ export interface TrainDialogIdList {
 export interface CreateTeachParams {
   contextDialog: TrainRound[]
   sourceLogDialogId?: string
+  initialFilledEntities: FilledEntity[]
 }

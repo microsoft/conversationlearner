@@ -7,6 +7,7 @@ import { ScoreResponse, ScoreInput } from './Score'
 import { ReplayError } from './ReplayError'
 import { UIScoreInput } from './UI'
 import { ActionBase } from './Action'
+import { ExtractResponse } from './Extract'
 
 export enum DialogMode {
   Extractor = 'Extract', // Waiting for Extractor feedback
@@ -45,6 +46,7 @@ export interface TeachWithHistory {
   dialogMode: DialogMode
   scoreResponse: ScoreResponse | undefined
   scoreInput: ScoreInput | undefined
+  extractResponse: ExtractResponse | undefined
   uiScoreInput: UIScoreInput | undefined
   lastAction: ActionBase | null
   replayErrors: ReplayError[]

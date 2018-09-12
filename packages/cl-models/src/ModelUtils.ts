@@ -4,13 +4,23 @@
  */
 import { ExtractResponse } from './Extract'
 import { Teach, TeachResponse } from './Teach'
-import { TrainRound, TrainDialog, TrainExtractorStep, TrainScorerStep, TextVariation, CreateTeachParams } from './TrainDialog'
+import { TrainRound, TrainDialog, TrainScorerStep, TextVariation, CreateTeachParams, SenderType } from './TrainDialog'
 import { LogDialog, LogRound, LogScorerStep } from './LogDialog'
-import { EntityList, EntityBase, LabeledEntity, PredictedEntity } from './Entity'
+import { EntityBase, LabeledEntity, PredictedEntity } from './Entity'
 import { ActionBase } from './Action'
 import { AppDefinition } from './AppDefinition'
 
 export class ModelUtils {
+  public static generateGUID(): string {
+    let d = new Date().getTime()
+    let guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, char => {
+      let r = ((d + Math.random() * 16) % 16) | 0
+      d = Math.floor(d / 16)
+      return (char === 'x' ? r : (r & 0x3) | 0x8).toString(16)
+    })
+    return guid
+  }
+
   /** Remove n words from start of string */
   public static RemoveWords(text: string, numWords: number): string {
     if (text.length === 0 || numWords === 0) {
@@ -136,7 +146,8 @@ export class ModelUtils {
       sourceLogDialogId: logDialog.logDialogId,
       version: 0,
       rounds: trainRounds,
-      definitions: appDefinition
+      definitions: appDefinition,
+      initialFilledEntities: logDialog.initialFilledEntities
     }
   }
 
@@ -180,7 +191,8 @@ export class ModelUtils {
   public static ToCreateTeachParams(trainDialog: TrainDialog): CreateTeachParams {
     let createTeachParams: CreateTeachParams = {
       contextDialog: trainDialog.rounds,
-      sourceLogDialogId: trainDialog.sourceLogDialogId
+      sourceLogDialogId: trainDialog.sourceLogDialogId,
+      initialFilledEntities: trainDialog.initialFilledEntities
     }
 
     // TODO: Change to non destructive operation
@@ -205,6 +217,26 @@ export class ModelUtils {
       createdDatetime: undefined,
       lastQueryDatetime: undefined,
       packageId: undefined
+    }
+  }
+
+  //====================================================================
+  // Misc utils shared between SDK and UI
+  //====================================================================
+  /* Converts user intput into BB.Activity */
+  public static InputToActivity(userText: string, userName: string, userId: string, roundNum: number): any {
+    // Generate activity
+    return {
+      id: this.generateGUID(),
+      from: { id: userId, name: userName },
+      channelData: {
+        senderType: SenderType.User,
+        roundIndex: roundNum,
+        scoreIndex: 0,
+        clientActivityId: this.generateGUID()
+      },
+      type: 'message',
+      text: userText
     }
   }
 

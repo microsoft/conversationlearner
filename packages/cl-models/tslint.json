@@ -5,6 +5,7 @@
     "tslint-config-prettier"
   ],
   "rules": {
+    "insecure-random": false,
     "comment-format": false,
     "member-ordering": false,
     "cyclomatic-complexity": [true, 30],

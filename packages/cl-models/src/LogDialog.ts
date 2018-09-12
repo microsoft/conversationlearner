@@ -5,6 +5,7 @@
 import { ScoreResponse, ScoreInput } from './Score'
 import { ExtractResponse } from './Extract'
 import { Metrics } from './Metrics'
+import { FilledEntity } from './FilledEntity'
 
 export interface LogExtractorStep extends ExtractResponse {
   stepBeginDatetime: string
@@ -35,6 +36,7 @@ export interface LogDialog {
   packageId: string
   metrics: string
   rounds: LogRound[]
+  initialFilledEntities: FilledEntity[]
 }
 
 export interface LogDialogList {
