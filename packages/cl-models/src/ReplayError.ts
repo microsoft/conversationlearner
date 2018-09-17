@@ -3,8 +3,13 @@
  * Licensed under the MIT License.
  */
 export enum ReplayErrorType {
-  MissingAction = 'MissingAcion',
-  MissingEntity = 'MissingEntity',
+  /* Action does not exist in the model */
+  ActionUndefined = 'ActionUndefined',
+  /* Entity does not exist in the model */
+  EntityUndefined = 'EntityUndefined',
+  /* Entity used in Action but has not value */
+  EntityEmpty = 'EntityEmpty',
+  /* Selected Action is not available with given constraints */
   ActionUnavailable = 'ActionUnavailable',
   EntityDiscrepancy = 'EntityDiscrepancy',
   /* Action in Score Rounds after Wait action */
@@ -19,15 +24,21 @@ export class ReplayError {
   constructor(public type: ReplayErrorType) {}
 }
 
-export class ReplayErrorMissingAction extends ReplayError {
+export class ReplayErrorActionUndefined extends ReplayError {
   constructor(public lastUserInput: string) {
-    super(ReplayErrorType.MissingAction)
+    super(ReplayErrorType.ActionUndefined)
   }
 }
 
-export class ReplayErrorMissingEntity extends ReplayError {
+export class ReplayErrorEntityUndefined extends ReplayError {
   constructor(public value: string) {
-    super(ReplayErrorType.MissingEntity)
+    super(ReplayErrorType.EntityUndefined)
+  }
+}
+
+export class ReplayErrorEntityEmpty extends ReplayError {
+  constructor(public values: string[]) {
+    super(ReplayErrorType.EntityEmpty)
   }
 }
 
