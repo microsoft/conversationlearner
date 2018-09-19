@@ -15,8 +15,8 @@ export interface HistoryProps {
     onClickCardAction: () => void,
     setFocus: () => void,
     renderSelectedActivity?: (activity: Activity) => (JSX.Element | null) // BLIS addition
-    highlightClassName?: string
-
+    highlightClassName?: string // BLIS ADD
+    onScrollChange?: (position: number) => void // BLIS ADD
     isFromMe: (activity: Activity) => boolean,
     isSelected: (activity: Activity) => boolean,
     onClickActivity: (activity: Activity) => React.MouseEventHandler<HTMLDivElement>,
@@ -62,6 +62,28 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
         }
 
         this.autoscroll();
+    }
+
+    // BLIS addition
+    handler() {
+        this.props.onScrollChange(this.scrollMe.scrollTop)
+    }
+
+    // BLIS addition
+    componentDidMount() {
+        if  (this.props.onScrollChange) {
+            const node = this.scrollMe;
+            if (node) {
+            node.addEventListener('scroll', this.handler)
+            }
+        }
+    }
+    
+    // BLIS addition
+    componentWillUnmount() {
+        if (this.props.onScrollChange) {
+            this.scrollMe.removeEventListener('scroll', this.handler)
+        }
     }
 
     private autoscroll() {
@@ -191,6 +213,7 @@ export const History = connect(
         // from ownProps
         setFocus: ownProps.setFocus,
         renderSelectedActivity: ownProps.renderSelectedActivity,  // BLIS ADD
+        onScrollChange: ownProps.onScrollChange, // BLIS ADD
         highlightClassName: ownProps.highlightClassName,  // BLIS ADD
         // helper functions
         doCardAction: doCardAction(stateProps.botConnection, stateProps.user, stateProps.format.locale, dispatchProps.sendMessage),
@@ -230,7 +253,6 @@ export interface WrappedActivityProps {
     format: FormatState,
     onClickActivity: React.MouseEventHandler<HTMLDivElement>,
     onClickRetry: React.MouseEventHandler<HTMLAnchorElement>,
-
     renderSelectedActivity?: (activity: Activity) => (JSX.Element | null)     // BLIS ADD
     highlightClassName?: string    // BLIS ADD
 }

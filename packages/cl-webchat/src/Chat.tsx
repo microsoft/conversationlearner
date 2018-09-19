@@ -35,6 +35,7 @@ export interface ChatProps {
     focusInput: boolean, //BLIS addition
     disableUpload: boolean, //BLIS addition
     renderSelectedActivity?: ((a: Activity) => (JSX.Element | null)) // BLIS addition
+    onScrollChange?: ((position: number) => void)
     highlightClassName?: string // BLIS addition
     selectedActivityIndex?: number | null // BLIS addition
 }
@@ -229,6 +230,7 @@ export class Chat extends React.Component<ChatProps, {}> {
                         <History 
                             setFocus={ () => this.setFocus()}
                             renderSelectedActivity={ this.props.renderSelectedActivity }
+                            onScrollChange={this.props.onScrollChange}
                             highlightClassName={ this.props.highlightClassName }
                          />
                     </MessagePane>
