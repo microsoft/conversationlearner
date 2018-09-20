@@ -33,6 +33,7 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
 
     constructor(props: HistoryProps) {
         super(props);
+        this.scrollHandler = this.scrollHandler.bind(this);
     }
 
     componentWillUpdate() {
@@ -65,7 +66,7 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
     }
 
     // BLIS addition
-    handler() {
+    scrollHandler() {
         this.props.onScrollChange(this.scrollMe.scrollTop)
     }
 
@@ -74,7 +75,7 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
         if  (this.props.onScrollChange) {
             const node = this.scrollMe;
             if (node) {
-            node.addEventListener('scroll', this.handler)
+            node.addEventListener('scroll', this.scrollHandler)
             }
         }
     }
@@ -82,7 +83,7 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
     // BLIS addition
     componentWillUnmount() {
         if (this.props.onScrollChange) {
-            this.scrollMe.removeEventListener('scroll', this.handler)
+            this.scrollMe.removeEventListener('scroll', this.scrollHandler)
         }
     }
 
