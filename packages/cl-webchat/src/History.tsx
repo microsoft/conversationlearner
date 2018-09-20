@@ -17,7 +17,8 @@ export interface HistoryProps {
     renderSelectedActivity?: (activity: Activity) => (JSX.Element | null) // BLIS addition
     highlightClassName?: string // BLIS ADD
     onScrollChange?: (position: number) => void // BLIS ADD
-    scrollTimeout: NodeJS.Timer | undefined
+    initialScrollPosition?: number // BLIS ADD
+    scrollTimeout: NodeJS.Timer | undefined // BLIS ADD
     isFromMe: (activity: Activity) => boolean,
     isSelected: (activity: Activity) => boolean,
     onClickActivity: (activity: Activity) => React.MouseEventHandler<HTMLDivElement>,
@@ -81,6 +82,9 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
 
     // BLIS addition
     componentDidMount() {
+        if (this.props.initialScrollPosition) {
+            this.scrollMe.scrollTop = this.props.initialScrollPosition
+        }
         if (this.props.onScrollChange) {
             const node = this.scrollMe;
             if (node) {
@@ -229,6 +233,7 @@ export const History = connect(
         setFocus: ownProps.setFocus,
         renderSelectedActivity: ownProps.renderSelectedActivity,  // BLIS ADD
         onScrollChange: ownProps.onScrollChange, // BLIS ADD
+        initialScrollPosition: ownProps.initialScrollPosition, // BLIS ADD
         scrollTimeout: ownProps.scrollTimeout, // BLIS ADD
         highlightClassName: ownProps.highlightClassName,  // BLIS ADD
         // helper functions
