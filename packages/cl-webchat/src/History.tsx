@@ -110,12 +110,14 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
         if (!this.scrollInitialized && this.props.initialScrollPosition)
         {
             this.scrollMe.scrollTop = this.props.initialScrollPosition
-            this.scrollInitialized = true
+            if (this.scrollMe.scrollTop === this.props.initialScrollPosition) {
+                this.scrollInitialized = true
+            }
         }
         // Validating if we are at the bottom of the list or the last activity was triggered by the user.
         else if (this.scrollToBottom || lastActivityFromMe) {
             const newScroll = this.scrollMe.scrollHeight - this.scrollMe.offsetHeight;
-            if (newScroll != this.scrollMe.scrollTop) {
+            if (newScroll != Math.round(this.scrollMe.scrollTop)) {
                 this.scrollMe.scrollTop = newScroll
 
                 // BLIS add
