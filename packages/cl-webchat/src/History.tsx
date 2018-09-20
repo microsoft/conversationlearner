@@ -17,6 +17,7 @@ export interface HistoryProps {
     renderSelectedActivity?: (activity: Activity) => (JSX.Element | null) // BLIS addition
     highlightClassName?: string // BLIS ADD
     onScrollChange?: (position: number) => void // BLIS ADD
+    scrollTimeout: NodeJS.Timer | undefined
     isFromMe: (activity: Activity) => boolean,
     isSelected: (activity: Activity) => boolean,
     onClickActivity: (activity: Activity) => React.MouseEventHandler<HTMLDivElement>,
@@ -33,7 +34,7 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
 
     constructor(props: HistoryProps) {
         super(props);
-        this.scrollHandler = this.scrollHandler.bind(this);
+        this.scrollHandler = this.scrollHandler.bind(this);  // BLIS add
     }
 
     componentWillUpdate() {
@@ -67,15 +68,23 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
 
     // BLIS addition
     scrollHandler() {
-        this.props.onScrollChange(this.scrollMe.scrollTop)
+        // Clear timeout as scrollbar is still moving
+        clearTimeout(this.props.scrollTimeout)
+
+        // Set another timer
+        setTimeout(
+            // Call callback after delay
+            () => this.props.onScrollChange(this.scrollMe.scrollTop),
+            1000
+        )
     }
 
     // BLIS addition
     componentDidMount() {
-        if  (this.props.onScrollChange) {
+        if (this.props.onScrollChange) {
             const node = this.scrollMe;
             if (node) {
-            node.addEventListener('scroll', this.scrollHandler)
+                node.addEventListener('scroll', this.scrollHandler)
             }
         }
     }
@@ -97,6 +106,11 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
         // Validating if we are at the bottom of the list or the last activity was triggered by the user.
         if (this.scrollToBottom || lastActivityFromMe) {
             this.scrollMe.scrollTop = this.scrollMe.scrollHeight - this.scrollMe.offsetHeight;
+        }
+
+        // BLIS add
+        if (this.props.onScrollChange) {
+            this.props.onScrollChange(this.scrollMe.scrollTop)
         }
     }
 
@@ -215,6 +229,7 @@ export const History = connect(
         setFocus: ownProps.setFocus,
         renderSelectedActivity: ownProps.renderSelectedActivity,  // BLIS ADD
         onScrollChange: ownProps.onScrollChange, // BLIS ADD
+        scrollTimeout: ownProps.scrollTimeout, // BLIS ADD
         highlightClassName: ownProps.highlightClassName,  // BLIS ADD
         // helper functions
         doCardAction: doCardAction(stateProps.botConnection, stateProps.user, stateProps.format.locale, dispatchProps.sendMessage),
