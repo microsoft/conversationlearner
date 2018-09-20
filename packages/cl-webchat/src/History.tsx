@@ -40,11 +40,6 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
     }
 
     componentWillUpdate() {
-        if (!this.scrollInitialized && this.props.initialScrollPosition)
-        {
-            this.scrollMe.scrollTop = this.props.initialScrollPosition
-            this.scrollInitialized = true
-        }
         this.scrollToBottom = (Math.abs(this.scrollMe.scrollHeight - this.scrollMe.scrollTop - this.scrollMe.offsetHeight) <= 1);
     }
 
@@ -112,8 +107,13 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
         const lastActivity = this.props.activities[this.props.activities.length - 1];
         const lastActivityFromMe = lastActivity && this.props.isFromMe && this.props.isFromMe(lastActivity);
 
+        if (!this.scrollInitialized && this.props.initialScrollPosition)
+        {
+            this.scrollMe.scrollTop = this.props.initialScrollPosition
+            this.scrollInitialized = true
+        }
         // Validating if we are at the bottom of the list or the last activity was triggered by the user.
-        if (this.scrollToBottom || lastActivityFromMe) {
+        else if (this.scrollToBottom || lastActivityFromMe) {
             const newScroll = this.scrollMe.scrollHeight - this.scrollMe.offsetHeight;
             if (newScroll != this.scrollMe.scrollTop) {
                 this.scrollMe.scrollTop = newScroll
