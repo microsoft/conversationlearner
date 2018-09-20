@@ -25,9 +25,10 @@ export interface HistoryProps {
 }
 
 export class HistoryView extends React.Component<HistoryProps, {}> {
-    private scrollMe: HTMLDivElement;
-    private scrollContent: HTMLDivElement;
-    private scrollToBottom = true;
+    private scrollMe: HTMLDivElement
+    private scrollContent: HTMLDivElement
+    private scrollToBottom = true
+    private scrollInitialized = false
     private scrollTimeout: any // BLIS ADD
 
     private carouselActivity: WrappedActivity;
@@ -39,6 +40,11 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
     }
 
     componentWillUpdate() {
+        if (!this.scrollInitialized && this.props.initialScrollPosition)
+        {
+            this.scrollMe.scrollTop = this.props.initialScrollPosition
+            this.scrollInitialized = true
+        }
         this.scrollToBottom = (Math.abs(this.scrollMe.scrollHeight - this.scrollMe.scrollTop - this.scrollMe.offsetHeight) <= 1);
     }
 
@@ -84,9 +90,6 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
 
     // BLIS addition
     componentDidMount() {
-        if (this.props.initialScrollPosition) {
-            this.scrollMe.scrollTop = this.props.initialScrollPosition
-        }
         if (this.props.onScrollChange) {
             const node = this.scrollMe;
             if (node) {
