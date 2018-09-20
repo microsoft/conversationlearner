@@ -18,7 +18,6 @@ export interface HistoryProps {
     highlightClassName?: string // BLIS ADD
     onScrollChange?: (position: number) => void // BLIS ADD
     initialScrollPosition?: number // BLIS ADD
-    scrollTimeout: NodeJS.Timer | undefined // BLIS ADD
     isFromMe: (activity: Activity) => boolean,
     isSelected: (activity: Activity) => boolean,
     onClickActivity: (activity: Activity) => React.MouseEventHandler<HTMLDivElement>,
@@ -29,6 +28,7 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
     private scrollMe: HTMLDivElement;
     private scrollContent: HTMLDivElement;
     private scrollToBottom = true;
+    private scrollTimeout: any // BLIS ADD
 
     private carouselActivity: WrappedActivity;
     private largeWidth: number;
@@ -70,10 +70,12 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
     // BLIS addition
     scrollHandler() {
         // Clear timeout as scrollbar is still moving
-        clearTimeout(this.props.scrollTimeout)
+        if (this.scrollTimeout) {
+            clearTimeout(this.scrollTimeout)
+        }
 
         // Set another timer
-        setTimeout(
+        this.scrollTimeout = setTimeout(
             // Call callback after delay
             () => this.props.onScrollChange(this.scrollMe.scrollTop),
             1000
@@ -234,7 +236,6 @@ export const History = connect(
         renderSelectedActivity: ownProps.renderSelectedActivity,  // BLIS ADD
         onScrollChange: ownProps.onScrollChange, // BLIS ADD
         initialScrollPosition: ownProps.initialScrollPosition, // BLIS ADD
-        scrollTimeout: ownProps.scrollTimeout, // BLIS ADD
         highlightClassName: ownProps.highlightClassName,  // BLIS ADD
         // helper functions
         doCardAction: doCardAction(stateProps.botConnection, stateProps.user, stateProps.format.locale, dispatchProps.sendMessage),
