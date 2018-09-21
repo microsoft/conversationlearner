@@ -79,7 +79,7 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
         this.scrollTimeout = setTimeout(
             // Call callback after delay
             () => this.props.onScrollChange(this.scrollMe.scrollTop),
-            1000
+            200
         )
     }
 
@@ -105,20 +105,25 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
         this.scrollContent.style.marginTop = vAlignBottomPadding + 'px';
 
         /*
-        // BLIS remove - should only scroll to bottom on receiving a new activity from me
+        // BLIS removed - should only scroll to bottom on receiving a new activity from me
         // otherwise history can make it pop down
         const lastActivity = this.props.activities[this.props.activities.length - 1];
         const lastActivityFromMe = lastActivity && this.props.isFromMe && this.props.isFromMe(lastActivity);
         */
-        if (!this.scrollInitialized && this.props.initialScrollPosition)
+        if (!this.scrollInitialized)
         {
-            this.scrollMe.scrollTop = this.props.initialScrollPosition
-            if (this.scrollMe.scrollTop === this.props.initialScrollPosition) {
+            if (this.props.initialScrollPosition) {
+                this.scrollMe.scrollTop = this.props.initialScrollPosition
+                if (this.scrollMe.scrollTop === this.props.initialScrollPosition) {
+                    this.scrollInitialized = true
+                }
+            }
+            else {
                 this.scrollInitialized = true
             }
         }
         // Validating if we are at the bottom of the list or the last activity was triggered by the user.
-        else if (this.scrollToBottom) {
+        else if (this.scrollToBottom && this.scrollInitialized) {
             const newScroll = this.scrollMe.scrollHeight - this.scrollMe.offsetHeight;
             if (Math.abs(newScroll - this.scrollMe.scrollTop) > 1) {
                 this.scrollMe.scrollTop = newScroll

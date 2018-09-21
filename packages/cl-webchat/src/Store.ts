@@ -491,9 +491,16 @@ const trySendMessage: Epic<ChatActions, ChatState> = (action$ : any, store) =>
             (<any>activity).entities  =(<any>activity).entities == null ? [capabilities] :  [...(<any>activity).entities, capabilities];
         }
 
-        return state.connection.botConnection.postActivity(activity)
-        .map(id => ({ type: 'Send_Message_Succeed', clientActivityId, id } as HistoryAction))
-        .catch(error => Observable.of({ type: 'Send_Message_Fail', clientActivityId } as HistoryAction))
+        const result = state.connection.botConnection.postActivity(activity)
+
+        // BLIS UI may eat action (i.e. disabled DL), in which case there is no result
+        if (!result) {
+            return Observable.empty<HistoryAction>();
+        }
+        else {
+            return result.map(id => ({ type: 'Send_Message_Succeed', clientActivityId, id } as HistoryAction))
+            .catch(error => Observable.of({ type: 'Send_Message_Fail', clientActivityId } as HistoryAction))
+        }
     });
 
 ///const speakObservable = Observable.bindCallback<string, string, {}, {}>(Speech.SpeechSynthesizer.speak:any);

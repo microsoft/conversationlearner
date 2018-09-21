@@ -168,15 +168,22 @@ export class Chat extends React.Component<ChatProps, {}> {
 
         if (this.props.selectedActivity) {
             this.selectedActivitySubscription = this.props.selectedActivity.subscribe(activityOrID => {
-                this.store.dispatch<ChatActions>({
-                    type: 'Select_Activity',
-                    selectedActivity: activityOrID.activity || this.store.getState().history.activities.find(activity => activity.id === activityOrID.id)
-                });
+                // BLIS - bug fixed: activity.id can be null, resulting first activity being incorrectly selected
+                let selectedActivity = activityOrID.activity
+                if (!selectedActivity && activityOrID.id) {
+                    selectedActivity = this.store.getState().history.activities.find(activity => activity.id === activityOrID.id)
+                }
+                if (selectedActivity) {
+                    this.store.dispatch<ChatActions>({
+                        type: 'Select_Activity',
+                        selectedActivity
+                    });
+                }
             });
         }
         // BLIS add
-        if (this.props.selectedActivityIndex) {
-
+        // Null value will clear the selected activity
+        if (this.props.selectedActivityIndex != null) {
             this.store.dispatch<ChatActions>({
                 type: 'Select_Activity',
                 selectedActivity: this.store.getState().history.activities[this.props.selectedActivityIndex]
