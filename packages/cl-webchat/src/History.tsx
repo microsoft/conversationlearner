@@ -27,9 +27,11 @@ export interface HistoryProps {
 export class HistoryView extends React.Component<HistoryProps, {}> {
     private scrollMe: HTMLDivElement
     private scrollContent: HTMLDivElement
-    private scrollToBottom = true
+    private scrollToBottom = false
     private scrollInitialized = false
     private scrollTimeout: any // BLIS ADD
+    // Number of activities at last scroll stop
+    private lastActivityCount: number // BLIS ADD
 
     private carouselActivity: WrappedActivity;
     private largeWidth: number;
@@ -37,10 +39,14 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
     constructor(props: HistoryProps) {
         super(props);
         this.scrollHandler = this.scrollHandler.bind(this);  // BLIS add
+        this.lastActivityCount = 0
     }
 
-    componentWillUpdate() {
-        this.scrollToBottom = (Math.abs(this.scrollMe.scrollHeight - this.scrollMe.scrollTop - this.scrollMe.offsetHeight) <= 1);
+    componentWillReceiveProps(newProps: HistoryProps) {
+        if ((this.scrollInitialized || newProps.initialScrollPosition === undefined)
+         && this.props.activities.length < newProps.activities.length) {
+            this.scrollToBottom = true
+        }
     }
 
     componentDidUpdate() {
@@ -69,21 +75,6 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
     }
 
     // BLIS addition
-    scrollHandler() {
-        // Clear timeout as scrollbar is still moving
-        if (this.scrollTimeout) {
-            clearTimeout(this.scrollTimeout)
-        }
-
-        // Set another timer
-        this.scrollTimeout = setTimeout(
-            // Call callback after delay
-            () => this.props.onScrollChange(this.scrollMe.scrollTop),
-            200
-        )
-    }
-
-    // BLIS addition
     componentDidMount() {
         if (this.props.onScrollChange) {
             const node = this.scrollMe;
@@ -100,6 +91,22 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
         }
     }
 
+    
+    // BLIS addition
+    scrollHandler() {
+        // Clear timeout as scrollbar is still moving
+        if (this.scrollTimeout) {
+            clearTimeout(this.scrollTimeout)
+        }
+
+        // Set another timer
+        this.scrollTimeout = setTimeout(
+            // Call callback after delay
+            () => this.props.onScrollChange(this.scrollMe.scrollTop),
+            200
+        )
+    }
+
     private autoscroll() {
         const vAlignBottomPadding = Math.max(0, measurePaddedHeight(this.scrollMe) - this.scrollContent.offsetHeight);
         this.scrollContent.style.marginTop = vAlignBottomPadding + 'px';
@@ -112,7 +119,7 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
         */
         if (!this.scrollInitialized)
         {
-            if (this.props.initialScrollPosition) {
+            if (this.props.initialScrollPosition !== undefined) {
                 this.scrollMe.scrollTop = this.props.initialScrollPosition
                 if (this.scrollMe.scrollTop === this.props.initialScrollPosition) {
                     this.scrollInitialized = true
@@ -125,6 +132,7 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
         // Validating if we are at the bottom of the list or the last activity was triggered by the user.
         else if (this.scrollToBottom && this.scrollInitialized) {
             const newScroll = this.scrollMe.scrollHeight - this.scrollMe.offsetHeight;
+            this.scrollToBottom = false
             if (Math.abs(newScroll - this.scrollMe.scrollTop) > 1) {
                 this.scrollMe.scrollTop = newScroll
 
