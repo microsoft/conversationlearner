@@ -343,6 +343,8 @@ export class WrappedActivity extends React.Component<WrappedActivityProps, {}> {
             this.props.onClickActivity && 'clickable'
         );
 
+        let contentClassName = 'wc-message-content'
+
         //BLIS - added error bars
         if (this.props.activity.channelData) {
             if (this.props.activity.channelData.highlight === "warning") {
@@ -355,13 +357,15 @@ export class WrappedActivity extends React.Component<WrappedActivityProps, {}> {
             if (this.props.selected && this.props.highlightClassName) {
                 wrapperClassName += ` ${this.props.highlightClassName}`
             }
+
+
         };
 
         // BLIS add renderSelectedActivity
         return (
             <div data-activity-id={ this.props.activity.id } className={ wrapperClassName } onClick={ this.props.onClickActivity }>
                 <div className={ 'wc-message wc-message-from-' + who } ref={ div => this.messageDiv = div }>
-                    <div className={ 'wc-message-content' }>
+                    <div className={ contentClassName }>
                         <svg className="wc-message-callout">
                             <path className="point-left" d="m0,6 l6 6 v-12 z" />
                             <path className="point-right" d="m6,6 l-6 6 v-12 z" />
@@ -370,7 +374,19 @@ export class WrappedActivity extends React.Component<WrappedActivityProps, {}> {
                     </div>
                 </div>
                 {this.props.selected && this.props.renderSelectedActivity && this.props.renderSelectedActivity(this.props.activity)}
-                <div className={ 'wc-message-from wc-message-from-' + who }>{ timeLine }</div>
+                {this.props.activity.channelData && this.props.activity.channelData.downarrow ? 
+                    (
+                        <svg className="wc-message-downarrow">
+                            <polygon 
+                                className={this.props.activity.channelData.downarrow}
+                                points="0,0 50,0 25,15">
+                            </polygon>
+                        </svg>
+                    ) :
+                    (
+                        <div className={ 'wc-message-from wc-message-from-' + who }>{ timeLine }</div>
+                    )
+                }
             </div>
         );
     }
