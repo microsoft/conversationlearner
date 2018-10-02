@@ -14,7 +14,7 @@ export interface HistoryProps {
     onClickRetry: (activity: Activity) => void,
     onClickCardAction: () => void,
     setFocus: () => void,
-    renderSelectedActivity?: (activity: Activity) => (JSX.Element | null) // BLIS addition
+    renderActivity?: (props: WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void) => (JSX.Element | null) // BLIS addition
     highlightClassName?: string // BLIS ADD
     onScrollChange?: (position: number) => void // BLIS ADD
     initialScrollPosition?: number // BLIS ADD
@@ -194,7 +194,7 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
                         showTimestamp={ index === this.props.activities.length - 1 || (index + 1 < this.props.activities.length && suitableInterval(activity, this.props.activities[index + 1])) }
                         selected={ this.props.isSelected(activity) }
                         fromMe={ this.props.isFromMe(activity) }
-                        renderSelectedActivity={this.props.renderSelectedActivity}
+                        renderActivity={this.props.renderActivity}
                         highlightClassName={this.props.highlightClassName}
                         onClickActivity={ this.props.onClickActivity(activity) }
                         onClickRetry={ e => {
@@ -257,7 +257,7 @@ export const History = connect(
         onClickCardAction: dispatchProps.onClickCardAction,
         // from ownProps
         setFocus: ownProps.setFocus,
-        renderSelectedActivity: ownProps.renderSelectedActivity,  // BLIS ADD
+        renderActivity: ownProps.renderActivity,  // BLIS ADD
         onScrollChange: ownProps.onScrollChange, // BLIS ADD
         initialScrollPosition: ownProps.initialScrollPosition, // BLIS ADD
         highlightClassName: ownProps.highlightClassName,  // BLIS ADD
@@ -299,7 +299,7 @@ export interface WrappedActivityProps {
     format: FormatState,
     onClickActivity: React.MouseEventHandler<HTMLDivElement>,
     onClickRetry: React.MouseEventHandler<HTMLAnchorElement>,
-    renderSelectedActivity?: (activity: Activity) => (JSX.Element | null)     // BLIS ADD
+    renderActivity?: (props: WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void) => (JSX.Element | null)     // BLIS ADD
     highlightClassName?: string    // BLIS ADD
 }
 
@@ -311,6 +311,9 @@ export class WrappedActivity extends React.Component<WrappedActivityProps, {}> {
     }
 
     render () {
+        if (this.props.renderActivity) {
+            return this.props.renderActivity(this.props, this.props.children, (div) => this.messageDiv = div )
+        }
         let timeLine: JSX.Element;
         switch (this.props.activity.id) {
             case undefined:
@@ -343,29 +346,10 @@ export class WrappedActivity extends React.Component<WrappedActivityProps, {}> {
             this.props.onClickActivity && 'clickable'
         );
 
-        let contentClassName = 'wc-message-content'
-
-        //BLIS - added error bars
-        if (this.props.activity.channelData) {
-            if (this.props.activity.channelData.highlight === "warning") {
-                wrapperClassName += ' wc-message-warning-from-' + who;
-            } 
-            else if (this.props.activity.channelData.highlight === "error") {
-                wrapperClassName += ' wc-message-error-from-' + who;
-            }
-            // BLIS add
-            if (this.props.selected && this.props.highlightClassName) {
-                wrapperClassName += ` ${this.props.highlightClassName}`
-            }
-
-
-        };
-
-        // BLIS add renderSelectedActivity
         return (
             <div data-activity-id={ this.props.activity.id } className={ wrapperClassName } onClick={ this.props.onClickActivity }>
                 <div className={ 'wc-message wc-message-from-' + who } ref={ div => this.messageDiv = div }>
-                    <div className={ contentClassName }>
+                    <div className={ 'wc-message-content' }>
                         <svg className="wc-message-callout">
                             <path className="point-left" d="m0,6 l6 6 v-12 z" />
                             <path className="point-right" d="m6,6 l-6 6 v-12 z" />
@@ -373,20 +357,6 @@ export class WrappedActivity extends React.Component<WrappedActivityProps, {}> {
                         { this.props.children }
                     </div>
                 </div>
-                {this.props.selected && this.props.renderSelectedActivity && this.props.renderSelectedActivity(this.props.activity)}
-                {this.props.activity.channelData && this.props.activity.channelData.downarrow ? 
-                    (
-                        <svg className="wc-message-downarrow">
-                            <polygon 
-                                className={this.props.activity.channelData.downarrow}
-                                points="0,0 50,0 25,15">
-                            </polygon>
-                        </svg>
-                    ) :
-                    (
-                        <div className={ 'wc-message-from wc-message-from-' + who }>{ timeLine }</div>
-                    )
-                }
             </div>
         );
     }

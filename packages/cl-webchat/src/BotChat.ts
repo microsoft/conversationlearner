@@ -1,5 +1,6 @@
 export { App, AppProps } from './App';
 export { Chat, ChatProps, FormatOptions } from './Chat';
+export { WrappedActivityProps } from './History'
 export * from 'botframework-directlinejs';
 export { queryParams } from './Attachment';
 export { SpeechOptions } from './SpeechOptions'

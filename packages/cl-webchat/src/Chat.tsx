@@ -3,7 +3,7 @@ import * as React from 'react';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
-
+import { WrappedActivityProps } from './History'
 import { Activity, Media, IBotConnection, User, MediaType, DirectLine, DirectLineOptions, CardActionTypes } from 'botframework-directlinejs';
 import { createStore, ChatActions, HistoryAction } from './Store';
 import { Provider } from 'react-redux';
@@ -34,7 +34,7 @@ export interface ChatProps {
     hideInput: boolean,  //BLIS addition
     focusInput: boolean, //BLIS addition
     disableUpload: boolean, //BLIS addition
-    renderSelectedActivity?: ((a: Activity) => (JSX.Element | null)) // BLIS addition
+    renderActivity?: ((props: WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void) => (JSX.Element | null)) // BLIS addition
     onScrollChange?: ((position: number) => void)
     initialScrollPosition?: number,
     highlightClassName?: string // BLIS addition
@@ -237,7 +237,7 @@ export class Chat extends React.Component<ChatProps, {}> {
                     <MessagePane setFocus={ () => this.setFocus() }>
                         <History 
                             setFocus={ () => this.setFocus()}
-                            renderSelectedActivity={ this.props.renderSelectedActivity }
+                            renderActivity={ this.props.renderActivity }
                             onScrollChange={this.props.onScrollChange}
                             initialScrollPosition={this.props.initialScrollPosition}
                             highlightClassName={ this.props.highlightClassName }
