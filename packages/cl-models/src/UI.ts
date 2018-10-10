@@ -12,6 +12,7 @@ import { AppIdList, AppList } from './App'
 
 export const CL_USER_NAME_ID = 'CLTrainer'
 export const MEMORY_KEY_HEADER_NAME = 'x-conversationlearner-memory-key'
+export const DUMMY_ENTITY_PREFIX = `["$`
 
 /** Indicates whether END_SESSION was called on the running Session */
 export enum SessionEndState {
