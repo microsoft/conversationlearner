@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import { MemoryValue } from './Memory'
+import { MemoryValue, Memory } from './Memory'
 import { ModelUtils } from './ModelUtils'
 import { EntityBase } from './Entity'
 
@@ -65,6 +65,15 @@ export class FilledEntityMap {
       }
     }
     return filledEntityMap
+  }
+
+  public ToMemory(): Memory[] {
+    let memory: Memory[] = []
+    for (let entityName in this.map) {
+      let entityValues = this.map[entityName] ? this.map[entityName].values : []
+      memory.push({ entityName: entityName, entityValues })
+    }
+    return memory
   }
 
   public ValueAsList(entityName: string): string[] {
