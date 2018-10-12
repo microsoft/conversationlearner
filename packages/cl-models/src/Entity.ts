@@ -32,6 +32,11 @@ export interface EntityBase {
 
   /** If a Negative, Id of positive entity associated with this Entity */
   positiveId: string | null
+
+  /** If it is set to true, it means that the entity is not persisted in the bot memory.
+   * This is only true for built-in entities that are not created with "Always extract"
+   */
+  doNotMemorize: boolean | null
 }
 
 export interface LabeledEntity {
