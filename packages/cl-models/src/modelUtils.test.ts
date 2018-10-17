@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import { ModelUtils, TrainDialog } from './conversationlearner-models'
+import { ModelUtils, TrainDialog, Validity } from './conversationlearner-models'
 
 describe('ModelUtils', () => {
   describe('RemoveWords', () => {
@@ -117,7 +117,7 @@ describe('ModelUtils', () => {
       packageCreationId: 1,
       packageDeletionId: 2,
       definitions: null,
-      invalid: false,
+      validity: Validity.VALID,
       initialFilledEntities: [],
       rounds: [
         {

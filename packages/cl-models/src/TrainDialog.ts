@@ -35,11 +35,17 @@ export interface TrainRound {
   scorerSteps: TrainScorerStep[]
 }
 
+export enum Validity {
+  VALID = 'valid',
+  INVALID = 'invalid',
+  UNKNOWN = 'unknown'
+}
+
 export interface TrainDialogInput {
   sourceLogDialogId: string
   rounds: TrainRound[]
   definitions?: AppDefinition | null
-  invalid?: boolean
+  validity?: Validity
 }
 
 export interface TrainDialog extends TrainDialogInput {
