@@ -35,6 +35,7 @@ export interface ChatProps {
     focusInput: boolean, //BLIS addition
     disableUpload: boolean, //BLIS addition
     renderActivity?: ((props: WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void) => (JSX.Element | null)) // BLIS addition
+    renderInput?: () => JSX.Element | null // BLIS addition
     onScrollChange?: ((position: number) => void)
     initialScrollPosition?: number,
     highlightClassName?: string // BLIS addition
@@ -115,6 +116,13 @@ export class Chat extends React.Component<ChatProps, {}> {
         }
     }
 
+    componentWillReceiveProps(newProps: ChatProps) {
+        if (this.props.selectedActivityIndex && !newProps.selectedActivityIndex) {
+            this.store.dispatch<ChatActions>({
+                type: 'Deselect_Activity'
+            });
+        }
+    }
     private handleIncomingActivity(activity: Activity) {
         let state = this.store.getState();
         switch (activity.type) {
@@ -229,6 +237,8 @@ export class Chat extends React.Component<ChatProps, {}> {
         if (this.props.resize === 'detect') resize =
             <ResizeDetector onresize={ this.resizeListener } />;
 
+        const renderedInput = this.props.renderInput ? this.props.renderInput() : null
+
         // BLIS - added hideInput & focusInput below below
         return (
             <Provider store={ this.store }>
@@ -243,11 +253,14 @@ export class Chat extends React.Component<ChatProps, {}> {
                             highlightClassName={ this.props.highlightClassName }
                          />
                     </MessagePane>
-                    { this.props.hideInput ? null : 
-                        <Shell  
-                            focusInput={this.props.focusInput}  // BLIS addition
-                            disableUpload={this.props.disableUpload}  // BLIS addition
-                    />}  
+                    {renderedInput ||
+                        (!this.props.hideInput && 
+                           <Shell  
+                                focusInput={this.props.focusInput}  // BLIS addition
+                                disableUpload={this.props.disableUpload}  // BLIS addition
+                            />
+                        )
+                    }  
                     { resize }
                 </div>
             </Provider>

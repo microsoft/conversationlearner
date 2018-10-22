@@ -249,6 +249,8 @@ export type HistoryAction = {
     type: 'Select_Activity',
     selectedActivity: Activity
 } | {
+    type: 'Deselect_Activity'
+} | {
     type: 'Take_SuggestedAction',
     message: Message
 } | {
@@ -384,6 +386,13 @@ export const history: Reducer<HistoryState> = (
             return {
                 ... state,
                 selectedActivity: action.selectedActivity
+            };
+
+        
+        case 'Deselect_Activity':
+            return {
+                ... state,
+                selectedActivity: null
             };
 
         case 'Take_SuggestedAction':
