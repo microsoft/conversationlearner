@@ -21,53 +21,53 @@ export enum ReplayErrorType {
 }
 
 export class ReplayError {
-  constructor(public type: ReplayErrorType) {}
+  constructor(public type: ReplayErrorType, public isBlocking: boolean) {}
 }
 
 export class ReplayErrorActionUndefined extends ReplayError {
   constructor(public lastUserInput: string) {
-    super(ReplayErrorType.ActionUndefined)
+    super(ReplayErrorType.ActionUndefined, true)
   }
 }
 
 export class ReplayErrorEntityUndefined extends ReplayError {
   constructor(public value: string) {
-    super(ReplayErrorType.EntityUndefined)
+    super(ReplayErrorType.EntityUndefined, false)
   }
 }
 
 export class ReplayErrorEntityEmpty extends ReplayError {
   constructor(public values: string[]) {
-    super(ReplayErrorType.EntityEmpty)
+    super(ReplayErrorType.EntityEmpty, false)
   }
 }
 
 export class ReplayErrorActionUnavailable extends ReplayError {
   constructor(public lastUserInput: string) {
-    super(ReplayErrorType.ActionUnavailable)
+    super(ReplayErrorType.ActionUnavailable, false)
   }
 }
 
 export class ReplayErrorEntityDiscrepancy extends ReplayError {
   constructor(public lastUserInput: string, public originalEntities: string[], public newEntities: string[]) {
-    super(ReplayErrorType.EntityDiscrepancy)
+    super(ReplayErrorType.EntityDiscrepancy, false)
   }
 }
 
 export class ReplayErrorActionAfterWait extends ReplayError {
   constructor() {
-    super(ReplayErrorType.ActionAfterWait)
+    super(ReplayErrorType.ActionAfterWait, false)
   }
 }
 
 export class ReplayErrorTwoUserInputs extends ReplayError {
   constructor() {
-    super(ReplayErrorType.TwoUserInputs)
+    super(ReplayErrorType.TwoUserInputs, false)
   }
 }
 
 export class ReplayErrorInputAfterNonWait extends ReplayError {
   constructor() {
-    super(ReplayErrorType.InputAfterNonWait)
+    super(ReplayErrorType.InputAfterNonWait, false)
   }
 }
