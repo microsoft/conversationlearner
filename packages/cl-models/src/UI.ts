@@ -4,7 +4,7 @@
  */
 import { Memory } from './Memory'
 import { ScoreInput, ScoreResponse } from './Score'
-import { TrainExtractorStep, TrainScorerStep } from './TrainDialog'
+import { TrainExtractorStep, TrainScorerStep, TextVariation } from './TrainDialog'
 import { EntityBase } from './Entity'
 import { ExtractResponse } from './Extract'
 import { TeachResponse } from './Teach'
@@ -50,9 +50,10 @@ export interface UIPostScoreResponse {
 }
 
 export interface UIScoreResponse {
-  scoreResponse: ScoreResponse
-  scoreInput: ScoreInput
-  memories: Memory[]
+  scoreResponse?: ScoreResponse
+  scoreInput?: ScoreInput
+  memories?: Memory[]
+  extractConflict?: ExtractResponse | null
 }
 
 export interface UITrainScorerStep {

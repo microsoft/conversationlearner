@@ -223,6 +223,24 @@ export class ModelUtils {
   //====================================================================
   // Misc utils shared between SDK and UI
   //====================================================================
+  public static areEqualTextVariations(tv1: TextVariation, tv2: TextVariation) {
+    if (tv1.text !== tv2.text) {
+      return false
+    }
+    if (tv1.labelEntities.length !== tv2.labelEntities.length) {
+      return false
+    }
+    for (const le1 of tv1.labelEntities) {
+      const le2 = tv2.labelEntities.find(
+        le => le.entityId === le1.entityId && le.entityText === le1.entityText && le.startCharIndex === le1.startCharIndex
+      )
+      if (!le2) {
+        return false
+      }
+    }
+    return true
+  }
+
   /* Converts user intput into BB.Activity */
   public static InputToActivity(userText: string, userName: string, userId: string, roundNum: number): any {
     // Generate activity

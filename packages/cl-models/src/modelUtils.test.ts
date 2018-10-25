@@ -19,6 +19,172 @@ describe('ModelUtils', () => {
     })
   })
 
+  describe('TextVariationEqual', () => {
+    test(`pass`, () => {
+      expect(
+        ModelUtils.areEqualTextVariations(
+          {
+            text: 'some text',
+            labelEntities: [
+              { entityId: 'someGUID', startCharIndex: 5, endCharIndex: 9, entityText: 'text', resolution: {}, builtinType: '' }
+            ]
+          },
+          {
+            text: 'some text',
+            labelEntities: [
+              { entityId: 'someGUID', startCharIndex: 5, endCharIndex: 9, entityText: 'text', resolution: {}, builtinType: '' }
+            ]
+          }
+        )
+      ).toEqual(true)
+    })
+
+    test(`complex pass`, () => {
+      expect(
+        ModelUtils.areEqualTextVariations(
+          {
+            text: 'this is tag and frog',
+            labelEntities: [
+              {
+                entityId: 'c56fb3b8-923c-4d58-9150-838616e29913',
+                startCharIndex: 8,
+                endCharIndex: 10,
+                entityText: 'tag',
+                resolution: {},
+                builtinType: ''
+              },
+              {
+                entityId: 'c56fb3b8-923c-4d58-9150-838616e29913',
+                startCharIndex: 16,
+                endCharIndex: 19,
+                entityText: 'frog',
+                resolution: {},
+                builtinType: ''
+              }
+            ]
+          },
+          {
+            text: 'this is tag and frog',
+            labelEntities: [
+              {
+                entityId: 'c56fb3b8-923c-4d58-9150-838616e29913',
+                startCharIndex: 8,
+                endCharIndex: 10,
+                entityText: 'tag',
+                resolution: {},
+                builtinType: ''
+              },
+              {
+                entityId: 'c56fb3b8-923c-4d58-9150-838616e29913',
+                startCharIndex: 16,
+                endCharIndex: 19,
+                entityText: 'frog',
+                resolution: {},
+                builtinType: 'LUIS'
+              }
+            ]
+          }
+        )
+      ).toEqual(true)
+    })
+
+    test(`fail based on different text`, () => {
+      expect(
+        ModelUtils.areEqualTextVariations(
+          {
+            text: 'some text',
+            labelEntities: [
+              { entityId: 'someGUID', startCharIndex: 5, endCharIndex: 9, entityText: 'text', resolution: {}, builtinType: '' }
+            ]
+          },
+          {
+            text: 'some different text',
+            labelEntities: [
+              { entityId: 'someGUID', startCharIndex: 5, endCharIndex: 9, entityText: 'text', resolution: {}, builtinType: '' }
+            ]
+          }
+        )
+      ).toEqual(false)
+    })
+
+    test(`fail based on different number of entities`, () => {
+      expect(
+        ModelUtils.areEqualTextVariations(
+          {
+            text: 'some text',
+            labelEntities: [
+              { entityId: 'someGUID', startCharIndex: 5, endCharIndex: 9, entityText: 'text', resolution: {}, builtinType: '' }
+            ]
+          },
+          {
+            text: 'some text',
+            labelEntities: [
+              { entityId: 'someGUID', startCharIndex: 5, endCharIndex: 9, entityText: 'text', resolution: {}, builtinType: '' },
+              { entityId: 'someGUID', startCharIndex: 5, endCharIndex: 9, entityText: 'text', resolution: {}, builtinType: '' }
+            ]
+          }
+        )
+      ).toEqual(false)
+    })
+
+    test(`fail based on different entityIds`, () => {
+      expect(
+        ModelUtils.areEqualTextVariations(
+          {
+            text: 'some text',
+            labelEntities: [
+              { entityId: 'someGUID', startCharIndex: 5, endCharIndex: 9, entityText: 'text', resolution: {}, builtinType: '' }
+            ]
+          },
+          {
+            text: 'some text',
+            labelEntities: [
+              { entityId: 'differentGUID', startCharIndex: 5, endCharIndex: 9, entityText: 'text', resolution: {}, builtinType: '' }
+            ]
+          }
+        )
+      ).toEqual(false)
+    })
+
+    test(`fail based on different positions`, () => {
+      expect(
+        ModelUtils.areEqualTextVariations(
+          {
+            text: 'some text',
+            labelEntities: [
+              { entityId: 'someGUID', startCharIndex: 5, endCharIndex: 9, entityText: 'text', resolution: {}, builtinType: '' }
+            ]
+          },
+          {
+            text: 'some text',
+            labelEntities: [
+              { entityId: 'someGUID', startCharIndex: 10, endCharIndex: 14, entityText: 'text', resolution: {}, builtinType: '' }
+            ]
+          }
+        )
+      ).toEqual(false)
+    })
+
+    test(`fail based on different entity text`, () => {
+      expect(
+        ModelUtils.areEqualTextVariations(
+          {
+            text: 'some text',
+            labelEntities: [
+              { entityId: 'someGUID', startCharIndex: 5, endCharIndex: 9, entityText: 'text', resolution: {}, builtinType: '' }
+            ]
+          },
+          {
+            text: 'some text',
+            labelEntities: [
+              { entityId: 'someGUID', startCharIndex: 5, endCharIndex: 9, entityText: 'other', resolution: {}, builtinType: '' }
+            ]
+          }
+        )
+      ).toEqual(false)
+    })
+  })
+
   describe('PrebuiltDisplayText', () => {
     test(`given prebuilt with unknown type return entity text`, () => {
       expect(ModelUtils.PrebuiltDisplayText('builtin.nonexistingtype', null, 'entityText')).toEqual('entityText')
