@@ -12,9 +12,14 @@ export interface LogExtractorStep extends ExtractResponse {
   stepEndDatetime: string
 }
 
+export interface LogicResult {
+  logicResult: string
+}
+
 export interface LogScorerStep {
   input: ScoreInput
   predictedAction: string
+  logicResult: string | undefined
   predictionDetails: ScoreResponse
   stepBeginDatetime: string
   stepEndDatetime: string
