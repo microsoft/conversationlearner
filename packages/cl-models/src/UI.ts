@@ -8,7 +8,8 @@ import { TrainExtractorStep, TrainScorerStep, TextVariation } from './TrainDialo
 import { EntityBase } from './Entity'
 import { ExtractResponse } from './Extract'
 import { TeachResponse } from './Teach'
-import { AppIdList, AppList } from './App'
+import { AppList } from './App'
+import { CLChannelData } from './CLChannelData'
 
 export const CL_USER_NAME_ID = 'CLTrainer'
 export const MEMORY_KEY_HEADER_NAME = 'x-conversationlearner-memory-key'
@@ -58,7 +59,7 @@ export interface UIScoreResponse {
 
 export interface UITrainScorerStep {
   trainScorerStep: TrainScorerStep
-  channelData: {}
+  clData: CLChannelData
   entities: EntityBase[]
 }
 

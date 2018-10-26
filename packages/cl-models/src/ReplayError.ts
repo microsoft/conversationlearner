@@ -20,54 +20,60 @@ export enum ReplayErrorType {
   InputAfterNonWait = 'InputAfterNonWait'
 }
 
+export enum ReplayErrorLevel {
+  WARNING = 'WARNING',
+  ERROR = 'ERROR',
+  BLOCKING = 'BLOCKING' // Can't be edited
+}
+
 export class ReplayError {
-  constructor(public type: ReplayErrorType, public isBlocking: boolean) {}
+  constructor(public type: ReplayErrorType, public errorLevel: ReplayErrorLevel) {}
 }
 
 export class ReplayErrorActionUndefined extends ReplayError {
   constructor(public lastUserInput: string) {
-    super(ReplayErrorType.ActionUndefined, true)
+    super(ReplayErrorType.ActionUndefined, ReplayErrorLevel.BLOCKING)
   }
 }
 
 export class ReplayErrorEntityUndefined extends ReplayError {
   constructor(public value: string) {
-    super(ReplayErrorType.EntityUndefined, false)
+    super(ReplayErrorType.EntityUndefined, ReplayErrorLevel.WARNING)
   }
 }
 
 export class ReplayErrorEntityEmpty extends ReplayError {
   constructor(public values: string[]) {
-    super(ReplayErrorType.EntityEmpty, false)
+    super(ReplayErrorType.EntityEmpty, ReplayErrorLevel.ERROR)
   }
 }
 
 export class ReplayErrorActionUnavailable extends ReplayError {
   constructor(public lastUserInput: string) {
-    super(ReplayErrorType.ActionUnavailable, false)
+    super(ReplayErrorType.ActionUnavailable, ReplayErrorLevel.ERROR)
   }
 }
 
 export class ReplayErrorEntityDiscrepancy extends ReplayError {
   constructor(public lastUserInput: string, public originalEntities: string[], public newEntities: string[]) {
-    super(ReplayErrorType.EntityDiscrepancy, false)
+    super(ReplayErrorType.EntityDiscrepancy, ReplayErrorLevel.ERROR)
   }
 }
 
 export class ReplayErrorActionAfterWait extends ReplayError {
   constructor() {
-    super(ReplayErrorType.ActionAfterWait, false)
+    super(ReplayErrorType.ActionAfterWait, ReplayErrorLevel.ERROR)
   }
 }
 
 export class ReplayErrorTwoUserInputs extends ReplayError {
   constructor() {
-    super(ReplayErrorType.TwoUserInputs, false)
+    super(ReplayErrorType.TwoUserInputs, ReplayErrorLevel.ERROR)
   }
 }
 
 export class ReplayErrorInputAfterNonWait extends ReplayError {
   constructor() {
-    super(ReplayErrorType.InputAfterNonWait, false)
+    super(ReplayErrorType.InputAfterNonWait, ReplayErrorLevel.ERROR)
   }
 }
