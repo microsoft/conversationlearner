@@ -67,6 +67,16 @@ export class FilledEntityMap {
     return filledEntityMap
   }
 
+  // Provided an update (diff), update the filled entity list
+  public UpdateFilledEntities(filledEntities: FilledEntity[], entities: EntityBase[]) {
+    for (let filledEntity of filledEntities) {
+      let entity = entities.find(e => e.entityId === filledEntity.entityId)
+      if (entity) {
+        this.map[entity.entityName] = filledEntity
+      }
+    }
+  }
+
   public ToMemory(): Memory[] {
     let memory: Memory[] = []
     for (let entityName in this.map) {

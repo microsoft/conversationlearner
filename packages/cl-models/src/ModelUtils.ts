@@ -8,6 +8,8 @@ import { TrainRound, TrainDialog, TrainScorerStep, TextVariation, CreateTeachPar
 import { LogDialog, LogRound, LogScorerStep } from './LogDialog'
 import { EntityBase, LabeledEntity, PredictedEntity } from './Entity'
 import { ActionBase } from './Action'
+import { MemoryValue } from './Memory'
+import { FilledEntityMap, FilledEntity } from './FilledEntity'
 import { AppDefinition } from './AppDefinition'
 
 export class ModelUtils {
@@ -239,6 +241,61 @@ export class ModelUtils {
       }
     }
     return true
+  }
+
+  public static areEqualMemoryValues(mvs1: MemoryValue[], mvs2: MemoryValue[]) {
+    if (mvs1.length !== mvs2.length) {
+      return false
+    }
+    for (let mv1 of mvs1) {
+      const match = mvs2.find(mv2 => {
+        if (mv1.userText !== mv2.userText) {
+          return false
+        }
+        if (mv1.displayText !== mv2.displayText) {
+          return false
+        }
+        if (mv1.builtinType !== mv2.builtinType) {
+          return false
+        }
+        if (JSON.stringify(mv1.resolution) !== JSON.stringify(mv2.resolution)) {
+          return false
+        }
+        return true
+      })
+      if (!match) {
+        return false
+      }
+    }
+    return true
+  }
+
+  public static changedFilledEntities(originalEntityMap: FilledEntityMap, newEntityMap: FilledEntityMap): FilledEntity[] {
+    let changedFilledEntities: FilledEntity[] = []
+
+    // Capture emptied entities
+    for (let entityName in originalEntityMap.map) {
+      if (!newEntityMap.map[entityName]) {
+        const filledEntity = {
+          entityId: originalEntityMap.map[entityName].entityId,
+          values: []
+        }
+        changedFilledEntities.push(filledEntity)
+      }
+    }
+
+    for (let entityName in newEntityMap.map) {
+      // Capture new entities
+      if (!originalEntityMap.map[entityName]) {
+        changedFilledEntities.push(newEntityMap.map[entityName])
+      }
+      // Capture changed entities
+      else if (!ModelUtils.areEqualMemoryValues(newEntityMap.map[entityName].values, originalEntityMap.map[entityName].values)) {
+        changedFilledEntities.push(newEntityMap.map[entityName])
+      }
+    }
+
+    return changedFilledEntities
   }
 
   /* Converts user intput into BB.Activity */

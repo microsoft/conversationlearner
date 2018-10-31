@@ -21,11 +21,17 @@ export interface TrainExtractorStep {
   textVariations: TextVariation[]
 }
 
+export interface LogicResult {
+  // Result passed to render portion of API callback
+  logicValue: string | undefined
+  // Entities that changed as part of logic callback
+  changedFilledEntities: FilledEntity[]
+}
 export interface TrainScorerStep {
   input: ScoreInput
   // ID of the selected action
   labelAction: string | undefined
-  logicResult: string | undefined
+  logicResult: LogicResult | undefined
   // Score of the selected action
   scoredAction: ScoredAction | undefined
 }

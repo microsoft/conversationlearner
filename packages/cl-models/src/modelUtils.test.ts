@@ -2,7 +2,41 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import { ModelUtils, TrainDialog, Validity } from './conversationlearner-models'
+import { ModelUtils, TrainDialog, Validity, MemoryValue, FilledEntity, FilledEntityMap } from './conversationlearner-models'
+
+function makeMemoryValue(userText: string = 'userText'): MemoryValue {
+  return {
+    userText: userText,
+    displayText: 'displayText',
+    builtinType: 'number',
+    resolution: { data: 'one', number: '5' }
+  } as MemoryValue
+}
+
+function makeFilledEntity(elementValues: string[]): FilledEntity {
+  let values: MemoryValue[] = []
+  for (let value of elementValues) {
+    values.push(makeMemoryValue(value))
+  }
+  return {
+    entityId: elementValues.join('.'),
+    values
+  }
+}
+
+interface MapMaker {
+  name: string
+  values: string[]
+}
+
+function makeFilledEntityMap(mapMakers: MapMaker[]): FilledEntityMap {
+  let filledEntityMap: FilledEntityMap = new FilledEntityMap()
+  for (let mapMaker of mapMakers) {
+    let filledEntities = makeFilledEntity(mapMaker.values)
+    filledEntityMap.map[mapMaker.name] = filledEntities
+  }
+  return filledEntityMap
+}
 
 describe('ModelUtils', () => {
   describe('RemoveWords', () => {
@@ -182,6 +216,65 @@ describe('ModelUtils', () => {
           }
         )
       ).toEqual(false)
+    })
+  })
+
+  describe('areEqualMemoryValues', () => {
+    test(`equal`, () => {
+      let mv1 = makeMemoryValue('mv1')
+      let mv2 = makeMemoryValue('mv2')
+      expect(ModelUtils.areEqualMemoryValues([mv1], [mv1])).toEqual(true)
+    })
+
+    test(`mv1 diff`, () => {
+      let mv1 = makeMemoryValue('mv1')
+      let mv2 = makeMemoryValue('mv2')
+      expect(ModelUtils.areEqualMemoryValues([mv1], [mv2])).toEqual(false)
+    })
+
+    test(`no mv2`, () => {
+      let mv1 = makeMemoryValue('mv1')
+      expect(ModelUtils.areEqualMemoryValues([mv1], [])).toEqual(false)
+    })
+
+    test(`no mv2`, () => {
+      let mv1 = makeMemoryValue('mv1')
+      expect(ModelUtils.areEqualMemoryValues([], [mv1])).toEqual(false)
+    })
+  })
+
+  describe('changedFilledEntities', () => {
+    test(`equal`, () => {
+      let fe1 = makeFilledEntityMap([{ name: 'e1', values: ['joe', 'sue'] }, { name: 'e2', values: ['bob'] }])
+      let fe2 = makeFilledEntityMap([{ name: 'e1', values: ['joe', 'sue'] }, { name: 'e2', values: ['bob'] }])
+      expect(Object.keys(ModelUtils.changedFilledEntities(fe1, fe2).map).length).toEqual(0)
+    })
+
+    test(`removed entity`, () => {
+      let fe1 = makeFilledEntityMap([{ name: 'e1', values: ['joe', 'sue'] }, { name: 'e2', values: ['bob'] }])
+      let fe2 = makeFilledEntityMap([{ name: 'e1', values: ['joe', 'sue'] }])
+      let cem = ModelUtils.changedFilledEntities(fe1, fe2)
+      expect(cem.length).toEqual(1)
+      expect(cem[0].entityId === 'bob')
+      expect(cem[0].values.length === 0)
+    })
+
+    test(`added entity`, () => {
+      let fe1 = makeFilledEntityMap([{ name: 'e1', values: ['joe', 'sue'] }])
+      let fe2 = makeFilledEntityMap([{ name: 'e1', values: ['joe', 'sue'] }, { name: 'e2', values: ['bob'] }])
+      let cem = ModelUtils.changedFilledEntities(fe1, fe2)
+      expect(cem.length).toEqual(1)
+      expect(cem[0].values.length === 1)
+      expect(cem[0].values[0].userText === 'bob')
+    })
+
+    test(`changed entity`, () => {
+      let fe1 = makeFilledEntityMap([{ name: 'e1', values: ['joe', 'sue'] }, { name: 'e2', values: ['bob'] }])
+      let fe2 = makeFilledEntityMap([{ name: 'e1', values: ['mary', 'sue'] }, { name: 'e2', values: ['bob'] }])
+      let cem = ModelUtils.changedFilledEntities(fe1, fe2)
+      expect(cem.length).toEqual(1)
+      expect(cem[0].values.length === 1)
+      expect(cem[0].values[0].userText === 'mary')
     })
   })
 

@@ -6,20 +6,17 @@ import { ScoreResponse, ScoreInput } from './Score'
 import { ExtractResponse } from './Extract'
 import { Metrics } from './Metrics'
 import { FilledEntity } from './FilledEntity'
+import { LogicResult } from './TrainDialog'
 
 export interface LogExtractorStep extends ExtractResponse {
   stepBeginDatetime: string
   stepEndDatetime: string
 }
 
-export interface LogicResult {
-  logicResult: string
-}
-
 export interface LogScorerStep {
   input: ScoreInput
   predictedAction: string
-  logicResult: string | undefined
+  logicResult: LogicResult | undefined
   predictionDetails: ScoreResponse
   stepBeginDatetime: string
   stepEndDatetime: string
