@@ -81,6 +81,24 @@ export class ModelUtils {
     return textVariation
   }
 
+  public static ToExtractResponse(textVariation: TextVariation): ExtractResponse {
+    let predictedEntities = this.ToPredictedEntities(textVariation.labelEntities)
+    let extractResponse: ExtractResponse = {
+      definitions: {
+        entities: [],
+        actions: [],
+        trainDialogs: []
+      },
+      packageId: '',
+      metrics: {
+        wallTime: 0
+      },
+      text: textVariation.text,
+      predictedEntities: predictedEntities
+    }
+    return extractResponse
+  }
+
   public static ToExtractResponses(textVariations: TextVariation[]): ExtractResponse[] {
     let extractResponses: ExtractResponse[] = []
     for (let textVariation of textVariations) {
