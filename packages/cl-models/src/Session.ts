@@ -16,7 +16,7 @@ export interface Session {
   logDialogId: string
   createdDatetime: string
   lastQueryDatetime: string
-  packageId: number
+  packageId: string
   saveToLog: boolean
 }
 
