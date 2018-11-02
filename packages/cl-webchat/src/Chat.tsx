@@ -117,7 +117,7 @@ export class Chat extends React.Component<ChatProps, {}> {
     }
 
     componentWillReceiveProps(newProps: ChatProps) {
-        if (this.props.selectedActivityIndex && !newProps.selectedActivityIndex) {
+        if (this.props.selectedActivityIndex !== null && newProps.selectedActivityIndex === null) {
             this.store.dispatch<ChatActions>({
                 type: 'Deselect_Activity'
             });
