@@ -17,7 +17,9 @@ export enum ReplayErrorType {
   /* Two consecutive user inputs */
   TwoUserInputs = 'TwoUserInputs',
   /* User input after non-wait */
-  InputAfterNonWait = 'InputAfterNonWait'
+  InputAfterNonWait = 'InputAfterNonWait',
+  /* Exception */
+  Exception = 'Exception'
 }
 
 export enum ReplayErrorLevel {
@@ -75,5 +77,11 @@ export class ReplayErrorTwoUserInputs extends ReplayError {
 export class ReplayErrorInputAfterNonWait extends ReplayError {
   constructor() {
     super(ReplayErrorType.InputAfterNonWait, ReplayErrorLevel.ERROR)
+  }
+}
+
+export class ReplayErrorException extends ReplayError {
+  constructor() {
+    super(ReplayErrorType.Exception, ReplayErrorLevel.BLOCKING)
   }
 }
