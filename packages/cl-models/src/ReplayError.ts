@@ -9,9 +9,10 @@ export enum ReplayErrorType {
   EntityUndefined = 'EntityUndefined',
   /* Entity used in Action but has not value */
   EntityEmpty = 'EntityEmpty',
+  /* Non-multi value has multiple values */
+  EntityUnexpectedMultivalue = 'EntityUnexpectedMultivalue',
   /* Selected Action is not available with given constraints */
   ActionUnavailable = 'ActionUnavailable',
-  EntityDiscrepancy = 'EntityDiscrepancy',
   /* Action in Score Rounds after Wait action */
   ActionAfterWait = 'ActionAfterWait',
   /* Two consecutive user inputs */
@@ -19,13 +20,17 @@ export enum ReplayErrorType {
   /* User input after non-wait */
   InputAfterNonWait = 'InputAfterNonWait',
   /* Exception */
-  Exception = 'Exception'
+  Exception = 'Exception',
+  EntityDiscrepancy = 'EntityDiscrepancy'
 }
 
 export enum ReplayErrorLevel {
+  // TrainDialog can still be used in training
   WARNING = 'WARNING',
+  // TrainDialog will be disabled
   ERROR = 'ERROR',
-  BLOCKING = 'BLOCKING' // Can't be edited
+  //TrainDialog will be disabled and can't be edited / replayed
+  BLOCKING = 'BLOCKING'
 }
 
 export class ReplayError {
@@ -47,6 +52,12 @@ export class ReplayErrorEntityUndefined extends ReplayError {
 export class ReplayErrorEntityEmpty extends ReplayError {
   constructor(public values: string[]) {
     super(ReplayErrorType.EntityEmpty, ReplayErrorLevel.ERROR)
+  }
+}
+
+export class EntityUnexpectedMultivalue extends ReplayError {
+  constructor(public entityName: string) {
+    super(ReplayErrorType.EntityUnexpectedMultivalue, ReplayErrorLevel.WARNING)
   }
 }
 

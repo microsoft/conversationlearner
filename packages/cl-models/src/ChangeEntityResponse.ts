@@ -7,4 +7,5 @@ export interface ChangeEntityResponse {
   entityId: string
   negativeEntityId: string
   trainingStatus: string
+  trainDialogIds: string
 }

@@ -44,7 +44,8 @@ export interface TrainRound {
 export enum Validity {
   VALID = 'valid',
   INVALID = 'invalid',
-  UNKNOWN = 'unknown'
+  UNKNOWN = 'unknown',
+  WARNING = 'warning'
 }
 
 export interface TrainDialogInput {
