@@ -27,6 +27,25 @@ export interface LogicResult {
   // Entities that changed as part of logic callback
   changedFilledEntities: FilledEntity[]
 }
+
+export function GetBotAPIError(logicResult: LogicResult | undefined): BotAPIError | null {
+  if (!logicResult) {
+    return null
+  }
+  if (!logicResult.logicValue) {
+    return null
+  }
+  const logicAPIResult = JSON.parse(logicResult.logicValue) as BotAPIError
+  if (!logicAPIResult.APIError) {
+    return null
+  }
+  return logicAPIResult
+}
+
+export interface BotAPIError {
+  APIError: string
+}
+
 export interface TrainScorerStep {
   input: ScoreInput
   // ID of the selected action

@@ -4,7 +4,7 @@
  */
 import { Memory } from './Memory'
 import { ScoreInput, ScoreResponse } from './Score'
-import { TrainExtractorStep, TrainScorerStep, TextVariation } from './TrainDialog'
+import { TrainExtractorStep, TrainScorerStep, BotAPIError } from './TrainDialog'
 import { EntityBase } from './Entity'
 import { ExtractResponse } from './Extract'
 import { TeachResponse } from './Teach'
@@ -54,6 +54,7 @@ export interface UIScoreResponse {
   scoreInput?: ScoreInput
   memories?: Memory[]
   extractConflict?: ExtractResponse | null
+  botAPIError?: BotAPIError | null
 }
 
 export interface UITrainScorerStep {
