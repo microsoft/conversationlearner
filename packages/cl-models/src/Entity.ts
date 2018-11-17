@@ -17,6 +17,7 @@ export interface EntityBase {
   entityId: string
   entityName: string
   entityType: string
+  resolverType: string | null
   createdDateTime: string
   version: number | null
   packageCreationId: number | null
