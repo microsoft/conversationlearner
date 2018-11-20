@@ -136,7 +136,7 @@ export class FilledEntityMap {
     return null
   }
 
-  public ValueAsPrebuilt(entityName: string): MemoryValue[] {
+  public Values(entityName: string): MemoryValue[] {
     if (!this.map[entityName]) {
       return []
     }
