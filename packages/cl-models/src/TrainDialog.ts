@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import { ScoreInput, ScoredAction } from './Score'
+import { ScoreInput, ScoredAction, ScoreResponse } from './Score'
 import { LabeledEntity } from './Entity'
 import { AppDefinition } from './AppDefinition'
 import { FilledEntity } from './FilledEntity'
@@ -53,6 +53,8 @@ export interface TrainScorerStep {
   logicResult: LogicResult | undefined
   // Score of the selected action
   scoredAction: ScoredAction | undefined
+  // Used for UI rendering only
+  uiScoreResponse?: ScoreResponse
 }
 
 export interface TrainRound {

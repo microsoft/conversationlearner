@@ -11,6 +11,7 @@ import { ActionBase } from './Action'
 import { MemoryValue } from './Memory'
 import { FilledEntityMap, FilledEntity } from './FilledEntity'
 import { AppDefinition } from './AppDefinition'
+import { CLChannelData } from './CLChannelData'
 
 export class ModelUtils {
   public static generateGUID(): string {
@@ -188,7 +189,8 @@ export class ModelUtils {
         input: logScorerStep.input,
         labelAction: logScorerStep.predictedAction,
         logicResult: logScorerStep.logicResult,
-        scoredAction: undefined
+        scoredAction: undefined,
+        uiScoreResponse: logScorerStep.predictionDetails
       }))
     }
   }
@@ -318,14 +320,17 @@ export class ModelUtils {
 
   /* Converts user intput into BB.Activity */
   public static InputToActivity(userText: string, userName: string, userId: string, roundNum: number): any {
+    let clData: CLChannelData = {
+      senderType: SenderType.User,
+      roundIndex: roundNum,
+      scoreIndex: undefined
+    }
     // Generate activity
     return {
       id: this.generateGUID(),
       from: { id: userId, name: userName },
       channelData: {
-        senderType: SenderType.User,
-        roundIndex: roundNum,
-        scoreIndex: 0,
+        clData,
         clientActivityId: this.generateGUID()
       },
       type: 'message',
