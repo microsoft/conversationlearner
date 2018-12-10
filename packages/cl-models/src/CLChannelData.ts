@@ -6,9 +6,9 @@ import { SenderType } from './TrainDialog'
 import { ReplayError } from './ReplayError'
 
 export interface CLChannelData {
-  senderType?: SenderType
-  roundIndex?: number
-  scoreIndex?: number
+  senderType: SenderType | null
+  roundIndex: number | null
+  scoreIndex: number | null
   validWaitAction?: boolean
   replayError?: ReplayError | null
   activityIndex?: number

@@ -323,7 +323,7 @@ export class ModelUtils {
     let clData: CLChannelData = {
       senderType: SenderType.User,
       roundIndex: roundNum,
-      scoreIndex: undefined
+      scoreIndex: null
     }
     // Generate activity
     return {
