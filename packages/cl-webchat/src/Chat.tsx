@@ -214,12 +214,14 @@ export class Chat extends React.Component<ChatProps, {}> {
     // 2. To determine the margins of any given carousel (we just render one mock activity so that we can measure it)
     // 3. (this is also the normal re-render case) To render without the mock activity
 
-    //BLIS CHANGE - make public
-    //private setFocus() {
+    //BLIS CHANGE - make public, check of shell not present 
     public setFocus() {
         // HUGE HACK - set focus back to input after clicking on an action
         // React makes this hard to do well, so we just do an end run around them
-        (this.chatviewPanel.querySelector(".wc-shellinput") as HTMLInputElement).focus();
+        const inputPanel = this.chatviewPanel.querySelector(".wc-shellinput") as HTMLInputElement
+        if (inputPanel) {
+            inputPanel.focus();
+        }
     }
 
     render() {
