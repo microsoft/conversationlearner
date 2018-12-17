@@ -15,7 +15,6 @@ export interface HistoryProps {
     onClickCardAction: () => void,
     setFocus: () => void,
     renderActivity?: (props: WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void) => (JSX.Element | null) // BLIS addition
-    highlightClassName?: string // BLIS ADD
     onScrollChange?: (position: number) => void // BLIS ADD
     initialScrollPosition?: number // BLIS ADD
     isFromMe: (activity: Activity) => boolean,
@@ -195,7 +194,6 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
                         selected={ this.props.isSelected(activity) }
                         fromMe={ this.props.isFromMe(activity) }
                         renderActivity={this.props.renderActivity}
-                        highlightClassName={this.props.highlightClassName}
                         onClickActivity={ this.props.onClickActivity(activity) }
                         onClickRetry={ e => {
                             // Since this is a click on an anchor, we need to stop it
@@ -260,7 +258,6 @@ export const History = connect(
         renderActivity: ownProps.renderActivity,  // BLIS ADD
         onScrollChange: ownProps.onScrollChange, // BLIS ADD
         initialScrollPosition: ownProps.initialScrollPosition, // BLIS ADD
-        highlightClassName: ownProps.highlightClassName,  // BLIS ADD
         // helper functions
         doCardAction: doCardAction(stateProps.botConnection, stateProps.user, stateProps.format.locale, dispatchProps.sendMessage),
         isFromMe: (activity: Activity) => activity.from.id === stateProps.user.id,
@@ -300,7 +297,6 @@ export interface WrappedActivityProps {
     onClickActivity: React.MouseEventHandler<HTMLDivElement>,
     onClickRetry: React.MouseEventHandler<HTMLAnchorElement>,
     renderActivity?: (props: WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void) => (JSX.Element | null)     // BLIS ADD
-    highlightClassName?: string    // BLIS ADD
 }
 
 export class WrappedActivity extends React.Component<WrappedActivityProps, {}> {

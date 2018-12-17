@@ -38,7 +38,6 @@ export interface ChatProps {
     renderInput?: () => JSX.Element | null // BLIS addition
     onScrollChange?: ((position: number) => void)
     initialScrollPosition?: number,
-    highlightClassName?: string // BLIS addition
     selectedActivityIndex?: number | null // BLIS addition
 }
 
@@ -252,7 +251,6 @@ export class Chat extends React.Component<ChatProps, {}> {
                             renderActivity={ this.props.renderActivity }
                             onScrollChange={this.props.onScrollChange}
                             initialScrollPosition={this.props.initialScrollPosition}
-                            highlightClassName={ this.props.highlightClassName }
                          />
                     </MessagePane>
                     {renderedInput ||
