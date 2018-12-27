@@ -259,6 +259,10 @@ export type HistoryAction = {
 } | {
     type: 'Set_History',
     activities: Activity[]
+} | {
+    type: 'Replace_Activity_Text',
+    index: number,
+    text: string
 }
 
 const copyArrayWithUpdatedItem = <T>(array: Array<T>, i: number, item: T) => [
@@ -282,6 +286,29 @@ export const history: Reducer<HistoryState> = (
             return {
                 ... state,
                 activities: [... action.activities]
+            };
+        // BLIS addition
+        case 'Replace_Activity_Text':
+            
+            if (state.activities[action.index].type !== 'message') {
+                return
+            }
+            if (action.index >= state.activities.length) {
+                return
+            }
+
+            let activities = [...state.activities]
+
+            // Create new message with replaced text
+            let message = {...activities[action.index]} as Message
+            message.text = action.text
+            message.textFormat = "markdown"
+
+            // Swap for existing one
+            activities[action.index] = message
+            return {
+                ... state,
+                activities: activities
             };
         case 'Receive_Sent_Message': {
             if (!action.activity.channelData || !action.activity.channelData.clientActivityId) {

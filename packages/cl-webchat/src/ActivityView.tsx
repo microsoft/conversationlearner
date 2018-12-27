@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Activity, Attachment, AttachmentLayout } from 'botframework-directlinejs';
+import { Activity, Attachment, AttachmentLayout, Message } from 'botframework-directlinejs';
 import { AttachmentView } from './Attachment';
 import { Carousel } from './Carousel';
 import { FormattedText } from './FormattedText';
@@ -57,7 +57,9 @@ export class ActivityView extends React.Component<ActivityViewProps, {}> {
         // if it's a carousel and the size changed, re-render
             || (this.props.activity.type === 'message'
                 && this.props.activity.attachmentLayout === 'carousel'
-                && this.props.size !== nextProps.size);
+                && this.props.size !== nextProps.size)
+        // if it's message and text has change (BLIS addition)
+            || (this.props.activity.type === 'message' && this.props.activity.text !== (nextProps.activity as Message).text)
     }
 
     render() {

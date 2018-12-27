@@ -39,6 +39,8 @@ export interface ChatProps {
     onScrollChange?: ((position: number) => void)
     initialScrollPosition?: number,
     selectedActivityIndex?: number | null // BLIS addition
+    replaceActivityText?: string | null // BLIS addition
+    replaceActivityIndex?: number | null // BLIS addition
 }
 
 export const sendMessage = (text: string, from: User, locale: string) => ({
@@ -119,6 +121,13 @@ export class Chat extends React.Component<ChatProps, {}> {
         if (this.props.selectedActivityIndex !== null && newProps.selectedActivityIndex === null) {
             this.store.dispatch<ChatActions>({
                 type: 'Deselect_Activity'
+            });
+        }
+        if (newProps.replaceActivityText !== null && newProps.replaceActivityIndex !== null && newProps.replaceActivityText !== this.props.replaceActivityText) {
+            this.store.dispatch<ChatActions>({
+                type: 'Replace_Activity_Text',
+                index: newProps.replaceActivityIndex,
+                text: newProps.replaceActivityText
             });
         }
     }
