@@ -338,6 +338,29 @@ export class ModelUtils {
     }
   }
 
+  public static textVariationToMarkdown(textVariation: TextVariation) {
+    if (textVariation.labelEntities.length === 0) {
+      return textVariation.text
+    }
+    // First sort labelled entities by start location
+    let labelEntities = textVariation.labelEntities.sort(
+      (a, b) => (a.startCharIndex > b.startCharIndex ? 1 : a.startCharIndex < b.startCharIndex ? -1 : 0)
+    )
+
+    let text = textVariation.text.substring(0, labelEntities[0].startCharIndex)
+    for (let index in labelEntities) {
+      let curEntity = labelEntities[index]
+      text = `${text}**_${textVariation.text.substring(curEntity.startCharIndex, curEntity.endCharIndex + 1)}_**`
+      let nextEntity = labelEntities[Number(index) + 1]
+      if (nextEntity) {
+        text = `${text}${textVariation.text.substring(curEntity.endCharIndex + 1, nextEntity.startCharIndex)}`
+      } else {
+        text = `${text}${textVariation.text.substring(curEntity.endCharIndex + 1, textVariation.text.length)}`
+      }
+    }
+    return text
+  }
+
   public static PrebuiltDisplayText(builtinType: string, resolution: any, entityText: string): string {
     if (!builtinType || !resolution) {
       return entityText

@@ -408,3 +408,123 @@ describe('ModelUtils', () => {
     })
   })
 })
+
+describe('textVariationToMarkdown', () => {
+  test('no entities', () => {
+    let textVariation = { text: 'no entities', labelEntities: [] }
+    let expected = 'no entities'
+    let result = ModelUtils.textVariationToMarkdown(textVariation)
+    expect(result).toBe(expected)
+  })
+
+  test('**_start_** entity only', () => {
+    let textVariation = {
+      text: 'start entity only',
+      labelEntities: [
+        {
+          entityId: '0f427885-b4b2-4b62-af10-040e5e1001de',
+          startCharIndex: 0,
+          endCharIndex: 4,
+          entityText: 'start',
+          resolution: {},
+          builtinType: 'LUIS'
+        }
+      ]
+    }
+    let expected = '**_start_** entity only'
+    let result = ModelUtils.textVariationToMarkdown(textVariation)
+    expect(result).toBe(expected)
+  })
+
+  test('**_start_** and **_end_**', () => {
+    let textVariation = {
+      text: 'start and end',
+      labelEntities: [
+        {
+          entityId: '0f427885-b4b2-4b62-af10-040e5e1001de',
+          startCharIndex: 0,
+          endCharIndex: 4,
+          entityText: 'start',
+          resolution: {},
+          builtinType: 'LUIS'
+        },
+        {
+          entityId: 'b558509d-5045-4055-b8c4-a8673b4b9ace',
+          startCharIndex: 10,
+          endCharIndex: 12,
+          entityText: 'end',
+          resolution: {},
+          builtinType: 'LUIS'
+        }
+      ]
+    }
+    let expected = '**_start_** and **_end_**'
+    let result = ModelUtils.textVariationToMarkdown(textVariation)
+    expect(result).toBe(expected)
+  })
+
+  test('is **_next_** **_together_** entities', () => {
+    let textVariation = {
+      text: 'is next together entities',
+      labelEntities: [
+        {
+          entityId: '0f427885-b4b2-4b62-af10-040e5e1001de',
+          startCharIndex: 3,
+          endCharIndex: 6,
+          entityText: 'next',
+          resolution: {},
+          builtinType: 'LUIS'
+        },
+        {
+          entityId: 'b558509d-5045-4055-b8c4-a8673b4b9ace',
+          startCharIndex: 8,
+          endCharIndex: 15,
+          entityText: 'together',
+          resolution: {},
+          builtinType: 'LUIS'
+        }
+      ]
+    }
+    let expected = 'is **_next_** **_together_** entities'
+    let result = ModelUtils.textVariationToMarkdown(textVariation)
+    expect(result).toBe(expected)
+  })
+
+  test('a **_multi word_** entity', () => {
+    let textVariation = {
+      text: 'a multi word entity',
+      labelEntities: [
+        {
+          entityId: '0f427885-b4b2-4b62-af10-040e5e1001de',
+          startCharIndex: 2,
+          endCharIndex: 11,
+          entityText: 'multi word',
+          resolution: {},
+          builtinType: 'LUIS'
+        }
+      ]
+    }
+    let expected = 'a **_multi word_** entity'
+    let result = ModelUtils.textVariationToMarkdown(textVariation)
+    expect(result).toBe(expected)
+  })
+
+  test('**_solo_**', () => {
+    let textVariation = {
+      text: 'solo',
+      labelEntities: [
+        {
+          entityId: '0f427885-b4b2-4b62-af10-040e5e1001de',
+          startCharIndex: 0,
+          endCharIndex: 3,
+          entityText: 'solo',
+          resolution: {},
+          builtinType: 'LUIS'
+        }
+      ]
+    }
+    let expected = '**_solo_**'
+    let result = ModelUtils.textVariationToMarkdown(textVariation)
+    expect(result).toBe(expected)
+  })
+})
