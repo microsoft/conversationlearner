@@ -16,7 +16,7 @@ export interface BotInfo {
   user: IUser
   callbacks: Callback[]
   templates: Template[]
-  validationErrors: string[]
-  checksum?: string
+  validationError: string | null
+  checksum: string
   banner: Banner | null
 }
