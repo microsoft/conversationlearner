@@ -41,7 +41,6 @@
     "semantic-release-prepare": "ts-node tools/semantic-release-prepare",
     "setpackageversion": "tsc -p ./scripts/tsconfig.json && node ./scripts/setpackageversion.js",
     "verifypackagelock": "tsc -p ./scripts/tsconfig.json && node ./scripts/verifypackagelock.js",
-    "precommit": "lint-staged",
     "watch": "rollup -c rollup.config.ts --watch",
     "prepush": "npm run test:prod && npm run build",
     "commitmsg": "commitlint -E GIT_PARAMS"
@@ -66,7 +65,7 @@
     "transform": {
       ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx)$",
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -88,8 +87,8 @@
     "testEnvironment": "node"
   },
   "devDependencies": {
-    "@commitlint/cli": "7.0.0",
-    "@commitlint/config-conventional": "7.0.1",
+    "@commitlint/cli": "7.2.1",
+    "@commitlint/config-conventional": "7.1.2",
     "@types/execa": "^0.8.1",
     "@types/fs-extra": "^5.0.0",
     "@types/jest": "^22.1.0",
@@ -130,5 +129,9 @@
   },
   "prettier": {
     "printWidth": 140
+  },
+  "dependencies": {
+    "@types/lodash": "^4.14.119",
+    "lodash": "^4.17.11"
   }
 }

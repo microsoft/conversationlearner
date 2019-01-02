@@ -5,11 +5,7 @@ branches:
     - master
     - /^greenkeeper/.*$/
 
-cache:
-  yarn: true
-  directories:
-    - ~/.npm
-    - node_modules
+
 
 notifications:
   email: false
