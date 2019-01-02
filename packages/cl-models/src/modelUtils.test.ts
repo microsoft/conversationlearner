@@ -527,4 +527,42 @@ describe('textVariationToMarkdown', () => {
     let result = ModelUtils.textVariationToMarkdown(textVariation)
     expect(result).toBe(expected)
   })
+  test(`i'd like to go **_tomorrow_**`, () => {
+    let textVariation = {  
+      text:"i'd like to go tomorrow",
+      labelEntities:[  
+         {  
+            score:0,
+            entityId:"b18c67af-26c3-4756-88af-76baf68a59ee",
+            startCharIndex:15,
+            endCharIndex:22,
+            entityText:"tomorrow",
+            resolution:{  
+               values:[  
+                  {  
+                     timex:"2019-01-03",
+                     type: "date",
+                     value:"2019-01-03"
+                  }
+               ]
+            },
+            builtinType:"builtin.datetimeV2.date"
+         },
+         {  
+            entityId:"7367096c-80a1-4fe6-8d55-e78522e342bf",
+            startCharIndex:15,
+            endCharIndex:22,
+            entityText:"tomorrow",
+            resolution:{  
+   
+            },
+            builtinType:"LUIS",
+            score:0
+         }
+      ]
+    }
+    let expected = `i'd like to go **_tomorrow_**`
+    let result = ModelUtils.textVariationToMarkdown(textVariation)
+    expect(result).toBe(expected)
+  })
 })

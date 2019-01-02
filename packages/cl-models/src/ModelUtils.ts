@@ -6,7 +6,7 @@ import { ExtractResponse } from './Extract'
 import { Teach, TeachResponse } from './Teach'
 import { TrainRound, TrainDialog, TrainScorerStep, TextVariation, CreateTeachParams, SenderType } from './TrainDialog'
 import { LogDialog, LogRound, LogScorerStep } from './LogDialog'
-import { EntityBase, LabeledEntity, PredictedEntity } from './Entity'
+import { EntityBase, LabeledEntity, PredictedEntity, EntityType } from './Entity'
 import { ActionBase } from './Action'
 import { MemoryValue } from './Memory'
 import { FilledEntityMap, FilledEntity } from './FilledEntity'
@@ -343,7 +343,8 @@ export class ModelUtils {
       return textVariation.text
     }
     // First sort labelled entities by start location
-    let labelEntities = textVariation.labelEntities.sort(
+    let labelEntities = textVariation.labelEntities.filter(le => le.builtinType === EntityType.LUIS)
+    labelEntities = labelEntities.sort(
       (a, b) => (a.startCharIndex > b.startCharIndex ? 1 : a.startCharIndex < b.startCharIndex ? -1 : 0)
     )
 
