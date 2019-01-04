@@ -338,12 +338,21 @@ export class ModelUtils {
     }
   }
 
-  public static textVariationToMarkdown(textVariation: TextVariation) {
+  public static textVariationToMarkdown(textVariation: TextVariation, excludeEntities: string[]) {
     if (textVariation.labelEntities.length === 0) {
       return textVariation.text
     }
-    // First sort labelled entities by start location
-    let labelEntities = textVariation.labelEntities.filter(le => le.builtinType === EntityType.LUIS)
+
+    // Remove resolvers that aren't labelled
+    let labelEntities = textVariation.labelEntities.filter(le => !excludeEntities.includes(le.entityId))
+    
+    // Remove duplicate labels
+    labelEntities = labelEntities.filter((le,i) => labelEntities.findIndex(fi => fi.startCharIndex === le.startCharIndex) === i)
+
+    if (labelEntities.length === 0) {
+      return textVariation.text
+    }
+    
     labelEntities = labelEntities.sort(
       (a, b) => (a.startCharIndex > b.startCharIndex ? 1 : a.startCharIndex < b.startCharIndex ? -1 : 0)
     )
