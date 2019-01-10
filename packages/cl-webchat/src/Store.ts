@@ -291,11 +291,11 @@ export const history: Reducer<HistoryState> = (
         case 'Replace_Activity_Text':
             
             if (action.index >= state.activities.length) {
-                return
+                return {...state}
             }
 
             if (state.activities[action.index].type !== 'message') {
-                return
+                return {...state}
             }
 
             let activities = [...state.activities]
