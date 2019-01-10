@@ -290,10 +290,11 @@ export const history: Reducer<HistoryState> = (
         // BLIS addition
         case 'Replace_Activity_Text':
             
-            if (state.activities[action.index].type !== 'message') {
+            if (action.index >= state.activities.length) {
                 return
             }
-            if (action.index >= state.activities.length) {
+
+            if (state.activities[action.index].type !== 'message') {
                 return
             }
 
