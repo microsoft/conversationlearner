@@ -56,13 +56,23 @@ export class FilledEntityMap {
     Object.assign(this, init)
   }
 
-  public static FromFilledEntities(filledEntities: FilledEntity[], entities: EntityBase[]) {
+  public static FromFilledEntities(filledEntities: FilledEntity[], entities: EntityBase[]): FilledEntityMap {
     let filledEntityMap = new FilledEntityMap()
     for (let filledEntity of filledEntities) {
       let entity = entities.find(e => e.entityId === filledEntity.entityId)
       if (entity) {
         filledEntityMap.map[entity.entityName] = filledEntity
       }
+    }
+    return filledEntityMap
+  }
+
+  // Flips entity name based map to entityId based map
+  public EntityMapToIdMap(entities: EntityBase[]) {
+    let filledEntityMap = new FilledEntityMap()
+    for (let entityName in this.map) {
+      const filledEntity = this.map[entityName]
+      filledEntityMap.map[filledEntity.entityId!] = filledEntity
     }
     return filledEntityMap
   }

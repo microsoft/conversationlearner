@@ -143,6 +143,46 @@ describe('filledEntity', () => {
       })
     })
 
+    describe('EntityMapToIdMap', () => {
+
+      const entity1 = {
+        entityId: 'entityId1',
+        values: [
+          {
+            userText: '3',
+            displayText: '3',
+            builtinType: 'none',
+            resolution: {}
+          }
+        ]
+      }
+
+      const entity2 = 
+      {
+        entityId: 'entityId2',
+        values: [
+          {
+            userText: '3',
+            displayText: '3',
+            builtinType: 'none',
+            resolution: {}
+          }
+        ]
+      }
+
+      const entityMap = new FilledEntityMap({
+        map: {
+          entityName1: entity1,
+          entityName2: entity2
+        }
+      })
+
+
+      const idMap = entityMap.EntityMapToIdMap([entity1 as any, entity2 as any])
+      expect(idMap.map[entity1.entityId]).toEqual(entity1)
+      expect(idMap.map[entity2.entityId]).toEqual(entity2)
+    })
+
     describe('FilledEntities', () => {
       test('given filledEntityMap return values in array', () => {
         expect(filledEntityMap.FilledEntities()).toEqual([
