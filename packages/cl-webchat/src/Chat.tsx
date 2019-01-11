@@ -43,7 +43,8 @@ export interface ChatProps {
     replaceActivityIndex?: number | null // BLIS addition
 }
 
-export const sendMessage = (text: string, from: User, locale: string) => ({
+// BLIS added channeldata so know if came from imBack
+export const sendMessage = (text: string, from: User, locale: string, channelData?: string | undefined) => ({
     type: 'Send_Message',
     activity: {
         type: "message",
@@ -51,7 +52,8 @@ export const sendMessage = (text: string, from: User, locale: string) => ({
         from,
         locale,
         textFormat: 'plain',
-        timestamp: (new Date()).toISOString()
+        timestamp: (new Date()).toISOString(),
+        channelData
     }} as ChatActions);
 
 export const sendFiles = (files: FileList, from: User, locale: string) => ({
@@ -285,7 +287,8 @@ export const doCardAction = (
     botConnection: IBotConnection,
     from: User,
     locale: string,
-    sendMessage: (value: string, user: User, locale: string) => void,
+    // BLIS added channel data so know response came from button
+    sendMessage: (value: string, user: User, locale: string, channelData?: any) => void,
 ): IDoCardAction => (
     type,
     actionValue
@@ -297,7 +300,7 @@ export const doCardAction = (
     switch (type) {
         case "imBack":
             if (typeof text === 'string')
-                sendMessage(text, from, locale);
+                sendMessage(text, from, locale, {imback: true});
             break;
 
         case "postBack":

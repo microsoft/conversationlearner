@@ -349,7 +349,8 @@ export const history: Reducer<HistoryState> = (
                     {
                         ... action.activity,
                         timestamp: (new Date()).toISOString(),
-                        channelData: { clientActivityId: state.clientActivityBase + state.clientActivityCounter }
+                        // BLIS - added channel data
+                        channelData: { ...action.activity.channelData,  clientActivityId: state.clientActivityBase + state.clientActivityCounter }
                     },
                     ... state.activities.filter(activity => activity.type === "typing"),
                 ],
