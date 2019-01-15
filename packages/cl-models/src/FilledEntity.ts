@@ -110,7 +110,7 @@ export class FilledEntityMap {
     }
 
     if (this.map[entityName].values.length === 0) {
-      return `[$entityName]`
+      return `[$${entityName}]`
     }
     // Print out[] list in friendly manner
     return filledEntityValueAsString(this.map[entityName])
