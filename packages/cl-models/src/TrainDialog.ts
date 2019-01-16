@@ -28,21 +28,7 @@ export interface LogicResult {
   changedFilledEntities: FilledEntity[]
 }
 
-export function GetBotAPIError(logicResult: LogicResult | undefined): BotAPIError | null {
-  if (!logicResult) {
-    return null
-  }
-  if (!logicResult.logicValue) {
-    return null
-  }
-  const logicAPIResult = JSON.parse(logicResult.logicValue) as BotAPIError
-  if (!logicAPIResult.APIError) {
-    return null
-  }
-  return logicAPIResult
-}
-
-export interface BotAPIError {
+export interface LogicAPIError {
   APIError: string
 }
 

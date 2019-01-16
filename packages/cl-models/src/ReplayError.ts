@@ -61,7 +61,7 @@ export class ReplayErrorAPIUndefined extends ReplayError {
 
 export class ReplayErrorAPIException extends ReplayError {
   constructor() {
-    super(ReplayErrorType.APIUndefined, ReplayErrorLevel.ERROR)
+    super(ReplayErrorType.APIException, ReplayErrorLevel.ERROR)
   }
 }
 
