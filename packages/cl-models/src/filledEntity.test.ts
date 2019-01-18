@@ -85,6 +85,41 @@ describe('filledEntity', () => {
       }
     })
 
+    const entity1 = {
+      entityId: 'entityId1',
+      values: [
+        {
+          userText: '3',
+          displayText: '3',
+          builtinType: 'none',
+          resolution: {}
+        }
+      ]
+    }
+
+    const entity2 = 
+    {
+      entityId: 'entityId2',
+      values: [
+        {
+          userText: '3',
+          displayText: '3',
+          builtinType: 'none',
+          resolution: {}
+        }
+      ]
+    }
+
+    let newEntityMap = () => {
+      return new FilledEntityMap({
+        map: {
+          entityName1: entity1,
+          entityName2: entity2
+        }
+      })
+  }
+
+
     describe('getEntityDisplayValueMap', () => {
       test('given filledEntityMap should return Map which has entity id to entity display value', () => {
         const displayFilledEntityName = getEntityDisplayValueMap(filledEntityMap)
@@ -145,39 +180,7 @@ describe('filledEntity', () => {
 
     describe('EntityMapToIdMap', () => {
 
-      const entity1 = {
-        entityId: 'entityId1',
-        values: [
-          {
-            userText: '3',
-            displayText: '3',
-            builtinType: 'none',
-            resolution: {}
-          }
-        ]
-      }
-
-      const entity2 = 
-      {
-        entityId: 'entityId2',
-        values: [
-          {
-            userText: '3',
-            displayText: '3',
-            builtinType: 'none',
-            resolution: {}
-          }
-        ]
-      }
-
-      const entityMap = new FilledEntityMap({
-        map: {
-          entityName1: entity1,
-          entityName2: entity2
-        }
-      })
-
-
+      let entityMap = newEntityMap()
       const idMap = entityMap.EntityMapToIdMap([entity1 as any, entity2 as any])
       expect(idMap.map[entity1.entityId]).toEqual(entity1)
       expect(idMap.map[entity2.entityId]).toEqual(entity2)
@@ -191,6 +194,30 @@ describe('filledEntity', () => {
             values: memoryValues
           }
         ])
+      })
+    })
+
+    describe('DeleteWithEmptyString', () => {
+      test('DeleteNonMultiWithEmptyString', () => {
+
+        let entityMap = newEntityMap()
+        expect(Object.keys(entityMap.map).length).toEqual(2)
+        entityMap.Remember("entityName1", entity1.entityId, "")
+        expect(Object.keys(entityMap.map).length).toEqual(1)
+      })
+
+      test('DeleteMultiWithEmptyString', () => {
+        let entityMap = newEntityMap()
+        expect(Object.keys(entityMap.map).length).toEqual(2)
+        entityMap.RememberMany("entityName1", entity1.entityId, ["",""])
+        expect(Object.keys(entityMap.map).length).toEqual(1)
+      })
+
+      test('DeleteMultiWithEmptyString', () => {
+        let entityMap = newEntityMap()
+        expect(Object.keys(entityMap.map).length).toEqual(2)
+        entityMap.RememberMany("entityName1", entity1.entityId, [])
+        expect(Object.keys(entityMap.map).length).toEqual(1)
       })
     })
 

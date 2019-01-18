@@ -190,7 +190,17 @@ export class FilledEntityMap {
     builtinType: string | null = null,
     resolution: {} | null = null
   ): void {
-    for (let entityValue of entityValues) {
+
+    // Filter out empty strings
+    const values = entityValues.filter(s => s !== "")
+
+    // If no non-empty values, acts as delete
+    if (values.length === 0) {
+      this.Forget(entityName)
+      return
+    }
+
+    for (let entityValue of values) {
       this.Remember(entityName, entityId, entityValue, isBucket, builtinType, resolution)
     }
   }
@@ -204,6 +214,13 @@ export class FilledEntityMap {
     builtinType: string | null = null,
     resolution: any | null = null
   ): void {
+
+    // If setting to an empty string is actually a delete
+    if (entityValue === "") {
+      this.Forget(entityName)
+      return
+    }
+
     // If we don't already have entry in map for this item, create one
     if (!this.map[entityName]) {
       this.map[entityName] = {
