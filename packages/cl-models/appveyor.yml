@@ -1,5 +1,11 @@
 skip_branch_with_pr: true
 
+branches:
+  only:
+    - master
+
+skip_tags: true
+
 cache:
   - '%AppData%\npm-cache -> appveyor.yml'
   - node_modules -> package-lock.json
