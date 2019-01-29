@@ -3,8 +3,12 @@
  * Licensed under the MIT License.
  */
 export enum EntityType {
+  // Programmatic Entity
   LOCAL = 'LOCAL',
-  LUIS = 'LUIS'
+  // Entity trained in LUIS
+  LUIS = 'LUIS',
+  // Enumeration
+  ENUM = 'ENUM'
 }
 
 export const makeNegative = (entity: EntityBase, positiveId: string): EntityBase => ({
@@ -16,7 +20,7 @@ export const makeNegative = (entity: EntityBase, positiveId: string): EntityBase
 export interface EntityBase {
   entityId: string
   entityName: string
-  entityType: string
+  entityType: EntityType | string
   resolverType: string | null
   createdDateTime: string
   version: number | null
@@ -38,6 +42,10 @@ export interface EntityBase {
    * This is only true for built-in entities that are not created with "Always extract"
    */
   doNotMemorize: boolean | null
+}
+
+export function isPrebuilt(entity: EntityBase) {
+  return (entity.entityName === `builtin-${entity.entityType.toLowerCase()}`)
 }
 
 export interface LabeledEntity {

@@ -9,7 +9,7 @@ export enum ReplayErrorType {
   EntityUndefined = 'EntityUndefined',
   /* API bad Card */
   APIBadCard = 'APIBadCard',
-  /* API returns logicValue but has not Render */
+  /* API returns logicValue but has no Render function */
   APIMalformed = 'APIMalformed',
   /* API does not exist on the Bot */
   APIUndefined = 'APIUndefined',
