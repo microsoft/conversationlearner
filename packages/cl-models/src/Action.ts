@@ -12,6 +12,16 @@ export enum ActionTypes {
   END_SESSION = 'END_SESSION'
 }
 
+export enum ConditionType {
+  EQUAL = "EQUAL"
+}
+
+export interface Condition {
+  entityId: string
+  valueId: string
+  condition: ConditionType
+}
+
 export class ActionBase {
   actionId: string
   actionType: ActionTypes
@@ -21,6 +31,8 @@ export class ActionBase {
   requiredEntitiesFromPayload: string[]
   requiredEntities: string[] = []
   negativeEntities: string[] = []
+  requiredConditions: Condition[] = []
+  negativeConditions: Condition[] = []
   suggestedEntity: string | null = null
   version: number
   packageCreationId: number
@@ -35,6 +47,8 @@ export class ActionBase {
     this.requiredEntitiesFromPayload = action.requiredEntitiesFromPayload || []
     this.requiredEntities = action.requiredEntities || []
     this.negativeEntities = action.negativeEntities || []
+    this.requiredConditions = action.requiredConditions || []
+    this.negativeConditions = action.negativeConditions || []
     this.suggestedEntity = action.suggestedEntity || null
     this.version = action.version
     this.packageCreationId = action.packageCreationId

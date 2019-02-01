@@ -26,6 +26,7 @@ export interface EntityBase {
   version: number | null
   packageCreationId: number | null
   packageDeletionId: number | null
+  lastModifiedDateTime?: string
 
   isMultivalue: boolean
 
@@ -38,14 +39,23 @@ export interface EntityBase {
   /** If a Negative, Id of positive entity associated with this Entity */
   positiveId: string | null
 
+  /** If an ENUM entity, the supported enums */
+  enumValues?: EnumValue[]
+
   /** If it is set to true, it means that the entity is not persisted in the bot memory.
    * This is only true for built-in entities that are not created with "Always extract"
    */
   doNotMemorize: boolean | null
+
 }
 
 export function isPrebuilt(entity: EntityBase) {
   return (entity.entityName === `builtin-${entity.entityType.toLowerCase()}`)
+}
+
+export interface EnumValue {
+  enumValueId?: string
+  enumValue: string
 }
 
 export interface LabeledEntity {

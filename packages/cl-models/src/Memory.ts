@@ -7,6 +7,7 @@ export interface MemoryValue {
   displayText: string | null
   builtinType: string | null
   resolution: {}
+  enumValueId?: string | null
 }
 
 export interface Memory {

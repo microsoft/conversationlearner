@@ -6,11 +6,9 @@ import { MemoryValue, Memory } from './Memory'
 import { ModelUtils } from './ModelUtils'
 import { EntityBase } from './Entity'
 
-const SUBSTITUTE_PREFIX = '$'
-
 export interface FilledEntity {
   entityId: string | null
-  values: MemoryValue[]
+  values: MemoryValue[] 
 }
 
 export const filledEntityValueAsString = (fe: FilledEntity): string => memoryValuesAsString(fe.values)
