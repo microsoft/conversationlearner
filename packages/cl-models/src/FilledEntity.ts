@@ -210,7 +210,8 @@ export class FilledEntityMap {
     entityValue: string,
     isBucket: boolean = false,
     builtinType: string | null = null,
-    resolution: any | null = null
+    resolution: any | null = null,
+    enumValueId: string | null = null
   ): void {
 
     // If setting to an empty string is actually a delete
@@ -229,11 +230,12 @@ export class FilledEntityMap {
 
     const displayText = builtinType && resolution ? ModelUtils.PrebuiltDisplayText(builtinType, resolution, entityValue) : entityValue
 
-    const newFilledEntityValue = {
+    const newFilledEntityValue: MemoryValue = {
       userText: entityValue,
       displayText,
       builtinType,
-      resolution
+      resolution,
+      enumValueId
     }
 
     const filledEntity = this.map[entityName]
