@@ -168,12 +168,14 @@ export class ModelUtils {
       version: 0,
       rounds: trainRounds,
       definitions: appDefinition,
-      initialFilledEntities: logDialog.initialFilledEntities
+      initialFilledEntities: logDialog.initialFilledEntities,
+      tags: [],
+      description: ''
     }
   }
 
   //====================================================================
-  // CONVERSION: LogRoung == TrainRound
+  // CONVERSION: LogRound == TrainRound
   //====================================================================
   public static ToTrainRound(logRound: LogRound): TrainRound {
     return {

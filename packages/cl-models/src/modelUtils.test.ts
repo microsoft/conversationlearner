@@ -378,6 +378,8 @@ describe('ModelUtils', () => {
       definitions: null,
       validity: Validity.VALID,
       initialFilledEntities: [],
+      tags: [],
+      description: '',
       rounds: [
         {
           extractorStep: {

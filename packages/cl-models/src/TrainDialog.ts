@@ -70,6 +70,8 @@ export interface TrainDialog extends TrainDialogInput {
   packageCreationId: number
   packageDeletionId: number
   initialFilledEntities: FilledEntity[]
+  tags: string[]
+  description: string
 }
 
 export interface TrainResponse {
