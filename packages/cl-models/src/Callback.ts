@@ -7,5 +7,7 @@
 export interface Callback {
   name: string
   logicArguments: string[]
+  isLogicFunctionProvided: boolean
   renderArguments: string[]
+  isRenderFunctionProvided: boolean
 }
