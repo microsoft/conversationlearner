@@ -5,7 +5,6 @@
 import { EntityBase } from './Entity'
 import { ActionBase } from './Action'
 import { TrainDialog } from './TrainDialog'
-import { AppBase } from './App'
 
 export interface AppDefinition {
   entities: EntityBase[]

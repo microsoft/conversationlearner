@@ -21,4 +21,4 @@ build_script:
   - npm run build
 
 test_script:
-  - npm run test:prod
+  - npm run test

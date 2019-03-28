@@ -6,7 +6,7 @@ import { ExtractResponse } from './Extract'
 import { Teach, TeachResponse } from './Teach'
 import { TrainRound, TrainDialog, TrainScorerStep, TextVariation, CreateTeachParams, SenderType } from './TrainDialog'
 import { LogDialog, LogRound, LogScorerStep } from './LogDialog'
-import { EntityBase, LabeledEntity, PredictedEntity, EntityType } from './Entity'
+import { EntityBase, LabeledEntity, PredictedEntity } from './Entity'
 import { ActionBase } from './Action'
 import { MemoryValue } from './Memory'
 import { FilledEntityMap, FilledEntity } from './FilledEntity'
@@ -42,7 +42,7 @@ export class ModelUtils {
   //====================================================================
   public static ToLabeledEntity(predictedEntity: PredictedEntity): LabeledEntity {
     const { score, ...labeledEntity } = predictedEntity
-    return predictedEntity
+    return labeledEntity
   }
 
   public static ToLabeledEntities(predictedEntities: PredictedEntity[]): LabeledEntity[] {

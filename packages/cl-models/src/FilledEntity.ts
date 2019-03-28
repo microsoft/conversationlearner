@@ -66,7 +66,7 @@ export class FilledEntityMap {
   }
 
   // Flips entity name based map to entityId based map
-  public EntityMapToIdMap(entities: EntityBase[]) {
+  public EntityMapToIdMap() {
     let filledEntityMap = new FilledEntityMap()
     for (let entityName in this.map) {
       const filledEntity = this.map[entityName]

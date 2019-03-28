@@ -20,7 +20,7 @@ install:
   - npm ci
   
 script:
-  - npm run test:prod
+  - npm run test
   - npm run build
 
 # after_success:

@@ -179,9 +179,8 @@ describe('filledEntity', () => {
     })
 
     describe('EntityMapToIdMap', () => {
-
       let entityMap = newEntityMap()
-      const idMap = entityMap.EntityMapToIdMap([entity1 as any, entity2 as any])
+      const idMap = entityMap.EntityMapToIdMap()
       expect(idMap.map[entity1.entityId]).toEqual(entity1)
       expect(idMap.map[entity2.entityId]).toEqual(entity2)
     })
