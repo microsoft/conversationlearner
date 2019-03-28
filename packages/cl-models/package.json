@@ -37,10 +37,6 @@
     "deploy-docs": "typedoc --out dist/docs --target es6 --theme minimal --mode file src && ts-node tools/gh-pages-publish",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
     "commit": "git-cz",
-    "semantic-release": "semantic-release",
-    "semantic-release-prepare": "ts-node tools/semantic-release-prepare",
-    "setpackageversion": "tsc -p ./scripts/tsconfig.json && node ./scripts/setpackageversion.js",
-    "verifypackagelock": "tsc -p ./scripts/tsconfig.json && node ./scripts/verifypackagelock.js",
     "watch": "rollup -c rollup.config.ts --watch",
     "prepush": "npm run test:prod && npm run build",
     "commitmsg": "commitlint -E GIT_PARAMS"
@@ -115,7 +111,6 @@
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
     "rollup-plugin-typescript2": "^0.9.0",
-    "semantic-release": "^15.5.0",
     "ts-jest": "^22.0.0",
     "ts-node": "^4.1.0",
     "tslint": "^5.8.0",
