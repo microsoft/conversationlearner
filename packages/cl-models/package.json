@@ -10,11 +10,11 @@
     "bot framework",
     "models"
   ],
-  "main": "dist/conversationlearner-models.umd.js",
-  "module": "dist/conversationlearner-models.es5.js",
-  "typings": "dist/conversationlearner-models.d.ts",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "author": "Microsoft Conversation Learner Team",
   "repository": {
@@ -109,8 +109,7 @@
   },
   "husky": {
     "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-push": "npm run test && npm run build"
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   }
 }

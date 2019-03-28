@@ -8,7 +8,7 @@ import {
   filledEntityValueAsString,
   MemoryValue,
   getEntityDisplayValueMap
-} from './conversationlearner-models'
+} from './'
 
 const createFilledEntity = (values: string[]): FilledEntity => {
   return {
