@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:8.11.2-browsers
+      - image: circleci/node:lts
     steps:
       - checkout
 
@@ -15,7 +15,7 @@ jobs:
 
       - run: node --version
       - run: npm --version
-      - run: npm install
+      - run: npm ci
 
       - save_cache:
           paths:
