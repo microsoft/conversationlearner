@@ -38,9 +38,24 @@ export const getEntityDisplayValueMap = (filledEntityMap: FilledEntityMap): Map<
   return Object.keys(filledEntityMap.map).reduce((m, key) => {
     const entityDisplayValue = filledEntityMap.ValueAsString(key)
 
-    // TODO: Required check because poor API from filledEntityMap which can return null
     if (entityDisplayValue) {
       m.set(key, entityDisplayValue)
+    }
+
+    // Entity is missing. Provide readable error message
+    else {
+      // Default to showing key
+      let missingValue = key
+
+      // If key is an entityId, try to get value from name key
+      if (filledEntityMap.map[key].entityId ===  key) {
+        for (let k of Object.keys(filledEntityMap.map)) {
+          if (k !== key && filledEntityMap.map[k].entityId === key) {
+            missingValue = k
+          }
+        }
+      }
+      m.set(key,`[$${missingValue}]`)
     }
 
     return m
@@ -108,7 +123,7 @@ export class FilledEntityMap {
     }
 
     if (this.map[entityName].values.length === 0) {
-      return `[$${entityName}]`
+      return null
     }
     // Print out[] list in friendly manner
     return filledEntityValueAsString(this.map[entityName])
