@@ -158,6 +158,18 @@ export class ModelUtils {
       }
     }
 
+    // Update initialFilledEntity list to include those that were saved in onEndSession
+    let initialFilledEntities: FilledEntity[] = []
+    if (trainRounds.length !== 0 && trainRounds[0].scorerSteps.length !== 0) {
+
+          // Get entities extracted on first input
+          const firstEntityIds = trainRounds[0].extractorStep.textVariations[0].labelEntities.map(le => le.entityId)
+  
+          // Intial entities are ones on first round that weren't extracted on the first utterance 
+          initialFilledEntities = trainRounds[0].scorerSteps[0].input.filledEntities
+              .filter(fe => !firstEntityIds.includes(fe.entityId!))
+    }
+
     return {
       createdDateTime: logDialog.createdDateTime,
       lastModifiedDateTime: logDialog.lastModifiedDateTime,
@@ -168,7 +180,7 @@ export class ModelUtils {
       version: 0,
       rounds: trainRounds,
       definitions: appDefinition,
-      initialFilledEntities: logDialog.initialFilledEntities,
+      initialFilledEntities: initialFilledEntities,
       tags: [],
       description: ''
     }
