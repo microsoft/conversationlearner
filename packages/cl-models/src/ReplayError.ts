@@ -29,7 +29,8 @@ export enum ReplayErrorType {
   InputAfterNonWait = 'InputAfterNonWait',
   /* Exception */
   Exception = 'Exception',
-  EntityDiscrepancy = 'EntityDiscrepancy'
+  EntityDiscrepancy = 'EntityDiscrepancy',
+  SetEntityException = 'SetEntityException',
 }
 
 export enum ReplayErrorLevel {
@@ -126,5 +127,14 @@ export class ReplayErrorInputAfterNonWait extends ReplayError {
 export class ReplayErrorException extends ReplayError {
   constructor() {
     super(ReplayErrorType.Exception, ReplayErrorLevel.BLOCKING)
+  }
+}
+
+// TODO: Why do we have two types for the same errors?
+// This makes it possible for them to be mismatched.
+// E.g. API exception error could be a InputAfterNoWait error which should be impossible
+export class ReplaySetEntityException extends ReplayError {
+  constructor() {
+    super(ReplayErrorType.SetEntityException, ReplayErrorLevel.ERROR)
   }
 }

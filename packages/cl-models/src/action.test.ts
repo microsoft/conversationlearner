@@ -29,7 +29,9 @@ const createEmptyAction = (): ActionBase => ({
   version: 0,
   packageCreationId: 0,
   packageDeletionId: 0,
-  actionType: ActionTypes.TEXT
+  actionType: ActionTypes.TEXT,
+  entityId: undefined,
+  enumValueId: undefined,
 })
 
 const expectedSimpleTextPayload = 'simple text payload'
@@ -214,7 +216,9 @@ describe('Action', () => {
         suggestedEntity: 'fake-action',
         version: 1,
         packageCreationId: 1,
-        packageDeletionId: 0
+        packageDeletionId: 0,
+        entityId: undefined,
+        enumValueId: undefined,
       }
 
       // Act
@@ -242,7 +246,9 @@ describe('Action', () => {
         suggestedEntity: 'fake-action',
         version: 1,
         packageCreationId: 1,
-        packageDeletionId: 0
+        packageDeletionId: 0,
+        entityId: undefined,
+        enumValueId: undefined,
       })
 
       // Act
@@ -268,7 +274,9 @@ describe('Action', () => {
         suggestedEntity: 'fake-action',
         version: 1,
         packageCreationId: 1,
-        packageDeletionId: 0
+        packageDeletionId: 0,
+        entityId: undefined,
+        enumValueId: undefined,
       })
 
       // Act

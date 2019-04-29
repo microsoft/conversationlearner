@@ -9,7 +9,8 @@ export enum ActionTypes {
   TEXT = 'TEXT',
   API_LOCAL = 'API_LOCAL',
   CARD = 'CARD',
-  END_SESSION = 'END_SESSION'
+  END_SESSION = 'END_SESSION',
+  SET_ENTITY = 'SET_ENTITY',
 }
 
 export enum ConditionType {
@@ -37,6 +38,8 @@ export class ActionBase {
   version: number
   packageCreationId: number
   packageDeletionId: number
+  entityId: string | undefined
+  enumValueId: string | undefined
 
   constructor(action: ActionBase) {
     this.actionId = action.actionId
@@ -53,6 +56,8 @@ export class ActionBase {
     this.version = action.version
     this.packageCreationId = action.packageCreationId
     this.packageDeletionId = action.packageDeletionId
+    this.entityId = action.entityId
+    this.enumValueId = action.enumValueId
   }
 
   // TODO: Refactor away from generic GetPayload for different action types
@@ -274,5 +279,29 @@ export class SessionAction extends ActionBase {
 
   renderValue(entityValues: Map<string, string>, serializerOptions: Partial<IOptions> = {}): string {
     return EntityIdSerializer.serialize(this.value, entityValues, serializerOptions)
+  }
+}
+
+export type SetEntityPayload = {
+  entityId: string
+  enumValueId: string
+}
+
+export class SetEntityAction extends ActionBase {
+  entityId: string
+  enumValueId: string
+
+  constructor(action: ActionBase) {
+    super(action)
+
+    if (action.actionType !== ActionTypes.SET_ENTITY) {
+      throw new Error(`You attempted to create set entity action from action of type: ${action.actionType}`)
+    }
+
+    // TODO: Server already has actual entityId and enumValueId values, should not need to use payload like this
+    // but some things like scored action only have the payload
+    const jsonPayload = JSON.parse(this.payload) as SetEntityPayload
+    this.entityId = jsonPayload.entityId
+    this.enumValueId = jsonPayload.enumValueId
   }
 }
