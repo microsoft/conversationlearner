@@ -34,7 +34,7 @@ export class ActionBase {
   negativeEntities: string[] = []
   requiredConditions: Condition[] = []
   negativeConditions: Condition[] = []
-  suggestedEntity: string | null = null
+  suggestedEntity: string | undefined
   version: number
   packageCreationId: number
   packageDeletionId: number
@@ -52,7 +52,7 @@ export class ActionBase {
     this.negativeEntities = action.negativeEntities || []
     this.requiredConditions = action.requiredConditions || []
     this.negativeConditions = action.negativeConditions || []
-    this.suggestedEntity = action.suggestedEntity || null
+    this.suggestedEntity = action.suggestedEntity
     this.version = action.version
     this.packageCreationId = action.packageCreationId
     this.packageDeletionId = action.packageDeletionId
