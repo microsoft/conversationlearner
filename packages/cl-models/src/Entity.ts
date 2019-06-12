@@ -65,7 +65,7 @@ export interface LabeledEntity {
   startCharIndex: number
   endCharIndex: number
   entityText: string
-  resolution: {}
+  resolution: {} | null
   builtinType: string
 }
 
