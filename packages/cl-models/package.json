@@ -36,7 +36,7 @@
     "tsc": "tsc",
     "update-docs": "typedoc",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
-    "commit": "git-cz"
+    "cm": "git-cz"
   },
   "lint-staged": {
     "{src,test}/**/*.ts": [
@@ -84,7 +84,7 @@
     "@commitlint/config-conventional": "7.1.2",
     "@types/jest": "22.2.3",
     "@types/node": "8.10.45",
-    "commitizen": "^2.10.1",
+    "commitizen": "3.1.1",
     "coveralls": "^3.0.0",
     "cz-conventional-changelog": "^2.0.0",
     "husky": "1.3.1",
