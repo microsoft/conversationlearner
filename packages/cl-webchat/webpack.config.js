@@ -21,7 +21,7 @@ var coreConfig = {
                 exclude: [/node_modules/]
             },
             {
-                test: require.resolve('microsoft-adaptivecards'),
+                test: require.resolve('adaptivecards'),
                 use: [{ loader: 'expose-loader', options: 'AdaptiveCards' }]
             }
         ]
@@ -37,16 +37,4 @@ var chatConfig = {
     }
 }
 
-// Config for addon features
-var featureConfig = {
-    entry: {
-        CognitiveServices: "./src/CognitiveServices/lib.ts"
-    },
-    output: {
-        libraryTarget: "umd",
-        library: "[name]",
-        filename: "./[name].js",
-    }
-}
-
-module.exports = [Object.assign(chatConfig, coreConfig), Object.assign(featureConfig, coreConfig)];
+module.exports = [Object.assign(chatConfig, coreConfig)];

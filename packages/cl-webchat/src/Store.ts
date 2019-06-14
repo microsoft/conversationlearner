@@ -2,7 +2,6 @@ import { Activity, IBotConnection, User, ConnectionStatus, Message } from 'botfr
 import { FormatOptions, ActivityOrID, konsole, sendMessage as sendChatMessage } from './Chat';
 import { strings, defaultStrings, Strings } from './Strings';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Speech } from './SpeechModule';
 
 // Reducers - perform state transformations
 
@@ -565,42 +564,6 @@ const speakOnMessageReceived:Epic<ChatActions, ChatState> = (action$ : any, stor
     .filter(action => (action.activity as Message) && store.getState().shell.lastInputViaSpeech)
     .map(action => speakFromMsg(action.activity as Message, store.getState().format.locale) as ShellAction);
 
-const stopSpeaking: Epic<ChatActions, ChatState> = (action$ : any) =>
-    action$.ofType(
-        'Update_Input',
-        'Listening_Starting',
-        'Send_Message',
-        'Card_Action_Clicked',
-        'Stop_Speaking'
-    )
-    .do(Speech.SpeechSynthesizer.stopSpeaking)
-    .map(_ => nullAction)
-
-const stopListening: Epic<ChatActions, ChatState> = (action$ : any) =>
-    action$.ofType(
-        'Listening_Stop',
-        'Card_Action_Clicked'
-    )
-    .do(Speech.SpeechRecognizer.stopRecognizing)
-    .map(_ => nullAction)
-
-const startListening:Epic<ChatActions, ChatState> = (action$ : any, store) =>
-    action$.ofType('Listening_Starting')
-    .do((action : ShellAction) => {
-        var locale = store.getState().format.locale;
-        var onIntermediateResult = (srText : string) => { store.dispatch({ type: 'Update_Input', input: srText, source:"speech" })};
-        var onFinalResult = (srText : string) => {
-                srText = srText.replace(/^[.\s]+|[.\s]+$/g, "");
-                onIntermediateResult(srText);
-                store.dispatch({ type: 'Listening_Stop' });
-                store.dispatch(sendChatMessage(srText, store.getState().connection.user, locale));
-            };
-        var onAudioStreamStart = () => { store.dispatch({ type: 'Listening_Start' }) };
-        var onRecognitionFailed = () => { store.dispatch({ type: 'Listening_Stop' })};
-        Speech.SpeechRecognizer.startRecognizing(locale, onIntermediateResult, onFinalResult, onAudioStreamStart, onRecognitionFailed);
-    })
-    .map(_ => nullAction) 
-
 const listeningSilenceTimeout: Epic<ChatActions, ChatState> = (action$ : any, store) =>
 {
     const cancelMessages$ = action$.ofType('Update_Input', 'Listening_Stop');
@@ -670,11 +633,7 @@ export const createStore = () =>
             retrySendMessage,
             showTyping,
             sendTyping,
-         //   speakSSML,
             speakOnMessageReceived,
-            startListening,
-            stopListening,
-            stopSpeaking,
             listeningSilenceTimeout,
         )))
     );

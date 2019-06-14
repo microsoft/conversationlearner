@@ -7,8 +7,6 @@ import { WrappedActivityProps } from './History'
 import { Activity, Media, IBotConnection, User, MediaType, DirectLine, DirectLineOptions, CardActionTypes } from 'botframework-directlinejs';
 import { createStore, ChatActions, HistoryAction } from './Store';
 import { Provider } from 'react-redux';
-import { SpeechOptions } from './SpeechOptions';
-import { Speech } from './SpeechModule';
 
 export interface FormatOptions {
     showHeader?: boolean
@@ -24,7 +22,6 @@ export interface ChatProps {
     bot: User,
     botConnection?: IBotConnection,
     directLine?: DirectLineOptions,
-    speechOptions?: SpeechOptions,
     locale?: string,
     history?: Activity[],
     selectedActivity?: BehaviorSubject<ActivityOrID>,
@@ -112,11 +109,6 @@ export class Chat extends React.Component<ChatProps, {}> {
 
         if (props.sendTyping)
             this.store.dispatch<ChatActions>({ type: 'Set_Send_Typing', sendTyping: props.sendTyping });
-
-        if (props.speechOptions) {
-            Speech.SpeechRecognizer.setSpeechRecognizer(props.speechOptions.speechRecognizer);
-            Speech.SpeechSynthesizer.setSpeechSynthesizer(props.speechOptions.speechSynthesizer);
-        }
     }
 
     componentWillReceiveProps(newProps: ChatProps) {
@@ -170,11 +162,6 @@ export class Chat extends React.Component<ChatProps, {}> {
         this.store.dispatch<ChatActions>({ type: 'Start_Connection', user: this.props.user, bot: this.props.bot, botConnection, selectedActivity: this.props.selectedActivity });
 
         this.connectionStatusSubscription = botConnection.connectionStatus$.subscribe(connectionStatus =>{
-                if(this.props.speechOptions && this.props.speechOptions.speechRecognizer){
-                    let refGrammarId = botConnection.referenceGrammarId;
-                    if(refGrammarId)
-                        this.props.speechOptions.speechRecognizer.referenceGrammarId = refGrammarId;
-                }
                 this.store.dispatch<ChatActions>({ type: 'Connection_Change', connectionStatus })
             }
         );

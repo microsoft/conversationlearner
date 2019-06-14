@@ -14,7 +14,6 @@
         "sourceMap": true
     },
     "files": [
-        "src/adaptivecards-hostconfig.d.ts",
         "src/BotChat.ts"
     ]
 }
