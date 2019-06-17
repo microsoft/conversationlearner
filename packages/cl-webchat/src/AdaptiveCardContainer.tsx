@@ -34,22 +34,18 @@ function getLinkedAdaptiveCard(action: AdaptiveCards.Action) {
     return element as LinkedAdaptiveCard;
 }
 
-/* BLIS
-function cardWithoutHttpActions(card: AdaptiveCardSchema.ICard) {
-    if (!card.actions) return card;
-    const actions: AdaptiveCardSchema.IActionBase[] = [];
-    card.actions.forEach(action => {
-        //filter out http action buttons
-        if (action.type === 'Action.Http') return;
-        if (action.type === 'Action.ShowCard') {
-            const showCardAction = action as AdaptiveCardSchema.IActionShowCard;
-            showCardAction.card = cardWithoutHttpActions(showCardAction.card);
-        }
-        actions.push(action);
-    });
-    return { ...card, actions };
+function stripSubmitAction(card) {
+    if (!card.actions) {
+        return card;
+    }
+
+    // Filter out HTTP action buttons
+    const nextActions = card.actions
+        .filter(action => action.type !== 'Action.Submit')
+        .map(action => (action.type === 'Action.ShowCard' ? { ...action, card: stripSubmitAction(action.card) } : action));
+
+    return { ...card, nextActions };
 }
-*/
 
 AdaptiveCards.AdaptiveCard.onExecuteAction = (action: AdaptiveCards.Action/*BLID   .ExternalAction*/) => {
     if (action instanceof AdaptiveCards.OpenUrlAction) {
@@ -285,14 +281,9 @@ export class AdaptiveCardContainer extends React.Component<Props, State> {
 
     // BLIS
     componentDidMount() {
-        const adaptiveCard = new AdaptiveCards.AdaptiveCard()
-        adaptiveCard.hostConfig = this.getAdaptiveCardHostConfig()
-        adaptiveCard.parse(this.props.card)
-        const renderedCard = adaptiveCard.render()
-        this.div.appendChild(renderedCard)
-        /*
         const adaptiveCard = new LinkedAdaptiveCard(this);
-        adaptiveCard.parse(cardWithoutHttpActions(this.props.card));
+        adaptiveCard.hostConfig = this.getAdaptiveCardHostConfig()
+        adaptiveCard.parse(stripSubmitAction(this.props.card));
         const errors = adaptiveCard.validate();
         if (errors.length === 0) {
             let renderedCard: HTMLElement;
@@ -328,7 +319,6 @@ export class AdaptiveCardContainer extends React.Component<Props, State> {
             errors.forEach(e => console.log(e.message));
             this.setState({ errors: errors.map(e => e.message) });
         }
-        */
     }
 
     render() {
