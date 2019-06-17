@@ -353,7 +353,10 @@ export const history: Reducer<HistoryState> = (
                     },
                     ... state.activities.filter(activity => activity.type === "typing"),
                 ],
-                clientActivityCounter: state.clientActivityCounter + 1
+                clientActivityCounter: state.clientActivityCounter + 1,
+                // BLIS add.
+                // Clicked button will select card.  Clear this when next input comes in
+                selectedActivity: null
             };
 
         case 'Send_Message_Retry': {
