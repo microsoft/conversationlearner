@@ -284,8 +284,9 @@ export class AdaptiveCardContainer extends React.Component<Props, State> {
         const adaptiveCard = new LinkedAdaptiveCard(this);
         adaptiveCard.hostConfig = this.getAdaptiveCardHostConfig()
         adaptiveCard.parse(stripSubmitAction(this.props.card));
-        const errors = adaptiveCard.validate();
-        if (errors.length === 0) {
+        const { failures } = adaptiveCard.validateProperties()
+        let errors = []
+        if (failures.length === 0) {
             let renderedCard: HTMLElement;
             try {
                 renderedCard = adaptiveCard.render();
@@ -314,9 +315,11 @@ export class AdaptiveCardContainer extends React.Component<Props, State> {
                 return;
             }
         }
-        if (errors.length > 0) {
+        if (failures.length > 0) {
             console.log('Error(s) rendering AdaptiveCard:');
-            errors.forEach(e => console.log(e.message));
+            failures.forEach(e => errors = [...errors, e.errors]);
+        }
+        if (errors.length > 0) {
             this.setState({ errors: errors.map(e => e.message) });
         }
     }
