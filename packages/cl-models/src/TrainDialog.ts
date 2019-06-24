@@ -72,7 +72,7 @@ export interface TurnValidation {
 }
 
 export interface TrainDialogClientData {
-  // List of .transcript files used to create this TrainDialog
+  // Hashes of .transcript files used to create this TrainDialog
   importHashes: string[]
 }
 
