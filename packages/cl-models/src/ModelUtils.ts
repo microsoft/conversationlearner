@@ -4,14 +4,13 @@
  */
 import { ExtractResponse } from './Extract'
 import { Teach, TeachResponse } from './Teach'
-import { TrainRound, TrainDialog, TrainScorerStep, TextVariation, CreateTeachParams, SenderType } from './TrainDialog'
+import { TrainRound, TrainDialog, TrainScorerStep, TextVariation, CreateTeachParams } from './TrainDialog'
 import { LogDialog, LogRound, LogScorerStep } from './LogDialog'
 import { EntityBase, LabeledEntity, PredictedEntity } from './Entity'
 import { ActionBase } from './Action'
 import { MemoryValue } from './Memory'
 import { FilledEntityMap, FilledEntity } from './FilledEntity'
 import { AppDefinition } from './AppDefinition'
-import { CLChannelData } from './CLChannelData'
 
 export class ModelUtils {
   public static generateGUID(): string {
@@ -150,7 +149,7 @@ export class ModelUtils {
     }
 
     let appDefinition: AppDefinition | null = null
-    if (entities != null && actions != null) {
+    if (entities !== null && actions !== null) {
       appDefinition = {
         entities,
         actions,
@@ -330,26 +329,6 @@ export class ModelUtils {
     }
 
     return changedFilledEntities
-  }
-
-  /* Converts user intput into BB.Activity */
-  public static InputToActivity(userText: string, userName: string, userId: string, roundNum: number): any {
-    let clData: CLChannelData = {
-      senderType: SenderType.User,
-      roundIndex: roundNum,
-      scoreIndex: null
-    }
-    // Generate activity
-    return {
-      id: this.generateGUID(),
-      from: { id: userId, name: userName },
-      channelData: {
-        clData,
-        clientActivityId: this.generateGUID()
-      },
-      type: 'message',
-      text: userText
-    }
   }
 
   public static textVariationToMarkdown(textVariation: TextVariation, excludeEntities: string[]) {

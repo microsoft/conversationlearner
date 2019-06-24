@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import EntityIdSerializer, { IOptions } from './slateSerializer'
-import { ScoredAction } from './Score'
+import { ScoredBase, ScoredAction } from './Score'
 
 export enum ActionTypes {
   TEXT = 'TEXT',
@@ -23,6 +23,14 @@ export interface Condition {
   condition: ConditionType
 }
 
+export interface ActionClientData {
+  // Used to match import utterances to actions
+  importHashes?: string[]
+}
+
+// Need dummy actionId for stub action
+export const CL_STUB_IMPORT_ACTION_ID = '51cd7df5-e504-451d-b629-0932e604689c'
+
 export class ActionBase {
   actionId: string
   actionType: ActionTypes
@@ -40,6 +48,7 @@ export class ActionBase {
   packageDeletionId: number
   entityId: string | undefined
   enumValueId: string | undefined
+  clientData?: ActionClientData
 
   constructor(action: ActionBase) {
     this.actionId = action.actionId
@@ -58,6 +67,7 @@ export class ActionBase {
     this.packageDeletionId = action.packageDeletionId
     this.entityId = action.entityId
     this.enumValueId = action.enumValueId
+    this.clientData = action.clientData
   }
 
   // TODO: Refactor away from generic GetPayload for different action types
@@ -65,7 +75,7 @@ export class ActionBase {
   // This causes issue of having to pass in entityValueMap even when it's not required, but making it optional ruins
   // safety for those places which should require it.
   // TODO: Remove ScoredAction since it doesn't have payload
-  static GetPayload(action: ActionBase | ScoredAction, entityValues: Map<string, string>): string {
+  static GetPayload(action: ActionBase | ScoredBase, entityValues: Map<string, string>): string {
     if (action.actionType === ActionTypes.TEXT) {
       /**
        * For backwards compatibility check if payload is of new TextPayload type
@@ -97,6 +107,40 @@ export class ActionBase {
       return actionPayload.payload
     }
     return action.payload
+  }
+
+  // Return true if action is a stub action
+  static isStubbedAPI(action: Partial<ActionBase> | undefined): boolean {
+    if (!action) {
+      return false
+    }
+    if (action.payload && JSON.parse(action.payload).isStub) {
+      return true
+    }
+    return false
+  }
+
+  // Create dummy stub action
+  static createStubAction(apiStubName: string, isTerminal: boolean): ActionBase
+  {
+    return new ActionBase({
+      actionId: null!,
+      payload: JSON.stringify({payload: apiStubName, logicArguments: [], renderArguments: [], isStub: true}),
+      createdDateTime: new Date().toJSON(),
+      isTerminal,
+      requiredEntitiesFromPayload: [],
+      requiredEntities: [],
+      negativeEntities: [],
+      requiredConditions: [],
+      negativeConditions: [],
+      suggestedEntity: undefined,
+      version: 0,
+      packageCreationId: 0,
+      packageDeletionId: 0,
+      actionType: ActionTypes.API_LOCAL,
+      entityId: undefined,
+      enumValueId: undefined
+    })
   }
 
   /** Return arguments for an action */
@@ -136,6 +180,7 @@ export interface ActionPayload {
   payload: string
   logicArguments: IActionArgument[]
   renderArguments: IActionArgument[]
+  isStub?: boolean
 }
 
 export interface CardPayload {
@@ -189,6 +234,7 @@ export class ApiAction extends ActionBase {
   name: string
   logicArguments: ActionArgument[]
   renderArguments: ActionArgument[]
+  isStub?: boolean
 
   constructor(action: ActionBase) {
     super(action)
@@ -199,8 +245,9 @@ export class ApiAction extends ActionBase {
 
     const actionPayload: ActionPayload = JSON.parse(this.payload)
     this.name = actionPayload.payload
-    this.logicArguments = actionPayload.logicArguments.map(aa => new ActionArgument(aa))
-    this.renderArguments = actionPayload.renderArguments.map(aa => new ActionArgument(aa))
+    this.logicArguments = actionPayload.logicArguments ? actionPayload.logicArguments.map(aa => new ActionArgument(aa)): []
+    this.renderArguments = actionPayload.renderArguments ? actionPayload.renderArguments.map(aa => new ActionArgument(aa)) : []
+    this.isStub = actionPayload.isStub
   }
   renderLogicArguments(entityValues: Map<string, string>, serializerOptions: Partial<IOptions> = {}): RenderedActionArgument[] {
     return this.renderArgs(this.logicArguments, entityValues, serializerOptions)
