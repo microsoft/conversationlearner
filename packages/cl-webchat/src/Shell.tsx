@@ -34,7 +34,7 @@ class ShellContainer extends React.Component<Props, {}> {
 
     //BLIS new function
     componentWillReceiveProps() {
-        setTimeout(() => this.textInput.focus(), 1500);
+        setTimeout(() => this.textInput && this.textInput.focus(), 1500);
     }
 
     private sendMessage() {
