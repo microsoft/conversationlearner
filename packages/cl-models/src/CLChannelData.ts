@@ -12,4 +12,5 @@ export interface CLChannelData {
   validWaitAction?: boolean
   replayError?: ReplayError | null
   activityIndex?: number
+  isValidationTest?: boolean
 }

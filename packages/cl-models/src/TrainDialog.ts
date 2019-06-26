@@ -66,9 +66,15 @@ export interface TrainDialogInput {
   validity?: Validity
 }
 
-export interface TurnValidation {
+export interface TranscriptValidationTurn {
   inputText: string
   actionHashes: string[]
+}
+
+export interface TranscriptValidationResult {
+  validity: Validity
+  logDialogId: string | null
+  fileName?: string
 }
 
 export interface TrainDialogClientData {
