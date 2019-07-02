@@ -17,6 +17,9 @@ export interface HistoryProps {
     renderActivity?: (props: WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void) => (JSX.Element | null) // BLIS addition
     onScrollChange?: (position: number) => void // BLIS ADD
     initialScrollPosition?: number // BLIS ADD
+    forceScrollPosition?: number // BLIS ADD
+    // Scroll immediately, not waiting for stop
+    instantScroll?: boolean // BLIS ADD
     isFromMe: (activity: Activity) => boolean,
     isSelected: (activity: Activity) => boolean,
     onClickActivity: (activity: Activity) => React.MouseEventHandler<HTMLDivElement>,
@@ -31,6 +34,7 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
     private scrollTimeout: any // BLIS ADD
     // Number of activities at last scroll stop
     private lastActivityCount: number // BLIS ADD
+    private lastForceScrollPosition: number | null
 
     private carouselActivity: WrappedActivity;
     private largeWidth: number;
@@ -45,6 +49,12 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
         if ((this.scrollInitialized || newProps.initialScrollPosition === undefined)
          && this.props.activities.length < newProps.activities.length) {
             this.scrollToBottom = true
+        }
+        if (this.lastForceScrollPosition !== newProps.forceScrollPosition) {
+            this.lastForceScrollPosition = newProps.forceScrollPosition
+            if (this.lastForceScrollPosition !== null) {
+                this.scrollMe.scrollTop = this.lastForceScrollPosition
+            }
         }
     }
 
@@ -93,17 +103,20 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
     
     // BLIS addition
     scrollHandler() {
-        // Clear timeout as scrollbar is still moving
-        if (this.scrollTimeout) {
-            clearTimeout(this.scrollTimeout)
+        if (this.props.instantScroll) {
+            this.props.onScrollChange(this.scrollMe.scrollTop)
         }
+        else {
+            // Clear timeout as scrollbar is still moving
+            if (this.scrollTimeout) {
+                clearTimeout(this.scrollTimeout)
+            }
 
-        // Set another timer
-        this.scrollTimeout = setTimeout(
-            // Call callback after delay
-            () => this.props.onScrollChange(this.scrollMe.scrollTop),
-            200
-        )
+            // Set another timer
+            this.scrollTimeout = setTimeout(
+                // Call callback after delay
+                () => this.props.onScrollChange(this.scrollMe.scrollTop), 200)
+        }
     }
 
     private autoscroll() {
@@ -258,6 +271,8 @@ export const History = connect(
         renderActivity: ownProps.renderActivity,  // BLIS ADD
         onScrollChange: ownProps.onScrollChange, // BLIS ADD
         initialScrollPosition: ownProps.initialScrollPosition, // BLIS ADD
+        forceScrollPosition: ownProps.forceScrollPosition, // BLIS ADD
+        instantScroll: ownProps.instantScroll, // BLIS ADD
         // helper functions
         doCardAction: doCardAction(stateProps.botConnection, stateProps.user, stateProps.format.locale, dispatchProps.sendMessage),
         isFromMe: (activity: Activity) => activity.from.id === stateProps.user.id,
