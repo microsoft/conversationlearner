@@ -20,6 +20,7 @@ export interface HistoryProps {
     forceScrollPosition?: number // BLIS ADD
     // Scroll immediately, not waiting for stop
     instantScroll?: boolean // BLIS ADD
+    disableCardActions?: boolean // BLIS ADD
     isFromMe: (activity: Activity) => boolean,
     isSelected: (activity: Activity) => boolean,
     onClickActivity: (activity: Activity) => React.MouseEventHandler<HTMLDivElement>,
@@ -184,6 +185,9 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
     // 3. (this is also the normal re-render case) To render without the mock activity
 
     private doCardAction(type: CardActionTypes, value: string | object) {
+        if (this.props.disableCardActions) {
+            return
+        }
         this.props.setFocus();
         this.props.onClickCardAction();
         return this.props.doCardAction(type, value);
@@ -273,6 +277,7 @@ export const History = connect(
         initialScrollPosition: ownProps.initialScrollPosition, // BLIS ADD
         forceScrollPosition: ownProps.forceScrollPosition, // BLIS ADD
         instantScroll: ownProps.instantScroll, // BLIS ADD
+        disableCardActions: ownProps.disableCardActions, // BLIS ADD
         // helper functions
         doCardAction: doCardAction(stateProps.botConnection, stateProps.user, stateProps.format.locale, dispatchProps.sendMessage),
         isFromMe: (activity: Activity) => activity.from.id === stateProps.user.id,

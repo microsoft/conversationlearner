@@ -37,6 +37,7 @@ export interface ChatProps {
     initialScrollPosition?: number,
     forceScrollPosition?: number | null // BLIS addition
     instantScroll?: boolean // BLIS addition
+    disableCardActions?: boolean // BLIS addition
     selectedActivityIndex?: number | null // BLIS addition
     replaceActivityText?: string | null // BLIS addition
     replaceActivityIndex?: number | null // BLIS addition
@@ -253,6 +254,7 @@ export class Chat extends React.Component<ChatProps, {}> {
                             initialScrollPosition={this.props.initialScrollPosition}
                             forceScrollPosition={this.props.forceScrollPosition}
                             instantScroll={this.props.instantScroll}
+                            disableCardActions={this.props.disableCardActions}
                         />
                     </MessagePane>
                     {renderedInput ||
