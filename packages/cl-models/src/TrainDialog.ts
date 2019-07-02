@@ -75,6 +75,8 @@ export interface TranscriptValidationResult {
   validity: Validity
   logDialogId: string | null
   fileName?: string
+  // Original transcript history
+  sourceHistory?: any
 }
 
 export interface TrainDialogClientData {
