@@ -342,6 +342,10 @@ export class ModelUtils {
     // Remove duplicate labels
     labelEntities = labelEntities.filter((le,i) => labelEntities.findIndex(fi => fi.startCharIndex === le.startCharIndex) === i)
 
+    // Remove overlapping labels (can happen if have CUSTOM and Pre-Trained)
+    labelEntities = labelEntities.filter(le => labelEntities.findIndex(fe => fe.entityId !== le.entityId &&          
+      (le.startCharIndex >= fe.startCharIndex && le.endCharIndex <= fe.endCharIndex)) === -1)
+
     if (labelEntities.length === 0) {
       return textVariation.text
     }

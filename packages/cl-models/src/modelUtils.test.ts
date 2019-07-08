@@ -535,34 +535,34 @@ describe('textVariationToMarkdown', () => {
     let textVariation = {  
       text:"i'd like to go tomorrow",
       labelEntities:[  
-         {  
+          {  
             score:0,
             entityId:"b18c67af-26c3-4756-88af-76baf68a59ee",
             startCharIndex:15,
             endCharIndex:22,
             entityText:"tomorrow",
             resolution:{  
-               values:[  
+                values:[  
                   {  
-                     timex:"2019-01-03",
-                     type: "date",
-                     value:"2019-01-03"
+                      timex:"2019-01-03",
+                      type: "date",
+                      value:"2019-01-03"
                   }
-               ]
+                ]
             },
             builtinType:"builtin.datetimeV2.date"
-         },
-         {  
+          },
+          {  
             entityId:"7367096c-80a1-4fe6-8d55-e78522e342bf",
             startCharIndex:15,
             endCharIndex:22,
             entityText:"tomorrow",
             resolution:{  
-   
+  
             },
             builtinType:"LUIS",
             score:0
-         }
+        }
       ]
     }
     let expected = `i'd like to go **_tomorrow_**`
@@ -591,18 +591,18 @@ describe('textVariationToMarkdown', () => {
     let textVariation = {  
       text: "send to lars@outlook.com",
       labelEntities: [  
-         {  
+        {  
             entityId: "1a4cad5c-0eab-41d4-b569-e93af4b6a19e",
             startCharIndex: 8,
             endCharIndex: 23,
             entityText: "lars@outlook.com",
             resolution:{  
-               value: "lars@outlook.com"
+              value: "lars@outlook.com"
             },
             builtinType: "builtin.email"
-         }
+        }
       ]
-   }
+  }
     let expected = `send to **_lars@outlook.com_**`
     let result = ModelUtils.textVariationToMarkdown(textVariation, [])
     expect(result).toBe(expected)
@@ -613,27 +613,72 @@ describe('textVariationToMarkdown', () => {
     let textVariation = {  
       text:"i'd like to go tomorrow",
       labelEntities:[  
-         {  
+        {  
             score:0,
             entityId:"b18c67af-26c3-4756-88af-76baf68a59ee",
             startCharIndex:15,
             endCharIndex:22,
             entityText:"tomorrow",
             resolution:{  
-               values:[  
+              values:[  
                   {  
-                     timex:"2019-01-03",
-                     type: "date",
-                     value:"2019-01-03"
+                    timex:"2019-01-03",
+                    type: "date",
+                    value:"2019-01-03"
                   }
-               ]
+              ]
             },
             builtinType:"builtin.datetimeV2.date"
-         }
+        }
       ]
     }
     let expected = `i'd like to go tomorrow`
     let result = ModelUtils.textVariationToMarkdown(textVariation, ["b18c67af-26c3-4756-88af-76baf68a59ee"])
+    expect(result).toBe(expected)
+  })
+
+  // Built-in subset of custom
+  test(`meet me on Wednesday`, () => {
+    let textVariation = {  
+      text:"meet me on Wednesday",
+      labelEntities:[
+        {
+          score: 0,
+          entityId:"26f0b940-64a0-44c3-ab1a-14894ccae3fe",
+          startCharIndex:0,
+          endCharIndex:19,
+          entityText:"meet me on wednesday",
+          resolution:{},
+          builtinType:"LUIS"
+        },
+        {
+          entityId:"6875e7e7-a020-4c88-b7d3-3b8023303022",
+          startCharIndex:11,
+          endCharIndex:19,
+          entityText:"wednesday",
+          resolution:
+          {
+            values:
+            [
+              {
+                timex:"XXXX-WXX-3",
+                type:"date",
+                value:"2019-07-03"
+              },
+              {
+                timex:"XXXX-WXX-3",
+                type:"date",
+                value:"2019-07-10"
+              }
+            ]
+          },
+          builtinType:"builtin.datetimeV2.date"
+        }
+      ]
+    }
+
+    let expected = `**_meet me on Wednesday_**`
+    let result = ModelUtils.textVariationToMarkdown(textVariation, [])
     expect(result).toBe(expected)
   })
 })
