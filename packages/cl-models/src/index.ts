@@ -28,6 +28,7 @@ export * from './Session'
 export * from './Teach'
 export * from './Template'
 export * from './TrainDialog'
+export * from './Transcript'
 export * from './UserInput'
 export * from './UI'
 export { EntityIdSerializer }
