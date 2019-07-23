@@ -48,7 +48,7 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
 
     componentWillReceiveProps(newProps: HistoryProps) {
         if ((this.scrollInitialized || newProps.initialScrollPosition === undefined)
-         && this.props.activities.length < newProps.activities.length) {
+            && this.props.activities.length < newProps.activities.length) {
             this.scrollToBottom = true
         }
         if (this.lastForceScrollPosition !== newProps.forceScrollPosition) {
@@ -104,20 +104,17 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
     
     // BLIS addition
     scrollHandler() {
-        if (this.props.instantScroll) {
-            this.props.onScrollChange(this.scrollMe.scrollTop)
-        }
-        else {
-            // Clear timeout as scrollbar is still moving
-            if (this.scrollTimeout) {
-                clearTimeout(this.scrollTimeout)
-            }
+        const timeout = this.props.instantScroll ? 1 : 100
 
-            // Set another timer
-            this.scrollTimeout = setTimeout(
-                // Call callback after delay
-                () => this.props.onScrollChange(this.scrollMe.scrollTop), 200)
+        // Clear timeout as scrollbar is still moving
+        if (this.scrollTimeout) {
+            clearTimeout(this.scrollTimeout)
         }
+
+        // Set another timer
+        this.scrollTimeout = setTimeout(
+            // Call callback after delay
+            () => this.props.onScrollChange(this.scrollMe.scrollTop), timeout)
     }
 
     private autoscroll() {
