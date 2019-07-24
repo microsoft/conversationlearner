@@ -120,7 +120,7 @@ export class ActionBase {
     return false
   }
 
-  // Create dummy placeholder action
+  // Create dummy placeholder API action
   static createPlaceholderAPIAction(placeholderName: string, isTerminal: boolean): ActionBase
   {
     return new ActionBase({
