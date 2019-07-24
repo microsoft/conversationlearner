@@ -109,23 +109,23 @@ export class ActionBase {
     return action.payload
   }
 
-  // Return true if action is a stub action
-  static isStubbedAPI(action: Partial<ActionBase> | undefined): boolean {
+  // Return true if action is a placeholder
+  static isPlaceholderAPI(action: Partial<ActionBase> | undefined): boolean {
     if (!action) {
       return false
     }
-    if (action.payload && JSON.parse(action.payload).isStub) {
+    if (action.payload && JSON.parse(action.payload).isPlaceholder) {
       return true
     }
     return false
   }
 
-  // Create dummy stub action
-  static createStubAction(apiStubName: string, isTerminal: boolean): ActionBase
+  // Create dummy placeholder action
+  static createPlaceholderAPIAction(placeholderName: string, isTerminal: boolean): ActionBase
   {
     return new ActionBase({
       actionId: null!,
-      payload: JSON.stringify({payload: apiStubName, logicArguments: [], renderArguments: [], isStub: true}),
+      payload: JSON.stringify({payload: placeholderName, logicArguments: [], renderArguments: [], isPlaceholder: true}),
       createdDateTime: new Date().toJSON(),
       isTerminal,
       requiredEntitiesFromPayload: [],
@@ -180,7 +180,7 @@ export interface ActionPayload {
   payload: string
   logicArguments: IActionArgument[]
   renderArguments: IActionArgument[]
-  isStub?: boolean
+  isPlaceholder?: boolean
 }
 
 export interface CardPayload {
@@ -234,7 +234,7 @@ export class ApiAction extends ActionBase {
   name: string
   logicArguments: ActionArgument[]
   renderArguments: ActionArgument[]
-  isStub?: boolean
+  isPlaceholder?: boolean
 
   constructor(action: ActionBase) {
     super(action)
@@ -247,7 +247,7 @@ export class ApiAction extends ActionBase {
     this.name = actionPayload.payload
     this.logicArguments = actionPayload.logicArguments ? actionPayload.logicArguments.map(aa => new ActionArgument(aa)): []
     this.renderArguments = actionPayload.renderArguments ? actionPayload.renderArguments.map(aa => new ActionArgument(aa)) : []
-    this.isStub = actionPayload.isStub
+    this.isPlaceholder = actionPayload.isPlaceholder
   }
   renderLogicArguments(entityValues: Map<string, string>, serializerOptions: Partial<IOptions> = {}): RenderedActionArgument[] {
     return this.renderArgs(this.logicArguments, entityValues, serializerOptions)
