@@ -2,6 +2,8 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
+import { FilledEntity } from './FilledEntity'
+
 export enum TranscriptRating {
     BETTER = 'BETTER',
     WORSE = 'WORSE',
@@ -18,7 +20,10 @@ export enum TranscriptValidationResultType {
 
 export interface TranscriptValidationTurn {
     inputText: string
+    // Actions following input
     actionHashes: string[]
+    // API placeholder results following input
+    apiResults: FilledEntity[][]
 }
 
 export interface TranscriptValidationResult {
