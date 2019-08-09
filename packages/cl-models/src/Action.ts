@@ -11,6 +11,7 @@ export enum ActionTypes {
   CARD = 'CARD',
   END_SESSION = 'END_SESSION',
   SET_ENTITY = 'SET_ENTITY',
+  DISPATCH = 'DISPATCH',
 }
 
 export enum ConditionType {
@@ -90,7 +91,7 @@ export class ActionBase {
         const error = e as Error
         throw new Error(
           `Error when attempting to parse text action payload. This might be an old action which was saved as a string.  Please create a new action. ${
-            error.message
+          error.message
           }`
         )
       }
@@ -105,6 +106,10 @@ export class ActionBase {
     } else if (ActionTypes.API_LOCAL === action.actionType) {
       let actionPayload = JSON.parse(action.payload) as ActionPayload
       return actionPayload.payload
+    } else if (ActionTypes.DISPATCH === action.actionType) {
+      // TODO: Another reason to schema refactor...
+      let actionPayload = JSON.parse(action.payload) as DispatchPayload
+      return `${ActionTypes.DISPATCH}: ${actionPayload.modelName}`
     }
     return action.payload
   }
@@ -121,11 +126,10 @@ export class ActionBase {
   }
 
   // Create dummy placeholder API action
-  static createPlaceholderAPIAction(placeholderName: string, isTerminal: boolean): ActionBase
-  {
+  static createPlaceholderAPIAction(placeholderName: string, isTerminal: boolean): ActionBase {
     return new ActionBase({
       actionId: null!,
-      payload: JSON.stringify({payload: placeholderName, logicArguments: [], renderArguments: [], isPlaceholder: true}),
+      payload: JSON.stringify({ payload: placeholderName, logicArguments: [], renderArguments: [], isPlaceholder: true }),
       createdDateTime: new Date().toJSON(),
       isTerminal,
       requiredEntitiesFromPayload: [],
@@ -245,7 +249,7 @@ export class ApiAction extends ActionBase {
 
     const actionPayload: ActionPayload = JSON.parse(this.payload)
     this.name = actionPayload.payload
-    this.logicArguments = actionPayload.logicArguments ? actionPayload.logicArguments.map(aa => new ActionArgument(aa)): []
+    this.logicArguments = actionPayload.logicArguments ? actionPayload.logicArguments.map(aa => new ActionArgument(aa)) : []
     this.renderArguments = actionPayload.renderArguments ? actionPayload.renderArguments.map(aa => new ActionArgument(aa)) : []
     this.isPlaceholder = actionPayload.isPlaceholder
   }
@@ -350,5 +354,29 @@ export class SetEntityAction extends ActionBase {
     const jsonPayload = JSON.parse(this.payload) as SetEntityPayload
     this.entityId = jsonPayload.entityId
     this.enumValueId = jsonPayload.enumValueId
+  }
+}
+
+export type DispatchPayload = {
+  modelId: string
+  modelName: string
+}
+
+export class DispatchAction extends ActionBase {
+  modelId: string
+  modelName: string
+
+  constructor(action: ActionBase) {
+    super(action)
+
+    if (action.actionType !== ActionTypes.DISPATCH) {
+      throw new Error(`You attempted to create Dispatch action from action of type: ${action.actionType}`)
+    }
+
+    // TODO: Server already has actual modelId and modelName values, should not need to use payload like this
+    // but some things like scored action only have the payload
+    const jsonPayload = JSON.parse(this.payload) as DispatchPayload
+    this.modelId = jsonPayload.modelId
+    this.modelName = jsonPayload.modelName
   }
 }

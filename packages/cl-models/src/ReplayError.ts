@@ -35,6 +35,7 @@ export enum ReplayErrorType {
   Exception = 'Exception',
   EntityDiscrepancy = 'EntityDiscrepancy',
   SetEntityException = 'SetEntityException',
+  DispatchException = 'DispatchException',
   // Transcript failed to replay as expected during test
   TranscriptValidationError = 'TranscriptValidationError'
 }
@@ -163,3 +164,10 @@ export class ReplaySetEntityException extends ReplayError {
     super(ReplayErrorType.SetEntityException, ReplayErrorLevel.ERROR)
   }
 }
+
+export class ReplayDispatchException extends ReplayError {
+  constructor() {
+    super(ReplayErrorType.DispatchException, ReplayErrorLevel.ERROR)
+  }
+}
+
