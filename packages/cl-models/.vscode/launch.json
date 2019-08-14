@@ -7,15 +7,6 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
-            "program": "${file}",
-            "outFiles": [
-                "${workspaceRoot}/out/**/*.js"
-            ]
-        },
-        {
-            "type": "node",
-            "request": "launch",
             "name": "Jest Tests",
             "program": "${workspaceRoot}\\node_modules\\jest\\bin\\jest.js",
             "args": [
@@ -25,7 +16,7 @@
             "internalConsoleOptions": "openOnSessionStart",
             "sourceMaps": true,
             "outFiles": [
-                "${workspaceRoot}/lib/**/*"
+                "${workspaceRoot}/dist/**/*"
             ]
         }
     ]

@@ -27,7 +27,6 @@
   },
   "scripts": {
     "lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
-    "prebuild": "rimraf dist",
     "build": "tsc",
     "watch": "tsc -w",
     "start": "npm run build",
@@ -91,7 +90,6 @@
     "jest": "24.5.0",
     "lint-staged": "^6.0.0",
     "prettier": "^1.4.4",
-    "rimraf": "^2.6.1",
     "ts-jest": "24.0.0",
     "tslint": "^5.8.0",
     "tslint-config-prettier": "^1.1.0",
