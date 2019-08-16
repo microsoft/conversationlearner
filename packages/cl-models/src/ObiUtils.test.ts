@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import { LGItem, ObiUtils } from "./ObiUtils";
+import { LGItem, ObiUtils } from "./ObiUtils"
 
 interface TestData {
     tag: string
