@@ -45,6 +45,8 @@ export interface TrainScorerStep {
   importText?: string
   // Used for UI rendering only
   uiScoreResponse?: ScoreResponse
+  // Only set on LogDialog converted to TrainDialog for edit
+  forcedActionId?: string
 }
 
 export interface TrainRound {

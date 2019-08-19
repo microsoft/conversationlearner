@@ -38,6 +38,7 @@ export class ActionBase {
   createdDateTime: string
   payload: string
   isTerminal: boolean
+  repromptActionId?: string
   requiredEntitiesFromPayload: string[]
   requiredEntities: string[] = []
   negativeEntities: string[] = []
@@ -57,6 +58,7 @@ export class ActionBase {
     this.createdDateTime = action.createdDateTime
     this.payload = action.payload
     this.isTerminal = action.isTerminal
+    this.repromptActionId = action.repromptActionId
     this.requiredEntitiesFromPayload = action.requiredEntitiesFromPayload || []
     this.requiredEntities = action.requiredEntities || []
     this.negativeEntities = action.negativeEntities || []

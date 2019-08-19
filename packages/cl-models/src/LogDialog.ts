@@ -17,6 +17,7 @@ export interface LogScorerStep {
   input: ScoreInput
   predictedAction: string
   logicResult: LogicResult | undefined
+  forcedActionId: string
   predictionDetails: ScoreResponse
   stepBeginDatetime: string
   stepEndDatetime: string
