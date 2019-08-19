@@ -38,7 +38,7 @@ describe('OBIutils', () => {
             \`\`\`
             `
             const lgMap = new Map<string, LGItem>()
-            ObiUtils.parseLGString(input, lgMap)
+            ObiUtils.addToLGMap(input, lgMap)
             let expected: Map<string, LGItem> = testDataToMap([
                 {
                     tag: 'option0',
@@ -97,7 +97,7 @@ describe('OBIutils', () => {
             ]
             for (const data of inputs) {
                 try {
-                    ObiUtils.parseLGString(data.input, new Map<string, LGItem>())
+                    ObiUtils.addToLGMap(data.input, new Map<string, LGItem>())
                     fail('Did not get expected exception')
                 } catch (e) {
                     if (e instanceof RangeError) {
