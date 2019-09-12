@@ -203,8 +203,7 @@ export class ModelUtils {
         labelAction: logScorerStep.predictedAction,
         logicResult: logScorerStep.logicResult,
         scoredAction: undefined,
-        uiScoreResponse: logScorerStep.predictionDetails,
-        forcedActionId: logScorerStep.forcedActionId
+        uiScoreResponse: logScorerStep.predictionDetails
       }))
     }
   }
