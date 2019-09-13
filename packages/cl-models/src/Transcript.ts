@@ -31,7 +31,7 @@ export interface TranscriptValidationResult {
     logDialogId: string | null
     fileName?: string
     // Original transcript history
-    sourceHistory?: any
+    sourceActivities?: any
     rating: TranscriptRating
 }
 

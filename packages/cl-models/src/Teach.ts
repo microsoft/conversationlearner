@@ -38,9 +38,10 @@ export interface TeachIdList {
   teachIds: string[]
 }
 
-export interface TeachWithHistory {
+export interface TeachWithActivities {
   teach: Teach | undefined
-  history: any[]
+  // Partial<BB.Activity>[] but don't want dependency on botbuilder package
+  activities: any[]
   memories: Memory[]
   prevMemories: Memory[]
   dialogMode: DialogMode
