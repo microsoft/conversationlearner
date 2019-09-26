@@ -1,0 +1,49 @@
+# https://help.github.com/en/articles/workflow-syntax-for-github-actions
+
+name: build
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build-ubuntu-latest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - run: node --version
+      - run: npm --version
+      - run: npm ci
+      - run: npm run test
+      - run: npm run build
+
+        env:
+          CI: true
+
+  build-windows-latest:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - run: node --version
+      - run: npm --version
+      - run: npm ci
+      - run: npm run test
+      - run: npm run build
+
+        env:
+          CI: true

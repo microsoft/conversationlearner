@@ -2,10 +2,11 @@
 
 Models for ConversationLearner
 
-[![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
-[![Travis](https://api.travis-ci.com/Microsoft/ConversationLearner-Models.svg?token=x6vFsyYxGQbhsxY6ztLP&branch=master)](https://travis-ci.com/Microsoft/ConversationLearner-Models)
-[![CircleCI](https://circleci.com/gh/Microsoft/ConversationLearner-Models.svg?style=shield)](https://circleci.com/gh/Microsoft/ConversationLearner-Models)
+![GitHub Build Status](https://github.com/microsoft/ConversationLearner-Models/workflows/build/badge.svg)
+[![Travis Build Status](https://travis-ci.org/microsoft/ConversationLearner-Models.svg?branch=master)](https://travis-ci.org/microsoft/ConversationLearner-Models)
+[![CircleCI](https://circleci.com/gh/microsoft/ConversationLearner-Models.svg?style=svg)](https://circleci.com/gh/microsoft/ConversationLearner-Models)
 [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/Microsoft/ConversationLearner-Models?branch=master&svg=true)](https://ci.appveyor.com/project/conversationlearner/conversationlearner-models)
+[![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 [![Coverage Status](https://coveralls.io/repos/github/Microsoft/ConversationLearner-Models/badge.svg)](https://coveralls.io/github/Microsoft/ConversationLearner-Models)
 
 ### Usage
