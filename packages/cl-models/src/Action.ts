@@ -38,6 +38,9 @@ export class ActionBase {
   createdDateTime: string
   payload: string
   isTerminal: boolean
+  // If true, CL will generate out of domain example utterances that point to this action.
+  // There should be at most one action in a model with this flag set to `true`.
+  isEntryNode?: boolean
   repromptActionId?: string
   requiredEntitiesFromPayload: string[]
   requiredEntities: string[] = []
@@ -58,6 +61,7 @@ export class ActionBase {
     this.createdDateTime = action.createdDateTime
     this.payload = action.payload
     this.isTerminal = action.isTerminal
+    this.isEntryNode = action.isEntryNode
     this.repromptActionId = action.repromptActionId
     this.requiredEntitiesFromPayload = action.requiredEntitiesFromPayload || []
     this.requiredEntities = action.requiredEntities || []
@@ -79,41 +83,47 @@ export class ActionBase {
   // safety for those places which should require it.
   // TODO: Remove ScoredAction since it doesn't have payload
   static GetPayload(action: ActionBase | ScoredBase, entityValues: Map<string, string>): string {
-    if (action.actionType === ActionTypes.TEXT) {
-      /**
-       * For backwards compatibility check if payload is of new TextPayload type
-       * Ideally we would implement schema refactor:
-       * 1. Make payloads discriminated unions (E.g. After checking the action.type, flow control knows the type of the payload property)
-       * This removes the need for the GetPayload function and GetArguments which are brittle coding patterns.
-       */
-      try {
-        const textPayload = JSON.parse(action.payload) as TextPayload
-        return EntityIdSerializer.serialize(textPayload.json, entityValues)
-      } catch (e) {
-        const error = e as Error
-        throw new Error(
-          `Error when attempting to parse text action payload. This might be an old action which was saved as a string.  Please create a new action. ${
-          error.message
-          }`
-        )
-      }
-    } else if (action.actionType === ActionTypes.END_SESSION) {
-      const textPayload = JSON.parse(action.payload) as TextPayload
-      return EntityIdSerializer.serialize(textPayload.json, entityValues)
+    switch (action.actionType) {
+      case ActionTypes.TEXT: {
+          /**
+           * For backwards compatibility check if payload is of new TextPayload type
+           * Ideally we would implement schema refactor:
+           * 1. Make payloads discriminated unions (E.g. After checking the action.type, flow control knows the type of the payload property)
+           * This removes the need for the GetPayload function and GetArguments which are brittle coding patterns.
+           */
+          try {
+            const textPayload = JSON.parse(action.payload) as TextPayload
+            return EntityIdSerializer.serialize(textPayload.json, entityValues)
+          } catch (e) {
+            const error = e as Error
+            throw new Error(
+              `Error when attempting to parse text action payload. This might be an old action which was saved as a string.  Please create a new action. ${
+              error.message
+              }`
+            )
+          }
+        }
+      case ActionTypes.END_SESSION: {
+          const textPayload = JSON.parse(action.payload) as TextPayload
+          return EntityIdSerializer.serialize(textPayload.json, entityValues)
+        }
+      case ActionTypes.CARD: {
+        // For API or CARD the payload field of the outer payload is the name of API or the filename of the card template without extension
+          let cardPayload = JSON.parse(action.payload) as CardPayload
+          return cardPayload.payload
+        }
+      case ActionTypes.API_LOCAL: {
+          let actionPayload = JSON.parse(action.payload) as ActionPayload
+          return actionPayload.payload
+        }
+      case ActionTypes.DISPATCH: {
+        // TODO: Another reason to schema refactor...
+          let actionPayload = JSON.parse(action.payload) as DispatchPayload
+          return `${ActionTypes.DISPATCH}: ${actionPayload.modelName}`
+        }
+      default:
+        return action.payload
     }
-    // For API or CARD the payload field of the outer payload is the name of API or the filename of the card template without extension
-    else if (ActionTypes.CARD === action.actionType) {
-      let cardPayload = JSON.parse(action.payload) as CardPayload
-      return cardPayload.payload
-    } else if (ActionTypes.API_LOCAL === action.actionType) {
-      let actionPayload = JSON.parse(action.payload) as ActionPayload
-      return actionPayload.payload
-    } else if (ActionTypes.DISPATCH === action.actionType) {
-      // TODO: Another reason to schema refactor...
-      let actionPayload = JSON.parse(action.payload) as DispatchPayload
-      return `${ActionTypes.DISPATCH}: ${actionPayload.modelName}`
-    }
-    return action.payload
   }
 
   // Return true if action is a placeholder
@@ -134,6 +144,7 @@ export class ActionBase {
       payload: JSON.stringify({ payload: placeholderName, logicArguments: [], renderArguments: [], isPlaceholder: true }),
       createdDateTime: new Date().toJSON(),
       isTerminal,
+      isEntryNode: false,
       requiredEntitiesFromPayload: [],
       requiredEntities: [],
       negativeEntities: [],
