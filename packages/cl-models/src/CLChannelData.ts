@@ -13,4 +13,5 @@ export interface CLChannelData {
   replayError?: ReplayError | null
   activityIndex?: number
   isValidationTest?: boolean
+  actionId?: string
 }
