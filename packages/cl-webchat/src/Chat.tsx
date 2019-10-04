@@ -32,6 +32,7 @@ export interface ChatProps {
     focusInput: boolean, //BLIS addition
     disableUpload: boolean, //BLIS addition
     renderActivity?: ((props: WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void) => (JSX.Element | null)) // BLIS addition
+    onActivityHeight?: (index: number, height: number) => void // BLIS ADDITION
     renderInput?: () => JSX.Element | null // BLIS addition
     onScrollChange?: ((position: number) => void)
     initialScrollPosition?: number,
@@ -250,6 +251,7 @@ export class Chat extends React.Component<ChatProps, {}> {
                         <History 
                             setFocus={ () => this.setFocus()}
                             renderActivity={this.props.renderActivity}
+                            onActivityHeight={this.props.onActivityHeight}
                             onScrollChange={this.props.onScrollChange}
                             initialScrollPosition={this.props.initialScrollPosition}
                             forceScrollPosition={this.props.forceScrollPosition}

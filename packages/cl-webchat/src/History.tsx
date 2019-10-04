@@ -15,6 +15,7 @@ export interface HistoryProps {
     onClickCardAction: () => void,
     setFocus: () => void,
     renderActivity?: (props: WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void) => (JSX.Element | null) // BLIS addition
+    onActivityHeight?: (index: number, height: number) => void
     onScrollChange?: (position: number) => void // BLIS ADD
     initialScrollPosition?: number // BLIS ADD
     forceScrollPosition?: number // BLIS ADD
@@ -33,8 +34,6 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
     private scrollToBottom = false
     private scrollInitialized = false
     private scrollTimeout: any // BLIS ADD
-    // Number of activities at last scroll stop
-    private lastActivityCount: number // BLIS ADD
     private lastForceScrollPosition: number | null
 
     private carouselActivity: WrappedActivity;
@@ -43,7 +42,6 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
     constructor(props: HistoryProps) {
         super(props);
         this.scrollHandler = this.scrollHandler.bind(this);  // BLIS add
-        this.lastActivityCount = 0
     }
 
     componentWillReceiveProps(newProps: HistoryProps) {
@@ -104,7 +102,11 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
     
     // BLIS addition
     scrollHandler() {
-        const timeout = this.props.instantScroll ? 1 : 100
+        
+        if (this.props.instantScroll) {
+            this.props.onScrollChange(this.scrollMe.scrollTop)
+            return
+        }
 
         // Clear timeout as scrollbar is still moving
         if (this.scrollTimeout) {
@@ -114,7 +116,7 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
         // Set another timer
         this.scrollTimeout = setTimeout(
             // Call callback after delay
-            () => this.props.onScrollChange(this.scrollMe.scrollTop), timeout)
+            () => this.props.onScrollChange(this.scrollMe.scrollTop), 100)
     }
 
     private autoscroll() {
@@ -190,6 +192,12 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
         return this.props.doCardAction(type, value);
     }
 
+    onHeight(index: number, height: number) {
+        if (this.props.onActivityHeight) {
+            this.props.onActivityHeight(index, height)
+        }
+    }
+
     render() {
         konsole.log("History props", this);
         let content;
@@ -216,6 +224,8 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
                             e.stopPropagation();
                             this.props.onClickRetry(activity)
                         } }
+                        // BLIS callback when height has been determined
+                        onHeightSet={(height) => this.onHeight(index, height)}
                     >
                         <ActivityView
                             format={ this.props.format }
@@ -270,6 +280,7 @@ export const History = connect(
         // from ownProps
         setFocus: ownProps.setFocus,
         renderActivity: ownProps.renderActivity,  // BLIS ADD
+        onActivityHeight: ownProps.onActivityHeight, // BLIS ADD
         onScrollChange: ownProps.onScrollChange, // BLIS ADD
         initialScrollPosition: ownProps.initialScrollPosition, // BLIS ADD
         forceScrollPosition: ownProps.forceScrollPosition, // BLIS ADD
@@ -314,6 +325,7 @@ export interface WrappedActivityProps {
     onClickActivity: React.MouseEventHandler<HTMLDivElement>,
     onClickRetry: React.MouseEventHandler<HTMLAnchorElement>,
     renderActivity?: (props: WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void) => (JSX.Element | null)     // BLIS ADD
+    onHeightSet?: (height: number) => void // BLIS add
 }
 
 export class WrappedActivity extends React.Component<WrappedActivityProps, {}> {
@@ -321,6 +333,14 @@ export class WrappedActivity extends React.Component<WrappedActivityProps, {}> {
 
     constructor(props: WrappedActivityProps) {
         super(props);
+    }
+
+    // BLIS inform of height of element
+    componentDidUpdate() {
+        if (this.props.onHeightSet) {
+            const height = this.messageDiv.clientHeight
+            this.props.onHeightSet(height)
+        }
     }
 
     render () {
