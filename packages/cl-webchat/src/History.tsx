@@ -192,7 +192,7 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
         return this.props.doCardAction(type, value);
     }
 
-    onHeight(index: number, height: number) {
+    onHeightChanged(index: number, height: number) {
         if (this.props.onActivityHeight) {
             this.props.onActivityHeight(index, height)
         }
@@ -225,7 +225,7 @@ export class HistoryView extends React.Component<HistoryProps, {}> {
                             this.props.onClickRetry(activity)
                         } }
                         // BLIS callback when height has been determined
-                        onHeightSet={(height) => this.onHeight(index, height)}
+                        onHeightChanged={(height) => this.onHeightChanged(index, height)}
                     >
                         <ActivityView
                             format={ this.props.format }
@@ -325,7 +325,7 @@ export interface WrappedActivityProps {
     onClickActivity: React.MouseEventHandler<HTMLDivElement>,
     onClickRetry: React.MouseEventHandler<HTMLAnchorElement>,
     renderActivity?: (props: WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void) => (JSX.Element | null)     // BLIS ADD
-    onHeightSet?: (height: number) => void // BLIS add
+    onHeightChanged?: (height: number) => void // BLIS add
 }
 
 export class WrappedActivity extends React.Component<WrappedActivityProps, {}> {
@@ -336,10 +336,18 @@ export class WrappedActivity extends React.Component<WrappedActivityProps, {}> {
     }
 
     // BLIS inform of height of element
-    componentDidUpdate() {
-        if (this.props.onHeightSet) {
+    componentDidMount() {
+        if (this.props.onHeightChanged) {
             const height = this.messageDiv.clientHeight
-            this.props.onHeightSet(height)
+            this.props.onHeightChanged(height)
+        }
+    }
+
+    // BLIS inform of height of element
+    componentDidUpdate() {
+        if (this.props.onHeightChanged) {
+            const height = this.messageDiv.clientHeight
+            this.props.onHeightChanged(height)
         }
     }
 
