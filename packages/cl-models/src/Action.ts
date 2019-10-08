@@ -25,8 +25,9 @@ export interface Condition {
 }
 
 export interface ActionClientData {
-  // Used to match import utterances to actions
-  importHashes?: string[]
+  // Used to match import utterances
+  actionHashes?: string[]
+  lgName?: string
 }
 
 // Need dummy actionId for stub action
