@@ -57,6 +57,7 @@ export function isPrebuilt(entity: EntityBase) {
 }
 
 export const MAX_ENUM_VALUES = 5
+export const MAX_ENUM_VALUE_LENGTH = 10
 
 export interface EnumValue {
   enumValueId?: string
