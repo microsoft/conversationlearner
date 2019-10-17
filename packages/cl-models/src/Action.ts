@@ -15,12 +15,18 @@ export enum ActionTypes {
 }
 
 export enum ConditionType {
-  EQUAL = "EQUAL"
+  EQUAL = "EQUAL",
+  NOT_EQUAL = "NOT_EQUAL",
+  GREATER_THAN = "GREATER_THAN",
+  GREATER_THAN_OR_EQUAL = "GREATER_THAN_OR_EQUAL",
+  LESS_THAN = "LESS_THAN",
+  LESS_THEN_OR_EQUAL = "LESS_THEN_OR_EQUAL",
 }
 
 export interface Condition {
   entityId: string
-  valueId: string
+  valueId?: string
+  value?: number
   condition: ConditionType
 }
 

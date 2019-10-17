@@ -226,7 +226,7 @@ export class FilledEntityMap {
     isBucket: boolean = false,
     builtinType: string | null = null,
     resolution: any | null = null,
-    enumValueId: string | null = null
+    enumValueId: string | undefined = undefined
   ): void {
 
     // If setting to an empty string is actually a delete
