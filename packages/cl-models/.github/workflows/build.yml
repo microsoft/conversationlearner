@@ -25,6 +25,9 @@ jobs:
       - run: npm run test
       - run: npm run build
 
+      - run: npx semantic-release
+        if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
+
         env:
           CI: true
 
