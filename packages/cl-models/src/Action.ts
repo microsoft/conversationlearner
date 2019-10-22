@@ -70,11 +70,11 @@ export class ActionBase {
     this.isTerminal = action.isTerminal
     this.isEntryNode = action.isEntryNode
     this.repromptActionId = action.repromptActionId
-    this.requiredEntitiesFromPayload = action.requiredEntitiesFromPayload || []
-    this.requiredEntities = action.requiredEntities || []
-    this.negativeEntities = action.negativeEntities || []
-    this.requiredConditions = action.requiredConditions || []
-    this.negativeConditions = action.negativeConditions || []
+    this.requiredEntitiesFromPayload = action.requiredEntitiesFromPayload
+    this.requiredEntities = action.requiredEntities
+    this.negativeEntities = action.negativeEntities
+    this.requiredConditions = action.requiredConditions
+    this.negativeConditions = action.negativeConditions
     this.suggestedEntity = action.suggestedEntity
     this.version = action.version
     this.packageCreationId = action.packageCreationId

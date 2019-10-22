@@ -2,10 +2,10 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import { ScoreInput, ScoredAction, ScoreResponse } from './Score'
-import { LabeledEntity } from './Entity'
 import { AppDefinition } from './AppDefinition'
+import { LabeledEntity } from './Entity'
 import { FilledEntity } from './FilledEntity'
+import { ScoreInput, ScoredAction, ScoreResponse } from './Score'
 
 export const MAX_TEXT_VARIATIONS = 20
 
@@ -45,6 +45,8 @@ export interface TrainScorerStep {
   importText?: string
   // Used for UI rendering only
   uiScoreResponse?: ScoreResponse
+  // May be set during TrainDialog import to uniquely identify this scorer step.
+  importId?: string
 }
 
 export interface TrainRound {
