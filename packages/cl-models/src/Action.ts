@@ -12,6 +12,7 @@ export enum ActionTypes {
   END_SESSION = 'END_SESSION',
   SET_ENTITY = 'SET_ENTITY',
   DISPATCH = 'DISPATCH',
+  CHANGE_MODEL = 'CHANGE_MODEL',
 }
 
 export enum ConditionType {
@@ -125,9 +126,13 @@ export class ActionBase {
         }
       case ActionTypes.DISPATCH: {
         // TODO: Another reason to schema refactor...
-          let actionPayload = JSON.parse(action.payload) as DispatchPayload
+          let actionPayload = JSON.parse(action.payload) as ModelPayload
           return `${ActionTypes.DISPATCH}: ${actionPayload.modelName}`
         }
+      case ActionTypes.CHANGE_MODEL: {
+        const actionPayload = JSON.parse(action.payload) as ModelPayload
+        return `${ActionTypes.CHANGE_MODEL}: ${actionPayload.modelName}`
+      }
       default:
         return action.payload
     }
@@ -377,26 +382,47 @@ export class SetEntityAction extends ActionBase {
   }
 }
 
-export type DispatchPayload = {
+export type ModelPayload = {
   modelId: string
   modelName: string
 }
 
-export class DispatchAction extends ActionBase {
+export class ModelAction extends ActionBase {
   modelId: string
   modelName: string
 
   constructor(action: ActionBase) {
     super(action)
 
-    if (action.actionType !== ActionTypes.DISPATCH) {
-      throw new Error(`You attempted to create Dispatch action from action of type: ${action.actionType}`)
+    if (action.actionType !== ActionTypes.DISPATCH
+      && action.actionType !== ActionTypes.CHANGE_MODEL) {
+      throw new Error(`You attempted to create Model action from action of type: ${action.actionType}`)
     }
 
     // TODO: Server already has actual modelId and modelName values, should not need to use payload like this
     // but some things like scored action only have the payload
-    const jsonPayload = JSON.parse(this.payload) as DispatchPayload
+    const jsonPayload = JSON.parse(this.payload) as ModelPayload
     this.modelId = jsonPayload.modelId
     this.modelName = jsonPayload.modelName
+  }
+}
+
+export class DispatchAction extends ModelAction {
+  constructor(action: ActionBase) {
+    if (action.actionType !== ActionTypes.DISPATCH) {
+      throw new Error(`You attempted to create Dispatch action from action of type: ${action.actionType}`)
+    }
+
+    super(action)
+  }
+}
+
+export class ChangeModelAction extends ModelAction {
+  constructor(action: ActionBase) {
+    if (action.actionType !== ActionTypes.CHANGE_MODEL) {
+      throw new Error(`You attempted to create ChangeModel action from action of type: ${action.actionType}`)
+    }
+
+    super(action)
   }
 }
