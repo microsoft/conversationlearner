@@ -49,6 +49,7 @@ export class ActionBase {
   // If true, CL will generate out of domain example utterances that point to this action.
   // There should be at most one action in a model with this flag set to `true`.
   isEntryNode?: boolean
+  // Should server train for reprompting and if so what action to take when reprompting
   repromptActionId?: string
   requiredEntitiesFromPayload: string[]
   requiredEntities: string[] = []

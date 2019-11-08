@@ -32,4 +32,5 @@ export * from './TrainDialog'
 export * from './Transcript'
 export * from './UserInput'
 export * from './UI'
+export { MockData } from './MockDataUtil'
 export { EntityIdSerializer }
