@@ -56,6 +56,7 @@ export function isPrebuilt(entity: EntityBase) {
   return (entity.entityName === `builtin-${entity.entityType.toLowerCase()}`)
 }
 
+export const MAX_ENTITY_NAME_LENGTH = 30
 export const MAX_ENUM_VALUE_COUNT = 5
 export const MAX_ENUM_VALUE_NAME_LENGTH = 10
 
