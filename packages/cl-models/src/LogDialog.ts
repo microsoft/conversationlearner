@@ -48,3 +48,8 @@ export interface LogDialogList {
 export interface LogDialogIdList {
   logDialogIds: string[]
 }
+
+export interface LogQueryResult {
+  logDialogs: LogDialog[]
+  continuationToken: string | undefined
+}
