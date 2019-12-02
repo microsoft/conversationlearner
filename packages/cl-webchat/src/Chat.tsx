@@ -8,6 +8,7 @@ import { Activity, Media, IBotConnection, User, MediaType, DirectLine, DirectLin
 import { createStore, ChatActions, HistoryAction } from './Store';
 import { Provider } from 'react-redux';
 
+// Comment to test publishing
 export interface FormatOptions {
     showHeader?: boolean
 }
