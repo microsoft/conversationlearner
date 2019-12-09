@@ -78,6 +78,7 @@
     "collectCoverage": true,
     "testEnvironment": "node"
   },
+  "dependencies": {},
   "devDependencies": {
     "@commitlint/cli": "7.2.1",
     "@commitlint/config-conventional": "7.1.2",
@@ -96,7 +97,8 @@
     "tslint-config-standard": "^7.0.0",
     "tslint-microsoft-contrib": "^5.0.3",
     "typedoc": "^0.15.0",
-    "typescript": "3.7.2"
+    "typescript": "3.7.2",
+    "jest-resolve": "^24.8.0"
   },
   "publishConfig": {
     "tag": "next",
@@ -109,8 +111,5 @@
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
-  },
-  "dependencies": {
-    "jest-resolve": "^24.8.0"
   }
 }
