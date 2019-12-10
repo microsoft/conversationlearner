@@ -21,7 +21,7 @@ export enum ConditionType {
   GREATER_THAN = "GREATER_THAN",
   GREATER_THAN_OR_EQUAL = "GREATER_THAN_OR_EQUAL",
   LESS_THAN = "LESS_THAN",
-  LESS_THEN_OR_EQUAL = "LESS_THEN_OR_EQUAL",
+  LESS_THAN_OR_EQUAL = "LESS_THAN_OR_EQUAL",
 }
 
 export interface Condition {
@@ -94,42 +94,42 @@ export class ActionBase {
   static GetPayload(action: ActionBase | ScoredBase, entityValues: Map<string, string>): string {
     switch (action.actionType) {
       case ActionTypes.TEXT: {
-          /**
-           * For backwards compatibility check if payload is of new TextPayload type
-           * Ideally we would implement schema refactor:
-           * 1. Make payloads discriminated unions (E.g. After checking the action.type, flow control knows the type of the payload property)
-           * This removes the need for the GetPayload function and GetArguments which are brittle coding patterns.
-           */
-          try {
-            const textPayload = JSON.parse(action.payload) as TextPayload
-            return EntityIdSerializer.serialize(textPayload.json, entityValues)
-          } catch (e) {
-            const error = e as Error
-            throw new Error(
-              `Error when attempting to parse text action payload. This might be an old action which was saved as a string.  Please create a new action. ${
-              error.message
-              }`
-            )
-          }
-        }
-      case ActionTypes.END_SESSION: {
+        /**
+         * For backwards compatibility check if payload is of new TextPayload type
+         * Ideally we would implement schema refactor:
+         * 1. Make payloads discriminated unions (E.g. After checking the action.type, flow control knows the type of the payload property)
+         * This removes the need for the GetPayload function and GetArguments which are brittle coding patterns.
+         */
+        try {
           const textPayload = JSON.parse(action.payload) as TextPayload
           return EntityIdSerializer.serialize(textPayload.json, entityValues)
+        } catch (e) {
+          const error = e as Error
+          throw new Error(
+            `Error when attempting to parse text action payload. This might be an old action which was saved as a string.  Please create a new action. ${
+            error.message
+            }`
+          )
         }
+      }
+      case ActionTypes.END_SESSION: {
+        const textPayload = JSON.parse(action.payload) as TextPayload
+        return EntityIdSerializer.serialize(textPayload.json, entityValues)
+      }
       case ActionTypes.CARD: {
         // For API or CARD the payload field of the outer payload is the name of API or the filename of the card template without extension
-          let cardPayload = JSON.parse(action.payload) as CardPayload
-          return cardPayload.payload
-        }
+        let cardPayload = JSON.parse(action.payload) as CardPayload
+        return cardPayload.payload
+      }
       case ActionTypes.API_LOCAL: {
-          let actionPayload = JSON.parse(action.payload) as ActionPayload
-          return actionPayload.payload
-        }
+        let actionPayload = JSON.parse(action.payload) as ActionPayload
+        return actionPayload.payload
+      }
       case ActionTypes.DISPATCH: {
         // TODO: Another reason to schema refactor...
-          let actionPayload = JSON.parse(action.payload) as ModelPayload
-          return `${ActionTypes.DISPATCH}: ${actionPayload.modelName}`
-        }
+        let actionPayload = JSON.parse(action.payload) as ModelPayload
+        return `${ActionTypes.DISPATCH}: ${actionPayload.modelName}`
+      }
       case ActionTypes.CHANGE_MODEL: {
         const actionPayload = JSON.parse(action.payload) as ModelPayload
         return `${ActionTypes.CHANGE_MODEL}: ${actionPayload.modelName}`
