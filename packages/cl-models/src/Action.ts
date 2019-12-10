@@ -201,16 +201,16 @@ export interface TextPayload {
   json: object
 }
 
-export interface ActionPayloadSingleArguments {
-  payload: string
-  arguments: IActionArgument[]
-}
-
 export interface ActionPayload {
   payload: string
   logicArguments: IActionArgument[]
   renderArguments: IActionArgument[]
   isPlaceholder?: boolean
+}
+
+export interface ActionPayloadSingleArguments {
+  payload: string
+  arguments: IActionArgument[]
 }
 
 export interface CardPayload {
