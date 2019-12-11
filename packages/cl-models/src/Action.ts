@@ -13,6 +13,7 @@ export enum ActionTypes {
   SET_ENTITY = 'SET_ENTITY',
   DISPATCH = 'DISPATCH',
   CHANGE_MODEL = 'CHANGE_MODEL',
+  REMOTE_WORKFLOW = 'REMOTE_WORKFLOW',
 }
 
 export enum ConditionType {
