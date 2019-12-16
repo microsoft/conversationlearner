@@ -1,6 +1,6 @@
 # ConversationLearner
 
-[![CircleCI](https://circleci.com/gh/mattmazzola/conversation-learner-lerna.svg?style=svg)](https://circleci.com/gh/mattmazzola/conversation-learner-lerna)
+[![CircleCI](https://circleci.com/gh/microsoft/conversationlearner.svg?style=svg)](https://circleci.com/gh/microsoft/conversationlearner)\
 
 This repo contains 5 major components:
 1. **Samples** - Fully working bots using express, botbuilder, and the ConversationLearner SDK which demonstrate different use cases in code.
