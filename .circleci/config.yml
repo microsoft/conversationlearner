@@ -258,7 +258,7 @@ jobs:
       # Investigated submodules and subtrees but neither seemed offer simplicity that we want while still keeping this repo as source of truth
       # TODO: Look at using token only in git push instead of clone so it's not stored
       # E.g. 'git pull https://<token>@github.com/username/bar.git'
-      - run: git clone https://${GH_TOKEN_SAMPLES}@github.com/conversationlearner/ConversationLearner-Samples << parameters.clone_path >> -b develop
+      - run: git clone https://${GH_TOKEN_SAMPLES}@github.com/microsoft/ConversationLearner-Samples << parameters.clone_path >> -b develop
       # TODO: Try to consolidate to single copy command
       - run: cp ./packages/samples/src/ << parameters.clone_path >> -frv
       - run: cp ./packages/samples/*.* << parameters.clone_path >> -fv
