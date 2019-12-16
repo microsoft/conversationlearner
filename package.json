@@ -3,5 +3,9 @@
   "private": true,
   "devDependencies": {
     "lerna": "^3.18.3"
+  },
+  "dependencies": {
+    "@types/node": "12.12.18",
+    "typescript": "3.7.3"
   }
 }
