@@ -6,7 +6,7 @@
   },
   "dependencies": {
     "@types/node": "12.12.18",
-    "typescript": "3.7.3"
+    "typescript": "3.7.2"
   },
   "scripts": {
     "build": "lerna run build"
