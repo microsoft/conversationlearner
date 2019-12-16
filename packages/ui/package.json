@@ -17,9 +17,10 @@
   "license": "MIT",
   "publishConfig": {
     "tag": "next",
-    "access": "public"
+    "access": "public",
+    "directory": "package"
   },
-  "private": true,
+  "private": false,
   "dependencies": {
     "@conversationlearner/models": "0.500.0",
     "@conversationlearner/webchat": "0.500.0",
@@ -121,8 +122,8 @@
     "lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
     "lintsdl": "tslint -c tslint.sdl.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
     "start": "react-scripts-ts start",
-    "build": "react-scripts-ts build",
-    "cibuild": "cross-env CI=false react-scripts-ts build",
+    "build": "cross-env CI=false react-scripts-ts build",
+    "postbuild": "npm run builduipackage",
     "cypress": "cypress",
     "cypress:open": "cypress open",
     "test": "react-scripts-ts test --env=jsdom",
@@ -130,6 +131,7 @@
     "eject": "react-scripts-ts eject",
     "tsc": "tsc",
     "builduipackage": "tsc -p ./packageScripts/tsconfig.json --outDir ./package --listFiles && tsc -p ./scripts/tsconfig.json --listFiles && node ./scripts/createPackage.js",
+    "prepare": "npm run builduipackage",
     "commit": "git-cz",
     "servebuild": "tsc -p ./server/tsconfig.json && node ./server/server.js",
     "wait-on": "wait-on"

@@ -26,6 +26,7 @@ async function main() {
 
     console.log(`Copy: ${buildPath} to ${uiPackagePath}`)
     try {
+        await fs.ensureDir(buildPath)
         await fs.copy(buildPath, uiPackagePath)
     }
     catch (e) {
@@ -61,3 +62,5 @@ async function main() {
 }
 
 main()
+
+process.on('unhandledRejection', e => { throw e })
