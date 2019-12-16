@@ -1,0 +1,83 @@
+.toolbar-container {
+    position: relative;
+}
+
+.custom-toolbar {
+    background: white;
+    border: 1px solid var(--color-neutralTertiary);
+    border-radius: 4px;
+    box-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
+    min-width: 200px;
+    opacity: 0;
+    padding: 0.25em;
+    position: absolute;
+    left: -10000px;
+    transition: opacity .75s;
+    z-index: 2;
+    visibility: hidden;
+    transform: scale(0);
+    transition: transform 0.15s cubic-bezier(.3,1.2,.2,1), left 0.05s ease-in-out;
+
+    display: grid;
+    grid-template: min-content min-content 1fr / auto;
+    grid-gap: 0.25em;
+}
+
+.custom-toolbar--visible {
+  visibility: visible;
+  opacity: 1;
+  transform: scale(1);
+}
+
+.custom-toolbar__warning {
+    padding: 0.25em;
+}
+
+.custom-toolbar__search {
+    /* empty */
+}
+
+.custom-toolbar__search label {
+    font-size: 0.75rem;
+    padding-bottom: 0.25em;
+    display: block;
+    color: grey;
+}
+
+.custom-toolbar__input {
+    padding: 0.25em 0.5em;
+    border: 1px solid var(--color-neutralTertiary);
+    width: 100%;
+    font-size: 1rem;
+    outline: none;
+}
+.custom-toolbar__input:hover:not(:focus) {
+    border-color: var(--color-neutralDark);
+}
+.custom-toolbar__input:focus {
+    border-color: var(--color-themePrimary);
+}
+
+.custom-toolbar__results {
+    margin: 0;
+    list-style: none;
+    padding: 0;
+    padding-top: 0.25em;
+    border-top: 2px solid lightgrey;
+    overflow-y: auto;
+    max-height: 8.9em;
+}
+
+.custom-toolbar__result {
+    margin-bottom: 1px;
+    padding: 0.25em 0.5em;
+    cursor: pointer;
+}
+
+.custom-toolbar__result:hover:not(.custom-toolbar__result--highlight) {
+    background: rgba(187, 255, 187, 0.5);
+}
+
+.custom-toolbar__result--highlight {
+    background: rgba(187, 255, 187, 1.0);
+}

@@ -1,0 +1,12 @@
+{
+  "baseUrl": "http://localhost:3000",
+  "projectId": "so64kq",
+  "reporter": "mocha-multi-reporters",
+  "requestTimeout": 20000,
+  "responseTimeout": 45000,
+  "viewportHeight": 900,
+  "viewportWidth": 1450,
+  "reporterOptions": {
+    "configFile": "config-mocha-reporter.json"
+  }
+}

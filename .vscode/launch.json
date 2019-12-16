@@ -1,0 +1,229 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Empty Bot",
+            "cwd": "${workspaceFolder}/packages/samples",
+            "program": "${workspaceFolder}/packages/samples/lib/server.js",
+            "outFiles": [
+                "${workspaceFolder}/packages/samples/**/*.js"
+            ],
+            "runtimeArgs": [
+                "--preserve-symlinks"
+            ],
+            "sourceMaps": true
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "tutorialGeneral",
+            "cwd": "${workspaceFolder}/packages/samples",
+            "program": "${workspaceFolder}/packages/samples/lib/server.js",
+            "outFiles": [
+                "${workspaceFolder}/packages/samples/**/*.js"
+            ],
+            "runtimeArgs": [
+                "--preserve-symlinks"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "tutorialEntityDetectionCallback",
+            "cwd": "${workspaceFolder}/packages/samples",
+            "program": "${workspaceFolder}/packages/samples/lib/demos/tutorialEntityDetectionCallback.js",
+            "outFiles": [
+                "${workspaceFolder}/packages/samples/**/*.js"
+            ],
+            "runtimeArgs": [
+                "--preserve-symlinks"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "tutorialAPICalls",
+            "cwd": "${workspaceFolder}/packages/samples",
+            "program": "${workspaceFolder}/packages/samples/lib/demos/tutorialAPICalls.js",
+            "outFiles": [
+                "${workspaceFolder}/packages/samples/**/*.js"
+            ],
+            "runtimeArgs": [
+                "--preserve-symlinks"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "tutorialSessionCallbacks",
+            "cwd": "${workspaceFolder}/packages/samples",
+            "program": "${workspaceFolder}/packages/samples/lib/demos/tutorialSessionCallbacks.js",
+            "outFiles": [
+                "${workspaceFolder}/packages/samples/**/*.js"
+            ],
+            "runtimeArgs": [
+                "--preserve-symlinks"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "demoPasswordReset",
+            "cwd": "${workspaceFolder}/packages/samples",
+            "program": "${workspaceFolder}/packages/samples/lib/demos/demoPasswordReset.js",
+            "outFiles": [
+                "${workspaceFolder}/packages/samples/**/*.js"
+            ],
+            "runtimeArgs": [
+                "--preserve-symlinks"
+            ],
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "demoPizzaOrder",
+            "cwd": "${workspaceFolder}/packages/samples",
+            "program": "${workspaceFolder}/packages/samples/lib/demos/demoPizzaOrder.js",
+            "outFiles": [
+                "${workspaceFolder}/packages/samples/**/*.js"
+            ],
+            "runtimeArgs": [
+                "--preserve-symlinks"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "tutorialHybrid",
+            "cwd": "${workspaceFolder}/packages/samples",
+            "program": "${workspaceFolder}/packages/samples/lib/demos/tutorialHybrid.js",
+            "outFiles": [
+                "${workspaceFolder}/packages/samples/**/*.js"
+            ],
+            "runtimeArgs": [
+                "--preserve-symlinks"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "demoVRAppLauncher",
+            "cwd": "${workspaceFolder}/packages/samples",
+            "program": "${workspaceFolder}/packages/samples/lib/demos/demoVRAppLauncher.js",
+            "outFiles": [
+                "${workspaceFolder}/packages/samples/**/*.js"
+            ],
+            "runtimeArgs": [
+                "--preserve-symlinks"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "demoStorage",
+            "cwd": "${workspaceFolder}/packages/samples",
+            "program": "${workspaceFolder}/packages/samples/lib/demos/demoStorage.js",
+            "outFiles": [
+                "${workspaceFolder}/packages/samples/**/*.js"
+            ],
+            "runtimeArgs": [
+                "--preserve-symlinks"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "demoMultiCL",
+            "cwd": "${workspaceFolder}/packages/samples",
+            "program": "${workspaceFolder}/packages/samples/lib/demos/demoMultiCL.js",
+            "outFiles": [
+                "${workspaceFolder}/packages/samples/**/*.js"
+            ],
+            "runtimeArgs": [
+                "--preserve-symlinks"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Test API Callbacks",
+            "program": "${workspaceFolder}/lib/test/testApiCallbacks.js",
+            "outFiles": [
+                "${workspaceFolder}/**/*.js"
+            ],
+            "runtimeArgs": [
+                "--preserve-symlinks"
+            ],
+            "sourceMaps": true
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Empty App with Fiddler",
+            "cwd": "${workspaceFolder}/packages/samples",
+            "program": "${workspaceFolder}/packages/samples/lib/server.js",
+            "outFiles": [
+                "${workspaceFolder}/packages/samples/**/*"
+            ],
+            "runtimeArgs": [
+                "--preserve-symlinks"
+            ],
+            "env": {
+                "https_proxy": "http://127.0.0.1:8888",
+                "http_proxy": "http://127.0.0.1:8888",
+                "NODE_TLS_REJECT_UNAUTHORIZED": "0"
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Models - Jest Tests",
+            "cwd": "${workspaceFolder}/packages/models",
+            "program": "${workspaceFolder}/packages/models/node_modules/jest/bin/jest.js",
+            "args": [
+                "-i"
+            ],
+            "internalConsoleOptions": "openOnSessionStart",
+            "sourceMaps": true,
+            "outFiles": [
+                "${workspaceFolder}/packages/models/dist/**/*"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "SDK - Jest Tests",
+            "cwd": "${workspaceFolder}/packages/sdk",
+            "program": "${workspaceFolder}/packages/sdk/node_modules/jest/bin/jest.js",
+            "args": [
+                "-i"
+            ],
+            "internalConsoleOptions": "openOnSessionStart",
+            "sourceMaps": true,
+            "outFiles": [
+                "${workspaceFolder}/packages/sdk/lib/**/*"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "UI - Debug CRA Tests",
+            "runtimeExecutable": "${workspaceFolder}/packages/ui/node_modules/.bin/react-scripts-ts",
+            "args": [
+                "test",
+                "--runInBand",
+                "--no-cache",
+                "--env=jsdom"
+            ],
+            "cwd": "${workspaceFolder}/packages/ui/",
+            "protocol": "inspector",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
+        }
+    ]
+}

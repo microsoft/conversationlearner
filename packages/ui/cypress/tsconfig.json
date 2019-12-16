@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "baseUrl": "../node_modules",
+        "target": "es2016",
+        "lib": [
+            "esnext",
+            "dom"
+        ],
+        "types": [
+            "cypress"
+        ],
+        "keyofStringsOnly": true,
+        "skipLibCheck": true
+    },
+    "include": [
+        "**/*.ts"
+    ]
+}

@@ -1,0 +1,8 @@
+/node_modules
+/coverage
+/dist
+
+*.log
+.nyc_output
+.DS_Store
+.awcache

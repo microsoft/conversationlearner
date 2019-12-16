@@ -1,0 +1,31 @@
+# https://help.github.com/en/articles/workflow-syntax-for-github-actions
+
+name: release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-ubuntu-latest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - run: node --version
+      - run: npm --version
+      - run: npx lerna bootstrap
+      - run: npx lerna run build
+      - run: npx lerna run test
+
+        env:
+          CI: true
+          GH_TOKEN: ${{secrets.GH_TOKEN}}
+          NPM_TOKEN: ${{secrets.NPM_TOKEN}}

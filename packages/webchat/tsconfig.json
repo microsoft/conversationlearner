@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "declaration": true,
+        "importHelpers": true,
+        "jsx": "react",
+        "lib": [
+            "dom",
+            "es2017"
+        ],
+        "module": "commonjs",
+  
+        "outDir": "./built/",
+        "target": "es5",
+        "sourceMap": true
+    },
+    "files": [
+        "src/BotChat.ts"
+    ]
+}

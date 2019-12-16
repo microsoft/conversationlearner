@@ -1,0 +1,11 @@
+.env
+
+# build
+lib
+
+# dependencies
+node_modules
+
+# testing
+/coverage
+/results

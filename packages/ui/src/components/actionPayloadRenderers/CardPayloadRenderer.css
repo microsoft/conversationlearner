@@ -1,0 +1,20 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License.
+ */
+ .cl-card-payload {
+    display: grid;
+    grid-template: auto / 1fr min-content;
+    grid-gap: 1em;
+}
+
+.cl-card-payload__arguments {
+    display: grid;
+    grid-template: auto / min-content 1fr;
+    grid-gap: 0 0.5em;
+    align-items: center;
+}
+
+.cl-card-payload__arguments div:nth-child(2n - 1) {
+    white-space: nowrap;
+}

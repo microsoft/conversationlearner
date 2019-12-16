@@ -1,0 +1,175 @@
+{
+  "name": "@conversationlearner/ui",
+  "version": "0.500.0",
+  "description": "Administration user interface for creating, training, and testing bots created using Conversation Learner",
+  "homepage": "http://localhost:3978/ui",
+  "keywords": [
+    "Microsoft",
+    "bots",
+    "ConversationLearner",
+    "ui"
+  ],
+  "author": "Microsoft Conversation Learner Team",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/ConversationLearner-UI.git"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "tag": "next",
+    "access": "public",
+    "directory": "package"
+  },
+  "private": false,
+  "dependencies": {
+    "@conversationlearner/models": "0.500.0",
+    "@conversationlearner/webchat": "0.500.0",
+    "@cypress/webpack-preprocessor": "4.0.3",
+    "@types/klaw-sync": "^6.0.0",
+    "adaptivecards": "1.2.0",
+    "adm-zip": "^0.4.13",
+    "axios": "^0.19.0",
+    "botbuilder": "4.1.7",
+    "botframework-directlinejs": "^0.9.17",
+    "classnames": "2.2.6",
+    "core-decorators": "0.20.0",
+    "fast-json-stable-stringify": "2.0.0",
+    "file-saver": "^1.3.8",
+    "fuse.js": "^3.2.0",
+    "http-status-codes": "^1.3.2",
+    "immer": "3.1.3",
+    "immutable": "^3.8.2",
+    "inline-css": "^2.4.1",
+    "klaw-sync": "^6.0.0",
+    "lodash": "^4.17.15",
+    "markdown-it": "^8.4.2",
+    "moment": "^2.22.2",
+    "node-zip": "^1.1.1",
+    "office-ui-fabric-react": "7.59.0",
+    "query-string": "^6.8.1",
+    "react": "16.8.6",
+    "react-d3-tree": "^1.12.2",
+    "react-dom": "16.8.6",
+    "react-html-parser": "^2.0.2",
+    "react-intl": "^2.7.2",
+    "react-markdown": "^3.6.0",
+    "react-player": "^1.6.6",
+    "react-redux": "^5.1.0",
+    "react-router": "^4.3.1",
+    "react-router-dom": "^4.3.1",
+    "react-scoped-style": "^0.3.0",
+    "react-scripts-ts": "3.1.0",
+    "redux": "^3.7.2",
+    "redux-observable": "^0.17.0",
+    "redux-thunk": "^2.2.0",
+    "rxjs": "^5.5.12",
+    "sentence-generator": "^1.0.1",
+    "slate": "0.31.3",
+    "slate-html-serializer": "0.4.16",
+    "slate-plain-serializer": "0.4.16",
+    "slate-react": "0.10.17",
+    "source-map-explorer": "2.1.1",
+    "string-similarity": "^3.0.0",
+    "strip-json-comments": "^3.0.1",
+    "url": "^0.11.0",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.2.3",
+    "@commitlint/cli": "7.0.0",
+    "@commitlint/config-conventional": "7.0.1",
+    "@types/adm-zip": "^0.4.32",
+    "@types/classnames": "2.2.9",
+    "@types/express": "^4.16.0",
+    "@types/fast-json-stable-stringify": "^2.0.0",
+    "@types/file-saver": "^1.3.1",
+    "@types/fs-extra": "^5.1.0",
+    "@types/history": "4.7.0",
+    "@types/jest": "^20.0.8",
+    "@types/lodash": "^4.14.136",
+    "@types/markdown-it": "0.0.7",
+    "@types/node": "12.12.6",
+    "@types/prop-types": "^15.5.6",
+    "@types/react": "16.8.10",
+    "@types/react-dom": "16.8.3",
+    "@types/react-intl": "^2.3.11",
+    "@types/react-redux": "^5.0.21",
+    "@types/react-router-dom": "^4.3.1",
+    "@types/redux-auth-wrapper": "^2.0.8",
+    "@types/string-similarity": "^3.0.0",
+    "@types/uuid": "^3.4.4",
+    "commitizen": "3.1.1",
+    "cross-env": "^5.2.0",
+    "cypress": "3.4.0",
+    "express": "^4.16.4",
+    "fs-extra": "^5.0.0",
+    "husky": "1.3.1",
+    "mocha": "5.2.0",
+    "mocha-junit-reporter": "1.17.0",
+    "mocha-multi-reporters": "1.1.7",
+    "path-parse": "^1.0.6",
+    "tslint": "5.11.0",
+    "tslint-config-prettier": "^1.15.0",
+    "tslint-config-standard": "^7.1.0",
+    "tslint-microsoft-contrib": "^5.2.1",
+    "typescript": "3.7.2",
+    "wait-on": "3.2.0"
+  },
+  "scripts": {
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
+    "lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
+    "lintsdl": "tslint -c tslint.sdl.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
+    "start": "react-scripts-ts start",
+    "build": "cross-env CI=false react-scripts-ts build",
+    "postbuild": "npm run builduipackage",
+    "cypress": "cypress",
+    "cypress:open": "cypress open",
+    "test": "react-scripts-ts test --env=jsdom",
+    "test:debug": "react-scripts-ts --inspect-brk test --runInBand --env=jsdom",
+    "eject": "react-scripts-ts eject",
+    "tsc": "tsc",
+    "builduipackage": "tsc -p ./packageScripts/tsconfig.json --outDir ./package --listFiles && tsc -p ./scripts/tsconfig.json --listFiles && node ./scripts/createPackage.js",
+    "prepare": "npm run builduipackage",
+    "commit": "git-cz",
+    "servebuild": "tsc -p ./server/tsconfig.json && node ./server/server.js",
+    "wait-on": "wait-on"
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
+    }
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "release": {
+    "analyzeCommits": {
+      "preset": "angular",
+      "releaseRules": [
+        {
+          "type": "style",
+          "release": "patch"
+        }
+      ]
+    }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "office-ui-fabric-react/lib/(.*)$": "office-ui-fabric-react/lib-commonjs/$1"
+    }
+  }
+}

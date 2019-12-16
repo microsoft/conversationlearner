@@ -1,0 +1,1030 @@
+body, #root {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+
+}
+html {
+    padding: 0;
+    height: 100%;
+    width: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.cl-button--inline {
+  margin-left: -1px;
+  border-right: 1px solid #a6a6a6 !important;
+  border-top: 1px solid #a6a6a6 !important;
+  border-bottom: 1px solid #a6a6a6 !important;
+}
+
+
+
+.cl-button--viewCard {
+  margin-right: 10px;
+  border-radius: 20px;
+  padding: 0px !important;
+  float: right;
+  min-width: 32px !important;
+}
+
+.cl-button-blockwebchat {
+  left: 413px;
+  position: relative;
+}
+
+.cl-textfield--withLeftButton {
+  display: grid;
+  grid-template-columns: 0fr auto 0fr;
+  grid-column-gap: 0.5em;
+  margin-top:1em;
+}
+
+.cl-panelimage {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  display: block;
+}
+
+.cl-input--inline {
+  display: inline-block;
+  width: 300px;
+}
+
+.cl-wc-disabled {
+  pointer-events: none;
+}
+
+.cl-errorpanel {
+  background-color: var(--color-errorBackground);
+  padding: 5px
+}
+
+.cl-text--error {
+  color: var(--color-error);
+}
+
+.cl-text--warning {
+  color: var(--color-alert);
+}
+
+.cl-text--success {
+  color: var(--color-success);
+}
+
+.cl-action {
+  border: none;
+  background: none;
+  padding: 0.3em 0.2em 0.2em 0.2em;
+  margin: 0;
+  cursor: pointer;
+}
+
+.cl-icon {
+  color: var(--color-themePrimary) !important;
+}
+
+.cl-icon--short {
+  height: 15px !important;
+}
+
+.cl-icon--spin {
+  animation-name: cl-icon-spin;
+  animation-duration: 2000ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+@keyframes cl-icon-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.cl-icon-whitebackground {
+  color:rgb(16, 110, 190) !important;
+  background-color:transparent !important;
+}
+
+.cl-icon-whitebackground:hover {
+  color:#ff0000 !important;
+  background-color:transparent !important;
+}
+
+.cl-icon-orangebackground {
+  color:#c9c9c9 !important;
+  background-color:transparent !important;
+}
+
+.cl-icon-orangebackground:hover {
+  color:rgb(255, 255, 0) !important;
+  background-color:transparent !important;
+}
+
+.cl-icon-redbackground {
+  color:rgb(255, 159, 159) !important;
+  background-color:transparent !important;
+}
+
+.cl-icon-redbackground:hover {
+  color:rgb(255, 255, 0) !important;
+  background-color:transparent !important;
+}
+
+.cl-icon[data-icon-name="Warning"] {
+  color: var(--color-alert);
+  vertical-align: sub;
+  font-size: 1.2em;
+}
+.cl-icon[data-icon-name="Error"] {
+  color: var(--color-error);
+  vertical-align: sub;
+  font-size: 1.2em;
+}
+.cl-icon[data-icon-name="Cancel"] {
+  color: var(--color-error) !important;
+  vertical-align: sub;
+  font-size: 1.2em;
+}
+.cl-icon[data-icon-name="CheckMark"] {
+  color: green !important;
+  font-size: 20px;
+}
+
+.cl-icon[data-icon-name="CommentAdd"]{
+  color: lightgrey;
+  font-size: 18px
+}
+
+.cl-icon[data-icon-name="Delete"] {
+  font-size: 16px;
+  vertical-align: middle;
+}
+
+.cl-icon[data-icon-name="IncidentTriangle"] {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.cl-input-warning {
+  color: var(--cl-color-error);
+  padding: 0px;
+  margin: 0px;
+  font-size: 12px;
+}
+
+.cl-color-warning {
+  color: var(--cl-color-warning) !important;
+}
+
+.cl-color-caution {
+  color: var(--cl-color-caution) !important;
+}
+
+.cl-color-error {
+  color: var(--cl-color-error) !important;
+}
+
+.ms-Button-icon[data-icon-name="Info"] {
+  font-size: 13px;
+  margin-bottom: -6px;
+  margin-left: -5px;
+}
+
+.ms-Button-icon[data-icon-name="ChevronUpSmall"] {
+  font-size: 12px;
+  margin-right: 8px;
+  color: var(--color-themePrimary) !important
+}
+
+.ms-Button-icon[data-icon-name="BranchMerge"] {
+  color: var(--color-themePrimary) !important
+}
+
+.ms-Button-icon[data-icon-name="ChevronDownSmall"] {
+  font-size: 12px;
+  margin-right: 8px;
+  color: var(--color-themePrimary) !important;
+}
+
+.ms-Button-icon[data-icon-name="CommentAdd"] {
+  font-size: 18px !important;
+}
+
+.ms-Button--icon.cl-wc-addscore {
+  color: var(--color-neutralPrimary) !important;
+  background-color: transparent !important;
+}
+
+.ms-Button--icon.cl-wc-addinput {
+  color: var(--color-themePrimary) !important;
+  background-color: transparent !important;
+}
+
+.ms-Button--icon.cl-wc-deleteturn {
+  color: var(--color-redDark) !important;
+  background-color: transparent !important;
+}
+
+.ms-Button--icon.cl-wc-branchturn {
+  background-color: transparent !important;
+}
+
+.ms-Button--icon.cl-icon-plain {
+  background-color: transparent !important;
+}
+
+.ms-Button-icon[data-icon-name="EditSolidMirrored12"] {
+  color: var(--color-red);
+}
+
+.ms-Button-icon[data-icon-name="IncidentTriangle"] {
+  font-size: 13px;
+  margin-bottom: -3px;
+  margin-left: -5px;
+  color: var(--color-red);
+  background: transparent !important
+}
+
+.ms-Button-icon[data-icon-name="MessageFill"] {
+  font-size: 30px;
+  color: var(--color-error);
+  background: transparent !important
+}
+
+.ms-Button-icon[data-icon-name="MessageFill"]:not(:disabled):hover {
+  color: var(--color-red) !important;
+  background: transparent !important
+}
+
+.ms-Button-icon[data-icon-name="AddTo"]:not(:disabled):hover {
+  color: var(--color-red) !important;
+  background: transparent !important
+}
+
+.cl-label {
+  display: inline-block !important;
+}
+
+.cl-label--padded {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.cl-link {
+  color: var(--color-themePrimary);
+}
+
+.cl-messagebar {
+    margin-bottom: 15px;
+}
+
+i[data-icon-name="Delete"]:hover,
+i[data-icon-name="Edit"]:hover {
+  cursor: pointer;
+}
+
+.cl-tip.ms-Checkbox{
+  display: inline-block;
+}
+
+.cl-font--emphasis
+{
+  font-weight: bold !important;
+  color: #000000;
+}
+
+.cl-font--demphasis
+{
+  font-weight: lighter !important;
+  color: #000000;
+}
+
+.cl-font--deleted
+{
+  text-decoration: line-through;
+}
+
+.cl-font--action {
+  color: var(--color-blue);
+}
+
+.cl-font--highlight {
+  color: var(--color-error);
+}
+
+.cl-font--warning {
+  background-color: var(--color-errorBackground);
+  margin: 5px;
+  padding: 0.25em 0.5em;
+}
+
+.cl-font--preserve {
+  white-space: pre-wrap;
+}
+
+.cl-wc-message {
+  border-radius: 2px;
+  box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.2);
+  padding: 8px;
+  word-break: break-word;
+}
+.cl-wc-message--user {
+  background-color: var(--color-wc-user);
+  color: #ffffff;
+  margin-top: 5px;
+  padding: 5px;
+  font-weight: bold;
+}
+
+.cl-wc-message--train {
+  background-color: var(--cl-color-user-train);
+}
+
+.cl-wc-message--log {
+  background-color: var(--cl-color-user-log);
+}
+
+.cl-wc-message--import {
+  background-color: var(--cl-color-user-import);
+}
+
+.cl-wc-message--bot {
+  background-color: var(--color-wc-bot);
+  color: #000000;
+  margin-top: 5px;
+  padding: 5px;
+  font-weight: bold;
+}
+
+.cl-wc-message--done {
+  background-color: var(--color-yellow-darkest);
+  color: #ffffff;
+}
+
+.cl-wc-buttonbar {
+  background-color: transparent;
+}
+
+.cl-wc-deleteturn {
+  border: none !important;
+  position: absolute !important;
+  background-color: transparent !important;
+  top: 5px;
+  z-index: 1000;
+}
+
+.cl-wc-deleteturn--bot {
+  right: -4px;
+}
+
+.cl-wc-deleteturn--user {
+  left: 0px;
+}
+
+.cl-wc-addaction {
+  color: green !important;
+  border: none !important;
+  position: absolute !important;
+  background-color: transparent !important;
+  top: 27px;
+  z-index: 1000;
+  right: -4px;
+}
+
+.cl-wc-branchturn {
+  border: none !important;
+  position: absolute !important;
+  background-color: transparent !important;
+  bottom: -8px;
+  z-index: 1000;
+  right: 166px;
+}
+
+.cl-icon-plain {
+  border: none !important;
+  background-color: transparent !important;
+  color: var(--color-themePrimary) !important;
+}
+
+.cl-icon-plain:hover {
+  color: var(--color-red);
+}
+
+
+.cl-icon-warning {
+  border: none !important;
+  background-color: transparent !important;
+  color: var(--cl-color-error) !important;
+}
+
+.cl-icon-warning:hover {
+  color: var(--color-red);
+}
+
+/* botframework-webchat component override */
+.wc-chatview-panel:focus {
+  outline: 0;
+}
+
+.cl-overlay{
+  width: 100%;
+  height: 100%;
+  opacity: 0.09;
+  background-color: #000000;
+}
+
+/** New CSS using BEM to eventually replace above */
+
+/** Modals */
+
+.cl-modal > * {
+  height: 100%;
+  display: grid;
+  grid-template-rows: min-content 1fr min-content;
+}
+
+.cl-modal.cl-modal--teach > * {
+  grid-template-rows: 1fr min-content;
+  /* border-top: 8px solid var(--color-magentaDark); */
+}
+
+.cl-modal.cl-modal--log > * {
+  grid-template-rows: 1fr min-content;
+  /* border-top: 8px solid var(--color-blueMid); */
+}
+
+.cl-modal.cl-modal--importwait {
+  height: 100px;
+  width: 500px;
+  padding: 20px;
+  text-align: center !important;
+}
+
+.cl-modal.cl-modal--wide {
+  width: 80%;
+}
+
+.cl-modal.cl-modal--wide > * {
+  grid-row-gap: 2em;
+  padding: 1em;
+}
+
+.cl-modal.cl-modal--large {
+  width: 98%;
+  height: 96%;
+}
+
+/** Matches width of webchat **/
+.cl-modal.cl-modal--narrow {
+  width: 50%;
+  height: 90%;
+}
+@media (min-width: 701px) and (max-width: 800px) {
+  .cl-modal.cl-modal--narrow {
+    width: 65%;
+  }
+}
+@media (max-width: 700px) {
+  .cl-modal.cl-modal--narrow {
+    width: 80%;
+  }
+}
+
+.cl-modal.cl-modal--medium{
+  width: 60%;
+  height: 80%;
+  /* TODO: Remove padding here, it should be the content inside that decides padding, otherwise all modals should have padding */
+  padding: 1em;
+}
+@media (max-width: 600px) {
+  .cl-modal.cl-modal--medium {
+    width: 90%;
+  }
+}
+@media (max-height: 700px) {
+  .cl-modal.cl-modal--medium {
+    height: 90%;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 1200px) {
+  .cl-modal.cl-modal--medium {
+    width: 75%;
+  }
+}
+@media (min-height: 701px) and (max-height: 800px) {
+  .cl-modal.cl-modal--medium {
+    height: 80%;
+  }
+}
+
+@media (min-width: 1201px) {
+  .cl-modal.cl-modal--medium {
+    width: 50%;
+  }
+}
+
+.cl-modal.cl-modal--small{
+  width: 50%;
+  max-height: 90%;
+  /* TODO: Remove padding here, it should be the content inside that decides padding, otherwise all modals should have padding */
+  padding: 1em;
+}
+
+
+.cl-modal.cl-modal--high {
+  margin-top: -490px;
+}
+
+@media (max-width: 600px) {
+  .cl-modal.cl-modal--small {
+    width: 80%;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 800px) {
+  .cl-modal.cl-modal--small {
+    width: 70%;
+  }
+}
+
+@media (min-width: 801px) and (max-width: 1200px) {
+  .cl-modal.cl-modal--small {
+    width: 60%;
+  }
+}
+
+@media (min-width: 1400px) {
+  .cl-modal.cl-modal--small {
+    width: 40%;
+  }
+}
+
+.cl-modal_header {
+  display: block;
+  text-align: center;
+  padding: 1em;
+}
+
+
+.cl-modal_subheader {
+  display: block;
+  text-align: center;
+  padding-bottom: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.cl-underline {
+  border-bottom: 1px solid black;
+}
+
+.cl-modal_body {
+  position: relative;
+  overflow-y: auto;
+}
+
+.cl-modal_body > * {
+  position: absolute;
+  width: 100%;
+}
+
+.cl-modal_footer {
+  padding-top: 1em;
+}
+.cl-modal_footer--border {
+  border-top: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.cl-modal.cl-modal--teach .cl-modal_footer {
+  padding: 1em;
+  /* background-color: var(--cl-color-user-train); */
+}
+
+.cl-modal.cl-modal--log .cl-modal_footer{
+  padding: 1em;
+  /* background-color: var(--color-blueMid); */
+}
+
+.cl-debug-marker {
+  width: 1px;
+  height: 2px;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  background-color: #000000;
+}
+
+.ms-Dialog-main--wide {
+  min-width: 1000px;
+}
+
+.cl-dialog-title {
+  margin-right: 1em;
+}
+
+.cl-dialog-title i[data-icon-name] {
+  margin: -0.4em 0.5em -0.4em 0;
+  padding: 0.4em 0.3em 0.4em 0.5em;
+  border-radius: 50%;
+  color: white;
+  vertical-align: sub;
+}
+.cl-dialog-title.cl-dialog-title--log i[data-icon-name] {
+  background-color: var(--cl-color-user-log);
+}
+.cl-dialog-title.cl-dialog-title--train i[data-icon-name] {
+  background-color: var(--cl-color-user-train);
+}
+.cl-dialog-title.cl-dialog-title--import i[data-icon-name] {
+  background-color: var(--cl-color-user-import);
+}
+
+.cl-inputWithButton-input {
+  display: grid;
+  grid-template: auto / 1fr auto auto;
+  grid-auto-columns: min-content;
+  grid-gap: 0.1em;
+}
+
+.cl-inputWithButton-button {
+  width: 30px !important;
+  min-width: 30px !important;
+  align-self: end;
+}
+
+.cl-command-bar {
+  display: grid;
+  grid-gap: 1em;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  align-items: end;
+}
+
+.cl-file-picker {
+  display: grid;
+  grid-template: auto / min-content 1fr;
+  grid-gap: 1em;
+  width: 100%;
+  position: relative;
+}
+
+.cl-file-picker-button {
+  white-space: nowrap;
+  width: 160px;
+}
+
+.cl-form {
+  display: grid;
+  grid-gap: 0.5em;
+  justify-items: left;
+}
+
+.cl-screen-reader {
+  position: absolute;
+  left: -999em;
+}
+
+.cl-chatmodal {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 475px 1fr;
+}
+
+.cl-chatmodal_webchat {
+  position: relative;
+}
+
+.cl-chatmodal_controls {
+  border-left: 1px solid var(--cl-color-botchat-grey);
+  display: grid;
+  grid-template-rows: 1fr min-content;
+  /* This could causing clipping of the entity picker menu. Tried to mitigate by making menu stay within boundary of parent but it's not as ideal */
+  overflow-x: auto;
+}
+.cl-chatmodal_admin-controls {
+  padding: 1em;
+}
+
+.cl-sessionmodal {
+  height: 100%;
+  display: grid;
+  grid-template-rows: min-content auto;
+}
+.cl-sessionmodal-title {
+  padding: 1rem;
+}
+
+.cl-rightjustify {
+  position: absolute !important;
+  right: 0px;
+}
+
+/** Office UI Fabric Theme Overrides */
+.ms-List-cell {
+  min-height: 0px !important;
+}
+
+.ms-Pivot {
+  margin-bottom: 1.5em !important;
+}
+
+.ms-TagItem {
+  flex-shrink: 1;
+  background: #f4f4f4;
+  margin: 1px;
+  height: 26px;
+  line-height: 26px;
+  cursor: default;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  max-width: 300px;
+}
+
+.ms-TagItem-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 30px;
+  margin: 0 8px;
+}
+
+.ms-TagItem-text--strike {
+  text-decoration: line-through;
+}
+
+.ms-TagItem-text--highlight {
+  background-color: var(--color-themeLighter);
+}
+
+.ms-TagItem-close {
+  cursor: pointer;
+  color: #666666;
+  font-size: 12px;
+  display: inline-block;
+  text-align: center;
+  vertical-align: top;
+  width: 30px;
+  height: 100%;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+}
+
+.cl-disabledinputbutton-svg {
+  fill: red !important
+}
+/**
+ Should not use margins on components, this is external affect based on usage but the component should not know where it's used
+ the parents should define the spacing responsibilities of children, otherwise chil */
+/* .ms-Button {
+  margin-right: 5px;
+}
+*/
+.ms-Button--primary.is-disabled,
+.ms-Button--primary:disabled {
+  background-color: var(--color-neutralTertiary) !important;
+  color: var(--color-neutralSecondary) !important;
+}
+.ms-Button--primary.is-disabled .ms-Button-icon {
+  color: var(--color-neutralSecondary) !important;
+}
+
+/** TODO: Remove usage of !important */
+.ms-Button--primary:not(:disabled) {
+  background-color: var(--color-themePrimary);
+  border: 1px solid var(--color-themePrimary) !important;
+  color: white !important;
+}
+.ms-Button--primary:not(:disabled):hover {
+  background-color: var(--color-themeDark) !important;
+  border: 1px solid var(--color-themeDark) !important;
+}
+.ms-Button--primary:not(:disabled):focus {
+  background-color: var(--color-themeDarker) !important;
+  border: 1px solid var(--color-themeDarker) !important;
+}
+.ms-Button--primary:not(:disabled):focus:not(:active)::after {
+  content: "";
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  z-index: 1;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(255, 255, 255);
+  border-image: initial;
+  outline-color: rgb(102, 102, 102);
+}
+
+.ms-Button--transparent {
+  background-color: transparent !important;
+  color: var(--color-themePrimary) !important;
+}
+
+.ms-Button--default:not(.cl-button-delete):not(:disabled) {
+  background-color: white !important;
+  border: 1px solid var(--color-themePrimary) !important;
+  color: var(--color-themePrimary) !important;
+}
+.ms-Button--default:not(.cl-button-delete):not(:disabled):hover {
+  background-color: var(--color-themeDark) !important;
+  border: 1px solid var(--color-themeDark) !important;
+  color: white !important;
+}
+.ms-Button--default:not(.cl-button-delete):not(:disabled):focus {
+  background-color: var(--color-themeDark) !important;
+  border: 1px solid var(--color-themeDark) !important;
+  color: white !important;
+}
+
+.ms-Button--default:not(.cl-button-delete):not(:disabled):focus:not(:active)::after {
+  content: "";
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  z-index: 1;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(255, 255, 255);
+  border-image: initial;
+  outline-color: rgb(102, 102, 102);
+}
+.ms-Button--default:not(.cl-button-delete):disabled {
+  background-color: white !important;
+  border: 1px solid var(--color-neutralSecondaryAlt) !important;
+  color: var(--color-neutralSecondaryAlt) !important;
+}
+
+.cl-button-delete {
+  background-color: white !important;
+  border: 1px solid var(--color-redDark) !important;
+  color: var(--color-redDark) !important;
+}
+.cl-button-delete:hover {
+  background-color: var(--color-redDark) !important;
+  border: 1px solid var(--color-redDark) !important;
+  color: white !important;
+}
+.cl-button-delete:focus {
+  background-color: var(--color-redDark) !important;
+  border: 1px solid var(--color-redDark) !important;
+  color: white !important;
+}
+
+.cl-button-delete:disabled {
+  border: 1px solid var(--color-neutralQuaternary) !important;
+  color: 1px solid var(--color-neutralQuaternary) !important;
+}
+
+.cl-rotate i {
+  transform: rotateX(180deg);
+}
+
+/** Log Dialog Admin */
+.cl-dialog-admin {
+  display: grid;
+  grid-gap: 0.8em;
+}
+
+.cl-dialog-admin__header {
+  display: grid;
+  grid-template: auto / max-content minmax(min-content, 1fr) minmax(214px, max-content);
+  grid-gap: 1rem;
+}
+
+.cl-dialog-importcount {
+  font-size: 15px;
+  text-align: right;
+  margin-top: -4px;
+}
+
+.cl-dialog-admin__content {
+  display: grid;
+  grid-gap: 1rem;
+}
+
+.cl-dialog-admin-title {
+  font-weight: bold;
+  border-bottom: 1px solid rgba(0,0,0,0.25);
+}
+
+.cl-dialog-admin-chosen-action {
+  padding: 1em 0;
+  font-weight: bold
+}
+/** TODO: Remove after find better pattern for consumers */
+.cl-dialog-creation-buttons {
+  text-align: right;
+  padding-bottom: 0.5em;
+}
+
+/** Scorer Classes */
+.cl-action-icon {
+  font-size: 24px;
+}
+.cl-action-icon.i[data-icon-name="ChromeClose"] {
+  color: #cc0000;
+}
+.cl-action-icon.i[data-icon-name="CompletedSolid"] {
+  color: #ffb900;
+}
+.cl-action-icon.i[data-icon-name="Remove"] {
+    color: lightgrey;
+    font-size: 18px
+}
+
+.table-cell {
+  font-family: Segoe UI WestEuropean,Segoe UI,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-weight: 400;
+  font-size: 15px;
+}
+
+.cl-entity {
+  flex-shrink: 1;
+  margin: 1px;
+  display: inline-block;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  padding: 4px;
+  text-align: center;
+}
+.cl-entity--match {
+  background: #e0ffe0;
+}
+.cl-entity--mismatch {
+  background: #ffe0e0;
+}
+
+.cl-ux-flexpanel--primary {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  height:3em;
+}
+
+.cl-ux-flexpanel--left {
+  text-align:left;
+}
+
+.cl-ux-flexpanel--right {
+  float:right;
+  text-align:right;
+}
+
+.cl-ux-opaque {
+  background-color:#ffffff;
+
+}
+.cl-ux-shadowed {
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid #aaaaaa !important;
+
+}
+
+.cl-error-message-label {
+  font-size: 12px;
+  font-weight: 400;
+  color: #a80000;
+  margin: 0;
+  padding-top: 5px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  margin-top:0.15em;
+  margin-bottom:1em;
+}
+
+.cl-error-message-label--dark {
+  color: var(--color-neutralSecondaryAlt);
+  display: inline-block;
+}
+
+.cl-float-left {
+  float: left;
+}
+
+.cl-hidden {
+  visibility: hidden
+}
+
+.cl-warning-list {
+  height: 200px;
+  overflow-y: auto;
+}

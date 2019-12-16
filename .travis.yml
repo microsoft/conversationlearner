@@ -1,0 +1,27 @@
+language: node_js
+
+branches:
+  only:
+    - master
+
+cache:
+  directories:
+    - ~/.npm
+    - ~/.cache
+
+notifications:
+  email: false
+
+node_js:
+  - node
+
+before_install:
+  - node --version
+  - npm --version
+
+install:
+  - npx lerna bootstrap
+  
+script:
+  - npx lerna run build
+  - npx lerna run test --ignore @conversationlearner/webchat

@@ -1,0 +1,28 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License.
+ */
+ .cl-api-payload {
+    display: grid;
+    grid-template: auto / 1fr min-content;
+    grid-gap: 1em;
+}
+
+.cl-api-payload__fn {
+    margin-top: 0.5em;
+}
+.cl-api-payload__signature {
+    font-family: 'Consolas', 'Courier New', 'Tahoma', sans-serif
+}
+
+.cl-api-payload__arguments {
+    padding-left: 1em;
+    display: grid;
+    grid-template: auto / min-content 1fr;
+    grid-gap: 0 0.5em;
+    align-items: center;
+}
+
+.cl-api-payload__arguments div:nth-child(2n - 1) {
+    white-space: nowrap;
+}

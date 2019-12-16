@@ -1,0 +1,785 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>ModelUtils | @conversationlearner/models</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">@conversationlearner/models</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="modelutils.html">ModelUtils</a>
+				</li>
+			</ul>
+			<h1>Class ModelUtils</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">ModelUtils</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="modelutils.html#inputtoactivity" class="tsd-kind-icon">Input<wbr>ToActivity</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="modelutils.html#prebuiltdisplaytext" class="tsd-kind-icon">Prebuilt<wbr>Display<wbr>Text</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="modelutils.html#removewords" class="tsd-kind-icon">Remove<wbr>Words</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="modelutils.html#tocreateteachparams" class="tsd-kind-icon">To<wbr>Create<wbr>Teach<wbr>Params</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="modelutils.html#toextractresponse" class="tsd-kind-icon">To<wbr>Extract<wbr>Response</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="modelutils.html#toextractresponses" class="tsd-kind-icon">To<wbr>Extract<wbr>Responses</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="modelutils.html#tolabeledentities" class="tsd-kind-icon">To<wbr>Labeled<wbr>Entities</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="modelutils.html#tolabeledentity" class="tsd-kind-icon">To<wbr>Labeled<wbr>Entity</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="modelutils.html#topredictedentities" class="tsd-kind-icon">To<wbr>Predicted<wbr>Entities</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="modelutils.html#topredictedentity" class="tsd-kind-icon">To<wbr>Predicted<wbr>Entity</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="modelutils.html#toteach" class="tsd-kind-icon">To<wbr>Teach</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="modelutils.html#totextvariation" class="tsd-kind-icon">To<wbr>Text<wbr>Variation</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="modelutils.html#totextvariations" class="tsd-kind-icon">To<wbr>Text<wbr>Variations</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="modelutils.html#totraindialog" class="tsd-kind-icon">To<wbr>Train<wbr>Dialog</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="modelutils.html#totrainround" class="tsd-kind-icon">To<wbr>Train<wbr>Round</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="modelutils.html#totrainscorerstep" class="tsd-kind-icon">To<wbr>Train<wbr>Scorer<wbr>Step</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="modelutils.html#areequalmemoryvalues" class="tsd-kind-icon">are<wbr>Equal<wbr>Memory<wbr>Values</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="modelutils.html#areequaltextvariations" class="tsd-kind-icon">are<wbr>Equal<wbr>Text<wbr>Variations</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="modelutils.html#changedfilledentities" class="tsd-kind-icon">changed<wbr>Filled<wbr>Entities</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="modelutils.html#generateguid" class="tsd-kind-icon">generateGUID</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="modelutils.html#textvariationtomarkdown" class="tsd-kind-icon">text<wbr>Variation<wbr>ToMarkdown</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="inputtoactivity" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> Input<wbr>ToActivity</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">Input<wbr>ToActivity<span class="tsd-signature-symbol">(</span>userText<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, userName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, userId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, roundNum<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Microsoft/ConversationLearner-models/blob/c6c7a1b/src/ModelUtils.ts#L324">ModelUtils.ts:324</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>userText: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>userName: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>userId: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>roundNum: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="prebuiltdisplaytext" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> Prebuilt<wbr>Display<wbr>Text</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">Prebuilt<wbr>Display<wbr>Text<span class="tsd-signature-symbol">(</span>builtinType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, resolution<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, entityText<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Microsoft/ConversationLearner-models/blob/c6c7a1b/src/ModelUtils.ts#L376">ModelUtils.ts:376</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>builtinType: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>resolution: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5>entityText: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="removewords" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> Remove<wbr>Words</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">Remove<wbr>Words<span class="tsd-signature-symbol">(</span>text<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, numWords<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Microsoft/ConversationLearner-models/blob/c6c7a1b/src/ModelUtils.ts#L28">ModelUtils.ts:28</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Remove n words from start of string</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>text: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>numWords: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="tocreateteachparams" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> To<wbr>Create<wbr>Teach<wbr>Params</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">To<wbr>Create<wbr>Teach<wbr>Params<span class="tsd-signature-symbol">(</span>trainDialog<span class="tsd-signature-symbol">: </span><a href="../interfaces/traindialog.html" class="tsd-signature-type">TrainDialog</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/createteachparams.html" class="tsd-signature-type">CreateTeachParams</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Microsoft/ConversationLearner-models/blob/c6c7a1b/src/ModelUtils.ts#L215">ModelUtils.ts:215</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>trainDialog: <a href="../interfaces/traindialog.html" class="tsd-signature-type">TrainDialog</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/createteachparams.html" class="tsd-signature-type">CreateTeachParams</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="toextractresponse" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> To<wbr>Extract<wbr>Response</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">To<wbr>Extract<wbr>Response<span class="tsd-signature-symbol">(</span>textVariation<span class="tsd-signature-symbol">: </span><a href="../interfaces/textvariation.html" class="tsd-signature-type">TextVariation</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/extractresponse.html" class="tsd-signature-type">ExtractResponse</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Microsoft/ConversationLearner-models/blob/c6c7a1b/src/ModelUtils.ts#L85">ModelUtils.ts:85</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>textVariation: <a href="../interfaces/textvariation.html" class="tsd-signature-type">TextVariation</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/extractresponse.html" class="tsd-signature-type">ExtractResponse</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="toextractresponses" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> To<wbr>Extract<wbr>Responses</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">To<wbr>Extract<wbr>Responses<span class="tsd-signature-symbol">(</span>textVariations<span class="tsd-signature-symbol">: </span><a href="../interfaces/textvariation.html" class="tsd-signature-type">TextVariation</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/extractresponse.html" class="tsd-signature-type">ExtractResponse</a><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Microsoft/ConversationLearner-models/blob/c6c7a1b/src/ModelUtils.ts#L103">ModelUtils.ts:103</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>textVariations: <a href="../interfaces/textvariation.html" class="tsd-signature-type">TextVariation</a><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/extractresponse.html" class="tsd-signature-type">ExtractResponse</a><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="tolabeledentities" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> To<wbr>Labeled<wbr>Entities</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">To<wbr>Labeled<wbr>Entities<span class="tsd-signature-symbol">(</span>predictedEntities<span class="tsd-signature-symbol">: </span><a href="../interfaces/predictedentity.html" class="tsd-signature-type">PredictedEntity</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/labeledentity.html" class="tsd-signature-type">LabeledEntity</a><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Microsoft/ConversationLearner-models/blob/c6c7a1b/src/ModelUtils.ts#L48">ModelUtils.ts:48</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>predictedEntities: <a href="../interfaces/predictedentity.html" class="tsd-signature-type">PredictedEntity</a><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/labeledentity.html" class="tsd-signature-type">LabeledEntity</a><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="tolabeledentity" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> To<wbr>Labeled<wbr>Entity</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">To<wbr>Labeled<wbr>Entity<span class="tsd-signature-symbol">(</span>predictedEntity<span class="tsd-signature-symbol">: </span><a href="../interfaces/predictedentity.html" class="tsd-signature-type">PredictedEntity</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/labeledentity.html" class="tsd-signature-type">LabeledEntity</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Microsoft/ConversationLearner-models/blob/c6c7a1b/src/ModelUtils.ts#L43">ModelUtils.ts:43</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>predictedEntity: <a href="../interfaces/predictedentity.html" class="tsd-signature-type">PredictedEntity</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/labeledentity.html" class="tsd-signature-type">LabeledEntity</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="topredictedentities" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> To<wbr>Predicted<wbr>Entities</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">To<wbr>Predicted<wbr>Entities<span class="tsd-signature-symbol">(</span>labeledEntities<span class="tsd-signature-symbol">: </span><a href="../interfaces/labeledentity.html" class="tsd-signature-type">LabeledEntity</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/predictedentity.html" class="tsd-signature-type">PredictedEntity</a><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Microsoft/ConversationLearner-models/blob/c6c7a1b/src/ModelUtils.ts#L64">ModelUtils.ts:64</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>labeledEntities: <a href="../interfaces/labeledentity.html" class="tsd-signature-type">LabeledEntity</a><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/predictedentity.html" class="tsd-signature-type">PredictedEntity</a><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="topredictedentity" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> To<wbr>Predicted<wbr>Entity</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">To<wbr>Predicted<wbr>Entity<span class="tsd-signature-symbol">(</span>labeledEntity<span class="tsd-signature-symbol">: </span><a href="../interfaces/labeledentity.html" class="tsd-signature-type">LabeledEntity</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/predictedentity.html" class="tsd-signature-type">PredictedEntity</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Microsoft/ConversationLearner-models/blob/c6c7a1b/src/ModelUtils.ts#L57">ModelUtils.ts:57</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>labeledEntity: <a href="../interfaces/labeledentity.html" class="tsd-signature-type">LabeledEntity</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/predictedentity.html" class="tsd-signature-type">PredictedEntity</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="toteach" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> To<wbr>Teach</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">To<wbr>Teach<span class="tsd-signature-symbol">(</span>teachResponse<span class="tsd-signature-symbol">: </span><a href="../interfaces/teachresponse.html" class="tsd-signature-type">TeachResponse</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/teach.html" class="tsd-signature-type">Teach</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Microsoft/ConversationLearner-models/blob/c6c7a1b/src/ModelUtils.ts#L237">ModelUtils.ts:237</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>teachResponse: <a href="../interfaces/teachresponse.html" class="tsd-signature-type">TeachResponse</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/teach.html" class="tsd-signature-type">Teach</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="totextvariation" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> To<wbr>Text<wbr>Variation</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">To<wbr>Text<wbr>Variation<span class="tsd-signature-symbol">(</span>extractResponse<span class="tsd-signature-symbol">: </span><a href="../interfaces/extractresponse.html" class="tsd-signature-type">ExtractResponse</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/textvariation.html" class="tsd-signature-type">TextVariation</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Microsoft/ConversationLearner-models/blob/c6c7a1b/src/ModelUtils.ts#L76">ModelUtils.ts:76</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>extractResponse: <a href="../interfaces/extractresponse.html" class="tsd-signature-type">ExtractResponse</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/textvariation.html" class="tsd-signature-type">TextVariation</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="totextvariations" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> To<wbr>Text<wbr>Variations</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">To<wbr>Text<wbr>Variations<span class="tsd-signature-symbol">(</span>extractResponses<span class="tsd-signature-symbol">: </span><a href="../interfaces/extractresponse.html" class="tsd-signature-type">ExtractResponse</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/textvariation.html" class="tsd-signature-type">TextVariation</a><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Microsoft/ConversationLearner-models/blob/c6c7a1b/src/ModelUtils.ts#L125">ModelUtils.ts:125</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>extractResponses: <a href="../interfaces/extractresponse.html" class="tsd-signature-type">ExtractResponse</a><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/textvariation.html" class="tsd-signature-type">TextVariation</a><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="totraindialog" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> To<wbr>Train<wbr>Dialog</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">To<wbr>Train<wbr>Dialog<span class="tsd-signature-symbol">(</span>logDialog<span class="tsd-signature-symbol">: </span><a href="../interfaces/logdialog.html" class="tsd-signature-type">LogDialog</a>, actions<span class="tsd-signature-symbol">?: </span><a href="actionbase.html" class="tsd-signature-type">ActionBase</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, entities<span class="tsd-signature-symbol">?: </span><a href="../interfaces/entitybase.html" class="tsd-signature-type">EntityBase</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/traindialog.html" class="tsd-signature-type">TrainDialog</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Microsoft/ConversationLearner-models/blob/c6c7a1b/src/ModelUtils.ts#L141">ModelUtils.ts:141</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>logDialog: <a href="../interfaces/logdialog.html" class="tsd-signature-type">LogDialog</a></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> actions: <a href="actionbase.html" class="tsd-signature-type">ActionBase</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> =&nbsp;null</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> entities: <a href="../interfaces/entitybase.html" class="tsd-signature-type">EntityBase</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> =&nbsp;null</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/traindialog.html" class="tsd-signature-type">TrainDialog</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="totrainround" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> To<wbr>Train<wbr>Round</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">To<wbr>Train<wbr>Round<span class="tsd-signature-symbol">(</span>logRound<span class="tsd-signature-symbol">: </span><a href="../interfaces/loground.html" class="tsd-signature-type">LogRound</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/trainround.html" class="tsd-signature-type">TrainRound</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Microsoft/ConversationLearner-models/blob/c6c7a1b/src/ModelUtils.ts#L180">ModelUtils.ts:180</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>logRound: <a href="../interfaces/loground.html" class="tsd-signature-type">LogRound</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/trainround.html" class="tsd-signature-type">TrainRound</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="totrainscorerstep" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> To<wbr>Train<wbr>Scorer<wbr>Step</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">To<wbr>Train<wbr>Scorer<wbr>Step<span class="tsd-signature-symbol">(</span>logScorerStep<span class="tsd-signature-symbol">: </span><a href="../interfaces/logscorerstep.html" class="tsd-signature-type">LogScorerStep</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/trainscorerstep.html" class="tsd-signature-type">TrainScorerStep</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Microsoft/ConversationLearner-models/blob/c6c7a1b/src/ModelUtils.ts#L203">ModelUtils.ts:203</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>logScorerStep: <a href="../interfaces/logscorerstep.html" class="tsd-signature-type">LogScorerStep</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/trainscorerstep.html" class="tsd-signature-type">TrainScorerStep</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="areequalmemoryvalues" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> are<wbr>Equal<wbr>Memory<wbr>Values</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">are<wbr>Equal<wbr>Memory<wbr>Values<span class="tsd-signature-symbol">(</span>mvs1<span class="tsd-signature-symbol">: </span><a href="../interfaces/memoryvalue.html" class="tsd-signature-type">MemoryValue</a><span class="tsd-signature-symbol">[]</span>, mvs2<span class="tsd-signature-symbol">: </span><a href="../interfaces/memoryvalue.html" class="tsd-signature-type">MemoryValue</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Microsoft/ConversationLearner-models/blob/c6c7a1b/src/ModelUtils.ts#L268">ModelUtils.ts:268</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>mvs1: <a href="../interfaces/memoryvalue.html" class="tsd-signature-type">MemoryValue</a><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+								<li>
+									<h5>mvs2: <a href="../interfaces/memoryvalue.html" class="tsd-signature-type">MemoryValue</a><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="areequaltextvariations" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> are<wbr>Equal<wbr>Text<wbr>Variations</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">are<wbr>Equal<wbr>Text<wbr>Variations<span class="tsd-signature-symbol">(</span>tv1<span class="tsd-signature-symbol">: </span><a href="../interfaces/textvariation.html" class="tsd-signature-type">TextVariation</a>, tv2<span class="tsd-signature-symbol">: </span><a href="../interfaces/textvariation.html" class="tsd-signature-type">TextVariation</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Microsoft/ConversationLearner-models/blob/c6c7a1b/src/ModelUtils.ts#L250">ModelUtils.ts:250</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>tv1: <a href="../interfaces/textvariation.html" class="tsd-signature-type">TextVariation</a></h5>
+								</li>
+								<li>
+									<h5>tv2: <a href="../interfaces/textvariation.html" class="tsd-signature-type">TextVariation</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="changedfilledentities" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> changed<wbr>Filled<wbr>Entities</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">changed<wbr>Filled<wbr>Entities<span class="tsd-signature-symbol">(</span>originalEntityMap<span class="tsd-signature-symbol">: </span><a href="filledentitymap.html" class="tsd-signature-type">FilledEntityMap</a>, newEntityMap<span class="tsd-signature-symbol">: </span><a href="filledentitymap.html" class="tsd-signature-type">FilledEntityMap</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/filledentity.html" class="tsd-signature-type">FilledEntity</a><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Microsoft/ConversationLearner-models/blob/c6c7a1b/src/ModelUtils.ts#L295">ModelUtils.ts:295</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>originalEntityMap: <a href="filledentitymap.html" class="tsd-signature-type">FilledEntityMap</a></h5>
+								</li>
+								<li>
+									<h5>newEntityMap: <a href="filledentitymap.html" class="tsd-signature-type">FilledEntityMap</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/filledentity.html" class="tsd-signature-type">FilledEntity</a><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="generateguid" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> generateGUID</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">generateGUID<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Microsoft/ConversationLearner-models/blob/c6c7a1b/src/ModelUtils.ts#L17">ModelUtils.ts:17</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="textvariationtomarkdown" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> text<wbr>Variation<wbr>ToMarkdown</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">text<wbr>Variation<wbr>ToMarkdown<span class="tsd-signature-symbol">(</span>textVariation<span class="tsd-signature-symbol">: </span><a href="../interfaces/textvariation.html" class="tsd-signature-type">TextVariation</a>, excludeEntities<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Microsoft/ConversationLearner-models/blob/c6c7a1b/src/ModelUtils.ts#L343">ModelUtils.ts:343</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>textVariation: <a href="../interfaces/textvariation.html" class="tsd-signature-type">TextVariation</a></h5>
+								</li>
+								<li>
+									<h5>excludeEntities: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="modelutils.html" class="tsd-kind-icon">Model<wbr>Utils</a>
+						<ul>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="modelutils.html#inputtoactivity" class="tsd-kind-icon">Input<wbr>ToActivity</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="modelutils.html#prebuiltdisplaytext" class="tsd-kind-icon">Prebuilt<wbr>Display<wbr>Text</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="modelutils.html#removewords" class="tsd-kind-icon">Remove<wbr>Words</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="modelutils.html#tocreateteachparams" class="tsd-kind-icon">To<wbr>Create<wbr>Teach<wbr>Params</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="modelutils.html#toextractresponse" class="tsd-kind-icon">To<wbr>Extract<wbr>Response</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="modelutils.html#toextractresponses" class="tsd-kind-icon">To<wbr>Extract<wbr>Responses</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="modelutils.html#tolabeledentities" class="tsd-kind-icon">To<wbr>Labeled<wbr>Entities</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="modelutils.html#tolabeledentity" class="tsd-kind-icon">To<wbr>Labeled<wbr>Entity</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="modelutils.html#topredictedentities" class="tsd-kind-icon">To<wbr>Predicted<wbr>Entities</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="modelutils.html#topredictedentity" class="tsd-kind-icon">To<wbr>Predicted<wbr>Entity</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="modelutils.html#toteach" class="tsd-kind-icon">To<wbr>Teach</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="modelutils.html#totextvariation" class="tsd-kind-icon">To<wbr>Text<wbr>Variation</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="modelutils.html#totextvariations" class="tsd-kind-icon">To<wbr>Text<wbr>Variations</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="modelutils.html#totraindialog" class="tsd-kind-icon">To<wbr>Train<wbr>Dialog</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="modelutils.html#totrainround" class="tsd-kind-icon">To<wbr>Train<wbr>Round</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="modelutils.html#totrainscorerstep" class="tsd-kind-icon">To<wbr>Train<wbr>Scorer<wbr>Step</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="modelutils.html#areequalmemoryvalues" class="tsd-kind-icon">are<wbr>Equal<wbr>Memory<wbr>Values</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="modelutils.html#areequaltextvariations" class="tsd-kind-icon">are<wbr>Equal<wbr>Text<wbr>Variations</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="modelutils.html#changedfilledentities" class="tsd-kind-icon">changed<wbr>Filled<wbr>Entities</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="modelutils.html#generateguid" class="tsd-kind-icon">generateGUID</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="modelutils.html#textvariationtomarkdown" class="tsd-kind-icon">text<wbr>Variation<wbr>ToMarkdown</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
