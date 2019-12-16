@@ -2,10 +2,8 @@
   "name": "root",
   "private": true,
   "devDependencies": {
-    "lerna": "^3.18.3"
-  },
-  "dependencies": {
-    "@types/node": "12.12.18",
+    "@types/node": "12.12.6",
+    "lerna": "3.18.3",
     "typescript": "3.7.2"
   },
   "scripts": {
