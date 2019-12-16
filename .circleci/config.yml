@@ -110,6 +110,11 @@ jobs:
       - run: node .circleci/SetLuisAuthoringKey.js >> $BASH_ENV
       - run_bot_and_ui
 
+      - run:
+          command: npm run cypress -- run --record false --spec "cypress/integration/Tools/DeleteAllTestGeneratedModels.spec.js"
+          when: always
+          working_directory: packages/ui
+
       # Run smoke tests against sample
       - run:
           command: npm run cypress -- run --record false --spec "cypress/integration/smoke/required/**/*.spec.*"
