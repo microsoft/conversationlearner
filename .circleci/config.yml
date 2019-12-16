@@ -237,7 +237,7 @@ jobs:
       # Add key with Write permissions in order to run `lerna publish` which pushes commits
       - add_ssh_keys:
           fingerprints:
-            - "c5:43:9f:bd:5f:41:f2:b9:f5:96:40:08:3a:00:49:fd"
+            - "7f:27:5b:06:05:84:80:6d:f9:7e:a7:f9:4c:ef:a9:d0"
 
       # Setup git commit info
       - run: git config --global user.email "mattm@microsoft.com"
