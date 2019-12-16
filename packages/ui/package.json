@@ -1,6 +1,6 @@
 {
   "name": "@conversationlearner/ui",
-  "version": "0.0.0-development",
+  "version": "0.500.0",
   "description": "Administration user interface for creating, training, and testing bots created using Conversation Learner",
   "homepage": "http://localhost:3978/ui",
   "keywords": [
@@ -21,8 +21,8 @@
   },
   "private": true,
   "dependencies": {
-    "@conversationlearner/models": "0.219.0",
-    "@conversationlearner/webchat": "0.157.0",
+    "@conversationlearner/models": "0.500.0",
+    "@conversationlearner/webchat": "0.500.0",
     "@cypress/webpack-preprocessor": "4.0.3",
     "@types/klaw-sync": "^6.0.0",
     "adaptivecards": "1.2.0",
