@@ -35,8 +35,8 @@ jobs:
   - bash: npx lerna run build
     displayName: 'npx lerna run build'
 
-  - bash: npx lerna run test --ignore @mattmazzola/webchat
-    displayName: 'npx lerna run test --ignore @mattmazzola/webchat'
+  - bash: npx lerna run test --ignore @conversationlearner/webchat
+    displayName: 'npx lerna run test --ignore @conversationlearner/webchat'
 
 - job: windows_build
   pool:

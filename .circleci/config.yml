@@ -78,7 +78,7 @@ jobs:
             - ~/.cache
 
       - run: npx lerna run build
-      - run: npx lerna run test --ignore @mattmazzola/webchat
+      - run: npx lerna run test --ignore @conversationlearner/webchat
       - run: npx lerna run report-coverage
 
   test-smoke:
@@ -109,6 +109,11 @@ jobs:
       # Setup for e2e tests
       - run: node .circleci/SetLuisAuthoringKey.js >> $BASH_ENV
       - run_bot_and_ui
+
+      - run:
+          command: npm run cypress -- run --record false --spec "cypress/integration/Tools/DeleteAllTestGeneratedModels.spec.js"
+          when: always
+          working_directory: packages/ui
 
       # Run smoke tests against sample
       - run:
@@ -253,7 +258,7 @@ jobs:
       # Investigated submodules and subtrees but neither seemed offer simplicity that we want while still keeping this repo as source of truth
       # TODO: Look at using token only in git push instead of clone so it's not stored
       # E.g. 'git pull https://<token>@github.com/username/bar.git'
-      - run: git clone https://${GH_TOKEN_SAMPLES}@github.com/mattmazzola/ConversationLearner-Samples << parameters.clone_path >> -b develop
+      - run: git clone https://${GH_TOKEN_SAMPLES}@github.com/conversationlearner/ConversationLearner-Samples << parameters.clone_path >> -b develop
       # TODO: Try to consolidate to single copy command
       - run: cp ./packages/samples/src/ << parameters.clone_path >> -frv
       - run: cp ./packages/samples/*.* << parameters.clone_path >> -fv

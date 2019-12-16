@@ -1,21 +1,21 @@
 # Release Process
 
-This document outlines the process a developer would take to release a new version of @mattmazzola/sdk.
+This document outlines the process a developer would take to release a new version of @conversationlearner/sdk.
 
 ## Dependency Tree
 
-In normal applications UI is generally the top level dependency the user interacts with; however, in this case @mattmazzola/ui is an actual npm package of the @mattmazzola/sdk.  This allows the SDK to provide every thing the developer needs to get started.
+In normal applications UI is generally the top level dependency the user interacts with; however, in this case @conversationlearner/ui is an actual npm package of the @conversationlearner/sdk.  This allows the SDK to provide every thing the developer needs to get started.
 
 ```
   converstionlearner-samples
       |
-  @mattmazzola/sdk
+  @conversationlearner/sdk
       |    \
-      |  @mattmazzola/ui
+      |  @conversationlearner/ui
       |    /  \
-      |   /  @mattmazzola/webchat
+      |   /  @conversationlearner/webchat
       |  /
-  @mattmazzola/models
+  @conversationlearner/models
 ```
 
-> Notice @mattmazzola/models is consumed by both the SDK and UI
+> Notice @conversationlearner/models is consumed by both the SDK and UI
