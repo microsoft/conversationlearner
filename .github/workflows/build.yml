@@ -21,9 +21,9 @@ jobs:
 
       - run: node --version
       - run: npm --version
-      - run: npm ci
-      - run: npm run test
-      - run: npm run build
+      - run: npx lerna bootstrap
+      - run: npx lerna run test
+      - run: npx lerna run build
 
         env:
           CI: true
@@ -41,9 +41,9 @@ jobs:
 
       - run: node --version
       - run: npm --version
-      - run: npm ci
-      - run: npm run test
-      - run: npm run build
+      - run: npx lerna bootsrap
+      - run: npx lerna run test
+      - run: npx lerna run build
 
         env:
           CI: true

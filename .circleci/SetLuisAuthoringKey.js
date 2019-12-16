@@ -37,5 +37,6 @@ let luisAuthoringKey = authoringKeys[authoringKeyIndex]
 // will be consumed.
 
 console.log(`export LUIS_AUTHORING_KEY=${luisAuthoringKey}\n`)
-console.log(`export CYPRESS_BUILD_NUM=${buildNumber}\n`)
 
+// Expose build number to Cypress for unique model naming
+console.log(`export CYPRESS_BUILD_NUM=${buildNumber}\n`)

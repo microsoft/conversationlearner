@@ -3,7 +3,6 @@ language: node_js
 branches:
   only:
     - master
-    - /^greenkeeper/.*$/
 
 cache:
   directories:
@@ -16,9 +15,13 @@ notifications:
 node_js:
   - node
 
+before_install:
+  - node --version
+  - npm --version
+
 install:
-  - npm ci
+  - npx lerna bootstrap
   
 script:
-  - npm run test
-  - npm run build
+  - npx lerna run build
+  - npx lerna run test --ignore @mattmazzola/webchat

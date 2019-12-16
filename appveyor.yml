@@ -8,9 +8,9 @@ branches:
 cache:
   - '%AppData%\npm-cache -> appveyor.yml'
   - node_modules -> package-lock.json
-  
+
 install:
-  - npm ci
+  - npx lerna bootstrap
 
 before_build:
   # Output useful info for debugging.
@@ -18,7 +18,7 @@ before_build:
   - npm --version
 
 build_script:
-  - npm run build
+  - npx lerna run build
 
 test_script:
-  - npm run test
+  - npx lerna run test --ignore @mattmazzola/webchat

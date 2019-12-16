@@ -21,10 +21,9 @@ jobs:
 
       - run: node --version
       - run: npm --version
-      - run: npm ci
-      - run: npm run test
-      - run: npm run build
-      - run: npx semantic-release
+      - run: npx lerna bootstrap
+      - run: npx lerna run build
+      - run: npx lerna run test
 
         env:
           CI: true

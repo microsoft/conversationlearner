@@ -23,8 +23,8 @@ jobs:
   - bash: npm --version
     displayName: 'npm --version'
 
-  - bash: npm ci
-    displayName: 'npm ci'
+  - bash: npx lerna boostrap
+    displayName: 'npx lerna boostrap'
 
   # - task: CacheBeta@0
   #   inputs:
@@ -32,11 +32,11 @@ jobs:
   #   path: $(npm_config_cache)
   #   displayName: Cache npm
 
-  - bash: npm run build
-    displayName: 'npm run build'
+  - bash: npx lerna run build
+    displayName: 'npx lerna run build'
 
-  - bash: npm test
-    displayName: 'npm test'
+  - bash: npx lerna run test --ignore @mattmazzola/webchat
+    displayName: 'npx lerna run test --ignore @mattmazzola/webchat'
 
 - job: windows_build
   pool:
@@ -61,8 +61,8 @@ jobs:
   - script: npm ci
     displayName: 'npm ci'
 
-  - script: npm run build
-    displayName: 'npm run build'
+  - script: npx lerna run build
+    displayName: 'npx lerna run build'
 
-  - script: npm test
-    displayName: 'npm test'
+  - script: npx lerna run test
+    displayName: 'npx lerna run test'
