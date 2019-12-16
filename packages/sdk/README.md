@@ -56,7 +56,7 @@ import { uiRouter } from '@conversationlearner/sdk'
 ...
 
 "Mount the router at the root `/` as it internally has the /ui paths."
-server.use(uiRouter)
+server.use(uiRouter as any)
 
 ...
 
