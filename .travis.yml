@@ -24,4 +24,4 @@ install:
   
 script:
   - npx lerna run build
-  - npx lerna run test --ignore @mattmazzola/webchat
+  - npx lerna run test --ignore @conversationlearner/webchat

@@ -59,10 +59,10 @@ The SDK includes contains 2 notable components:
 
 # Using the SDK
 
-Install @mattmazzola/sdk in consuming project:
+Install @conversationlearner/sdk in consuming project:
 
 ```bash
-npm install @mattmazzola/sdk --save-exact
+npm install @conversationlearner/sdk --save-exact
 ```
 
 > Note: We recommend using --save-exact to lock the version since we are NOT following SemVer at this time. This can help prevent accidental package updates which may contain breaking changes if you are not using package-lock.json. We will move to following SemVer soon as we improve our release process.
@@ -70,7 +70,7 @@ npm install @mattmazzola/sdk --save-exact
 Using the recognizer:
 
 ```typescript
-import { ConversationLearner, ICLOptions, ClientMemoryManager } from '@mattmazzola/sdk'
+import { ConversationLearner, ICLOptions, ClientMemoryManager } from '@conversationlearner/sdk'
 
 ...
 
@@ -101,7 +101,7 @@ Previously the UI was served separately and required to be run on a different po
 
 ```typescript
 ...
-import { uiRouter } from '@mattmazzola/sdk'
+import { uiRouter } from '@conversationlearner/sdk'
 
 ...
 

@@ -21,4 +21,4 @@ build_script:
   - npx lerna run build
 
 test_script:
-  - npx lerna run test --ignore @mattmazzola/webchat
+  - npx lerna run test --ignore @conversationlearner/webchat
