@@ -33,7 +33,7 @@ const { bfAppId, bfAppPassword, modelId, ...clOptions } = config
 //==================
 // Create Adapter
 //==================
-const adapter = new BotFrameworkAdapter({ appId: bfAppId, appPassword: bfAppPassword });
+const adapter = new BotFrameworkAdapter({ appId: bfAppId, appPassword: bfAppPassword })
 
 //==================================
 // Storage
@@ -51,23 +51,23 @@ if (isDevelopment) {
     console.log(chalk.cyanBright(`Adding /sdk routes`))
     server.use('/sdk', sdkRouter)
 }
-let cl = new ConversationLearner(modelId);
+let cl = new ConversationLearner(modelId)
 
 //=========================================================
 // Bots Business Logic
 //=========================================================
-let cities = ['new york', 'boston', 'new orleans', 'chicago'];
-let cityMap:{ [index:string] : string } = {};
-cityMap['big apple'] = 'new york';
-cityMap['windy city'] = 'chicago';
+let cities = ['new york', 'boston', 'new orleans', 'chicago']
+let cityMap: { [index: string]: string } = {}
+cityMap['big apple'] = 'new york'
+cityMap['windy city'] = 'chicago'
 
-var resolveCity = function(cityFromUser: string) {
+var resolveCity = function (cityFromUser: string) {
     if (cities.indexOf(cityFromUser) > -1) {
-        return cityFromUser;
+        return cityFromUser
     } else if (cityFromUser in cityMap) {
-        return cityMap[cityFromUser];
+        return cityMap[cityFromUser]
     } else {
-        return null;
+        return null
     }
 }
 
@@ -82,19 +82,19 @@ var resolveCity = function(cityFromUser: string) {
 */
 cl.EntityDetectionCallback = async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
     // Clear
-    memoryManager.Delete("CityUnknown");
+    memoryManager.Delete("CityUnknown")
 
     // Get list of (possibly) ambiguous cities
-    var citiesFromUser = memoryManager.Get("City", ClientMemoryManager.AS_STRING_LIST);
+    var citiesFromUser = memoryManager.Get("City", ClientMemoryManager.AS_STRING_LIST)
     if (citiesFromUser.length > 0) {
         var cityFromUser = citiesFromUser[0]
         const resolvedCity = resolveCity(cityFromUser)
         if (resolvedCity) {
-            memoryManager.Set("CityResolved", resolvedCity);
+            memoryManager.Set("CityResolved", resolvedCity)
         } else {
-            memoryManager.Set("CityUnknown", cityFromUser);
-            memoryManager.Delete("CityResolved");
-            memoryManager.Delete("City");
+            memoryManager.Set("CityUnknown", cityFromUser)
+            memoryManager.Delete("CityResolved")
+            memoryManager.Delete("City")
         }
     }
 }
@@ -108,7 +108,7 @@ server.post('/api/messages', (req, res) => {
         let result = await cl.recognize(context)
 
         if (result) {
-            return cl.SendResult(result);
+            return cl.SendResult(result)
         }
     })
 })

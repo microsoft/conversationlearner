@@ -21,7 +21,7 @@ const isDevelopment = process.env.NODE_ENV === 'development'
 if (isDevelopment) {
     console.log(chalk.yellowBright(`Adding /directline routes`))
     server.use(getDolRouter(config.botPort))
-    
+
     console.log(chalk.greenBright(`Adding /ui routes`))
     server.use(uiRouter as any)
 }
@@ -35,7 +35,7 @@ const { bfAppId, bfAppPassword, modelId, cosmosServer, cosmosKey, ...clOptions }
 //==================
 // Create Adapter
 //==================
-const adapter = new BotFrameworkAdapter({ appId: bfAppId, appPassword: bfAppPassword });
+const adapter = new BotFrameworkAdapter({ appId: bfAppId, appPassword: bfAppPassword })
 
 //==================================
 // Storage 
@@ -64,9 +64,9 @@ async function main() {
 
     cl.EntityDetectionCallback = (async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
 
-    memoryManager.Get("name", ClientMemoryManager.AS_STRING)
+        memoryManager.Get("name", ClientMemoryManager.AS_STRING)
     })
-        
+
     //=================================
     // Handle Incoming Messages
     //=================================
@@ -75,7 +75,7 @@ async function main() {
             const result = await cl.recognize(context)
 
             if (result) {
-                return cl.SendResult(result);
+                return cl.SendResult(result)
             }
         })
     })

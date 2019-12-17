@@ -32,7 +32,7 @@ const { bfAppId, bfAppPassword, modelId, ...clOptions } = config
 //==================
 // Create Adapter
 //==================
-const adapter = new BotFrameworkAdapter({ appId: bfAppId, appPassword: bfAppPassword });
+const adapter = new BotFrameworkAdapter({ appId: bfAppId, appPassword: bfAppPassword })
 
 //==================================
 // STORAGE EXAMPLES
@@ -61,7 +61,7 @@ if (typeof config.redisKey !== 'string' || config.redisKey.length === 0) {
     throw new Error(`When using Redis storage: redisKey value must be non-empty. You passed: ${config.redisKey}`)
 }
 
-let redisStorage = new RedisStorage({ server: config.redisServer, key: config.redisKey });
+let redisStorage = new RedisStorage({ server: config.redisServer, key: config.redisKey })
 
 //==================================
 // Initialize Conversation Learner
@@ -71,7 +71,7 @@ if (isDevelopment) {
     console.log(chalk.cyanBright(`Adding /sdk routes`))
     server.use('/sdk', sdkRouter)
 }
-let cl = new ConversationLearner(modelId);
+let cl = new ConversationLearner(modelId)
 
 
 //=================================
@@ -83,7 +83,7 @@ server.post('/api/messages', (req, res) => {
         let result = await cl.recognize(context)
 
         if (result) {
-            return cl.SendResult(result);
+            return cl.SendResult(result)
         }
     })
 })

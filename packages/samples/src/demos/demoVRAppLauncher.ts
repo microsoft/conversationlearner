@@ -33,7 +33,7 @@ const { bfAppId, bfAppPassword, modelId, ...clOptions } = config
 //==================
 // Create Adapter
 //==================
-const adapter = new BotFrameworkAdapter({ appId: bfAppId, appPassword: bfAppPassword });
+const adapter = new BotFrameworkAdapter({ appId: bfAppId, appPassword: bfAppPassword })
 
 //==================================
 // Storage
@@ -51,14 +51,14 @@ if (isDevelopment) {
     console.log(chalk.cyanBright(`Adding /sdk routes`))
     server.use('/sdk', sdkRouter)
 }
-let cl = new ConversationLearner(modelId);
+let cl = new ConversationLearner(modelId)
 
 //=========================================================
 // Bots Buisness Logic
 //=========================================================
-var apps = ["skype", "outlook", "amazon video", "amazon music"];
+var apps = ["skype", "outlook", "amazon video", "amazon music"]
 var resolveApps = function (appName: string) {
-    return apps.filter(n => n.includes(appName));
+    return apps.filter(n => n.includes(appName))
 }
 
 //=================================
@@ -73,22 +73,22 @@ var resolveApps = function (appName: string) {
 cl.EntityDetectionCallback = async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
 
     // Clear disambigApps
-    memoryManager.Delete("DisambigAppNames");
-    memoryManager.Delete("UnknownAppName");
+    memoryManager.Delete("DisambigAppNames")
+    memoryManager.Delete("UnknownAppName")
 
     // Get list of (possibly) ambiguous apps
-    var appNames = memoryManager.Get("AppName", ClientMemoryManager.AS_STRING_LIST);
+    var appNames = memoryManager.Get("AppName", ClientMemoryManager.AS_STRING_LIST)
     if (appNames.length > 0) {
         const resolvedAppNames = appNames
             .map(appName => resolveApps(appName))
             .reduce((a, b) => a.concat(b))
 
         if (resolvedAppNames.length == 0) {
-            memoryManager.Set("UnknownAppName", appNames[0]);
-            memoryManager.Delete("AppName");
+            memoryManager.Set("UnknownAppName", appNames[0])
+            memoryManager.Delete("AppName")
         } else if (resolvedAppNames.length > 1) {
-            memoryManager.Set("DisambigAppNames", resolvedAppNames);
-            memoryManager.Delete("AppName");
+            memoryManager.Set("DisambigAppNames", resolvedAppNames)
+            memoryManager.Delete("AppName")
         }
     }
 }
@@ -114,7 +114,7 @@ server.post('/api/messages', (req, res) => {
         let result = await cl.recognize(context)
 
         if (result) {
-            return cl.SendResult(result);
+            return cl.SendResult(result)
         }
     })
 })
