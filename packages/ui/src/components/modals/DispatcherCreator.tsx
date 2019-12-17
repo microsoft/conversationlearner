@@ -14,7 +14,7 @@ import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { autobind } from 'core-decorators'
-import HelpIcon from '../HelpIcon';
+import HelpIcon from '../HelpIcon'
 import { TipType } from '../ToolTips/ToolTips'
 
 export enum DispatcherAlgorithmType {
@@ -189,7 +189,7 @@ class Component extends React.Component<Props, ComponentState> {
             </OF.Modal>
         )
     }
- 
+
     private getModelFromState(): Partial<CLM.AppBase> {
         return {
             appName: this.state.modelName.trim(),
@@ -207,7 +207,7 @@ class Component extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setErrorDisplay: actions.display.setErrorDisplay,
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     return {
@@ -222,8 +222,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
 type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
 export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(Component))

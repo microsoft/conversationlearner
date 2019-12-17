@@ -305,24 +305,24 @@ export function getBestUnscoredAction(scoreResponse: CLM.ScoreResponse, actions:
 
 // Check if entity is in memory and return its name
 export function entityInMemory(entityId: string, entities: CLM.EntityBase[], memories: CLM.Memory[]): { match: boolean, name: string } {
-    const entity = entities.find(e => e.entityId === entityId);
+    const entity = entities.find(e => e.entityId === entityId)
 
     // If entity is null - there's a bug somewhere
     if (!entity) {
-        return { match: false, name: 'ERROR' };
+        return { match: false, name: 'ERROR' }
     }
 
-    const memory = memories.find(m => m.entityName === entity.entityName);
-    return { match: (memory !== undefined), name: entity.entityName };
+    const memory = memories.find(m => m.entityName === entity.entityName)
+    return { match: (memory !== undefined), name: entity.entityName }
 }
 
 // Returns true if ActionId is available in actions
 export function isActionIdAvailable(actionId: string, actions: CLM.ActionBase[], entities: CLM.EntityBase[], memories: CLM.Memory[]): boolean {
-    const action = actions.find(a => a.actionId === actionId);
+    const action = actions.find(a => a.actionId === actionId)
     if (!action) {
-        return false;
+        return false
     }
-    return isActionAvailable(action, entities, memories);
+    return isActionAvailable(action, entities, memories)
 }
 
 // Returns true if Action is available given Entities in Memory
@@ -356,7 +356,7 @@ export function isActionAvailable(action: CLM.ActionBase, entities: CLM.EntityBa
             }
         }
     }
-    return true;
+    return true
 }
 
 export function convertToScorerCondition(condition: CLM.Condition, entities: CLM.EntityBase[], memories: CLM.Memory[]): { match: boolean, name: string } {
@@ -364,7 +364,7 @@ export function convertToScorerCondition(condition: CLM.Condition, entities: CLM
 
     // If entity is null - there's a bug somewhere
     if (!entity) {
-        return { match: false, name: 'ERROR' };
+        return { match: false, name: 'ERROR' }
     }
 
     const memory = memories.find(m => m.entityName === entity.entityName)
@@ -438,7 +438,7 @@ export function trainDialogFirstInput(trainDialog: CLM.TrainDialog): string {
 
 export function trainDialogLastInput(trainDialog: CLM.TrainDialog): string | void {
     if (trainDialog.rounds?.length > 0) {
-        return trainDialog.rounds[trainDialog.rounds.length - 1].extractorStep.textVariations[0].text;
+        return trainDialog.rounds[trainDialog.rounds.length - 1].extractorStep.textVariations[0].text
     }
 }
 
@@ -446,10 +446,10 @@ export function trainDialogLastResponse(trainDialog: CLM.TrainDialog, actions: C
     // Find last action of last scorer step of last round
     // If found, return payload, otherwise return not found icon
     if (trainDialog.rounds?.length > 0) {
-        const scorerSteps = trainDialog.rounds[trainDialog.rounds.length - 1].scorerSteps;
+        const scorerSteps = trainDialog.rounds[trainDialog.rounds.length - 1].scorerSteps
         if (scorerSteps.length > 0) {
-            const actionId = scorerSteps[scorerSteps.length - 1].labelAction;
-            const action = actions.find(a => a.actionId === actionId);
+            const actionId = scorerSteps[scorerSteps.length - 1].labelAction
+            const action = actions.find(a => a.actionId === actionId)
             if (action) {
                 return CLM.ActionBase.GetPayload(action, getDefaultEntityMap(entities))
             }
@@ -568,11 +568,11 @@ export function hasInternalLabelConflict(originalTrainDialog: CLM.TrainDialog, n
 
     let originalExtractorSteps = originalTrainDialog.rounds.reduce((acc, round) => {
         return [...acc, ...round.extractorStep.textVariations]
-    }, []);
+    }, [])
 
     let newExtractorSteps = newTrainDialog.rounds.reduce((acc, round) => {
         return [...acc, ...round.extractorStep.textVariations]
-    }, []);
+    }, [])
 
     // Only need to check one as train dialogs have self-consistent labelling, so make unique
     originalExtractorSteps = originalExtractorSteps.filter((item, i, ar) => ar.findIndex(es => es.text === item.text) === i)
@@ -802,7 +802,7 @@ export function getPrevMemories(trainDialog: CLM.TrainDialog, entities: CLM.Enti
         if (prevIndex >= 0) {
             const round = trainDialog.rounds[prevIndex]
             if (round.scorerSteps.length > 0) {
-                scorerStep = round.scorerSteps[round.scorerSteps.length - 1];
+                scorerStep = round.scorerSteps[round.scorerSteps.length - 1]
             }
         }
     }
@@ -840,16 +840,16 @@ export function getDialogRenderData(
     let prevMemories: CLM.Memory[] = []
 
     if (roundIndex !== null && roundIndex < trainDialog.rounds.length) {
-        round = trainDialog.rounds[roundIndex];
+        round = trainDialog.rounds[roundIndex]
         if (round.scorerSteps.length > 0) {
             // If a score round
             if (typeof scoreIndex === "number") {
-                scorerStep = round.scorerSteps[scoreIndex];
+                scorerStep = round.scorerSteps[scoreIndex]
                 if (!scorerStep) {
                     throw new Error(`Cannot get score step at index: ${scoreIndex} from array of length: ${round.scorerSteps.length}`)
                 }
 
-                let selectedAction = actions.find(action => action.actionId === scorerStep!.labelAction);
+                let selectedAction = actions.find(action => action.actionId === scorerStep!.labelAction)
 
                 if (!selectedAction) {
                     // Action may have been deleted.  If so create dummy action to render
@@ -900,7 +900,7 @@ export function getDialogRenderData(
                                 isTerminal: action.isTerminal,
                                 reason: CLM.ScoreReason.NotCalculated,
                                 actionType: action.actionType
-                            }));
+                            }))
 
                     scoreResponse = {
                         metrics: {
@@ -939,7 +939,7 @@ export function getDialogRenderData(
     }
 }
 
- // Return template that best matches the given imported action
+// Return template that best matches the given imported action
 export function bestTemplateMatch(importedAction: ImportedAction, templates: CLM.Template[]): CLM.Template | null {
     let bestScore = 0
     let bestTemplate: CLM.Template | null = null

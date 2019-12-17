@@ -22,7 +22,7 @@ loadTheme({
   palette: {
     // 'themePrimary': 'red' 
   }
-});
+})
 
 // Initialize react-intl-messages 
 addLocaleData([...en, ...ko])
@@ -43,4 +43,4 @@ ReactDOM.render(
     </IntlProvider>
   </Provider>,
   document.getElementById('root') as HTMLElement
-);
+)

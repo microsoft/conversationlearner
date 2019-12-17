@@ -66,7 +66,7 @@ class RepromptAction extends React.Component<Props, ComponentState> {
             template = this.props.botInfo.templates.find((t) => t.name === cardAction.templateName)
             renderedActionArguments = cardAction.renderArguments(entityMap, { preserveOptionalNodeWrappingCharacters: true })
         }
-        
+
         const repromptOptions: ChoiceGroupOptionWithTestId[] = [
             {
                 key: 'A',
@@ -79,7 +79,7 @@ class RepromptAction extends React.Component<Props, ComponentState> {
                 'data-testid': 'action-modal-reprompt-type-b',
             },
         ]
-    
+
         return <div className="cl-action-creator-reprompt">
             <OF.ChoiceGroup
                 defaultSelectedKey={this.props.selfprompt ? repromptOptions[0].key : repromptOptions[1].key}

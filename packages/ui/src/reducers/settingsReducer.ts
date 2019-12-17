@@ -34,8 +34,8 @@ const settingsReducer: Reducer<SettingsState> = produce((state: SettingsState, a
             }
             return
         case AT.SETTINGS_UPDATE_FEATURES:
-                state.features = action.features
-                return
+            state.features = action.features
+            return
         case AT.SETTINGS_TOGGLE_USE_CUSTOM_PORT:
             state.useCustomPort = !state.useCustomPort
             state.botPort = state.useCustomPort

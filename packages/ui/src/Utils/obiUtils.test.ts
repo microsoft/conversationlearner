@@ -83,7 +83,7 @@ describe('obiUtils', () => {
             const t1 = makeTranscript("channel1")
             const t2 = makeTranscript("channel2")
 
-            expect(ObiUtils.areTranscriptsEqual(t1 , t2)).toEqual(true)
+            expect(ObiUtils.areTranscriptsEqual(t1, t2)).toEqual(true)
         })
 
         test('typeMismatch', () => {
@@ -93,42 +93,42 @@ describe('obiUtils', () => {
                 "name": "bot",
                 "role": "bot"
             }
-            expect(ObiUtils.areTranscriptsEqual(t1 , t2)).toEqual(false)
+            expect(ObiUtils.areTranscriptsEqual(t1, t2)).toEqual(false)
         })
 
         test('botResponseMismatch', () => {
             const t1 = makeTranscript("channel1")
             const t2 = makeTranscript("channel2")
             t2[1].text = "CHANGED BOT RESPONSE"
-            expect(ObiUtils.areTranscriptsEqual(t1 , t2)).toEqual(false)
+            expect(ObiUtils.areTranscriptsEqual(t1, t2)).toEqual(false)
         })
 
         test('sameChannel', () => {
             const t1 = makeTranscript("channel1")
             const t2 = makeTranscript("channel1")
 
-            expect(() => ObiUtils.areTranscriptsEqual(t1 , t2)).toThrow()
+            expect(() => ObiUtils.areTranscriptsEqual(t1, t2)).toThrow()
         })
 
         test('noTurns', () => {
             const t1: any[] = []
             const t2: any[] = []
 
-            expect(() => ObiUtils.areTranscriptsEqual(t1 , t2)).toThrow()
+            expect(() => ObiUtils.areTranscriptsEqual(t1, t2)).toThrow()
         })
 
         test('missingFrom', () => {
             const t1 = makeTranscript("channel1")
             const t2 = makeTranscript("channel2")
             delete t2[3].from
-            expect(() => ObiUtils.areTranscriptsEqual(t1 , t2)).toThrow()
+            expect(() => ObiUtils.areTranscriptsEqual(t1, t2)).toThrow()
         })
 
         test('missingConversation', () => {
             const t1 = makeTranscript("channel1")
             const t2 = makeTranscript("channel2")
             delete t1[0].conversation
-            expect(() => ObiUtils.areTranscriptsEqual(t1 , t2)).toThrow()
+            expect(() => ObiUtils.areTranscriptsEqual(t1, t2)).toThrow()
         })
 
         test('differentLength', () => {
@@ -136,7 +136,7 @@ describe('obiUtils', () => {
             const t2 = makeTranscript("channel2")
             t2.pop()
 
-            expect(ObiUtils.areTranscriptsEqual(t1 , t2)).toEqual(false)
+            expect(ObiUtils.areTranscriptsEqual(t1, t2)).toEqual(false)
         })
 
         test('differentUserText', () => {
@@ -151,7 +151,7 @@ describe('obiUtils', () => {
                 "text": "DIFFERENT USER UTTERANCE"
             }
 
-            expect(() => ObiUtils.areTranscriptsEqual(t1 , t2)).toThrow()
+            expect(() => ObiUtils.areTranscriptsEqual(t1, t2)).toThrow()
         })
     })
     // Test cases for parsing conditions from Microsoft.SwitchCondition statements.

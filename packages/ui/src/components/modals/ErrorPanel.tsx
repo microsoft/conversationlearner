@@ -75,7 +75,7 @@ class ErrorPanel extends React.Component<Props, ComponentState> {
                     Close
                 </OF.DefaultButton>
             </div>
-        );
+        )
     }
 
     getCustomError(intl: InjectedIntl, error: ErrorState): string | null {
@@ -123,7 +123,7 @@ class ErrorPanel extends React.Component<Props, ComponentState> {
     }
 
     renderErrorBody(): React.ReactNode {
-        return this.state.errorMessages.map((item, i) => <p key={i}>{item}</p>);
+        return this.state.errorMessages.map((item, i) => <p key={i}>{item}</p>)
     }
 
     renderErrorCode(): React.ReactNode {
@@ -182,14 +182,14 @@ class ErrorPanel extends React.Component<Props, ComponentState> {
             >
                 {this.renderError()}
             </OF.Panel>
-        );
+        )
     }
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchBotInfoThunkAsync: actions.bot.fetchBotInfoThunkAsync,
         clearErrorDisplay: actions.display.clearErrorDisplay
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     return {
@@ -200,8 +200,8 @@ const mapStateToProps = (state: State) => {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
 type Props = stateProps & dispatchProps & InjectedIntlProps
 
 export default connect<stateProps, dispatchProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ErrorPanel))

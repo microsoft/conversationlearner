@@ -179,7 +179,7 @@ const isConditionMutuallyExclusive = (tag1: OF.ITag, tag2: OF.ITag): boolean => 
     if (ctag1.condition.entityId === ctag2.condition.entityId) {
         return true
     }
-    return false;
+    return false
 }
 
 const getSuggestedTags = (filterText: string, allTags: OF.ITag[], tagsToExclude: OF.ITag[], mutuallyExclusive: OF.ITag[] = []): OF.ITag[] => {
@@ -390,7 +390,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
             // Reset state every time dialog was closed and is opened
             if (prevProps.open === false) {
-                newState = this.initProps();
+                newState = this.initProps()
             }
             // Otherwise reset only if props have changed
             else {
@@ -655,7 +655,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         if (tags1.length !== tags2.length) {
             return false
         }
-        return tags1.reduce((acc, x, i) => { return acc && tags1[i].key === tags2[i].key }, true);
+        return tags1.reduce((acc, x, i) => { return acc && tags1[i].key === tags2[i].key }, true)
 
     }
 
@@ -958,7 +958,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     json: textValue.toJSON()
                 }
                 payload = JSON.stringify(tp)
-                break;
+                break
             }
             case CLM.ActionTypes.CARD:
                 const cp: CLM.CardPayload = {
@@ -966,7 +966,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     arguments: this.getActionArguments(this.state.slateValuesMap)
                 }
                 payload = JSON.stringify(cp)
-                break;
+                break
             case CLM.ActionTypes.API_LOCAL:
                 const ap: CLM.ActionPayload = {
                     payload: this.state.selectedApiOptionKey!.toString(),
@@ -974,14 +974,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     renderArguments: this.getActionArguments(this.state.secondarySlateValuesMap),
                 }
                 payload = JSON.stringify(ap)
-                break;
+                break
             case CLM.ActionTypes.END_SESSION:
                 const value = this.state.slateValuesMap[TEXT_SLOT]
                 const t: CLM.TextPayload = {
                     json: value.toJSON()
                 }
                 payload = JSON.stringify(t)
-                break;
+                break
             case CLM.ActionTypes.SET_ENTITY:
                 // TODO: Fix types with discriminated unions
                 // If action being saved is set entity action, entityId and enumValueId should be defined
@@ -992,7 +992,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     enumValueId,
                 }
                 payload = JSON.stringify(setEntityPayload)
-                break;
+                break
             case CLM.ActionTypes.CHANGE_MODEL: {
                 const model = this.props.models.find(m => m.appId === this.state.selectedModelOptionKey)
                 if (!model) {
@@ -1006,7 +1006,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 }
 
                 payload = JSON.stringify(modelPayload)
-                break;
+                break
             }
             default:
                 throw new Error(`When attempting to submit action, the selected action type: ${this.state.selectedActionTypeOptionKey} did not have matching type`)
@@ -1018,8 +1018,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const negativeConditions = this.state.negativeConditionTags.filter(t => t.condition).map(t => t.condition!)
         const repromptActionId = this.state.shouldReprompt
             ? this.state.repromptActionId || REPROMPT_SELF
-            : undefined 
-        
+            : undefined
+
         // TODO: This should be new type such as ActionInput for creation only.
         const action = new CLM.ActionBase({
             actionId: null!,
@@ -1095,7 +1095,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 })
             }
             else {
-                this.props.handleEdit(newOrEditedAction);
+                this.props.handleEdit(newOrEditedAction)
             }
         }
         catch (e) {
@@ -1123,13 +1123,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 this.setState({
                     isConfirmDeleteInUseModalOpen: true,
                     validationWarnings,
-                });
+                })
             }
             else {
                 this.setState({
                     isConfirmDeleteModalOpen: true,
                     validationWarnings: [],
-                });
+                })
             }
         }
         catch (e) {
@@ -1463,7 +1463,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     // Payload editor is trying to submit action
     async onSubmitPayloadEditor(): Promise<void> {
         if (!this.saveDisabled()) {
-            await this.onClickSaveCreate();
+            await this.onClickSaveCreate()
         }
     }
 
@@ -1476,7 +1476,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const otherValuesMap = isSecondary
             ? { ...this.state.slateValuesMap }
             : { ...this.state.secondarySlateValuesMap }
-        slateValuesMap[slot] = value;
+        slateValuesMap[slot] = value
 
         // Get new required entities from payloads
         // TODO: Would be more optimized to store required entities PER payload in the map instead of single value. This reduces computation for ALL
@@ -1589,7 +1589,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             (this.state.selectedActionTypeOptionKey === CLM.ActionTypes.API_LOCAL
                 && (this.state.apiOptions.length === 0))
             || (this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CARD
-                && (this.state.cardOptions.length === 0));
+                && (this.state.cardOptions.length === 0))
 
         // Available Mentions: All entities - expected entity - required entities from payload - disqualified entities
         const unavailableTags = [...this.state.expectedEntityTags, ...this.state.negativeConditionTags]
@@ -1618,7 +1618,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const repromptAction = this.state.repromptActionId
             ? this.props.actions.find(a => a.actionId === this.state.repromptActionId)
             : undefined
-        
+
         return (
             <OF.Modal
                 isOpen={this.props.open}
@@ -2125,7 +2125,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     onClickCancel={this.onClickCancelConditionCreator}
                 />
             </OF.Modal>
-        );
+        )
     }
 }
 const mapDispatchToProps = (dispatch: any) => {
@@ -2133,7 +2133,7 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchBotInfoThunkAsync: actions.bot.fetchBotInfoThunkAsync,
         fetchActionDeleteValidationThunkAsync: actions.action.fetchActionDeleteValidationThunkAsync,
         fetchActionEditValidationThunkAsync: actions.action.fetchActionEditValidationThunkAsync
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     if (!state.bot.botInfo) {

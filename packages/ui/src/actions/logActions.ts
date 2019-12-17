@@ -51,7 +51,7 @@ export const deleteLogDialogThunkAsync = (app: CLM.AppBase, logDialogId: string,
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_LOG_DIALOG_ASYNC))
             dispatch(deleteLogDialogRejected(logDialogId))
             // Delete failed so reload it back into UI
-            void dispatch(fetchLogDialogThunkAsync(app.appId, logDialogId, true));
+            void dispatch(fetchLogDialogThunkAsync(app.appId, logDialogId, true))
         }
     }
 }
@@ -143,7 +143,7 @@ export const fetchLogDialogThunkAsync = (appId: string, logDialogId: string, rep
                 return null
             }
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_LOG_DIALOG_ASYNC))
-            throw e;
+            throw e
         }
     }
 }
@@ -161,7 +161,7 @@ const fetchLogDialogsAsync = (appId: string, packageIds: string[], noSpinnerDisp
 }
 
 const fetchLogDialogsFulfilled = (logQueryResult: CLM.LogQueryResult, clear: boolean): ActionObject => {
-    return { 
+    return {
         type: AT.FETCH_LOG_DIALOGS_FULFILLED,
         logDialogs: logQueryResult.logDialogs,
         continuationToken: logQueryResult.continuationToken,
@@ -186,7 +186,7 @@ export const fetchLogDialogsThunkAsync = (app: CLM.AppBase, packageId: string, c
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_LOG_DIALOGS_ASYNC))
-            return null;
+            return null
         }
     }
 }

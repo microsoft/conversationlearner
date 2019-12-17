@@ -113,9 +113,9 @@ export type DisplayAction = {
 } | {
     type: AT.SET_WEBCHAT_SCROLL_POSITION,
     position: number
-}| {
+} | {
     type: AT.SPINNER_ADD
-}| {
+} | {
     type: AT.SPINNER_REMOVE
 } | {
     type: AT.CLEAR_WEBCHAT_SCROLL_POSITION
@@ -438,35 +438,35 @@ export type DeleteAction = {
     | DeleteLogDialogsAsyncAction
     | DeleteLogDialogsFulfilledAction
     | DeleteLogDialogsRejectedAction
-| {
-    type: AT.DELETE_CHAT_SESSION_ASYNC,
-    session: CLM.Session,
-    appId: string,
-    packageId: string
-} | {
-    type: AT.DELETE_CHAT_SESSION_FULFILLED,
-    sessionId: string,
-} | {
-    type: AT.DELETE_TEACH_SESSION_ASYNC,
-    teachSession: CLM.Teach,
-    appId: string,
-    save: boolean
-} | {
-    type: AT.DELETE_TEACH_SESSION_FULFILLED,
-    teachSessionGUID: string,
-    newTrainDialog: CLM.TrainDialog | null,
-    sourceTrainDialogId: string | null
-} | {
-    type: AT.CLEAR_TEACH_SESSION
-} | {
-    type: AT.DELETE_MEMORY_ASYNC,
-    key: string,
-    appId: string
-} | {
-    type: AT.DELETE_MEMORY_FULFILLED
-} | {
-    type: AT.DELETE_OPERATION_FULFILLED
-}
+    | {
+        type: AT.DELETE_CHAT_SESSION_ASYNC,
+        session: CLM.Session,
+        appId: string,
+        packageId: string
+    } | {
+        type: AT.DELETE_CHAT_SESSION_FULFILLED,
+        sessionId: string,
+    } | {
+        type: AT.DELETE_TEACH_SESSION_ASYNC,
+        teachSession: CLM.Teach,
+        appId: string,
+        save: boolean
+    } | {
+        type: AT.DELETE_TEACH_SESSION_FULFILLED,
+        teachSessionGUID: string,
+        newTrainDialog: CLM.TrainDialog | null,
+        sourceTrainDialogId: string | null
+    } | {
+        type: AT.CLEAR_TEACH_SESSION
+    } | {
+        type: AT.DELETE_MEMORY_ASYNC,
+        key: string,
+        appId: string
+    } | {
+        type: AT.DELETE_MEMORY_FULFILLED
+    } | {
+        type: AT.DELETE_OPERATION_FULFILLED
+    }
 
 export type DeleteLogDialogAsyncAction = {
     type: AT.DELETE_LOG_DIALOG_ASYNC,

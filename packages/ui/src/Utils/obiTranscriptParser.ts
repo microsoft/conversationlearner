@@ -4,7 +4,7 @@
  */
 import * as CLM from '@conversationlearner/models'
 import * as Util from './util'
-import * as OBIUtils from './obiUtils'  
+import * as OBIUtils from './obiUtils'
 import * as BB from 'botbuilder'
 
 export class ObiTranscriptParser {
@@ -14,7 +14,7 @@ export class ObiTranscriptParser {
     private trainDialogs: CLM.TrainDialog[] = []
     private createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
     private createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
-    
+
     constructor(
         app: CLM.AppBase,
         actions: CLM.ActionBase[],
@@ -46,10 +46,10 @@ export class ObiTranscriptParser {
             try {
                 const transcript: BB.Activity[] = JSON.parse(source)
                 const transcriptHash = CLM.hashText(JSON.stringify(transcript))
-    
+
                 // If transcript has already been imported, skip it
                 if (!this.hasTranscriptBeenImported(transcriptHash)) {
-            
+
                     const importedTrainDialog = await OBIUtils.trainDialogFromTranscriptImport(
                         transcript,
                         lgMap,
@@ -59,7 +59,7 @@ export class ObiTranscriptParser {
                         this.createActionThunkAsync as any,
                         this.createEntityThunkAsync as any
                     )
-        
+
                     importedTrainDialogs.push(importedTrainDialog)
                 }
             }

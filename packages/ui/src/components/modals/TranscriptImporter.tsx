@@ -2,19 +2,19 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
+import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
 import * as CLM from '@conversationlearner/models'
 import FormattedMessageId from '../FormattedMessageId'
 import HelpIcon from '../HelpIcon'
 import { TipType } from '../ToolTips/ToolTips'
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
 
 interface ComponentState {
     transcriptFiles: File[]
@@ -32,7 +32,7 @@ class TranscriptImporter extends React.Component<Props, ComponentState> {
         autoMerge: false,
         autoActionMatch: false
     }
-        
+
     private transcriptFileInput: any
     private lgFileInput: any
 
@@ -89,14 +89,14 @@ class TranscriptImporter extends React.Component<Props, ComponentState> {
             >
                 <div className='cl-modal_header'>
                     <span className={OF.FontClassNames.xxLarge}>
-                        <FormattedMessageId id={FM.TRANSCRIPT_IMPORTER_TITLE}/>
+                        <FormattedMessageId id={FM.TRANSCRIPT_IMPORTER_TITLE} />
                     </span>
                     <div className={OF.FontClassNames.medium}>
-                        <FormattedMessageId id={FM.TRANSCRIPT_IMPORTER_DESCRIPTION}/>
-                        <HelpIcon tipType={TipType.TRANSCRIPT_IMPORTER}/>
+                        <FormattedMessageId id={FM.TRANSCRIPT_IMPORTER_DESCRIPTION} />
+                        <HelpIcon tipType={TipType.TRANSCRIPT_IMPORTER} />
                     </div>
                 </div>
-                <div 
+                <div
                     data-testid="transcript-import-file-picker"
                     className="cl-form"
                 >
@@ -111,18 +111,18 @@ class TranscriptImporter extends React.Component<Props, ComponentState> {
                         <OF.PrimaryButton
                             data-testid="transcript-locate-file-button"
                             className="cl-file-picker-button"
-                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_TRANSCRIPT_BUTTON)} 
-                            text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_TRANSCRIPT_BUTTON)} 
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_TRANSCRIPT_BUTTON)}
+                            text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_TRANSCRIPT_BUTTON)}
                             iconProps={{ iconName: 'DocumentSearch' }}
                             onClick={() => this.transcriptFileInput.click()}
                         />
                         <OF.TextField
                             disabled={true}
-                            value={!this.state.transcriptFiles 
+                            value={!this.state.transcriptFiles
                                 ? undefined
                                 : this.state.transcriptFiles.length === 1
-                                ? this.state.transcriptFiles[0].name 
-                                : `${this.state.transcriptFiles.length} files selected`
+                                    ? this.state.transcriptFiles[0].name
+                                    : `${this.state.transcriptFiles.length} files selected`
                             }
                         />
                     </div>
@@ -137,18 +137,18 @@ class TranscriptImporter extends React.Component<Props, ComponentState> {
                         <OF.PrimaryButton
                             data-testid="transcript-locate-file-button"
                             className="cl-file-picker-button"
-                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_LG_BUTTON)} 
-                            text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_LG_BUTTON)} 
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_LG_BUTTON)}
+                            text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_LG_BUTTON)}
                             iconProps={{ iconName: 'DocumentSearch' }}
                             onClick={() => this.lgFileInput.click()}
                         />
                         <OF.TextField
                             disabled={true}
-                            value={!this.state.lgFiles 
+                            value={!this.state.lgFiles
                                 ? undefined
                                 : this.state.lgFiles.length === 1
-                                ? this.state.lgFiles[0].name 
-                                : `${this.state.lgFiles.length} files selected`
+                                    ? this.state.lgFiles[0].name
+                                    : `${this.state.lgFiles.length} files selected`
                             }
                         />
                     </div>
@@ -175,7 +175,7 @@ class TranscriptImporter extends React.Component<Props, ComponentState> {
                             <OF.PrimaryButton
                                 disabled={invalidImport}
                                 data-testid="import-submit-button"
-                                iconProps={{iconName: "DownloadDocument"}}
+                                iconProps={{ iconName: "DownloadDocument" }}
                                 onClick={() => this.props.onSubmit(this.state.transcriptFiles, this.state.lgFiles, this.state.autoImport, this.state.autoMerge, this.state.autoActionMatch)}
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_IMPORT)}
                                 text={Util.formatMessageId(this.props.intl, FM.BUTTON_IMPORT)}
@@ -197,7 +197,7 @@ class TranscriptImporter extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     return {
@@ -215,8 +215,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
 type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
 export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TranscriptImporter))

@@ -90,9 +90,9 @@ describe('obiDialogParser', () => {
             expect(entities[0].entityName).toEqual("isProductKey")
             expect(entities[0].entityType).toEqual(CLM.EntityType.ENUM)
             expect(entities[0].enumValues).toEqual([
-                {enumValue: "Office"},
-                {enumValue: "Windows"},
-                {enumValue: "OfficeTest"}
+                { enumValue: "Office" },
+                { enumValue: "Windows" },
+                { enumValue: "OfficeTest" }
             ])
             expect(entities[1].entityName).toEqual("productKey")
             expect(entities[1].entityType).toEqual(CLM.EntityType.LUIS)
@@ -104,7 +104,7 @@ describe('obiDialogParser', () => {
                 const condition: CLM.Condition = conditions[0]
                 expect(condition.condition).toEqual(CLM.ConditionType.EQUAL)
             }
- 
+
             expect(importResults.trainDialogs.length).toEqual(4)
             // Validate 1st TrainDialog.
             {

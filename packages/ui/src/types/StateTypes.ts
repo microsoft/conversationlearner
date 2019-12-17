@@ -6,10 +6,10 @@ import * as CLM from '@conversationlearner/models'
 import { ErrorType } from './const'
 import { AT } from './ActionTypes'
 import { TipType } from '../components/ToolTips/ToolTips'
-import { OBIImportData } from '../Utils/obiUtils';
+import { OBIImportData } from '../Utils/obiUtils'
 
-export type ActionState = CLM.ActionBase[];
-export type EntityState = CLM.EntityBase[];
+export type ActionState = CLM.ActionBase[]
+export type EntityState = CLM.EntityBase[]
 export type ErrorState = {
     type: ErrorType,
     title?: string,
@@ -17,7 +17,7 @@ export type ErrorState = {
     actionType?: AT,
     closeCallback?: (() => void)
 }
-export type TrainDialogState = CLM.TrainDialog[];
+export type TrainDialogState = CLM.TrainDialog[]
 
 export type LogDialogState = {
     logDialogs: CLM.LogDialog[]
@@ -27,7 +27,7 @@ export type LogDialogState = {
 
 export type AppsState = {
     all: CLM.AppBase[],
-    activeApps: { [appId: string]: string };  // appId: packageId
+    activeApps: { [appId: string]: string }  // appId: packageId
     selectedAppId: string | undefined,
     obiImportData?: OBIImportData
 }

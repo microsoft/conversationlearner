@@ -9,7 +9,7 @@ describe('TestObject', () => {
     const ALPHA = "alpha"
     const BETA = "beta"
     const CHARLIE = "charlie"
-    const conversationId = "1234" 
+    const conversationId = "1234"
 
     const makePair = (sourceA: string, sourceB: string, result: Test.RatingResult): Test.RatingPair => {
         const sourceNames = [sourceA, sourceB].sort()
@@ -85,7 +85,7 @@ describe('TestObject', () => {
             addPair(testSet, ALPHA, CHARLIE, Test.RatingResult.SAME)
             addPair(testSet, BETA, CHARLIE, Test.RatingResult.UNKNOWN)
 
-            const pairAB = makePair(ALPHA, BETA, Test.RatingResult.SAME) 
+            const pairAB = makePair(ALPHA, BETA, Test.RatingResult.SAME)
             testSet.addRatingResult(pairAB)
 
             const rating = testSet.getRating(BETA, CHARLIE, conversationId)
@@ -99,7 +99,7 @@ describe('TestObject', () => {
             addPair(testSet, ALPHA, CHARLIE, Test.RatingResult.UNKNOWN)
             addPair(testSet, BETA, CHARLIE, Test.RatingResult.SAME)
 
-            const pairAB = makePair(ALPHA, BETA, Test.RatingResult.SAME) 
+            const pairAB = makePair(ALPHA, BETA, Test.RatingResult.SAME)
             testSet.addRatingResult(pairAB)
 
             const rating = testSet.getRating(ALPHA, CHARLIE, conversationId)
@@ -113,7 +113,7 @@ describe('TestObject', () => {
             addPair(testSet, ALPHA, CHARLIE, Test.RatingResult.UNKNOWN)
             addPair(testSet, BETA, CHARLIE, Test.RatingResult.SAME)
 
-            const pairAB = makePair(ALPHA, BETA, Test.RatingResult.FIRST) 
+            const pairAB = makePair(ALPHA, BETA, Test.RatingResult.FIRST)
             testSet.addRatingResult(pairAB)
 
             const better = testSet.whichIsBetter(ALPHA, CHARLIE, conversationId)
@@ -127,7 +127,7 @@ describe('TestObject', () => {
             addPair(testSet, ALPHA, CHARLIE, Test.RatingResult.UNKNOWN)
             addPair(testSet, BETA, CHARLIE, Test.RatingResult.SAME)
 
-            const pairAB = makePair(ALPHA, BETA, Test.RatingResult.SECOND) 
+            const pairAB = makePair(ALPHA, BETA, Test.RatingResult.SECOND)
             testSet.addRatingResult(pairAB)
 
             const better = testSet.whichIsBetter(ALPHA, CHARLIE, conversationId)

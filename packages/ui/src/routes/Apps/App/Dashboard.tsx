@@ -134,7 +134,7 @@ class Dashboard extends React.Component<Props, ComponentState> {
                     />
                 }
             </div>
-        );
+        )
     }
 }
 

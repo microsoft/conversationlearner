@@ -19,7 +19,7 @@ import { EditDialogType } from '../../types/const'
 import { FM } from '../../react-intl-messages'
 import { TeachSessionState } from '../../types/StateTypes'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
 
 interface RoundLookup {
     textVariations?: CLM.TextVariation[] | null
@@ -71,8 +71,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         const ignoreDialogId = this.props.originalTrainDialogId
             ? this.props.originalTrainDialogId
             : this.props.sourceTrainDialog
-            ? this.props.sourceTrainDialog.trainDialogId
-            : null
+                ? this.props.sourceTrainDialog.trainDialogId
+                : null
 
         // Next against other TrainDialogs
         for (const changedTextVariation of changedTextVariations) {
@@ -182,9 +182,9 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             entities: this.props.entities
         }
 
-        const appId = this.props.app.appId;
-        const teachId = this.props.teachSession.teach.teachId;
-        const waitForUser = scoredAction.isTerminal;
+        const appId = this.props.app.appId
+        const teachId = this.props.teachSession.teach.teachId
+        const waitForUser = scoredAction.isTerminal
 
         // Pass score input (minus extractor step) for subsequent actions when this one is non-terminal
         const uiScoreInput = {
@@ -239,9 +239,9 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 
                 const turnData = this.state.turnLookup[lookupIndex]
                 const memories = turnData?.uiScoreResponse?.memories ?? []
-            
+
                 // If prev action was user, use prevTurn.memory.  If following a wait action use uiScoreResponse.memories
-                const prevTurn = this.state.turnLookup[lookupIndex - 1] 
+                const prevTurn = this.state.turnLookup[lookupIndex - 1]
                 const prevMemories = prevTurn?.uiScoreResponse?.memories
                     ?? prevTurn?.memories
                     ?? []
@@ -297,7 +297,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
     render() {
         // Don't render if not in a teach session
         if (!this.props.teachSession.teach) {
-            return null;
+            return null
         }
 
         const renderData = this.getRenderData()
@@ -313,15 +313,15 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         <OF.Icon
                             iconName={this.props.editType === EditDialogType.IMPORT
                                 ? 'DownloadDocument'
-                                :  isLogDialog 
-                                ? 'UserFollowed' 
-                                : 'EditContact'}
+                                : isLogDialog
+                                    ? 'UserFollowed'
+                                    : 'EditContact'}
                         />
                         {this.props.editType === EditDialogType.IMPORT
                             ? "Import"
-                            : isLogDialog 
-                            ? 'Log Dialog' 
-                            : 'Train Dialog'}
+                            : isLogDialog
+                                ? 'Log Dialog'
+                                : 'Train Dialog'}
                         {this.props.editType === EditDialogType.IMPORT &&
                             <div className="cl-dialog-importcount">
                                 {`${this.props.importIndex} of ${this.props.importCount}`}
@@ -336,7 +336,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         onAddTag={this.props.onAddTag}
                         onRemoveTag={this.props.onRemoveTag}
                     />
-                    <b/>
+                    <b />
                 </div>
                 {(renderData.dialogMode === CLM.DialogMode.Extractor || renderData.dialogMode === CLM.DialogMode.Wait) &&
                     (
@@ -439,7 +439,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                 selectedActionId={renderData.selectedActionId}
                                 memories={renderData.memories}
                                 onActionSelected={this.onActionScorerSubmit}
-                                onActionCreatorClosed={() => {}}
+                                onActionCreatorClosed={() => { }}
                             />
                         }
                     </div>
@@ -485,7 +485,7 @@ export interface ReceivedProps {
     selectedActivityIndex: number | null
     isLastActivitySelected: boolean,
     historyRenderData: (() => DialogUtils.DialogRenderData) | null
-    onScoredAction: (scoredAction: CLM.ScoredAction) => void;
+    onScoredAction: (scoredAction: CLM.ScoredAction) => void
     onEditExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any
     onEditAction: (trainScorerStep: CLM.TrainScorerStep) => any
     onReplaceActivityText: (userText: string, index: number) => void
@@ -501,8 +501,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
 type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
 export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TeachSessionAdmin))

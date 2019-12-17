@@ -35,7 +35,7 @@ export class CustomEntityContainer extends React.Component<Props, State> {
 
         const isDeleteButtonOpen = !this.state.isDeleteButtonOpen
 
-        this.setState({isDeleteButtonOpen})
+        this.setState({ isDeleteButtonOpen })
         this.props.onDeleteButtonVisible(isDeleteButtonOpen)
     }
 
@@ -43,7 +43,7 @@ export class CustomEntityContainer extends React.Component<Props, State> {
         if (this.props.readOnly) {
             return
         }
-        
+
         this.setState({
             isDeleteButtonOpen: false
         })

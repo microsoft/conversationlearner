@@ -179,7 +179,7 @@ export default class ClClient {
 
     async appSetEditingTag(appId: string, tagName: string): Promise<{ [appId: string]: string }> {
         const response = await this.send<{
-            [appId: string]: string;
+            [appId: string]: string
         }>({
             method: 'post',
             url: `/app/${appId}/edit/${tagName}`
@@ -217,9 +217,9 @@ export default class ClClient {
             data: entity
         })
 
-        const changeEntityResponse = response.data;
-        entity.entityId = changeEntityResponse.entityId;
-        entity.negativeId = changeEntityResponse.negativeEntityId;
+        const changeEntityResponse = response.data
+        entity.entityId = changeEntityResponse.entityId
+        entity.negativeId = changeEntityResponse.negativeEntityId
 
         // Note: Is synchronous API and could return whole object but there was hesitance of breaking change
         // Make second request to get other fields from new entity such as enumValueIds
@@ -246,16 +246,16 @@ export default class ClClient {
     }
 
     async entitiesUpdate(appId: string, entity: CLM.EntityBase): Promise<CLM.ChangeEntityResponse> {
-        const { version, packageCreationId, packageDeletionId, ...entityToSend } = entity;
+        const { version, packageCreationId, packageDeletionId, ...entityToSend } = entity
         const response = await this.send<CLM.ChangeEntityResponse>({
             method: 'put',
             url: `/app/${appId}/entity/${entity.entityId}`,
             data: entityToSend
         })
 
-        const changeEntityResponse = response.data;
-        entity.entityId = changeEntityResponse.entityId;
-        entity.negativeId = changeEntityResponse.negativeEntityId;
+        const changeEntityResponse = response.data
+        entity.entityId = changeEntityResponse.entityId
+        entity.negativeId = changeEntityResponse.negativeEntityId
 
         // TODO: Might be able to avoid since we still return the changeEntityResponse instead of updatedEntity
         // people should be using the return value instead of relying on mutation of passed in value
@@ -268,7 +268,7 @@ export default class ClClient {
     }
 
     async entitiesUpdateValidation(appId: string, packageId: string, entity: CLM.EntityBase): Promise<string[]> {
-        const { version, packageCreationId, packageDeletionId, ...entityToSend } = entity;
+        const { version, packageCreationId, packageDeletionId, ...entityToSend } = entity
         const response = await this.send({
             method: 'post',
             url: `/app/${appId}/entity/${entity.entityId}/editValidation?packageId=${packageId}`,
@@ -386,7 +386,7 @@ export default class ClClient {
             url: `/app/${appId}/traindialog`,
             data: trainDialog
         })
-        trainDialog.trainDialogId = response.data.trainDialogId;
+        trainDialog.trainDialogId = response.data.trainDialogId
         return trainDialog
     }
 
@@ -497,7 +497,7 @@ export default class ClClient {
             url: `/app/${appId}/logdialog`,
             data: logDialog
         })
-        logDialog.logDialogId = response.data;
+        logDialog.logDialogId = response.data
         return logDialog
     }
 

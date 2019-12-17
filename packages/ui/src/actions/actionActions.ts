@@ -10,7 +10,7 @@ import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory'
 import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
 import { fetchAllTrainDialogsThunkAsync } from './trainActions'
-import { AxiosError } from 'axios';
+import { AxiosError } from 'axios'
 
 const createActionAsync = (appId: string, action: ActionBase): ActionObject => {
     return {
@@ -39,7 +39,7 @@ export const createActionThunkAsync = (appId: string, action: ActionBase) => {
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_ACTION_ASYNC))
-            return null;
+            return null
         }
     }
 }
@@ -110,15 +110,15 @@ export const deleteActionThunkAsync = (appId: string, actionId: string, removeFr
 
             // Fetch train dialogs if any train dialogs were impacted
             if (deleteEditResponse.trainDialogIds?.length > 0) {
-                void dispatch(fetchAllTrainDialogsThunkAsync(appId));
+                void dispatch(fetchAllTrainDialogsThunkAsync(appId))
             }
 
             void dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
-            return true;
+            return true
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_ACTION_ASYNC))
-            return false;
+            return false
         }
     }
 }
@@ -149,7 +149,7 @@ export const fetchAllActionsThunkAsync = (appId: string) => {
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_ACTIONS_ASYNC))
-            return null;
+            return null
         }
     }
 }
@@ -181,7 +181,7 @@ export const fetchActionDeleteValidationThunkAsync = (appId: string, packageId: 
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC))
-            return null;
+            return null
         }
     }
 }
@@ -213,7 +213,7 @@ export const fetchActionEditValidationThunkAsync = (appId: string, packageId: st
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC))
-            return null;
+            return null
         }
     }
 }

@@ -16,7 +16,7 @@ const Utilities = {
     updateOptionNames: SlateTransformer.updateOptionNames
 }
 export {
-    triggerCharacter, 
+    triggerCharacter,
     SlateValue,
     Editor,
     IOption,

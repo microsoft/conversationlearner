@@ -21,7 +21,7 @@ class HelpLink extends React.Component<Props> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setTipType
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     return {

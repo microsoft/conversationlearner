@@ -76,8 +76,8 @@ export const deleteChatSessionThunkAsync = (session: CLM.Session, app: CLM.AppBa
         const clClient = ClientFactory.getInstance(AT.DELETE_CHAT_SESSION_ASYNC)
 
         try {
-            await clClient.chatSessionsDelete(app.appId);
-            dispatch(deleteChatSessionFulfilled(session.sessionId));
+            await clClient.chatSessionsDelete(app.appId)
+            dispatch(deleteChatSessionFulfilled(session.sessionId))
 
             if (deleteAssociatedLogDialog) {
                 void dispatch(deleteLogDialogThunkAsync(app, session.logDialogId, packageId))
@@ -85,11 +85,11 @@ export const deleteChatSessionThunkAsync = (session: CLM.Session, app: CLM.AppBa
             else {
                 void dispatch(fetchLogDialogThunkAsync(app.appId, session.logDialogId, true))
             }
-            return true;
+            return true
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_CHAT_SESSION_ASYNC))
-            return false;
+            return false
         }
     }
 }

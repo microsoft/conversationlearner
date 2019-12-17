@@ -119,7 +119,7 @@ const ExtractConflictModal: React.FC<Props> = (props) => {
             <div>
                 <p>{Util.formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_SUBTITLE)}</p>
                 <div className="cl-inconsistent-entity-modal-header">{Util.formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_REVIEW)}</div>
-                <div 
+                <div
                     className={`cl-inconsistent-entity-modal-option ${selectedAttempted ? 'cl-inconsistent-entity-modal-option--selected' : ''}`}
                     data-testid="extract-conflict-modal-attempted"
                     onClick={() => onClickOption(ExtractionType.Attempted)}
@@ -149,7 +149,7 @@ const ExtractConflictModal: React.FC<Props> = (props) => {
                     </div>
                 </div>
 
-                <div 
+                <div
                     className={`cl-inconsistent-entity-modal-option ${selectedAttempted ? '' : 'cl-inconsistent-entity-modal-option--selected'}`}
                     data-testid="extract-conflict-modal-existing"
                     onClick={() => onClickOption(ExtractionType.Existing)}

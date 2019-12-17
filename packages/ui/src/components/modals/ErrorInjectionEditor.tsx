@@ -8,8 +8,8 @@ import { ErrorInjector } from '../../Utils/ErrorInjector'
 import { AT } from '../../types/ActionTypes'
 
 interface Props {
-    onClose: Function;
-    open: boolean;
+    onClose: Function
+    open: boolean
 }
 
 class ErrorInjectionEditor extends React.Component<Props> {
@@ -41,7 +41,7 @@ class ErrorInjectionEditor extends React.Component<Props> {
     }
 
     private onCheckboxChange(ev: React.FormEvent<HTMLElement>, isChecked: boolean, actionType: string) {
-        ErrorInjector.SetError(actionType, isChecked);
+        ErrorInjector.SetError(actionType, isChecked)
     }
 }
 

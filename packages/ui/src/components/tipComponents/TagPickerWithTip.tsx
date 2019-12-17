@@ -9,8 +9,8 @@ import * as OF from 'office-ui-fabric-react'
 
 const testIdAttribute = 'data-testid'
 export interface ITagPickerWithTipProps extends OF.ITagPickerProps {
-    label: string;
-    tipType: TipType;
+    label: string
+    tipType: TipType
 }
 
 export default function component(props: ITagPickerWithTipProps) {

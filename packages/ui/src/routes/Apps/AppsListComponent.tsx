@@ -12,7 +12,7 @@ import { AppCreator as AppCreatorModal, TutorialImporterModal } from '../../comp
 import { InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import { User, AppCreatorType, FeatureStrings } from '../../types'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
 import { OBIImportData } from '../../Utils/obiUtils'
 import DispatcherCreator, { DispatcherAlgorithmType } from '../../components/modals/DispatcherCreator'
 
@@ -51,7 +51,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
                     }
                 }
 
-                return <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-is-editing">{tag}</span>;
+                return <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-is-editing">{tag}</span>
             }
         },
         {
@@ -199,7 +199,7 @@ export class Component extends React.Component<Props, ComponentState> {
         this.setState({
             columns,
             sortColumn,
-        });
+        })
     }
 
     render() {
@@ -328,14 +328,14 @@ export class Component extends React.Component<Props, ComponentState> {
                 const secondValue = ifStringReturnLowerCase(sortColumn.getSortValue(b))
 
                 if (sortColumn.isSortedDescending) {
-                    return firstValue > secondValue ? -1 : 1;
+                    return firstValue > secondValue ? -1 : 1
                 } else {
-                    return firstValue > secondValue ? 1 : -1;
+                    return firstValue > secondValue ? 1 : -1
                 }
-            });
+            })
         }
 
-        return sortedApps;
+        return sortedApps
     }
 }
 

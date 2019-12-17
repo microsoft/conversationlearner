@@ -53,9 +53,9 @@ const returnErrorStringWhenError = Util.returnStringWhenError("ERR")
 
 function textClassName(trainDialog: CLM.TrainDialog): string {
     if (trainDialog.validity === CLM.Validity.INVALID) {
-        return `${OF.FontClassNames.mediumPlus} cl-font--highlight`;
+        return `${OF.FontClassNames.mediumPlus} cl-font--highlight`
     }
-    return OF.FontClassNames.mediumPlus!;
+    return OF.FontClassNames.mediumPlus!
 }
 
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {
@@ -289,7 +289,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
         // If train dialogs have been updated, update selected trainDialog too
         if (this.props.trainDialogs !== newProps.trainDialogs) {
-            this.focusNewTeachSessionButton();
+            this.focusNewTeachSessionButton()
         }
     }
 
@@ -337,10 +337,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             .sort((a, b) => {
                 // Always put invalid at top (values can also be undefined)
                 if (a.validity === CLM.Validity.INVALID && b.validity !== CLM.Validity.INVALID) {
-                    return -1;
+                    return -1
                 }
                 if (b.validity === CLM.Validity.INVALID && a.validity !== CLM.Validity.INVALID) {
-                    return 1;
+                    return 1
                 }
 
                 // Then sort by column value
@@ -386,7 +386,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         this.setState({
             columns,
             sortColumn,
-        });
+        })
     }
 
     toActionFilter(action: CLM.ActionBase, entities: CLM.EntityBase[]): OF.IDropdownOption | null {
@@ -1026,7 +1026,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
         else {
             try {
-                await ((this.props.createTrainDialogThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>);
+                await ((this.props.createTrainDialogThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
             }
             catch (error) {
                 console.warn(`Error when attempting to create a train dialog: `, error)
@@ -1092,7 +1092,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             // If user clicks 'Cancel' replay dialogs will be reset
             if (this.state.replayDialogs.length === 0) {
                 console.warn(`Replay Selected Dialogs Canceled!`)
-                break;
+                break
             }
         }
 
@@ -1426,7 +1426,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     @autobind
     onSearch(newValue: string) {
-        const lcString = newValue.toLowerCase();
+        const lcString = newValue.toLowerCase()
         this.setState({
             searchValue: lcString
         })
@@ -1454,7 +1454,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
             for (const round of trainDialog.rounds) {
                 for (const variation of round.extractorStep.textVariations) {
-                    textVariations.push(variation.text);
+                    textVariations.push(variation.text)
                     for (const le of variation.labelEntities) {
                         // Include pos and neg examples of entity if reversable
                         const entity = this.props.entities.find(e => e.entityId === le.entityId)
@@ -1859,7 +1859,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     private focusNewTeachSessionButton() {
         if (this.newTeachSessionButtonRef.current) {
-            this.newTeachSessionButtonRef.current.focus();
+            this.newTeachSessionButtonRef.current.focus()
         }
     }
 
@@ -1897,7 +1897,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 entities: this.props.entities,
                 trainDialogs: []
             },
-        };
+        }
 
         try {
             const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)

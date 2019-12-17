@@ -15,7 +15,7 @@ import { ActionCreatorEditor } from '../../../components/modals'
 import { State } from '../../../types'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
 
 interface ComponentState {
     actionSelected: CLM.ActionBase | null
@@ -30,7 +30,7 @@ class Actions extends React.Component<Props, ComponentState> {
     private newActionButtonRef = React.createRef<OF.IButton>()
 
     constructor(p: any) {
-        super(p);
+        super(p)
         this.state = {
             actionIDToDelete: null,
             actionSelected: null,
@@ -213,7 +213,7 @@ class Actions extends React.Component<Props, ComponentState> {
                     handleEdit={this.onClickSubmitActionEditor}
                 />
             </div>
-        );
+        )
     }
 
     private focusNewActionButton() {
@@ -244,8 +244,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
-type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
+type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
 export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(Actions) as any)

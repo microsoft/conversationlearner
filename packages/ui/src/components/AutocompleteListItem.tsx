@@ -13,22 +13,22 @@ export interface Item {
 
 // Renaming from Props because of https://github.com/Microsoft/tslint-microsoft-contrib/issues/339
 export interface ReceivedProps {
-    item: Item;
-    onClick: Function;
+    item: Item
+    onClick: Function
 }
 
 type Props = ReceivedProps
 
 const AutocompleteListItem: React.SFC<Props> = (props) => {
     return (
-        <div 
-            data-is-focusable={true} 
-            onClick={() => props.onClick()} 
+        <div
+            data-is-focusable={true}
+            onClick={() => props.onClick()}
             className='autoCompleteListItem'
             role="button"
         >
             <span className={FontClassNames.medium}>{props.item.text}</span>
         </div>
-    );
+    )
 }
-export default AutocompleteListItem;
+export default AutocompleteListItem

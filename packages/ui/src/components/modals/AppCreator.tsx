@@ -15,7 +15,7 @@ import { State, ErrorType, AppCreatorType } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { AT } from '../../types/ActionTypes'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
 import { OBIImportData } from '../../Utils/obiUtils'
 
 interface ComponentState {
@@ -171,7 +171,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                     }
                     break
                 default:
-                        this.onClickCreate()
+                    this.onClickCreate()
             }
         }
     }
@@ -227,7 +227,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                     throw new Error("String Expected")
                 }
                 const source = JSON.parse(reader.result) as CLM.AppDefinition
-                const appInput = this.getAppInput();
+                const appInput = this.getAppInput()
                 this.props.onSubmit(appInput, source)
             }
             catch (e) {
@@ -365,8 +365,8 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                     value={!this.state.obiFiles
                                         ? undefined
                                         : this.state.obiFiles.length === 1
-                                        ? this.state.obiFiles[0].name
-                                        : `${this.state.obiFiles.length} files selected`
+                                            ? this.state.obiFiles[0].name
+                                            : `${this.state.obiFiles.length} files selected`
                                     }
                                 />
                             </div>
@@ -450,7 +450,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setErrorDisplay: actions.display.setErrorDisplay,
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     return {

@@ -9,7 +9,7 @@ import { State } from '../../types'
 import './SpinnerWindow.css'
 
 // Enable to see what API calls I'm waiting for
-const debug = false;
+const debug = false
 
 class SpinnerWindow extends React.Component<Props> {
     render() {
@@ -32,7 +32,7 @@ class SpinnerWindow extends React.Component<Props> {
                     {this.props.displaySpinner.length > 0 && <span className="cl-screen-reader" data-testid="spinner">Loading</span>}
                 </div>
             </React.Fragment>
-        );
+        )
     }
 }
 

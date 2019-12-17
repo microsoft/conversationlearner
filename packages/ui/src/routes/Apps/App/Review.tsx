@@ -41,17 +41,17 @@ function getTagName(logDialog: CLM.LogDialog, component: Review): string {
     if (component.props.editingPackageId !== component.props.app.devPackageId) {
         return ''
     }
-    let tagName = `UNKNOWN`; // Cover bug case of missing package
+    let tagName = `UNKNOWN` // Cover bug case of missing package
     if (logDialog.packageId === component.props.app.devPackageId) {
         tagName = 'Master'
     }
     else {
-        const packageVersion = component.props.app.packageVersions.find((pv: any) => pv.packageId === logDialog.packageId);
+        const packageVersion = component.props.app.packageVersions.find((pv: any) => pv.packageId === logDialog.packageId)
         if (packageVersion) {
-            tagName = packageVersion.packageVersion;
+            tagName = packageVersion.packageVersion
         }
     }
-    return tagName;
+    return tagName
 }
 
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {
@@ -64,7 +64,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 120,
             isResizable: true,
             render: (logDialog, component) => {
-                const tagName = getTagName(logDialog, component);
+                const tagName = getTagName(logDialog, component)
                 return <span className={OF.FontClassNames.mediumPlus}>{tagName}</span>
             },
             getSortValue: (logDialog, component) => {
@@ -81,7 +81,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isResizable: false,
             render: (logDialog, component) => {
                 return <>
-                    
+
                     <span>
                         <OF.TooltipHost
                             tooltipProps={{
@@ -316,7 +316,7 @@ class Review extends React.Component<Props, ComponentState> {
             const doneLogs = this.state.logScores?.map(ls => ls.logDialogId) || []
             const newLogs = this.props.logDialogs.filter(ld => !doneLogs.includes(ld.logDialogId))
             const logScores = rankLogs(newLogs, this.props.trainDialogs, this.props.entities)
-        
+
             // Sort by the analyzed scores
             const sortColumn = this.state.columns.find(c => c.fieldName === "score")
             if (!sortColumn) {
@@ -476,7 +476,7 @@ class Review extends React.Component<Props, ComponentState> {
                     title={Util.formatMessageId(intl, FM.LOGDIALOGS_CONFIRMCANCEL_DELETESELECTED, { selectionCount: this.state.selectionCount })}
                 />
             </div>
-        );
+        )
     }
 
     getLogScore(logDialogId: string): number {

@@ -22,7 +22,7 @@ export const getRelativeParent = (element: HTMLElement | null): HTMLElement => {
     }
 
     return getRelativeParent(element.parentElement)
-};
+}
 
 export const getSelectedText = (value: any) => {
     const characters = value.characters ? value.characters.toJSON() : []
@@ -534,7 +534,7 @@ export const convertEntitiesAndTextToEditorValue = (text: string, customEntities
     ])
 
     // console.log(`convertEntitiesAndTextToEditorValue: `, normalizedSegements.map(s => `[${s.startIndex}, '${s.text}', ${s.endIndex}]`).join(', '))
-    const document = convertSegmentsToSlateValue(normalizedSegements, inlineNodeType);
+    const document = convertSegmentsToSlateValue(normalizedSegements, inlineNodeType)
 
     return Value.fromJSON(document)
 }

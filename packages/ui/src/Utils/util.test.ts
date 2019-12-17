@@ -21,7 +21,7 @@ describe('util', () => {
                     string: "blah",
                     complex2: {
                         arrayV: [1, 2, 3],
-                        array2: [{number: 1, string: "1"}, {number: 2, string: "2"}]
+                        array2: [{ number: 1, string: "1" }, { number: 2, string: "2" }]
                     }
                 }
             }
