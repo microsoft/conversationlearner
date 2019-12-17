@@ -22,4 +22,4 @@ const listener = app.listen(port, () => {
     }
 
     throw error
-});
+})

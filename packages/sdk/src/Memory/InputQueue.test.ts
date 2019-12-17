@@ -29,7 +29,7 @@ function makeActivity(message: string, conversationId: string): any {
 }
 
 function delay(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 // Simulate AddInput function in CLRunner

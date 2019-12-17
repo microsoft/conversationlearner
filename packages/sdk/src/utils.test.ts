@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as utils from './Utils'
-import { FilledEntityMap } from '@conversationlearner/models';
+import { FilledEntityMap } from '@conversationlearner/models'
 
 describe('Util', () => {
     describe('replace', () => {

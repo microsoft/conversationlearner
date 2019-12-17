@@ -46,8 +46,8 @@ export class CLStorage {
                 return this.memCache[key]
             }
             catch (err) {
-                CLDebug.Error(err);
-                return null;
+                CLDebug.Error(err)
+                return null
             }
         }
     }

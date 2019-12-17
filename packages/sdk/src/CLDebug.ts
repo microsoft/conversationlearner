@@ -45,7 +45,7 @@ export class CLDebug {
         if (CLDebug.conversationReference !== conversationReference) {
             CLDebug.cachedMessages = []
         }
-        CLDebug.conversationReference = conversationReference;
+        CLDebug.conversationReference = conversationReference
     }
 
     private static HasDebugType(debugType: DebugType): boolean {
@@ -69,7 +69,7 @@ export class CLDebug {
                         await context.sendActivity(logMessage.message)
                     }
                 }
-            });
+            })
         }
     }
 

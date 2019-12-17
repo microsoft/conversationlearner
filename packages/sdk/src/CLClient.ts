@@ -33,10 +33,10 @@ export class CLClient {
     private options: ICLClientOptions
 
     constructor(options: ICLClientOptions) {
-        this.options = options;
+        this.options = options
 
         if (options.APIM_SUBSCRIPTION_KEY === undefined) {
-            options.APIM_SUBSCRIPTION_KEY = options.LUIS_AUTHORING_KEY;
+            options.APIM_SUBSCRIPTION_KEY = options.LUIS_AUTHORING_KEY
         }
     }
 
@@ -48,11 +48,11 @@ export class CLClient {
         if (typeof this.options.LUIS_AUTHORING_KEY !== 'string' || this.options.LUIS_AUTHORING_KEY.length === 0) {
             return `LUIS_AUTHORING_KEY must be a non-empty string. You passed: ${this.options.LUIS_AUTHORING_KEY}`
         }
-        return null;
+        return null
     }
 
     public LuisAuthoringKey(): string | undefined {
-        return this.options.LUIS_AUTHORING_KEY;
+        return this.options.LUIS_AUTHORING_KEY
     }
 
     private BuildURL(baseUri: string, apiPath: string, query?: string) {
@@ -165,7 +165,7 @@ export class CLClient {
 
     public async PostAppSource(appId: string, appDefinition: CLM.AppDefinition): Promise<void> {
         let apiPath = `app/${appId}/source`
-        await this.send('POST', this.MakeURL(apiPath), appDefinition);
+        await this.send('POST', this.MakeURL(apiPath), appDefinition)
     }
 
     /** Retrieve a list of (active) applications */

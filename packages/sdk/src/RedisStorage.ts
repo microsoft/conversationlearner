@@ -4,7 +4,7 @@
  */
 import { Storage, StoreItems, StoreItem } from 'botbuilder'
 import * as Redis from 'redis'
-import { CLDebug } from './CLDebug';
+import { CLDebug } from './CLDebug'
 
 /** Additional settings for configuring an instance of RedisStorage */
 export interface RedisStorageSettings {
