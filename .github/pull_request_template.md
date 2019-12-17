@@ -1,6 +1,3 @@
-<!--
-Please target PR's against `develop` branch unless it is a hotfix to `master`
--->
 
 #### Is this adding or improving a _feature_ or fixing a _bug_?
 
