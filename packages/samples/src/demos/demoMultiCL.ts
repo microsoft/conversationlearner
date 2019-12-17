@@ -5,7 +5,7 @@
 import * as path from 'path'
 import * as express from 'express'
 import { BotFrameworkAdapter, ConversationState, AutoSaveStateMiddleware } from 'botbuilder'
-import { ConversationLearner, ClientMemoryManager, ReadOnlyClientMemoryManager, FileStorage, uiRouter } from '@conversationlearner/sdk'
+import { ConversationLearnerFactory, ClientMemoryManager, ReadOnlyClientMemoryManager, FileStorage, uiRouter } from '@conversationlearner/sdk'
 import chalk from 'chalk'
 import config from '../config'
 import getDolRouter from '../dol'
@@ -45,10 +45,10 @@ let fileStorage = new FileStorage(path.join(__dirname, 'storage'))
 //==================================
 // Initialize Conversation Learner
 //==================================
-const sdkRouter = ConversationLearner.Init(clOptions, fileStorage)
+const clFactory = new ConversationLearnerFactory(clOptions, fileStorage)
 if (isDevelopment) {
     console.log(chalk.cyanBright(`Adding /sdk routes`))
-    server.use('/sdk', sdkRouter)
+    server.use('/sdk', clFactory.sdkRouter)
 }
 
 //=================================
@@ -59,8 +59,8 @@ var isInStock = function (topping: string) {
     return (inStock.indexOf(topping.toLowerCase()) > -1);
 }
 
-let clPizza = new ConversationLearner("2d9884f4-75a3-4f63-8b1e-d885ac02663e");
-clPizza.EntityDetectionCallback = async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
+let clPizza = clFactory.create("2d9884f4-75a3-4f63-8b1e-d885ac02663e");
+clPizza.EntityDetectionCallback(async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
 
     // Clear OutOfStock List
     memoryManager.Delete("OutOfStock");
@@ -112,8 +112,8 @@ var resolveApps = function (appName: string) {
     return apps.filter(n => n.includes(appName));
 }
 
-let clVr = new ConversationLearner("997dc1e2-c0c0-4812-9429-446e31cfdf99");
-clVr.EntityDetectionCallback = async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
+let clVr = clFactory.create("997dc1e2-c0c0-4812-9429-446e31cfdf99");
+clVr.EntityDetectionCallback(async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
 
     // Clear disambigApps
     memoryManager.Delete("DisambigAppNames");
