@@ -97,7 +97,7 @@ describe('filledEntity', () => {
       ]
     }
 
-    const entity2 = 
+    const entity2 =
     {
       entityId: 'entityId2',
       values: [
@@ -117,7 +117,7 @@ describe('filledEntity', () => {
           entityName2: entity2
         }
       })
-  }
+    }
 
 
     describe('getEntityDisplayValueMap', () => {
@@ -208,7 +208,7 @@ describe('filledEntity', () => {
       test('DeleteMultiWithEmptyString', () => {
         let entityMap = newEntityMap()
         expect(Object.keys(entityMap.map).length).toEqual(2)
-        entityMap.RememberMany("entityName1", entity1.entityId, ["",""])
+        entityMap.RememberMany("entityName1", entity1.entityId, ["", ""])
         expect(Object.keys(entityMap.map).length).toEqual(1)
       })
 
