@@ -31,12 +31,12 @@ export default class Component extends React.Component<Props> {
         const showLogicFunction = !callback
             ? true
             : callback.isLogicFunctionProvided
-                // && callback.logicArguments.length > 0
+        // && callback.logicArguments.length > 0
 
         const showRenderFunction = !callback
             ? true
             : callback.isRenderFunctionProvided
-                // && callback.renderArguments.length > 0
+        // && callback.renderArguments.length > 0
 
         return <ApiPayloadRenderer
             name={apiAction.name}

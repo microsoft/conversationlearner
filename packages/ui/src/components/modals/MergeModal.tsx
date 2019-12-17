@@ -11,7 +11,7 @@ import DialogMetadata from './DialogMetadata'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import './MergeModal.css'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
 
 interface ReceivedProps {
     onCancel: Function

@@ -17,7 +17,7 @@ import DisabledInputButtom from './DisabledInputButton'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import UserInputModal from './UserInputModal'
 import FormattedMessageId from '../FormattedMessageId'
-import TranscriptImportCancelModal from './TranscriptImportCancelModal';
+import TranscriptImportCancelModal from './TranscriptImportCancelModal'
 import Webchat, { renderActivity } from '../Webchat'
 import { ImportedAction } from '../../types/models'
 import { formatMessageId, equal, deepCopy } from '../../Utils/util'
@@ -30,7 +30,7 @@ import { FM } from '../../react-intl-messages'
 import { TipType } from '../ToolTips/ToolTips'
 import { renderReplayError } from '../../Utils/RenderReplayError'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
 
 interface ComponentState {
     isConfirmAbandonOpen: boolean
@@ -84,7 +84,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 ...initialState,
                 tags: [...nextProps.trainDialog.tags],
                 description: nextProps.trainDialog.description
-            });
+            })
         }
         if (this.state.currentTrainDialog !== nextProps.trainDialog) {
 
@@ -607,27 +607,27 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         switch (this.props.editType) {
             case EditDialogType.NEW:
                 this.props.onDeleteDialog()
-                break;
+                break
             case EditDialogType.IMPORT:
                 this.props.onCloseModal(false, stopImporting) // false -> no need to reload original
-                break;
+                break
             case EditDialogType.BRANCH:
                 this.props.onCloseModal(false, stopImporting) // false -> no need to reload original
-                break;
+                break
             case EditDialogType.LOG_EDITED:
                 this.props.onCloseModal(false, stopImporting) // false -> no need to reload original
-                break;
+                break
             case EditDialogType.LOG_ORIGINAL:
                 this.props.onDeleteDialog()
-                break;
+                break
             case EditDialogType.TRAIN_EDITED:
                 this.props.onCloseModal(true, stopImporting) // true -> Reload original TrainDialog
-                break;
+                break
             case EditDialogType.TRAIN_ORIGINAL:
                 dialogChanged
                     ? this.props.onCloseModal(true, stopImporting)
                     : this.props.onDeleteDialog()
-                break;
+                break
             default:
         }
     }
@@ -717,22 +717,22 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             case EditDialogType.IMPORT:
             case EditDialogType.BRANCH:
                 this.props.onCreateDialog(trainDialog)
-                break;
+                break
             case EditDialogType.LOG_EDITED:
                 trainDialog.tags.push(fromLogTag)
                 this.props.onSaveDialog(trainDialog)
-                break;
+                break
             case EditDialogType.LOG_ORIGINAL:
                 this.props.onCloseModal(false, false)  // false - No need to reload original
-                break;
+                break
             case EditDialogType.TRAIN_EDITED:
                 this.props.onSaveDialog(trainDialog)
-                break;
+                break
             case EditDialogType.TRAIN_ORIGINAL:
                 dialogChanged
                     ? this.props.onSaveDialog(trainDialog)
                     : this.props.onCloseModal(false, false)  // false - No need to reload original
-                break;
+                break
             default:
         }
     }
@@ -982,7 +982,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     render() {
         const { intl } = this.props
         // Put mask of webchat if waiting for extraction labelling
-        const chatDisable = this.state.pendingExtractionChanges ? <div className="cl-overlay" /> : null;
+        const chatDisable = this.state.pendingExtractionChanges ? <div className="cl-overlay" /> : null
         const hasBlockingError = this.hasBlockingError()
         const disableUserInput = this.shouldDisableUserInput()
         const isLastActivitySelected = this.state.selectedActivity ? this.state.selectedActivity === this.props.activityHistory[this.props.activityHistory.length - 1] : false
@@ -1145,7 +1145,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     onOk={this.onSaveConflictSave}
                 />
             </OF.Modal>
-        );
+        )
     }
 
     @autobind
@@ -1164,7 +1164,7 @@ const mapDispatchToProps = (dispatch: any) => {
         setWebchatScrollPosition: actions.display.setWebchatScrollPosition,
         clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition,
         setErrorDismissCallback: actions.display.setErrorDismissCallback
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     return {
@@ -1211,8 +1211,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
 type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
 export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(EditDialogModal))

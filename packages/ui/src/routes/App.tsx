@@ -71,17 +71,17 @@ class App extends React.Component<Props, ComponentState> {
 
   shouldShowBanner(banner: Banner) {
     if (!banner.message) {
-      return false;
+      return false
     }
 
     if (!this.props.clearedBanner) {
-      return true;
+      return true
     }
 
     if (JSON.stringify(banner) === JSON.stringify(this.props.clearedBanner)) {
-      return false;
+      return false
     }
-    return true;
+    return true
   }
 
   getMessageBarType(type: string | undefined) {
@@ -187,7 +187,7 @@ class App extends React.Component<Props, ComponentState> {
           <SpinnerWindow />
         </>
       </Router>
-    );
+    )
   }
 }
 
@@ -195,7 +195,7 @@ const mapDispatchToProps = (dispatch: any) => {
   return bindActionCreators({
     fetchBotInfoThunkAsync,
     clearBanner
-  }, dispatch);
+  }, dispatch)
 }
 
 const mapStateToProps = (state: State) => {
@@ -208,7 +208,7 @@ const mapStateToProps = (state: State) => {
 
 // Props types inferred from mapStateToProps & dispatchToProps
 type stateProps = ReturnType<typeof mapStateToProps>
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
 type Props = stateProps & dispatchProps
 
 export default connect<stateProps, dispatchProps>(mapStateToProps, mapDispatchToProps)(App)

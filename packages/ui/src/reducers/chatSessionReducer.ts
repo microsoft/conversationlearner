@@ -10,12 +10,12 @@ import produce from 'immer'
 const initialState: ChatSessionState = {
     all: [],
     current: null
-};
+}
 
 const chatSessionReducer: Reducer<ChatSessionState> = produce((state: ChatSessionState, action: ActionObject) => {
     switch (action.type) {
         case AT.USER_LOGOUT:
-            return { ...initialState };
+            return { ...initialState }
         case AT.FETCH_CHAT_SESSIONS_FULFILLED:
             state.all = action.allSessions
             return

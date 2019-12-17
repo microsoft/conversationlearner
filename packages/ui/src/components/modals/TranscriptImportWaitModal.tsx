@@ -20,12 +20,12 @@ class TranscriptImportWaitModal extends React.Component<Props, ComponentState> {
                 isBlocking={true}
                 containerClassName='cl-modal cl-modal--importwait'
             >
-                    <div className={`cl-dialog-title cl-dialog-title--import cl-transcript-import-wait-body ${OF.FontClassNames.xxLarge}`}>
-                        <OF.Icon
-                            iconName='DownloadDocument'
-                        />
-                        {`Importing ${this.props.importIndex} of ${this.props.importCount}...`}
-                    </div>
+                <div className={`cl-dialog-title cl-dialog-title--import cl-transcript-import-wait-body ${OF.FontClassNames.xxLarge}`}>
+                    <OF.Icon
+                        iconName='DownloadDocument'
+                    />
+                    {`Importing ${this.props.importIndex} of ${this.props.importCount}...`}
+                </div>
             </OF.Modal>
         )
     }
@@ -36,6 +36,6 @@ export interface ReceivedProps {
     importCount?: number
 }
 
-type Props = ReceivedProps 
+type Props = ReceivedProps
 
 export default connect<{}, {}, ReceivedProps>(null)(TranscriptImportWaitModal)

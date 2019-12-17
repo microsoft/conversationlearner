@@ -64,9 +64,9 @@ export default class Component extends React.Component<Props, State> {
 
                 return combined
             }, {
-                    argumentPairs: [],
-                    argumentsDiffer: false
-                })
+                argumentPairs: [],
+                argumentsDiffer: false
+            })
 
         const showToggle = pairedArguments.argumentsDiffer
 
@@ -75,13 +75,13 @@ export default class Component extends React.Component<Props, State> {
                 <div className={OF.FontClassNames.mediumPlus} data-testid="action-scorer-card-name">{this.props.name}</div>
                 <div className="cl-card-payload__arguments ms-ListItem-primaryText">
                     {pairedArguments.argumentPairs.map((argument, i) =>
-                            <React.Fragment key={i}>
-                                <div>{argument.original.parameter}:</div>
-                                <div>{`${(this.props.substitutedArguments === null || this.state.isOriginalVisible)
-                                    ? argument.original.value
-                                    : argument.substituted.value}`
-                                }</div>
-                            </React.Fragment>)}
+                        <React.Fragment key={i}>
+                            <div>{argument.original.parameter}:</div>
+                            <div>{`${(this.props.substitutedArguments === null || this.state.isOriginalVisible)
+                                ? argument.original.value
+                                : argument.substituted.value}`
+                            }</div>
+                        </React.Fragment>)}
                 </div>
             </div>
             <div>

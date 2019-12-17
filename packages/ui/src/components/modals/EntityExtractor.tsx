@@ -19,7 +19,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
 import './EntityExtractor.css'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
 
 interface ExtractResponseForDisplay {
     extractResponse: CLM.ExtractResponse
@@ -49,7 +49,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     private doneExtractingButtonRef = React.createRef<OF.IButton>()
 
     constructor(p: any) {
-        super(p);
+        super(p)
         this.state = {
             isPendingSubmit: false,
             pendingVariationChange: false,
@@ -72,7 +72,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     @autobind
     focusPrimaryButton(): void {
         if (this.doneExtractingButtonRef.current) {
-            this.doneExtractingButtonRef.current.focus();
+            this.doneExtractingButtonRef.current.focus()
         }
         else {
             setTimeout(this.focusPrimaryButton, 100)
@@ -99,7 +99,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             }
 
             this.setState(nextState)
-            this.props.clearExtractResponses();
+            this.props.clearExtractResponses()
         }
     }
 
@@ -222,19 +222,19 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         const extractEntities = this.withoutPreBuilts(extractResponse.predictedEntities)
 
         let missing = primaryEntities.filter(item =>
-            !extractEntities.find(er => item.entityId === er.entityId));
+            !extractEntities.find(er => item.entityId === er.entityId))
 
         if (missing.length > 0) {
-            return false;
+            return false
         }
 
         missing = extractEntities.filter(item =>
-            !primaryEntities.find(er => item.entityId === er.entityId));
+            !primaryEntities.find(er => item.entityId === er.entityId))
         if (missing.length > 0) {
-            return false;
+            return false
         }
 
-        return true;
+        return true
     }
 
     /**
@@ -264,7 +264,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickUndoChanges() {
-        this.props.clearExtractResponses();
+        this.props.clearExtractResponses()
         this.setState({
             newTextVariations: [...this.props.originalTextVariations],
             isPendingSubmit: false,
@@ -301,17 +301,17 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             labelEntities: extractResponse.predictedEntities
         }))
 
-        this.props.onSubmitExtractions(primaryExtractResponse, textVariations, roundIndex);
+        this.props.onSubmitExtractions(primaryExtractResponse, textVariations, roundIndex)
     }
 
     onAddExtractResponse(): void {
         this.setState({
             isPendingSubmit: true,
             pendingVariationChange: false
-        });
+        })
 
         if (this.props.onPendingStatusChanged) {
-            this.props.onPendingStatusChanged(true);
+            this.props.onPendingStatusChanged(true)
         }
     }
 
@@ -326,22 +326,22 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     onRemoveExtractResponse(extractResponse: CLM.ExtractResponse): void {
 
         // First look for match in extract responses
-        const foundResponse = this.props.extractResponses.find(e => e.text === extractResponse.text);
+        const foundResponse = this.props.extractResponses.find(e => e.text === extractResponse.text)
         if (foundResponse) {
-            this.props.removeExtractResponse(foundResponse);
-            this.setState({ isPendingSubmit: true });
+            this.props.removeExtractResponse(foundResponse)
+            this.setState({ isPendingSubmit: true })
         } else {
             // Otherwise change is in text variation
             const newVariations = this.state.newTextVariations
-                .filter(v => v.text !== extractResponse.text);
+                .filter(v => v.text !== extractResponse.text)
             this.setState({
                 newTextVariations: newVariations,
                 isPendingSubmit: true
-            });
+            })
         }
 
         if (this.props.onPendingStatusChanged) {
-            this.props.onPendingStatusChanged(true);
+            this.props.onPendingStatusChanged(true)
         }
     }
 
@@ -377,19 +377,19 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         this.setState({
             savedExtractResponses: [],
             savedRoundIndex: 0
-        });
+        })
     }
     onClickSaveCheckNo() {
         // Clear saved responses
         this.setState({
             savedExtractResponses: [],
             savedRoundIndex: 0
-        });
+        })
     }
 
     @autobind
     async onSubmitTextVariation() {
-        const text = this.state.textVariationValue.trim();
+        const text = this.state.textVariationValue.trim()
         if (text.length === 0) {
             return
         }
@@ -432,15 +432,15 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         })
 
         if (this.props.onPendingStatusChanged) {
-            this.props.onPendingStatusChanged(true);
+            this.props.onPendingStatusChanged(true)
         }
     }
 
     render() {
-        const allResponses = this.allResponses();
+        const allResponses = this.allResponses()
         const primaryExtractResponse = allResponses[0]
         if (!primaryExtractResponse) {
-            return null;
+            return null
         }
 
         // Don't show edit components when in auto TEACH or on score step
@@ -664,7 +664,7 @@ const mapDispatchToProps = (dispatch: any) => {
         clearExtractResponses: actions.teach.clearExtractResponses,
         clearExtractConflict: actions.teach.clearExtractConflict,
         editTrainDialogThunkAsync: actions.train.editTrainDialogThunkAsync,
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     if (!state.user.user) {

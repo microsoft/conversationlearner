@@ -19,9 +19,9 @@ export function actionTypeRenderer(action: CLM.ActionBase | undefined): JSX.Elem
         } else {
             actionType = "API"
         }
-    } 
-    return <span 
-        className={`${OF.FontClassNames.mediumPlus} ${addedStyle}`} 
+    }
+    return <span
+        className={`${OF.FontClassNames.mediumPlus} ${addedStyle}`}
         data-testid="action-details-action-type"
     >
         {actionType}
@@ -35,7 +35,7 @@ export function actionListViewRenderer(
     callbacks: CLM.Callback[],
     onClickViewCard: (action: CLM.ActionBase, cardViewerShowOriginal: boolean) => void
 ): React.ReactNode {
-    
+
     const defaultEntityMap = Util.getDefaultEntityMap(entities)
 
     if (action.actionType === CLM.ActionTypes.TEXT) {

@@ -18,7 +18,7 @@ import UserInputModal from './UserInputModal'
 import TeachSessionAdmin from './TeachSessionAdmin'
 import TeachSessionInitState from './TeachSessionInitState'
 import FormattedMessageId from '../FormattedMessageId'
-import TranscriptImportCancelModal from './TranscriptImportCancelModal';
+import TranscriptImportCancelModal from './TranscriptImportCancelModal'
 import Webchat, { renderActivity } from '../Webchat'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -30,7 +30,7 @@ import { FM } from '../../react-intl-messages'
 import { EditDialogType, SelectionType, fromLogTag } from '../../types/const'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import './TeachSessionModal.css'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
 
 interface ComponentState {
     isConfirmDeleteOpen: boolean,
@@ -87,7 +87,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 { actionType: AT.POST_SCORE_FEEDBACK_ASYNC, callback: this.onDismissError },
                 { actionType: AT.RUN_SCORER_ASYNC, callback: this.onDismissError },
             ]
-        );
+        )
 
         if (this.props.sourceTrainDialog) {
             const { tags, description } = this.props.sourceTrainDialog
@@ -260,7 +260,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
 
     autoTeachChanged(ev: React.FormEvent<HTMLElement>, isChecked: boolean) {
-        this.props.toggleAutoTeach(isChecked);
+        this.props.toggleAutoTeach(isChecked)
     }
 
     async onWebChatSelectActivity(activity: BB.Activity) {
@@ -662,7 +662,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         // Put mask of webchat if waiting for score selector or extraction labelling
         const waitingForScore = this.state.selectedActivityIndex === null && this.props.teachSession.dialogMode === CLM.DialogMode.Scorer
         const waitingForExtract = this.props.teachSession.dialogMode === CLM.DialogMode.Extractor
-        const chatDisable = (waitingForScore || waitingForExtract) ? <div className="cl-overlay" /> : null;
+        const chatDisable = (waitingForScore || waitingForExtract) ? <div className="cl-overlay" /> : null
         const saveDisable = this.props.teachSession.dialogMode === CLM.DialogMode.Extractor
             || this.props.teachSession.botAPIError !== null
             || this.state.isInitAvailable  // Empty TD
@@ -821,7 +821,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     handleClose={this.onCloseInitState}
                 />
             </div>
-        );
+        )
     }
 }
 
@@ -831,7 +831,7 @@ const mapDispatchToProps = (dispatch: any) => {
         toggleAutoTeach: actions.teach.toggleAutoTeach,
         setWebchatScrollPosition: actions.display.setWebchatScrollPosition,
         setErrorDismissCallback: actions.display.setErrorDismissCallback
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     if (!state.user.user) {
@@ -875,8 +875,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
 type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
 export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TeachModal))

@@ -37,7 +37,7 @@ export default function (appDefinition: models.AppDefinition, callbackMap: Callb
         }
 }
 
-export function getDefaultChangeResult<T> (value: T): models.IChangeResult<T> {
+export function getDefaultChangeResult<T>(value: T): models.IChangeResult<T> {
     return {
         isChanged: false,
         value,
@@ -45,7 +45,7 @@ export function getDefaultChangeResult<T> (value: T): models.IChangeResult<T> {
     }
 }
 
-export function getActionChangeResult (action: models.ActionBase, callbackMap: CallbackMap): models.IChangeResult<models.ActionBase> {
+export function getActionChangeResult(action: models.ActionBase, callbackMap: CallbackMap): models.IChangeResult<models.ActionBase> {
     // By default no update is performed
     const changeResult: models.IChangeResult<models.ActionBase> = {
         isChanged: false,

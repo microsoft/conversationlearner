@@ -9,8 +9,8 @@ import { CLDebug } from '../CLDebug'
 import { EntityState } from './EntityState'
 import { BotState } from './BotState'
 import { InProcessMessageState as MessageState } from './InProcessMessageState'
-import { CLStorage } from './CLStorage';
-import { BrowserSlotState } from './BrowserSlot';
+import { CLStorage } from './CLStorage'
+import { BrowserSlotState } from './BrowserSlot'
 
 /**
  * CLState is a container all states (BotState, EntityState, MessageState) and can be passed around as a single access point.
@@ -112,7 +112,7 @@ export class CLState {
     }
 
     public async SetAppAsync(app: CLM.AppBase | null): Promise<void> {
-        const curApp = await this.BotState.GetApp();
+        const curApp = await this.BotState.GetApp()
         await this.BotState.SetAppAsync(app)
 
         if (!app || !curApp || curApp.appId !== app.appId) {

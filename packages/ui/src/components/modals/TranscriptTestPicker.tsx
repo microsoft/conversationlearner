@@ -52,10 +52,10 @@ class TranscriptTestPicker extends React.Component<Props, ComponentState> {
             >
                 <div className="cl-modal_header">
                     <div className={`cl-dialog-title ${OF.FontClassNames.xxLarge}`}>
-                        {Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_TESTPICKER_TITLE)} 
+                        {Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_TESTPICKER_TITLE)}
                     </div>
                 </div>
-                <div 
+                <div
                     className="cl-transcript-loader-body"
                 >
                     <OF.Dropdown

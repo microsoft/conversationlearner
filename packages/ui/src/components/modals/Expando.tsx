@@ -16,8 +16,8 @@ interface Props {
 class Expando extends React.Component<Props> {
     render() {
         return (
-            <div 
-                className={`cl-expando ${this.props.className}`} 
+            <div
+                className={`cl-expando ${this.props.className}`}
                 onClick={this.props.onToggle}
                 role="button"
             >

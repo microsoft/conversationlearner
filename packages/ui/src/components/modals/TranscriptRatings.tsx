@@ -54,7 +54,7 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
     }
 
     componentDidUpdate(prevProps: Props) {
-        if (this.props.testSet && prevProps.testSet 
+        if (this.props.testSet && prevProps.testSet
             && (prevProps.testSet.sourceNames.length !== this.props.testSet.sourceNames.length
                 || this.props.testSet.ratingPairs !== prevProps.testSet.ratingPairs)) {
             this.onUpdatePivot(this.state.ratePivot || this.props.testSet.sourceNames[0])
@@ -97,7 +97,7 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
             if (sourceName !== ratePivot) {
                 const rankCounts: RankCount[] = []
                 for (let rank = maxRank; rank >= minRank; rank = rank - 1) {
-                    rankCounts.push({sourceName, rank, count: 0, conversationIds: [] })
+                    rankCounts.push({ sourceName, rank, count: 0, conversationIds: [] })
                 }
                 sourceRankMap.set(sourceName, rankCounts)
                 // Get number that aren't rankable (as they don't have matching transcript)
@@ -134,167 +134,170 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
         const numConversations = this.props.testSet.numConversations()
 
         this.setState({
-            ratePivot, 
-            sourceRankMap, 
+            ratePivot,
+            sourceRankMap,
             unRatableMap,
             notRatedMap,
-            maxRank, 
-            minRank, 
+            maxRank,
+            minRank,
             numRanks,
             numConversations
         })
     }
 
     render() {
-        
+
         return (
             <div>
-            {!this.props.testSet || this.props.testSet.sourceNames.length < 2 
-                ?
-                <div className="cl-testing-warning">
-                    {Util.formatMessageId(this.props.intl, FM.TRANSCRIPTRATINGS_WARNING_TITLE)}
-                </div>
-                :
-                <>
-                <div className={`cl-testing-dropbox ${OF.FontClassNames.mediumPlus}`}>
-                    <OF.Dropdown
-                        disabled={!this.props.testSet || this.props.testSet.sourceNames.length < 2}
-                        ariaLabel={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTRATINGS_DROPDOWN_TITLE)}
-                        label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTRATINGS_DROPDOWN_TITLE)}
-                        selectedKey={this.props.testSet && this.state.ratePivot 
-                            ? this.props.testSet.sourceNames.indexOf(this.state.ratePivot)
-                            : -1
-                        }
-                        onChange={this.onChangeRateSource}
-                        options={this.props.testSet 
-                            ? this.props.testSet.sourceNames
-                                .map<OF.IDropdownOption>((tag, i) => ({
-                                    key: i,
-                                    text: tag
-                                })) 
-                            : []
-                        }
-                    />
-                </div>
-                <div>
-                    {this.props.testSet?.sourceNames.length > 1 &&
-                        <div className="cl-transcriptrating-ranktitles">
-                            <div className="cl-testing-result-title">{'\u00A0'}</div>
-                            <div>
-                                {[...Array(this.state.numRanks).keys()].map((rc, i) => {
-                                    const rank = this.state.maxRank - i
-                                    let label = '\u00A0'
-                                    if (rank === 0) {
-                                        label = "Same"
-                                    }
-                                    else if (rank === this.state.maxRank) {
-                                        label = "Best"
-                                    }
-                                    else if (rank === this.state.minRank) {
-                                        label = "Worst"
-                                    }
-                                    else if (rank === 1) {
-                                        // Up arrow
-                                        label = "\u2B06"
-                                    }
-                                    else if (rank === -1) {
-                                        // Down arrow
-                                        label = "\u2B07"
-                                    }
-                                    return (
-                                        <div  
-                                            className="cl-testing-source-title"
-                                            key={i}
-                                        >
-                                            {label}
-                                        </div>
-                                    )}
-                                )}
-                                <div  
-                                    className="cl-testing-source-title cl-transcriptrating-rankbar"
-                                >
-                                    No Transcript 
-                                </div>
-                                <div  
-                                    className="cl-testing-source-title cl-transcriptrating-rankbutton"
-                                >
-                                    <OF.DefaultButton
-                                        disabled={!this.props.testSet || this.props.testSet.sourceNames.length < 2}
-                                        onClick={this.props.onRate}
-                                        ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_RATE)}
-                                        text={Util.formatMessageId(this.props.intl, FM.BUTTON_RATE)}
-                                        iconProps={{ iconName: 'Compare' }}
-                                    />
-                                </div>
-                            </div>
+                {!this.props.testSet || this.props.testSet.sourceNames.length < 2
+                    ?
+                    <div className="cl-testing-warning">
+                        {Util.formatMessageId(this.props.intl, FM.TRANSCRIPTRATINGS_WARNING_TITLE)}
+                    </div>
+                    :
+                    <>
+                        <div className={`cl-testing-dropbox ${OF.FontClassNames.mediumPlus}`}>
+                            <OF.Dropdown
+                                disabled={!this.props.testSet || this.props.testSet.sourceNames.length < 2}
+                                ariaLabel={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTRATINGS_DROPDOWN_TITLE)}
+                                label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTRATINGS_DROPDOWN_TITLE)}
+                                selectedKey={this.props.testSet && this.state.ratePivot
+                                    ? this.props.testSet.sourceNames.indexOf(this.state.ratePivot)
+                                    : -1
+                                }
+                                onChange={this.onChangeRateSource}
+                                options={this.props.testSet
+                                    ? this.props.testSet.sourceNames
+                                        .map<OF.IDropdownOption>((tag, i) => ({
+                                            key: i,
+                                            text: tag
+                                        }))
+                                    : []
+                                }
+                            />
                         </div>
-                    }
-                    {Array.from(this.state.sourceRankMap.keys())
-                        .map(sourceName => {
-                            const rankCount: RankCount[] | undefined = this.state.sourceRankMap.get(sourceName)
-                            const unrankable = this.state.unRatableMap.get(sourceName) ?? []
-                            const notRated = this.state.notRatedMap.get(sourceName) ?? []
-                            return (
-                                <div 
-                                    className="cl-transcriptrating-results"
-                                    key={sourceName}
-                                >
-                                    <div className="cl-testing-result-title">
-                                        {sourceName}
-                                    </div>
+                        <div>
+                            {this.props.testSet?.sourceNames.length > 1 &&
+                                <div className="cl-transcriptrating-ranktitles">
+                                    <div className="cl-testing-result-title">{'\u00A0'}</div>
                                     <div>
-                                        {rankCount?.map(rc => {
+                                        {[...Array(this.state.numRanks).keys()].map((rc, i) => {
+                                            const rank = this.state.maxRank - i
+                                            let label = '\u00A0'
+                                            if (rank === 0) {
+                                                label = "Same"
+                                            }
+                                            else if (rank === this.state.maxRank) {
+                                                label = "Best"
+                                            }
+                                            else if (rank === this.state.minRank) {
+                                                label = "Worst"
+                                            }
+                                            else if (rank === 1) {
+                                                // Up arrow
+                                                label = "\u2B06"
+                                            }
+                                            else if (rank === -1) {
+                                                // Down arrow
+                                                label = "\u2B07"
+                                            }
                                             return (
-                                                <div  
+                                                <div
+                                                    className="cl-testing-source-title"
+                                                    key={i}
+                                                >
+                                                    {label}
+                                                </div>
+                                            )
+                                        }
+                                        )}
+                                        <div
+                                            className="cl-testing-source-title cl-transcriptrating-rankbar"
+                                        >
+                                            No Transcript
+                                </div>
+                                        <div
+                                            className="cl-testing-source-title cl-transcriptrating-rankbutton"
+                                        >
+                                            <OF.DefaultButton
+                                                disabled={!this.props.testSet || this.props.testSet.sourceNames.length < 2}
+                                                onClick={this.props.onRate}
+                                                ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_RATE)}
+                                                text={Util.formatMessageId(this.props.intl, FM.BUTTON_RATE)}
+                                                iconProps={{ iconName: 'Compare' }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            {Array.from(this.state.sourceRankMap.keys())
+                                .map(sourceName => {
+                                    const rankCount: RankCount[] | undefined = this.state.sourceRankMap.get(sourceName)
+                                    const unrankable = this.state.unRatableMap.get(sourceName) ?? []
+                                    const notRated = this.state.notRatedMap.get(sourceName) ?? []
+                                    return (
+                                        <div
+                                            className="cl-transcriptrating-results"
+                                            key={sourceName}
+                                        >
+                                            <div className="cl-testing-result-title">
+                                                {sourceName}
+                                            </div>
+                                            <div>
+                                                {rankCount?.map(rc => {
+                                                    return (
+                                                        <div
+                                                            className="cl-transcriptrating-result"
+                                                            style={{ backgroundColor: `${Util.scaledColor(rc.rank)}` }}
+                                                            key={`${rc.rank}-${sourceName}`}
+                                                            onClick={() => this.props.onView(rc.conversationIds, this.state.ratePivot)}
+                                                            role="button"
+                                                        >
+                                                            <span className="cl-testing-result-item cl-testing-result-value">
+                                                                {rc.count}
+                                                            </span>
+                                                            <span className="cl-testing-result-item cl-testing-result-percent">
+                                                                {Util.percentOf(rc.count, this.state.numConversations)}
+                                                            </span>
+                                                        </div>
+                                                    )
+                                                }
+                                                )}
+                                                <div
                                                     className="cl-transcriptrating-result"
-                                                    style={{backgroundColor: `${Util.scaledColor(rc.rank)}`}}
-                                                    key={`${rc.rank}-${sourceName}`}
-                                                    onClick={() => this.props.onView(rc.conversationIds, this.state.ratePivot)}
+                                                    style={{ backgroundColor: '#dbdee1' }}
+                                                    onClick={() => this.props.onView(unrankable, this.state.ratePivot)}
                                                     role="button"
                                                 >
                                                     <span className="cl-testing-result-item cl-testing-result-value">
-                                                        {rc.count}
+                                                        {unrankable.length}
                                                     </span>
                                                     <span className="cl-testing-result-item cl-testing-result-percent">
-                                                        {Util.percentOf(rc.count, this.state.numConversations)}
+                                                        {Util.percentOf(unrankable.length, this.state.numConversations)}
                                                     </span>
                                                 </div>
-                                            )}
-                                        )}
-                                        <div
-                                            className="cl-transcriptrating-result"
-                                            style={{backgroundColor: '#dbdee1'}}
-                                            onClick={() => this.props.onView(unrankable, this.state.ratePivot)}
-                                            role="button"
-                                        >
-                                            <span className="cl-testing-result-item cl-testing-result-value">
-                                                {unrankable.length}
-                                            </span>
-                                            <span className="cl-testing-result-item cl-testing-result-percent">
-                                                {Util.percentOf(unrankable.length, this.state.numConversations)}
-                                            </span>
+                                                <div
+                                                    className="cl-transcriptrating-result"
+                                                    style={{ backgroundColor: '#e6e8ea' }}
+                                                    onClick={() => this.props.onView(notRated, this.state.ratePivot)}
+                                                    role="button"
+                                                >
+                                                    <span className="cl-testing-result-item cl-testing-result-value">
+                                                        {notRated.length}
+                                                    </span>
+                                                    <span className="cl-testing-result-item cl-testing-result-percent">
+                                                        {Util.percentOf(notRated.length, this.state.numConversations)}
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div
-                                            className="cl-transcriptrating-result"
-                                            style={{backgroundColor: '#e6e8ea'}}
-                                            onClick={() => this.props.onView(notRated, this.state.ratePivot)}
-                                            role="button"
-                                        >
-                                            <span className="cl-testing-result-item cl-testing-result-value">
-                                                {notRated.length}
-                                            </span>
-                                            <span className="cl-testing-result-item cl-testing-result-percent">
-                                                {Util.percentOf(notRated.length, this.state.numConversations)}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        )
-                    }
-                </div>
-                </>
-            }
+                                    )
+                                }
+                                )
+                            }
+                        </div>
+                    </>
+                }
             </div>
         )
     }

@@ -35,7 +35,7 @@ const { bfAppId, bfAppPassword, modelId, ...clOptions } = config
 //==================
 // Create Adapter
 //==================
-const adapter = new BB.BotFrameworkAdapter({ appId: bfAppId, appPassword: bfAppPassword });
+const adapter = new BB.BotFrameworkAdapter({ appId: bfAppId, appPassword: bfAppPassword })
 
 //==================================
 // Storage
@@ -53,7 +53,7 @@ if (isDevelopment) {
     console.log(chalk.cyanBright(`Adding /sdk routes`))
     server.use('/sdk', sdkRouter)
 }
-let cl = new ConversationLearner(modelId);
+let cl = new ConversationLearner(modelId)
 
 //=========================================================
 // Bots Buisness Logic
@@ -62,7 +62,7 @@ var greetings = [
     "Hello!",
     "Greetings!",
     "Hi there!"
-];
+]
 
 //=================================
 // Add Entity Logic
@@ -94,11 +94,11 @@ cl.AddCallback({
     name: "Multiply",
     render: async (logicResult: any, memoryManager: ReadOnlyClientMemoryManager, num1string: string, num2string: string) => {
         // Convert input to integers
-        var num1int = parseInt(num1string);
-        var num2int = parseInt(num2string);
+        var num1int = parseInt(num1string)
+        var num2int = parseInt(num2string)
 
         // Compute product
-        var product = num1int * num2int;
+        var product = num1int * num2int
 
         // Display result
         return `${num1string} * ${num2string} = ${product}`
@@ -109,7 +109,7 @@ cl.AddCallback({
 cl.AddCallback({
     name: "RandomGreeting",
     render: async (logicResult: any, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
-        var randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+        var randomGreeting = greetings[Math.floor(Math.random() * greetings.length)]
 
         const message = BB.MessageFactory.attachment(BB.CardFactory.thumbnailCard(randomGreeting, "Here's a neat photo", ["https://picsum.photos/100/?random"]))
         return message
@@ -121,7 +121,7 @@ cl.AddCallback({
     name: "ClearEntities",
     logic: async (memoryManager: ClientMemoryManager) => {
         // Clear "number" entity
-        memoryManager.Delete("number");
+        memoryManager.Delete("number")
     }
 })
 
@@ -155,7 +155,7 @@ cl.AddCallback({
         // !!WRONG!!
         // RememberEntity call will happen after the APICallback has returned
         request(options, (error: any, response: any, body: any) => {
-            memoryManager.Set("RandomMessage", response.body);   // BAD
+            memoryManager.Set("RandomMessage", response.body)   // BAD
         })
     },
     render: async (logicResult: any, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
@@ -176,7 +176,7 @@ cl.AddCallback({
     logic: async (memoryManager: ClientMemoryManager) => {
         var options = { method: 'GET', uri: 'https://jsonplaceholder.typicode.com/posts/1', json: true }
         let response = await requestpromise(options)
-        memoryManager.Set("RandomMessage", response.body);
+        memoryManager.Set("RandomMessage", response.body)
     },
     render: async (logicResult: any, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
         let value = memoryManager.Get("RandomMessage", ClientMemoryManager.AS_STRING)
@@ -208,7 +208,7 @@ server.post('/api/messages', (req, res) => {
         let result = await cl.recognize(context)
 
         if (result) {
-            return cl.SendResult(result);
+            return cl.SendResult(result)
         }
     })
 })

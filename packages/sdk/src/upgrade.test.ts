@@ -4,7 +4,7 @@
  */
 import * as upgrade from './upgrade'
 import * as models from '@conversationlearner/models'
-import { CallbackMap } from './CLRunner';
+import { CallbackMap } from './CLRunner'
 
 describe('upgrade', () => {
     describe('getActionPayload', () => {

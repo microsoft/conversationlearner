@@ -14,7 +14,7 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 import * as TC from '../tipComponents'
 import * as ToolTips from '../ToolTips/ToolTips'
 import * as Util from '../../Utils/util'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
 
 interface ComponentState {
     versionName: string
@@ -56,7 +56,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
     onKeyDown(event: React.KeyboardEvent<HTMLElement>) {
         // On enter attempt to create the model if required fields are set
         if (event.key === 'Enter' && (!(this.onGetNameErrorMessage(this.state.versionName)).length)) {
-            this.onClickCreate();
+            this.onClickCreate()
         }
     }
 
@@ -170,7 +170,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
 }
 
 const mapDispatchToProps = (dispatch: any) => {
-    return bindActionCreators({}, dispatch);
+    return bindActionCreators({}, dispatch)
 }
 const mapStateToProps = (state: State) => {
     return {}
@@ -184,8 +184,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
 type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
 export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(PackageCreator))

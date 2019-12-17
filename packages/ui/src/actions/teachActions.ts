@@ -11,7 +11,7 @@ import { setErrorDisplay } from './displayActions'
 import { AxiosError } from 'axios'
 import { fetchAllTrainDialogsThunkAsync } from './trainActions'
 import { EntityLabelConflictError } from '../types/errors'
-import { fetchApplicationTrainingStatusThunkAsync } from './appActions';
+import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
 
 // --------------------------
 // createTeachSession
@@ -161,7 +161,7 @@ export const deleteTeachSessionThunkAsync = (
 
             // If saving return the new train dialog
             const newTrainDialog = save ? await clClient.trainDialog(app.appId, teachSession.trainDialogId) : null
-            dispatch(deleteTeachSessionFulfilled(teachSession, newTrainDialog, sourceTrainDialogId));
+            dispatch(deleteTeachSessionFulfilled(teachSession, newTrainDialog, sourceTrainDialogId))
 
             if (save) {
                 void dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId))
@@ -173,7 +173,7 @@ export const deleteTeachSessionThunkAsync = (
             const error = e as AxiosError
             dispatch(clearTeachSession())
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_TRAIN_DIALOG_ASYNC))
-            void dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
+            void dispatch(fetchAllTrainDialogsThunkAsync(app.appId))
             throw error
         }
     }
@@ -201,13 +201,13 @@ export const deleteMemoryThunkAsync = (key: string, currentAppId: string) => {
         const clClient = ClientFactory.getInstance(AT.DELETE_MEMORY_ASYNC)
 
         try {
-            await clClient.memoryDelete(currentAppId);
-            dispatch(deleteMemoryFulfilled());
-            return true;
+            await clClient.memoryDelete(currentAppId)
+            dispatch(deleteMemoryFulfilled())
+            return true
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_MEMORY_ASYNC))
-            return false;
+            return false
         }
     }
 }
@@ -246,19 +246,19 @@ export const runExtractorThunkAsync = (appId: string, extractType: CLM.DialogTyp
             switch (extractType) {
                 case CLM.DialogType.TEACH:
                     uiExtractResponse = await clClient.teachSessionAddExtractStep(appId, sessionId, userInput, filteredDialog)
-                    break;
+                    break
                 case CLM.DialogType.TRAINDIALOG:
                     if (turnIndex === null) {
                         throw new Error(`Run extractor was called for a train dialog, but turnIndex was null. This should not be possible. Please open an issue.`)
                     }
                     uiExtractResponse = await clClient.trainDialogsUpdateExtractStep(appId, sessionId, turnIndex, userInput)
-                    break;
+                    break
                 case CLM.DialogType.LOGDIALOG:
                     if (turnIndex === null) {
                         throw new Error(`Run extractor was called for a log dialog, but turnIndex was null. This should not be possible. Please open an issue.`)
                     }
                     uiExtractResponse = await clClient.logDialogsUpdateExtractStep(appId, sessionId, turnIndex, userInput)
-                    break;
+                    break
                 default:
                     throw new Error(`Could not handle unknown extract type: ${extractType}`)
             }
@@ -420,7 +420,7 @@ export const postScorerFeedbackThunkAsync = (key: string, appId: string, teachId
 
             if (!waitForUser) {
                 // Don't re-send predicted entities on subsequent score call
-                uiScoreInput.extractResponse.predictedEntities = [];
+                uiScoreInput.extractResponse.predictedEntities = []
                 // TODO: Force end task to always be wait
                 dispatch(postScorerFeedbackFulfilled(key, appId, teachId, CLM.DialogMode.Scorer, uiPostScoreResponse, uiScoreInput))
             }

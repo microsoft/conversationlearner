@@ -22,10 +22,10 @@ export const getRelativeParent = (element: HTMLElement | null): HTMLElement => {
     }
 
     return getRelativeParent(element.parentElement)
-};
+}
 
 export const valueToJSON = (value: any) => {
-    const characters = value.characters ? value.characters.toJSON() : [];
+    const characters = value.characters ? value.characters.toJSON() : []
     return {
         data: value.data.toJSON(),
         decorations: value.decorations ? value.decorations.toJSON() : [],

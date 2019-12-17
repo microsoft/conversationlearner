@@ -221,8 +221,8 @@ export default class PayloadEditor extends React.Component<Props, State> {
 
         // User is trying to submit Action as a whole
         if (event.shiftKey) {
-            this.props.onSubmit();
-            return true;
+            this.props.onSubmit()
+            return true
         }
 
         if (!this.state.menuProps.isVisible || this.state.matchedOptions.length === 0) {

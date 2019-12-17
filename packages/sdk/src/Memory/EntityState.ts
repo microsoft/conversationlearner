@@ -5,7 +5,7 @@
 import { CLStorage } from './CLStorage'
 import { CLDebug } from '../CLDebug'
 import { Memory, FilledEntity, MemoryValue, FilledEntityMap } from '@conversationlearner/models'
-import { ClientMemoryManager } from '..';
+import { ClientMemoryManager } from '..'
 
 const NEGATIVE_PREFIX = '~'
 
@@ -107,7 +107,7 @@ export class EntityState {
     /** Return array of entity Ids for which I've remembered something */
     public async FilledEntitiesAsync(): Promise<FilledEntity[]> {
         await this.Init()
-        return this.filledEntityMap.FilledEntities();
+        return this.filledEntityMap.FilledEntities()
     }
 
     /** Given negative entity name, return positive version */

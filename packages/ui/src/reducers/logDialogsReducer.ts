@@ -52,7 +52,7 @@ const logDialogsReducer = produce((state: LogDialogState, action: ActionObject) 
         case AT.DELETE_LOG_DIALOG_FULFILLED:
             // Remove from pending item list
             state.pendingDelete = state.pendingDelete.filter(ld => ld.logDialogId !== action.logDialogId)
-            return 
+            return
         case AT.DELETE_LOG_DIALOG_REJECTED:
             // Restore pending item, remove from pending list
             const restoreItem = state.pendingDelete.filter(ld => ld.logDialogId === action.logDialogId)
@@ -67,7 +67,7 @@ const logDialogsReducer = produce((state: LogDialogState, action: ActionObject) 
         case AT.DELETE_LOG_DIALOGS_FULFILLED:
             // Remove pending items from list
             state.pendingDelete = state.pendingDelete.filter(dialog => !action.logDialogIds.some(ldId => ldId === dialog.logDialogId))
-            return 
+            return
         case AT.DELETE_LOG_DIALOGS_REJECTED:
             // Restore pending items, remove from pending list
             const restoreItems = state.pendingDelete.filter(dialog => action.logDialogIds.some(ldId => ldId === dialog.logDialogId))

@@ -111,7 +111,7 @@ class TranscriptList extends React.Component<Props, ComponentState> {
         for (const sourceName of this.props.testSet.sourceNames) {
 
             let items: Test.TestItem[] = this.props.testSet.items
-            .filter(i => i.sourceName === sourceName) 
+                .filter(i => i.sourceName === sourceName)
 
             renderResults.push({
                 sourceName: sourceName,
@@ -145,20 +145,20 @@ class TranscriptList extends React.Component<Props, ComponentState> {
                 />
                 <div className="cl-testing-trascript-group">
                     {renderResults.length > 0
-                    ?
-                    <OF.DetailsList
-                        className={OF.FontClassNames.mediumPlus}
-                        items={renderResults}
-                        columns={this.state.transcriptColumns}
-                        checkboxVisibility={OF.CheckboxVisibility.hidden}
-                        onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender?.(props)}</div>}
-                        onRenderItemColumn={(rr: RenderData, i, column: IRenderableColumn) =>
-                            column.render(rr)}
-                    />
-                    : 
-                    <div className="cl-testing-warning">
-                        {Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_WARNING_TITLE)}
-                    </div>
+                        ?
+                        <OF.DetailsList
+                            className={OF.FontClassNames.mediumPlus}
+                            items={renderResults}
+                            columns={this.state.transcriptColumns}
+                            checkboxVisibility={OF.CheckboxVisibility.hidden}
+                            onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender?.(props)}</div>}
+                            onRenderItemColumn={(rr: RenderData, i, column: IRenderableColumn) =>
+                                column.render(rr)}
+                        />
+                        :
+                        <div className="cl-testing-warning">
+                            {Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_WARNING_TITLE)}
+                        </div>
                     }
                     {this.props.testSet && this.props.testSet.lgItems.length > 0 &&
                         <div className="cl-testing-lglabel">

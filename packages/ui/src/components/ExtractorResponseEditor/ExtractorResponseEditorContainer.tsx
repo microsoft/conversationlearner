@@ -29,7 +29,7 @@ class ExtractorResponseEditorContainer extends React.Component<Props> {
                 console.warn(`ExtractorResponseEditorContainer#onChangeCustomEntities: When filtering prebuilts entities out of predicted entities encountered entity with builtinType undefined`)
             }
             const entityDef = entities.find(entity => entity.entityId === e.entityId)
-            return entityDef !== undefined && CLM.isPrebuilt(entityDef) 
+            return entityDef !== undefined && CLM.isPrebuilt(entityDef)
         })
 
         const newExtractResponse = {

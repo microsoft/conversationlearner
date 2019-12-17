@@ -118,7 +118,7 @@ export const actionHasHash = (actionId: string, hash: string, actions: CLM.Actio
 
 // Create recursive partial of an object
 export type RecursivePartial<T> = {
-    [P in keyof T]?: RecursivePartial<T[P]>;
+    [P in keyof T]?: RecursivePartial<T[P]>
 }
 
 export const addEntitiesById = (valuesByName: CLM.FilledEntityMap): CLM.FilledEntityMap => {

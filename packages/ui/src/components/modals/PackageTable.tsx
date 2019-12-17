@@ -53,7 +53,7 @@ interface ComponentState {
 
 class PackageTable extends React.Component<Props, ComponentState> {
     constructor(p: any) {
-        super(p);
+        super(p)
         this.state = {
             columns: columns,
         }
@@ -64,7 +64,7 @@ class PackageTable extends React.Component<Props, ComponentState> {
     }
 
     render() {
-        const packageReferences = util.packageReferences(this.props.app);
+        const packageReferences = util.packageReferences(this.props.app)
         return (
             <OF.DetailsList
                 className={OF.FontClassNames.mediumPlus}
@@ -79,7 +79,7 @@ class PackageTable extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
@@ -92,8 +92,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
 type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
 export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(PackageTable) as any)

@@ -16,7 +16,7 @@ import { State } from '../../types'
 import { AppBase } from '@conversationlearner/models'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
 
 interface ComponentState {
     isSessionEndModalOpen: boolean
@@ -137,14 +137,14 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                     title={Util.formatMessageId(intl, FM.CHATSESSIONMODAL_TIMEOUT_TITLE)}
                 />
             </OF.Modal>
-        );
+        )
     }
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         deleteChatSessionThunkAsync: actions.chat.deleteChatSessionThunkAsync,
         editChatSessionExpireThunkAsync: actions.chat.editChatSessionExpireThunkAsync,
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     if (!state.user.user) {

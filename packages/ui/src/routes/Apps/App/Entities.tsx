@@ -16,7 +16,7 @@ import FormattedMessageId from '../../../components/FormattedMessageId'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import * as Util from '../../../Utils/util'
 import * as moment from 'moment'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
 
 interface IRenderableColumn extends OF.IColumn {
     render: (entity: EntityBase, component: Entities) => JSX.Element | JSX.Element[]
@@ -49,7 +49,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 180,
             isResizable: true,
             getSortValue: entity => {
-                return entity.entityType.toLowerCase();
+                return entity.entityType.toLowerCase()
             },
             render: entity => {
                 let display = entity.entityType
@@ -79,8 +79,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 180,
             isResizable: true,
             getSortValue: entity => {
-                const display = entity.resolverType === undefined || entity.resolverType === null ? "none" : entity.resolverType;
-                return display.toLowerCase();
+                const display = entity.resolverType === undefined || entity.resolverType === null ? "none" : entity.resolverType
+                return display.toLowerCase()
             },
             render: entity => {
                 const display = entity.resolverType === undefined || entity.resolverType === null ? "none" : entity.resolverType
@@ -204,8 +204,8 @@ class Entities extends React.Component<Props, ComponentState> {
             entitySelected: null
         })
         setTimeout(() => {
-            this.focusNewEntityButton();
-        }, 500);
+            this.focusNewEntityButton()
+        }, 500)
     }
 
     onSelectEntity(entity: EntityBase) {
@@ -240,16 +240,16 @@ class Entities extends React.Component<Props, ComponentState> {
     @autobind
     getFilteredAndSortedEntities(): EntityBase[] {
         //runs when user changes the text or sort
-        const lcString = this.state.searchValue.toLowerCase();
+        const lcString = this.state.searchValue.toLowerCase()
         const filteredEntities = this.props.entities.filter(e => {
-            const nameMatch = e.entityName.toLowerCase().includes(lcString);
-            const typeMatch = e.entityType.toLowerCase().includes(lcString);
+            const nameMatch = e.entityName.toLowerCase().includes(lcString)
+            const typeMatch = e.entityType.toLowerCase().includes(lcString)
             const match = nameMatch || typeMatch
-            return match && !e.positiveId && !e.doNotMemorize;
+            return match && !e.positiveId && !e.doNotMemorize
         })
 
         if (!this.state.sortColumn) {
-            return filteredEntities;
+            return filteredEntities
         }
 
         // Sort the items.
@@ -263,7 +263,7 @@ class Entities extends React.Component<Props, ComponentState> {
                     : compareValue
             })
 
-        return filteredEntities;
+        return filteredEntities
     }
 
     @autobind
@@ -278,7 +278,7 @@ class Entities extends React.Component<Props, ComponentState> {
     @autobind
     onSearch(newValue: string) {
         // runs when user changes the text
-        const lcString = newValue.toLowerCase();
+        const lcString = newValue.toLowerCase()
         this.setState({
             searchValue: lcString
         })
@@ -375,7 +375,7 @@ class Entities extends React.Component<Props, ComponentState> {
                     entityTypeFilter={null}
                 />
             </div>
-        );
+        )
     }
 
     private focusNewEntityButton() {
@@ -402,8 +402,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
 type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
 export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(Entities))

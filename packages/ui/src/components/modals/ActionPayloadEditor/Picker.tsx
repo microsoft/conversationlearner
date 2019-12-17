@@ -20,7 +20,7 @@ interface PropsWithRef extends Props {
 }
 
 class Picker extends React.Component<PropsWithRef> {
-    listRef =  React.createRef<HTMLDivElement>()
+    listRef = React.createRef<HTMLDivElement>()
 
     componentDidUpdate() {
         if (this.listRef.current) {
@@ -56,15 +56,15 @@ class Picker extends React.Component<PropsWithRef> {
                 {this.props.matchedOptions.length === 0
                     ? <div className="mention-picker-button">No Results</div>
                     : this.props.matchedOptions.map((matchedOption, i) =>
-                    <button
-                        key={matchedOption.original.id}
-                        type="button"
-                        className={`mention-picker-button ${(matchedOption as any).highlighted ? 'mention-picker-button--active' : ''}`}
-                        onMouseDown={() => this.props.onClickOption(matchedOption.original)}
-                    >
-                        <FuseMatch matches={matchedOption.matchedStrings} />
-                    </button>
-                )}
+                        <button
+                            key={matchedOption.original.id}
+                            type="button"
+                            className={`mention-picker-button ${(matchedOption as any).highlighted ? 'mention-picker-button--active' : ''}`}
+                            onMouseDown={() => this.props.onClickOption(matchedOption.original)}
+                        >
+                            <FuseMatch matches={matchedOption.matchedStrings} />
+                        </button>
+                    )}
             </div>
         </div>
     }

@@ -15,7 +15,7 @@ import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
 import { AxiosError } from 'axios'
 import { setErrorDisplay } from './displayActions'
 import { EntityLabelConflictError } from '../types/errors'
-import { DispatcherAlgorithmType } from '../components/modals/DispatcherCreator';
+import { DispatcherAlgorithmType } from '../components/modals/DispatcherCreator'
 
 // --------------------------
 // CreateTrainDialog
@@ -137,7 +137,7 @@ export const fetchTrainDialogThunkAsync = (appId: string, trainDialogId: string,
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_TRAIN_DIALOG_ASYNC))
-            throw e;
+            throw e
         }
     }
 }
@@ -270,7 +270,7 @@ export const fetchAllTrainDialogsThunkAsync = (appId: string) => {
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_TRAIN_DIALOGS_ASYNC))
-            return null;
+            return null
         }
     }
 }

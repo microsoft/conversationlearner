@@ -1,4 +1,4 @@
-import { AT } from "./types";
+import { AT } from "./types"
 
 /**
  * Copyright (c) Microsoft Corporation. All rights reserved.
@@ -66,7 +66,7 @@ export enum FM {
     ACTIONLIST_COLUMNS_TYPE = 'ActionListColumns.type',
     ACTIONLIST_COLUMNS_CONDITIONS = 'ActionListColumns.conditions',
     ACTIONLIST_COLUMNS_REPROMPT = 'ActionListColumns.reprompt',
-            
+
     // ActionDetails
     ACTIONDETAILSLIST_COLUMNS_REQUIREDENTITIES = 'ActionDetailsList.columns.requiredEntities',
     ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES = 'ActionDetailsList.columns.disqualifyingEntities',
@@ -483,7 +483,7 @@ export enum FM {
     TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE = 'TeachSessionModal.edit.confirmDelete.title',
     TEACHSESSIONMODAL_INITSTATE_ARIADESCRIPTION = 'TeachSessionModal.initstate.ariaDescription',
     TEACHSESSIONMODAL_INITSTATE_TEXT = 'TeachSessionModal.initstate.text',
-    
+
     // Testing
     TESTING_NAME_LABEL = 'Testing.testname.label',
     TESTING_TABLE_SOURCE_LABEL = 'Testing.tablesource.lable',
@@ -727,10 +727,10 @@ export default {
 
         // ActionSelector
         [FM.ACTIONSELECTOR_TITLE]: 'Select Action for Prompt',
-    
+
         // ActionScorer
         [FM.ACTIONSCORER_COLUMNS_SCORE]: 'Score',
-        
+
         // ActionDeleteModal
         [FM.ACTION_DELETE_INUSE_TITLE]: 'Deleting actions used by train dialogs',
         [FM.ACTION_DELETE_INUSE_PLACEHOLDER_PRESERVE]: 'This operation will preserves the reference to the action leaving a placeholder. All the dialogs using the action will become invalid.  This option can be useful to see where and how the action was used as you correct the dialogs or replace the action.',
@@ -876,14 +876,14 @@ export default {
         [FM.DEMOIMPORT_TITLE]: 'Import Demo Models',
         [FM.DEMOIMPORT_BUTTON_ARIADESCRIPTION]: 'Import Demo Models',
         [FM.DEMOIMPORT_BUTTON_TEXT]: 'Import',
-        
+
         // DialogMetadata
         [FM.DIALOGMETADATA_TAGS_LABEL]: 'Tags',
         [FM.DIALOGMETADATA_DESCRIPTION_LABEL]: 'Description',
         [FM.DIALOGMETADATA_DESCRIPTION_PLACEHOLDER]: 'Click to add description',
         [FM.DIALOGMETADATA_USERINPUT_LABEL]: 'User Input',
         [FM.DIALOGMETADATA_ALTINPUT_LABEL]: 'Alt Input',
-                    
+
         // Dispatch Creator
         [FM.DISPATCHCREATOR_ALGORITHM_TYPE_LABEL]: 'Algorithm Type',
 
@@ -1006,7 +1006,7 @@ export default {
         [FM.IMPORT_AUTOMERGE]: 'Auto Merge',
         [FM.IMPORT_AUTOACTIONMATCH]: 'Auto Action Match',
 
-            // LogConversionConflictModal
+        // LogConversionConflictModal
         [FM.LOGCONVERSIONCONFLICTMODAL_TITLE]: 'Incompatible Log Dialog',
         [FM.LOGCONVERSIONCONFLICTMODAL_SUBTITLE]: 'You attempted to save this log dialog as a train dialog but this dialog is incompatible with the current model due to conflicts in entity labels.  This may occur if the model has changed from the version of model used to create the log dialog. You need to update the dialog to match current model to convert it.',
         [FM.LOGCONVERSIONCONFLICTMODAL_REVIEW]: 'The log dialog contains {conflictCount} conflicts. Please review the changes to labels for each conflict below:',
@@ -1053,7 +1053,7 @@ export default {
         [FM.PACKAGECREATOR_LIVE_LABEL]: 'Make Live Version',
         [FM.PACKAGECREATOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
         [FM.PACKAGECREATOR_CANCELBUTTON_TEXT]: 'Cancel',
-        
+
         // ReplayErrorList
         [FM.REPLAYERROR_ERROR]: 'This Train Dialog has errors that must be fixed before it can be used to train your model',
         [FM.REPLAYERROR_ERROR_LOG]: 'This Log Dialog has errors that must be fixed before it can be converted to a Train Dialog',
@@ -1091,7 +1091,7 @@ export default {
         [FM.REVIEW_SUBTITLE]: 'Top log dialogs suspected of having issues',
         [FM.REVIEW_ANALYZE]: 'Analyze',
         [FM.REVIEW_PLACEHOLDER_TITLE]: 'Analyze Log Dialogs',
-        
+
         // Settings
         [FM.SETTINGS_TITLE]: 'Settings',
         [FM.SETTINGS_SUBTITLE]: 'Control your model version tags and other model configuration',
@@ -1167,7 +1167,7 @@ export default {
 
         // TextVariationCreator
         [FM.TEXTVARIATION_PLACEHOLDER]: 'Add alternative input...',
-    
+
         // ToolTip
         [FM.TOOLTIP_ACTION_API]: 'APIs exposed in the running Bot of the form:',
         [FM.TOOLTIP_ACTION_API_TITLE]: 'API',
@@ -1319,7 +1319,7 @@ export default {
         // TrainscriptRatings
         [FM.TRANSCRIPTRATINGS_DROPDOWN_TITLE]: 'Relative to:',
         [FM.TRANSCRIPTRATINGS_WARNING_TITLE]: 'At least two sets of transcripts must be loaded to rate them',
-        
+
         // TreeView
         [FM.TREEVIEW_TOGGLE_FULLSCREEN]: 'Toggle Fullscreen',
 
@@ -1330,7 +1330,7 @@ export default {
         [FM.VALIDATE_UNABLE_TO_EDIT]: 'Unable to Edit',
         [FM.VALIDATE_UNABLE_TO_BRANCH]: 'Unable to Branch',
         [FM.VALIDATE_ENTITY_REASON]: 'Bot API calls are behaving differently. Entities in memory do not match.',
-      
+
         // UserInput Modal
         [FM.USERINPUT_ADD_TITLE]: 'Add User Input',
         [FM.USERINPUT_BRANCH_TITLE]: 'Add Different User Input',

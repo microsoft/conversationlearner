@@ -10,7 +10,7 @@ interface TestData {
     suggestions: string[]
 }
 
-const testDataToMap = (data : TestData[]) => {
+const testDataToMap = (data: TestData[]) => {
     let output = []
     for (const datum of data) {
         let d = {

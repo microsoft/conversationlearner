@@ -26,7 +26,7 @@ class HelpIcon extends React.Component<Props> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setTipType
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
@@ -44,4 +44,4 @@ type stateProps = ReturnType<typeof mapStateToProps>
 type dispatchProps = ReturnType<typeof mapDispatchToProps>
 type Props = stateProps & dispatchProps & ReceivedProps
 
-export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(HelpIcon);
+export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(HelpIcon)

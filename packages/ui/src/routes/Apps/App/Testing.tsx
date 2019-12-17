@@ -727,7 +727,7 @@ const mapDispatchToProps = (dispatch: any) => {
         setErrorDisplay: actions.display.setErrorDisplay,
         spinnerAdd: actions.display.spinnerAdd,
         spinnerRemove: actions.display.spinnerRemove
-    }, dispatch);
+    }, dispatch)
 }
 
 const mapStateToProps = (state: State) => {

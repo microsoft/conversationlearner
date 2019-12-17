@@ -9,10 +9,10 @@ export class ErrorInjector {
 
     public static SetError(actionType: string, enabled: boolean) {
         if (enabled) {
-            ErrorInjector.disabledActions.push(actionType);
+            ErrorInjector.disabledActions.push(actionType)
         }
         else {
-            ErrorInjector.disabledActions = ErrorInjector.disabledActions.filter(s => s !== actionType);
+            ErrorInjector.disabledActions = ErrorInjector.disabledActions.filter(s => s !== actionType)
         }
     }
 

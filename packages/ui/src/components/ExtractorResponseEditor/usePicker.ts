@@ -89,11 +89,11 @@ export const usePicker = (
         switch (event.key) {
             case 'ArrowUp': {
                 modifyFunction = decrement
-                break;
+                break
             }
             case 'ArrowDown':
                 modifyFunction = increment
-                break;
+                break
             case 'Enter':
             case 'Tab':
                 // Only simulate completion on 'forward' tab
@@ -104,7 +104,7 @@ export const usePicker = (
                 onSelectHighlightedOption()
                 event.stopPropagation()
                 event.preventDefault()
-                break;
+                break
             default:
         }
 

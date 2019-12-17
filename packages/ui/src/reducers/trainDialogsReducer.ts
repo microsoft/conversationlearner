@@ -8,7 +8,7 @@ import { Reducer } from 'redux'
 import { replace } from '../Utils/util'
 import produce from 'immer'
 
-const initialState: TrainDialogState = [];
+const initialState: TrainDialogState = []
 
 const trainDialogsReducer: Reducer<TrainDialogState> = produce((state: TrainDialogState, action: ActionObject) => {
     switch (action.type) {

@@ -8,7 +8,7 @@ import * as OF from 'office-ui-fabric-react'
 import { FM } from '../../react-intl-messages'
 import { connect } from 'react-redux'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
 
 interface ComponentState {
     stopImport: boolean
@@ -24,8 +24,8 @@ class TranscriptImportCancelModal extends React.Component<Props, ComponentState>
             stopImport: !this.state.stopImport
         })
     }
-    
-    render () {
+
+    render() {
         return (
             <OF.Dialog
                 hidden={!this.props.open}
@@ -38,14 +38,14 @@ class TranscriptImportCancelModal extends React.Component<Props, ComponentState>
                     isBlocking: false
                 }}
             >
-            {this.props.allowContinue &&
-                <OF.Checkbox
-                    label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORT_CANCEL_CHECKBOX_LABEL)}
-                    checked={this.state.stopImport}
-                    onChange={this.onChangeCheckbox}
-                />
-            }
-            <OF.DialogFooter>
+                {this.props.allowContinue &&
+                    <OF.Checkbox
+                        label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORT_CANCEL_CHECKBOX_LABEL)}
+                        checked={this.state.stopImport}
+                        onChange={this.onChangeCheckbox}
+                    />
+                }
+                <OF.DialogFooter>
                     <OF.PrimaryButton
                         onClick={() => this.props.onConfirm(this.state.stopImport || !this.props.allowContinue)}
                         text={Util.formatMessageId(this.props.intl, FM.BUTTON_CONFIRM)}

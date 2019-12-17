@@ -46,8 +46,7 @@ export class ObiUtils {
             const lgName = item.substring(0, findFirstOrThrow(item, "-")).trim()
             const backticksStart = findFirstOrThrow(item, "```")
             const suggestionsStart = findLastOrThrow(item, "[")
-            if (backticksStart > suggestionsStart) 
-            {
+            if (backticksStart > suggestionsStart) {
                 throw new RangeError('``` not found')
             }
 

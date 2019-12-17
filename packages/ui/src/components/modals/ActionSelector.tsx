@@ -36,7 +36,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 const refFn = (index === 0)
                     ? component.primaryScoreButtonRef
                     : undefined
-                
+
                 return (
                     <OF.PrimaryButton
                         data-testid="action-scorer-button-clickable"
@@ -178,25 +178,29 @@ class ActionSelector extends React.Component<Props, ComponentState> {
         const items = []
         for (const entityId of action.requiredEntities) {
             const found = DialogUtils.entityInMemory(entityId, this.props.entities, [])
-            items.push({name: found.name, neg: false
+            items.push({
+                name: found.name, neg: false
             })
         }
         for (const entityId of action.negativeEntities) {
             const found = DialogUtils.entityInMemory(entityId, this.props.entities, [])
-            items.push({name: found.name, neg: true
+            items.push({
+                name: found.name, neg: true
             })
         }
         if (action.requiredConditions) {
             for (const condition of action.requiredConditions) {
                 const result = DialogUtils.convertToScorerCondition(condition, this.props.entities, [])
-                items.push({name: result.name, neg: false
+                items.push({
+                    name: result.name, neg: false
                 })
             }
         }
         if (action.negativeConditions) {
             for (const condition of action.negativeConditions) {
                 const result = DialogUtils.convertToScorerCondition(condition, this.props.entities, [])
-                items.push({name: result.name, neg: true
+                items.push({
+                    name: result.name, neg: true
                 })
             }
         }

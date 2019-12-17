@@ -20,7 +20,7 @@ const renderOnlyText =
             // Display result
             return \`\${num1string} * \${num2string} = \${product}\`\
         }
-    })`;
+    })`
 
 const renderOnlyCard =
     `cl.AddCallback({
@@ -31,7 +31,7 @@ const renderOnlyCard =
             const message = BB.MessageFactory.attachment(BB.CardFactory.thumbnailCard(randomGreeting, "Here's a neat photo", ["https://picsum.photos/100/?random"]))
             return message
         }
-    })`;
+    })`
 
 const logicOnly =
     `cl.AddCallback({
@@ -40,7 +40,7 @@ const logicOnly =
             // Clear "number" entity
             memoryManager.Delete("number");
         }
-    })`;
+    })`
 
 const apiCorrect =
     `cl.AddCallback({
@@ -56,7 +56,7 @@ const apiCorrect =
         render: async (logicResult: any, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
             return logicResult.body
         }
-    })`;
+    })`
 
 const apiWrong =
     `cl.AddCallback({
@@ -73,7 +73,7 @@ const apiWrong =
         render: async (logicResult: any, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
             return logicResult
         }
-    })`;
+    })`
 
 const resultAsEntity =
     `cl.AddCallback({
@@ -87,7 +87,7 @@ const resultAsEntity =
             const value = memoryManager.Get("RandomMessage", ClientMemoryManager.AS_STRING)
             return value || ""
         }
-    })`;
+    })`
 
 const resultPassed =
     `cl.AddCallback({
@@ -100,7 +100,7 @@ const resultPassed =
         render: async (logicResult) => {
             return \`Title: \${logicResult.title}\`
         }
-    })`;
+    })`
 
 export function renderAPIPage1(): JSX.Element {
     return (

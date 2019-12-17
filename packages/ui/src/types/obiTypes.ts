@@ -28,24 +28,24 @@ export interface MicrosoftIRule {
     /**
      * Copy the definition by id from a .dialog file.
      */
-    $copy?: string;
+    $copy?: string
     /**
      * Extra information for the Bot Framework Designer.
      */
-    $designer?: { [key: string]: any };
+    $designer?: { [key: string]: any }
     /**
      * Inline id for reuse of an inline definition
      */
-    $id?: string;
+    $id?: string
     /**
      * Defines the valid properties for the component you are configuring (from a dialog .schema
      * file)
      */
-    $type?: string;
+    $type?: string
     /**
      * Optional constraint to which must be met for this rule to fire
      */
-    constraint?: string;
+    constraint?: string
     /**
      * Sequence of steps or dialogs to execute
      */
@@ -53,15 +53,15 @@ export interface MicrosoftIRule {
     /**
      * Events to trigger this rule for
      */
-    events?: Event[];
+    events?: Event[]
     /**
      * The entities required to trigger this rule
      */
-    entities?: string[];
+    entities?: string[]
     /**
      * Intent name to trigger on
      */
-    intent?: string;
+    intent?: string
 }
 
 /**
@@ -71,43 +71,43 @@ export interface OBIDialog {
     /**
      * Copy the definition by id from a .dialog file.
      */
-    $copy?: string;
+    $copy?: string
     /**
      * Extra information for the Bot Framework Designer.
      */
-    $designer?: { [key: string]: any };
+    $designer?: { [key: string]: any }
     /**
      * Inline id for reuse of an inline definition
      */
-    $id?: string;
+    $id?: string
     /**
      * Defines the valid properties for the component you are configuring (from a dialog .schema
      * file)
      */
-    $type?: string;
+    $type?: string
     /**
      * If this is true the dialog will automatically end when there are no more steps to run.
      * If this is false it is the responsbility of the author to call EndDialog at an
      * appropriate time.
      */
-    autoEndDialog?: boolean;
+    autoEndDialog?: boolean
     /**
      * Property path to the memory to return as the result of this dialog ending because
      * AutoEndDialog is true and there are no more steps to execute.
      */
-    defaultResultProperty?: string;
+    defaultResultProperty?: string
     /**
      * Language generator to use for this dialog. (aka: LG file)
      */
-    generator?: string;
+    generator?: string
     /**
      * This defines properties which be passed as arguments to this dialog
      */
-    inputBindings?: { [key: string]: string };
+    inputBindings?: { [key: string]: string }
     /**
      * This is the property which the EndDialog(result) will be set to when EndDialog() is called
      */
-    outputBinding?: string;
+    outputBinding?: string
     /**
      * This is that will be passed in as InputProperty and also set as the OutputProperty
      *
@@ -121,7 +121,7 @@ export interface OBIDialog {
      *
      * The property to set the value of
      */
-    property?: string;
+    property?: string
     /**
      * If the result is expected to be structured data such as a JSON object, this holds
      * the names of the fields or properties in that response object.
@@ -131,15 +131,15 @@ export interface OBIDialog {
     /**
      * Configured recognizer to generate intent and entites from user utterance
      */
-    recognizer?: Recognizer | string;
+    recognizer?: Recognizer | string
     /**
      * Array of rules to use to evaluate conversation
      */
-    rules?: MicrosoftIRule[];
+    rules?: MicrosoftIRule[]
     /**
      * Policy for how to select rule to execute next
      */
-    selector?: any;
+    selector?: any
     /**
      * Initial Sequence of steps or dialogs to execute when dialog is started
      *
@@ -152,24 +152,24 @@ export interface OBIDialog {
      * Always will always consult parent dialogs first, never will not consult parent dialogs,
      * notRecognized will consult parent only when it's not recognized
      */
-    allowInterruptions?: AllowInterruptions;
+    allowInterruptions?: AllowInterruptions
     /**
      * If set to true this will always prompt the user regardless if you already have the value
      * or not.
      */
-    alwaysPrompt?: boolean;
+    alwaysPrompt?: boolean
     /**
      * Value to return if the value expression can't be evaluated.
      */
-    defaultValue?: string;
+    defaultValue?: string
     /**
      * The message to send to when then input was not valid for the input type.
      */
-    invalidPrompt?: string;
+    invalidPrompt?: string
     /**
      * The max retry count for this prompt.
      */
-    maxTurnCount?: number;
+    maxTurnCount?: number
     /**
      * The attachment output format.
      *
@@ -179,19 +179,19 @@ export interface OBIDialog {
      *
      * The TextInput output format.
      */
-    outputFormat?: OutputFormat;
+    outputFormat?: OutputFormat
     /**
      * The message to send to as prompt for this input.
      */
-    prompt?: string;
+    prompt?: string
     /**
      * The message to send if the last input is not recognized.
      */
-    unrecognizedPrompt?: string;
+    unrecognizedPrompt?: string
     /**
      * Expressions to validate an input.
      */
-    validations?: string[];
+    validations?: string[]
     /**
      * The expression that you evaluated for input.
      *
@@ -201,102 +201,102 @@ export interface OBIDialog {
      *
      * Property path to memory object to send as the value of the trace activity
      */
-    value?: string;
+    value?: string
     /**
      * This is the dialog to call.
      *
      * This is the dialog to switch to.
      */
-    dialog?: OBIDialog | string;
+    dialog?: OBIDialog | string
     /**
      * Options to pass to the dialog.
      */
-    options?: { [key: string]: any };
+    options?: { [key: string]: any }
     /**
      * The name of event to emit
      */
-    eventName?: string;
+    eventName?: string
     /**
      * Optional value to emit along with the event
      */
-    eventValue?: { [key: string]: any };
+    eventValue?: { [key: string]: any }
     /**
      * Compose an output activity containing a set of choices
      */
-    appendChoices?: boolean;
-    choiceOptions?: ChoiceOptions;
-    choices?:       Choice[];
+    appendChoices?: boolean
+    choiceOptions?: ChoiceOptions
+    choices?: Choice[]
     /**
      * The prompts default locale that should be recognized.
      */
-    defaultLocale?:     string;
-    recognizerOptions?: RecognizerOptions;
+    defaultLocale?: string
+    recognizerOptions?: RecognizerOptions
     /**
      * The kind of choice list style to generate
      */
-    style?:          ListStyle;
-    confirmChoices?: ConfirmChoice[];
+    style?: ListStyle
+    confirmChoices?: ConfirmChoice[]
     /**
      * Memory expression of the array to manipulate.
      */
-    arrayProperty?: string;
+    arrayProperty?: string
     /**
      * The array operation to perform
      *
      * The change type to apply to current dialog
      */
-    changeType?: ChangeType;
+    changeType?: ChangeType
     /**
      * Memory expression of the result of this action.
      */
-    resultProperty?: string;
+    resultProperty?: string
     /**
      * If true this event should propagate to parent dialogs
      */
-    bubbleEvent?: boolean;
+    bubbleEvent?: boolean
     /**
      * The memory path which refers to the index of the item
      */
-    indexProperty?: string;
+    indexProperty?: string
     /**
      * Expression to evaluate.
      */
-    listProperty?: string;
+    listProperty?: string
     /**
      * The memory path which refers to the value of the item
      */
-    valueProperty?: string;
+    valueProperty?: string
     /**
      * The page size
      */
-    pageSize?: number;
+    pageSize?: number
     /**
      * The body to send in the HTTP call  (supports data binding)
      */
-    body?: { [key: string]: any };
+    body?: { [key: string]: any }
     /**
      * Http headers to include with the HTTP request (supports data binding)
      */
-    headers?: { [key: string]: any };
+    headers?: { [key: string]: any }
     /**
      * The HTTP method to use
      */
-    method?: Method;
+    method?: Method
     /**
      * Describes how to parse the response from the http request. If Activity or Activities,
      * then the they will be sent to the user.
      */
-    responseType?: ResponseType;
+    responseType?: ResponseType
     /**
      * The url to call (supports data binding)
      */
-    url?: string;
+    url?: string
     /**
      * Expression to evaluate.
      *
      * Expression to evaluate to switch on.
      */
-    condition?: string;
+    condition?: string
     /**
      * Step to execute if condition is false.
      */
@@ -304,34 +304,34 @@ export interface OBIDialog {
     /**
      * type of value to set the property to, object or array.
      */
-    type?: Type;
+    type?: Type
     /**
      * LG Expression to write to the log
      *
      * Text shown in the OAuth signin card.
      */
-    text?: string;
+    text?: string
     /**
      * Set to true to also create a TraceActivity with the log text
      */
-    traceActivity?: boolean;
+    traceActivity?: boolean
     /**
      * The connection name configured in Azure Web App Bot OAuth settings.
      */
-    connectionName?: string;
+    connectionName?: string
     /**
      * Time out setting for the OAuth signin card.
      */
-    timeout?: number;
+    timeout?: number
     /**
      * Title shown in the OAuth signin card.
      */
-    title?: string;
+    title?: string
     /**
      * Activity to send to the user
      */
-    activity?: string;
-    cases?:    Case[];
+    activity?: string
+    cases?: Case[]
     /**
      * Step to execute if no case is equal to condition
      */
@@ -339,11 +339,11 @@ export interface OBIDialog {
     /**
      * Name of the trace activity
      */
-    name?: string;
+    name?: string
     /**
      * Value type of the trace activity
      */
-    valueType?: string;
+    valueType?: string
 }
 
 export interface Case {
@@ -354,8 +354,8 @@ export interface Case {
     /**
      * Value which must match the condition property
      */
-    value: string;
-    case?:  any;
+    value: string
+    case?: any
 }
 
 export enum Event {
@@ -393,49 +393,49 @@ export interface ChoiceOptions {
     /**
      * If true, inline and list style choices will be prefixed with the index of the choice.
      */
-    includeNumbers?: boolean;
+    includeNumbers?: boolean
     /**
      * Separator inserted between the choices when their are only 2 choices
      */
-    inlineOr?: string;
+    inlineOr?: string
     /**
      * Separator inserted between the last 2 choices when their are more than 2 choices.
      */
-    inlineOrMore?: string;
+    inlineOrMore?: string
     /**
      * Character used to separate individual choices when there are more than 2 choices
      */
-    inlineSeparator?: string;
+    inlineSeparator?: string
 }
 
 export interface Choice {
     /**
      * Card action for the choice
      */
-    action?: { [key: string]: any };
+    action?: { [key: string]: any }
     /**
      * the list of synonyms to recognize in addition to the value. This is optional.
      */
-    synonyms?: string[];
+    synonyms?: string[]
     /**
      * the value to return when selected.
      */
-    value?: string;
+    value?: string
 }
 
 export interface ConfirmChoice {
     /**
      * Card action for the choice
      */
-    action?: { [key: string]: any };
+    action?: { [key: string]: any }
     /**
      * The list of synonyms to recognize in addition to the value. This is optional.
      */
-    synonyms?: string[];
+    synonyms?: string[]
     /**
      * the value to return when selected.
      */
-    value?: string;
+    value?: string
 }
 
 /**
@@ -480,35 +480,35 @@ export interface Recognizer {
     /**
      * Copy the definition by id from a .dialog file.
      */
-    $copy?: string;
+    $copy?: string
     /**
      * Extra information for the Bot Framework Designer.
      */
-    $designer?: { [key: string]: any };
+    $designer?: { [key: string]: any }
     /**
      * Inline id for reuse of an inline definition
      */
-    $id?: string;
+    $id?: string
     /**
      * Defines the valid properties for the component you are configuring (from a dialog .schema
      * file)
      */
-    $type?:         string;
-    applicationId?: string;
-    endpoint?:      string;
-    endpointKey?:   string;
+    $type?: string
+    applicationId?: string
+    endpoint?: string
+    endpointKey?: string
     /**
      * Defines languages to try per language.
      */
-    languagePolicy?: LanguagePolicy;
+    languagePolicy?: LanguagePolicy
     /**
      * Map of language -> IRecognizer
      */
-    recognizers?: { [key: string]: Recognizer | string };
+    recognizers?: { [key: string]: Recognizer | string }
     /**
      * Pattern->Intents mappings
      */
-    intents?: { [key: string]: string };
+    intents?: { [key: string]: string }
 }
 
 /**
@@ -520,31 +520,31 @@ export interface LanguagePolicy {
     /**
      * Copy the definition by id from a .dialog file.
      */
-    $copy?: string;
+    $copy?: string
     /**
      * Extra information for the Bot Framework Designer.
      */
-    $designer?: { [key: string]: any };
+    $designer?: { [key: string]: any }
     /**
      * Inline id for reuse of an inline definition
      */
-    $id?: string;
+    $id?: string
     /**
      * Defines the valid properties for the component you are configuring (from a dialog .schema
      * file)
      */
-    $type?: string;
+    $type?: string
 }
 
 export interface RecognizerOptions {
     /**
      * If true, the the choices action.title field will NOT be searched over
      */
-    noAction?: boolean;
+    noAction?: boolean
     /**
      * If true, the choices value field will NOT be search over
      */
-    noValue?: boolean;
+    noValue?: boolean
 }
 
 /**

@@ -6,7 +6,7 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import AddButtonInput from '../AddButtonInput'
 import AddScoreButton from '../AddButtonScore'
-import './TreeView.css';
+import './TreeView.css'
 import { EditDialogType } from '../../../types/const'
 import { TreeNode, TreeScorerStep, TreeUserInput } from './TreeNodeLabel'
 
@@ -16,7 +16,7 @@ interface TreeNodeReceivedProps {
     selectedNode: TreeNode | null
     generateActionDescriptions: (treeScorerSteps: TreeScorerStep[]) => void
     onExpandoClick: (nodeId: string) => void
-    onOpenTrainDialog: (treeNode: TreeNode, trainDialogId: string) => void 
+    onOpenTrainDialog: (treeNode: TreeNode, trainDialogId: string) => void
 }
 
 export class TreeNodeExpanded extends React.PureComponent<TreeNodeReceivedProps>  {
@@ -25,7 +25,7 @@ export class TreeNodeExpanded extends React.PureComponent<TreeNodeReceivedProps>
         const treeNode = this.props.nodeData
         if (!treeNode || treeNode.depth === 0) {
             return null
-        }   
+        }
         // Show count of input
         let userInputs: TreeUserInput[] = []
         if (treeNode.userInput) {
@@ -46,7 +46,7 @@ export class TreeNodeExpanded extends React.PureComponent<TreeNodeReceivedProps>
 
         return (
             <div>
-                <div 
+                <div
                     className="cl-treeview-userBox"
                 >
                     {userInputs?.map((input, index) =>
@@ -61,51 +61,51 @@ export class TreeNodeExpanded extends React.PureComponent<TreeNodeReceivedProps>
                     )}
                 </div>
                 <div className="cl-treeview-scorerBox">
-                    {scorerSteps.map((s, index) => 
+                    {scorerSteps.map((s, index) =>
+                        <div
+                            key={`${treeNode.id}${index}SH`}
+                        >
                             <div
-                                key={`${treeNode.id}${index}SH`} 
+                                className="cl-treeview-memoryBox"
                             >
-                                <div 
-                                    className="cl-treeview-memoryBox"
-                                >
-                                    {`(${s.memory.length}) ${s.memory.join(', ') || '-'}`}
-                                </div>
-                                <div
-                                    key={`${treeNode.id}${index}SS`} 
-                                    className="cl-treeview-scorerStep"
-                                >
-                                    {s.description}
-                                </div>
+                                {`(${s.memory.length}) ${s.memory.join(', ') || '-'}`}
                             </div>
+                            <div
+                                key={`${treeNode.id}${index}SS`}
+                                className="cl-treeview-scorerStep"
+                            >
+                                {s.description}
+                            </div>
+                        </div>
                     )}
                 </div>
                 {this.props.canEdit &&
                     <div className="cl-treeview-buttonblock">
                         <AddButtonInput
                             className={'cl-treeview-treeViewButton cl-treeview-treeViewButtonPadded'}
-                            onClick={() => {}}
+                            onClick={() => { }}
                             editType={EditDialogType.TRAIN_ORIGINAL}
                         />
                         <OF.IconButton
                             disabled={true}
                             className={`cl-treeview-treeViewButton`}
                             iconProps={{ iconName: 'BranchMerge' }}
-                            onClick={() => {}}
+                            onClick={() => { }}
                         />
                         <AddScoreButton
                             className={'cl-treeview-treeViewButton cl-treeview-treeViewButtonPadded'}
                             // Don't select an activity if on last step
-                            onClick={() => {}}
+                            onClick={() => { }}
                         />
                         <OF.IconButton
                             className={`cl-treeview-treeViewButton`}
                             iconProps={{ iconName: 'Delete' }}
-                            onClick={() => {}}
+                            onClick={() => { }}
                             ariaDescription="Delete Turn"
                         />
                     </div>
                 }
-                {!treeNode.children && 
+                {!treeNode.children &&
                     <div
                         key={`${treeNode.id}END`}
                         className="cl-treeview-endConversation"

@@ -161,12 +161,12 @@ export class ModelUtils {
     let initialFilledEntities: FilledEntity[] = []
     if (trainRounds.length !== 0 && trainRounds[0].scorerSteps.length !== 0) {
 
-          // Get entities extracted on first input
-          const firstEntityIds = trainRounds[0].extractorStep.textVariations[0].labelEntities.map(le => le.entityId)
-  
-          // Intial entities are ones on first round that weren't extracted on the first utterance 
-          initialFilledEntities = trainRounds[0].scorerSteps[0].input.filledEntities
-              .filter(fe => !firstEntityIds.includes(fe.entityId!))
+      // Get entities extracted on first input
+      const firstEntityIds = trainRounds[0].extractorStep.textVariations[0].labelEntities.map(le => le.entityId)
+
+      // Intial entities are ones on first round that weren't extracted on the first utterance 
+      initialFilledEntities = trainRounds[0].scorerSteps[0].input.filledEntities
+        .filter(fe => !firstEntityIds.includes(fe.entityId!))
     }
 
     return {
@@ -338,18 +338,18 @@ export class ModelUtils {
 
     // Remove resolvers that aren't labelled
     let labelEntities = textVariation.labelEntities.filter(le => !excludeEntities.includes(le.entityId))
-    
+
     // Remove duplicate labels
-    labelEntities = labelEntities.filter((le,i) => labelEntities.findIndex(fi => fi.startCharIndex === le.startCharIndex) === i)
+    labelEntities = labelEntities.filter((le, i) => labelEntities.findIndex(fi => fi.startCharIndex === le.startCharIndex) === i)
 
     // Remove overlapping labels (can happen if have CUSTOM and Pre-Trained)
-    labelEntities = labelEntities.filter(le => labelEntities.findIndex(fe => fe.entityId !== le.entityId &&          
+    labelEntities = labelEntities.filter(le => labelEntities.findIndex(fe => fe.entityId !== le.entityId &&
       (le.startCharIndex >= fe.startCharIndex && le.endCharIndex <= fe.endCharIndex)) === -1)
 
     if (labelEntities.length === 0) {
       return textVariation.text
     }
-    
+
     labelEntities = labelEntities.sort(
       (a, b) => (a.startCharIndex > b.startCharIndex ? 1 : a.startCharIndex < b.startCharIndex ? -1 : 0)
     )

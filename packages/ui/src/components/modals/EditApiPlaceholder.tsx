@@ -18,7 +18,7 @@ import { State } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import './EditApiPlaceholder.css'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
 
 interface ComponentState {
     filledEntityMap: CLM.FilledEntityMap
@@ -33,7 +33,7 @@ class EditApiPlaceholder extends React.Component<Props, ComponentState> {
 
     constructor(props: Props) {
         super(props)
-        this.state = { 
+        this.state = {
             filledEntityMap: new CLM.FilledEntityMap(),
             isEntityEditorModalOpen: false,
             apiNameVal: '',
@@ -122,8 +122,8 @@ class EditApiPlaceholder extends React.Component<Props, ComponentState> {
         if (this.props.actions.filter(a => CLM.ActionBase.isPlaceholderAPI(a))
             .map(aa => new CLM.ApiAction(aa))
             .find(aaa => aaa.name === value)) {
-                return Util.formatMessageId(this.props.intl, FM.FIELDERROR_DISTINCT)
-            }
+            return Util.formatMessageId(this.props.intl, FM.FIELDERROR_DISTINCT)
+        }
 
         return ''
     }
@@ -134,7 +134,7 @@ class EditApiPlaceholder extends React.Component<Props, ComponentState> {
 
     @autobind
     updateFilledEntityMap(map: { [key: string]: CLM.FilledEntity }) {
-        this.setState({filledEntityMap: new CLM.FilledEntityMap({map: map})})
+        this.setState({ filledEntityMap: new CLM.FilledEntityMap({ map: map }) })
     }
 
     render() {
@@ -147,7 +147,7 @@ class EditApiPlaceholder extends React.Component<Props, ComponentState> {
             >
                 <div className="cl-modal_header">
                     <span className={OF.FontClassNames.xxLarge}>
-                        <FormattedMessageId id={FM.TEACHSESSIONPLACEHOLDER_TITLE}/>
+                        <FormattedMessageId id={FM.TEACHSESSIONPLACEHOLDER_TITLE} />
                     </span>
                 </div>
                 <div>
@@ -171,14 +171,14 @@ class EditApiPlaceholder extends React.Component<Props, ComponentState> {
                             </div>
                         }
                         <div className={OF.FontClassNames.mediumPlus}>
-                            <FormattedMessageId id={FM.TEACHSESSIONPLACEHOLDER_DESCRIPTION}/>
-                            <HelpIcon tipType={ToolTip.TipType.PLACEHOLDER_API}/>
+                            <FormattedMessageId id={FM.TEACHSESSIONPLACEHOLDER_DESCRIPTION} />
+                            <HelpIcon tipType={ToolTip.TipType.PLACEHOLDER_API} />
                         </div>
                     </div>
                     <MemorySetter
                         map={this.state.filledEntityMap.map}
                         onUpdate={this.updateFilledEntityMap}
-                    />               
+                    />
                 </div>
                 <div className="cl-modal_footer cl-modal-buttons cl-modal_footer--border">
                     <div className="cl-modal-buttons_secondary">
@@ -217,13 +217,13 @@ class EditApiPlaceholder extends React.Component<Props, ComponentState> {
                     entityTypeFilter={null}
                 />
             </OF.Modal>
-        );
+        )
     }
 }
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     return {
@@ -242,8 +242,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
 type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
 export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(EditApiPlaceholder))

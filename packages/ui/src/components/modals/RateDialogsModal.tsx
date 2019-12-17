@@ -78,7 +78,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         if (!this.state.haveActivityHeights) {
             // Check to see if all activity heights have been gathered
             const haveHeights = this.state.activityHeights.length > 0 && this.state.activityHeights.filter(ah => ah.height === undefined).length === 0
-            
+
             if (haveHeights && this.state.activities1) {
                 // If I have them calculate padding to align activity horizontally
                 const activityHeights = [...this.state.activityHeights]
@@ -86,23 +86,24 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                 for (let index = 0; index < numActivities; index = index + 1) {
                     // Get max height for this index
                     const maxHeight = Math.max(...this.state.activityHeights
-                        .filter(ah => ah.index === index) 
+                        .filter(ah => ah.index === index)
                         .map(ah => ah.height ?? 0))
-                    
+
                     const itemHeights = activityHeights.filter(ah => ah.index === index)
                     for (const activityHeight of itemHeights) {
                         if (activityHeight.height) {
                             // Calcluate padding to make this activity the same height
-                            activityHeight.padding = (maxHeight > activityHeight.height) 
+                            activityHeight.padding = (maxHeight > activityHeight.height)
                                 ? maxHeight - activityHeight.height
                                 : 0
                         }
                     }
                 }
                 this.setState({
-                    activityHeights, 
+                    activityHeights,
                     scrollPosition: 0,
-                    haveActivityHeights: true})  
+                    haveActivityHeights: true
+                })
             }
         }
     }
@@ -114,7 +115,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         if (this.state.haveActivityHeights && activityProps.activity.id) {
             // Find height lookup
             const activityHeight = this.state.activityHeights.find(ah => ah.id === activityProps.activity.id)
-            
+
             if (activityHeight?.padding) {
                 padding = activityHeight.padding
             }
@@ -179,7 +180,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         if (resultIndex === this.state.numberOfNeededRatings) {
             this.closeModal()
         }
-        this.setState({resultIndex})
+        this.setState({ resultIndex })
     }
 
     async onChangedDialog() {
@@ -237,10 +238,10 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
             const activity2 = activities2[i]
             if (!OBIUtils.isSameActivity(activity1, activity2)) {
                 if (activity1) {
-                    activity1.channelData.clData = {...activity1.channelData.clData, replayError  }
+                    activity1.channelData.clData = { ...activity1.channelData.clData, replayError }
                 }
                 if (activity2) {
-                    activity2.channelData.clData = {...activity2.channelData.clData, replayError  }
+                    activity2.channelData.clData = { ...activity2.channelData.clData, replayError }
                 }
             }
         }
@@ -282,7 +283,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
 
         this.setState({
             ratingPair,
-            activities1, 
+            activities1,
             activities2,
             missingLog,
             webchatKey: this.state.webchatKey + 1,
@@ -295,7 +296,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
     // Keep scroll position of two webchats in lockstep
     @autobind
     onScrollChange(scrollPosition: number) {
-        this.setState({scrollPosition})
+        this.setState({ scrollPosition })
     }
 
     @autobind
@@ -317,7 +318,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
     // align acitivities across multiple webchat windows by adding padding
     @autobind
     onActivityHeight(sourceName: string, index: number, height: number): void {
-    
+
         // Find height for this item
         let activityHeight = this.state.activityHeights.find(ac =>
             ac.sourceName === sourceName && ac.index === index)
@@ -327,13 +328,13 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
             if (!activityHeight.height) {
                 // Set state via function so events don't clobber each other
                 this.setState(prevState => {
-                     // Update height
+                    // Update height
                     activityHeight = prevState.activityHeights.find(ac =>
                         ac.sourceName === sourceName && ac.index === index)!
                     activityHeight.height = height
-                    return {activityHeights: prevState.activityHeights}
+                    return { activityHeights: prevState.activityHeights }
                 })
-            } 
+            }
         }
     }
 
@@ -342,12 +343,12 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         const renderData: RenderData[] = []
         if (this.state.ratingPair) {
             if (this.state.isFlipped) {
-                renderData.push({sourceName: this.state.ratingPair.sourceNames[1], activities: this.state.activities2})
-                renderData.push({sourceName: this.state.ratingPair.sourceNames[0], activities: this.state.activities1})
+                renderData.push({ sourceName: this.state.ratingPair.sourceNames[1], activities: this.state.activities2 })
+                renderData.push({ sourceName: this.state.ratingPair.sourceNames[0], activities: this.state.activities1 })
             }
             else {
-                renderData.push({sourceName: this.state.ratingPair.sourceNames[0], activities: this.state.activities1})
-                renderData.push({sourceName: this.state.ratingPair.sourceNames[1], activities: this.state.activities2})
+                renderData.push({ sourceName: this.state.ratingPair.sourceNames[0], activities: this.state.activities1 })
+                renderData.push({ sourceName: this.state.ratingPair.sourceNames[1], activities: this.state.activities2 })
             }
         }
         return renderData
@@ -366,34 +367,34 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                 >
                     <div className="cl-modal_body">
                         <div className="cl-rate-dialogs-modal">
-                        {renderData.map(rd => {
-                            return (
-                                <div 
-                                    className="cl-compare-dialogs-webchat"
-                                    key={rd.sourceName}
-                                >
-                                    <Webchat 
-                                        isOpen={rd.activities !== undefined}
-                                        key={`${rd.sourceName}-${this.state.webchatKey}`}
-                                        app={this.props.app}
-                                        history={rd.activities ?? []}
-                                        onPostActivity={() => {}}
-                                        onSelectActivity={(activity) => this.onSelectActivity(rd.activities as any, activity)}
-                                        onScrollChange={this.onScrollChange}
-                                        hideInput={true}
-                                        focusInput={false}
-                                        renderActivity={(props, children, setRef) => this.renderActivity(props, children, setRef)}
-                                        renderInput={() => null}
-                                        onActivityHeight={(index, height) => this.onActivityHeight(rd.sourceName, index, height)}
-                                        selectedActivityIndex={this.state.selectedActivityIndex}
-                                        forceScrollPosition={this.state.scrollPosition}
-                                        instantScroll={true}
-                                        disableCardActions={true}
-                                    />
-                                </div>
-                            )
+                            {renderData.map(rd => {
+                                return (
+                                    <div
+                                        className="cl-compare-dialogs-webchat"
+                                        key={rd.sourceName}
+                                    >
+                                        <Webchat
+                                            isOpen={rd.activities !== undefined}
+                                            key={`${rd.sourceName}-${this.state.webchatKey}`}
+                                            app={this.props.app}
+                                            history={rd.activities ?? []}
+                                            onPostActivity={() => { }}
+                                            onSelectActivity={(activity) => this.onSelectActivity(rd.activities as any, activity)}
+                                            onScrollChange={this.onScrollChange}
+                                            hideInput={true}
+                                            focusInput={false}
+                                            renderActivity={(props, children, setRef) => this.renderActivity(props, children, setRef)}
+                                            renderInput={() => null}
+                                            onActivityHeight={(index, height) => this.onActivityHeight(rd.sourceName, index, height)}
+                                            selectedActivityIndex={this.state.selectedActivityIndex}
+                                            forceScrollPosition={this.state.scrollPosition}
+                                            instantScroll={true}
+                                            disableCardActions={true}
+                                        />
+                                    </div>
+                                )
                             })
-                        }
+                            }
                         </div>
                     </div>
                     <div>
@@ -401,14 +402,14 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                             <OF.DefaultButton
                                 onClick={this.onLeft}
                                 className='cl-rate-dialogs-left-button'
-                                iconProps={{ iconName: 'Trophy2'}}
+                                iconProps={{ iconName: 'Trophy2' }}
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_PREVIOUS)}
                                 text={'Left Better'}
                             />
                             <OF.DefaultButton
                                 className='cl-rate-dialogs-same-button'
                                 onClick={this.onSame}
-                                iconProps={{ iconName: 'Compare'}}
+                                iconProps={{ iconName: 'Compare' }}
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_NEXT)}
                                 text={'Same'}
                                 componentRef={this.sameButtonRef}
@@ -416,7 +417,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                             <OF.DefaultButton
                                 onClick={this.onRight}
                                 className='cl-rate-dialogs-right-button'
-                                iconProps={{ iconName: 'Trophy2'}}
+                                iconProps={{ iconName: 'Trophy2' }}
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_NEXT)}
                                 text={'Right Better'}
                             />
@@ -450,7 +451,7 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchLogDialogThunkAsync: actions.log.fetchLogDialogThunkAsync,
         fetchActivitiesThunkAsync: actions.train.fetchActivitiesThunkAsync,
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     if (!state.user.user) {
@@ -471,8 +472,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
 type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
 export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(RateDialogsModal))

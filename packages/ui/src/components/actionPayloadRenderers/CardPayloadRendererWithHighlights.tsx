@@ -38,20 +38,20 @@ const Component: React.FC<Props> = (props) => {
                 <div className={OF.FontClassNames.mediumPlus} data-testid="action-scorer-card-name">{props.cardAction.templateName}</div>
                 <div className="cl-card-payload__arguments ms-ListItem-primaryText">
                     {payloadRenderData.renderedArguments.map((argument, i) => {
-                            const visibleSlateValue = isOriginalVisible
-                                ? argument.valueShowingEntityNames
-                                : argument.valueShowingCurrentMemory
+                        const visibleSlateValue = isOriginalVisible
+                            ? argument.valueShowingEntityNames
+                            : argument.valueShowingCurrentMemory
 
-                            return (
-                                <React.Fragment key={i}>
-                                    <div>{argument.parameter}:</div>
-                                    <PayloadRendererWithHighlights
-                                        hasEntities={argument.hasEntities}
-                                        slateValue={visibleSlateValue}
-                                    />
-                                </React.Fragment>
-                            )
-                        })}
+                        return (
+                            <React.Fragment key={i}>
+                                <div>{argument.parameter}:</div>
+                                <PayloadRendererWithHighlights
+                                    hasEntities={argument.hasEntities}
+                                    slateValue={visibleSlateValue}
+                                />
+                            </React.Fragment>
+                        )
+                    })}
                 </div>
             </div>
             <div>

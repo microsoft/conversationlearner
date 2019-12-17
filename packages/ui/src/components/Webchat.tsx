@@ -27,7 +27,7 @@ export function renderActivity(
     hidden?: boolean,
 ): JSX.Element {
 
-    const timeLine = <span> {activityProps.fromMe ? "User" : "Bot"}</span>;
+    const timeLine = <span> {activityProps.fromMe ? "User" : "Bot"}</span>
 
     const isLogDialog = editType === EditDialogType.LOG_ORIGINAL || editType === EditDialogType.LOG_EDITED
     const who = activityProps.fromMe ? 'me' : 'bot'
@@ -46,10 +46,10 @@ export function renderActivity(
     if (clData) {
         if (clData.replayError) {
             if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.WARNING) {
-                messageBorder = ` wc-border-warning-from-${who}`;
+                messageBorder = ` wc-border-warning-from-${who}`
             }
             else { // ERROR or BLOCKING
-                messageBorder = ` wc-border-error-from-${who}`;
+                messageBorder = ` wc-border-error-from-${who}`
             }
             if (clData.replayError.type === CLM.ReplayErrorType.Exception) {
                 messageColor = `wc-message-color-exception`
@@ -84,7 +84,7 @@ export function renderActivity(
                 ref={div => setRef(div)}
                 data-testid="web-chat-utterances"
             >
-                <div 
+                <div
                     className='wc-message-content'
                 >
                     <svg className={`wc-message-callout ${messageFillColor}`}>
@@ -138,7 +138,7 @@ class Webchat extends React.Component<Props> {
 
     componentWillUnmount() {
         if (this.dl) {
-            this.dl.end();
+            this.dl.end()
         }
         if (this.subscription) {
             this.subscription.unsubscribe()
@@ -149,7 +149,7 @@ class Webchat extends React.Component<Props> {
     UNSAFE_componentWillReceiveProps(nextProps: Props) {
         if (this.props.history !== nextProps.history) {
             if (this.props.history.length > 0 || nextProps.history.length > 0) {
-                this.chatProps = null;
+                this.chatProps = null
                 if (this.subscription) {
                     this.subscription.unsubscribe()
                     this.subscription = null
@@ -160,14 +160,14 @@ class Webchat extends React.Component<Props> {
 
     selectedActivity$(): BehaviorSubject<any> {
         if (!this.behaviorSubject) {
-            this.behaviorSubject = new BehaviorSubject<any>({});
+            this.behaviorSubject = new BehaviorSubject<any>({})
             this.subscription = this.behaviorSubject.subscribe((value) => {
                 if (value.activity) {
                     this.props.onSelectActivity(value.activity as BB.Activity)
                 }
             })
         }
-        return this.behaviorSubject;
+        return this.behaviorSubject
     }
 
     // Get conversation Id for pro-active message during a 
@@ -207,7 +207,7 @@ class Webchat extends React.Component<Props> {
                 botConnection.activity$ = Observable.from(this.props.history).concat(dl.activity$) as any
             }
 
-            dl.connectionStatus$.subscribe((status) => this.getConversationId(status));
+            dl.connectionStatus$.subscribe((status) => this.getConversationId(status))
 
             this.dl = dl
             this.chatProps = {
@@ -225,19 +225,19 @@ class Webchat extends React.Component<Props> {
 
         if (this.chatProps) {
             // Currently we don't support upload so disable button
-            this.chatProps.disableUpload = true;
+            this.chatProps.disableUpload = true
         }
 
-        return this.chatProps!;
+        return this.chatProps!
     }
     render() {
         // Prevent creation of DL client if not needed
         if (!this.props.isOpen) {
-            return null;
+            return null
         }
 
         // TODO: This call has side-affects and should be moved to componentDidMount
-        const chatProps = this.getChatProps();
+        const chatProps = this.getChatProps()
 
         chatProps.hideInput = this.props.hideInput
         chatProps.focusInput = this.props.focusInput
@@ -263,7 +263,7 @@ class Webchat extends React.Component<Props> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setConversationIdThunkAsync: actions.display.setConversationIdThunkAsync,
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     if (!state.user.user) {
@@ -307,8 +307,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
-type Props = stateProps & dispatchProps & ReceivedProps;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
+type Props = stateProps & dispatchProps & ReceivedProps
 
-export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(Webchat);
+export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(Webchat)

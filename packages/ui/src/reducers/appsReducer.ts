@@ -15,7 +15,7 @@ const initialState: AppsState = {
     activeApps: {},
     selectedAppId: undefined,
     obiImportData: undefined
-};
+}
 
 const appsReducer: Reducer<AppsState> = produce((state: AppsState, action: ActionObject) => {
     let app: App | undefined

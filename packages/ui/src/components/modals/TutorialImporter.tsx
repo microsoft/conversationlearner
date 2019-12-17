@@ -11,7 +11,7 @@ import { FM } from '../../react-intl-messages'
 import { AppBase } from '@conversationlearner/models'
 import { formatMessageId } from '../../Utils/util'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
 
 interface IRenderableColumn extends OF.IColumn {
     render: (app: AppBase, component: TutorialImporter) => React.ReactNode
@@ -27,7 +27,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 80,
             isResizable: true,
             render: (tutorial, component) => {
-                const disabled = component.props.apps.filter(a => a.appName === tutorial.appName).length > 0;
+                const disabled = component.props.apps.filter(a => a.appName === tutorial.appName).length > 0
                 return (
                     <OF.PrimaryButton
                         disabled={disabled}
@@ -86,8 +86,8 @@ class TutorialImporter extends React.Component<Props, ComponentState> {
     }
 
     handleTutorialSelection(tutorial: AppBase) {
-        this.props.onTutorialSelected(tutorial);
-        this.props.handleClose();
+        this.props.onTutorialSelected(tutorial)
+        this.props.handleClose()
     }
 
     @autobind
@@ -106,13 +106,13 @@ class TutorialImporter extends React.Component<Props, ComponentState> {
 
     sortTutorials(): AppBase[] {
         if (this.props.tutorials) {
-            const tutorials = [...this.props.tutorials];
+            const tutorials = [...this.props.tutorials]
             tutorials
                 .sort((a, b) => {
                     return a.appName.localeCompare(b.appName)
                 })
 
-            return tutorials;
+            return tutorials
         }
         return []
     }
@@ -180,19 +180,19 @@ class TutorialImporter extends React.Component<Props, ComponentState> {
                     </div>
                 </div>
             </OF.Modal>
-        );
+        )
 
     }
 }
 
 interface ReceivedProps {
     open: boolean,
-    onTutorialSelected: (tutorial: AppBase) => void;
-    handleClose: () => void;
-    apps: AppBase[];
-    tutorials: AppBase[];
+    onTutorialSelected: (tutorial: AppBase) => void
+    handleClose: () => void
+    apps: AppBase[]
+    tutorials: AppBase[]
 }
 
-type Props = ReceivedProps & InjectedIntlProps;
+type Props = ReceivedProps & InjectedIntlProps
 
 export default injectIntl(TutorialImporter)

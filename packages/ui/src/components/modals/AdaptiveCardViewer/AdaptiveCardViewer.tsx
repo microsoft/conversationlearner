@@ -50,16 +50,16 @@ function getProcessedTemplate(template: Template, actionArguments: RenderedActio
 
     if (hideUndefined) {
         // Replace unfilled entity references with blank
-        templateString = templateString.replace(/{{\s*[\w\.]+\s*}}/g, '');
+        templateString = templateString.replace(/{{\s*[\w\.]+\s*}}/g, '')
     } else {
         // Now replace any images that haven't been substituted with a dummy image
         for (const templateVar of template.variables) {
             if (templateVar.type === 'Image') {
-                templateString = templateString.replace(new RegExp(`{{${templateVar.key}}}`, 'g'), 'https://c1.staticflickr.com/9/8287/29517736620_3184b66ec8.jpg');
+                templateString = templateString.replace(new RegExp(`{{${templateVar.key}}}`, 'g'), 'https://c1.staticflickr.com/9/8287/29517736620_3184b66ec8.jpg')
             }
         }
     }
-    return JSON.parse(templateString);
+    return JSON.parse(templateString)
 }
 
 class AdaptiveCardViewer extends React.Component<Props> {
@@ -76,13 +76,13 @@ class AdaptiveCardViewer extends React.Component<Props> {
 
     render() {
         if (!this.props.open || !this.props.template) {
-            return null;
+            return null
         }
         let card: HTMLElement | null = null
 
         try {
             const template = getProcessedTemplate(this.props.template, this.props.actionArguments, this.props.hideUndefined)
-            
+
             AdaptiveCards.AdaptiveCard.onProcessMarkdown = ((text, result) => {
                 result.outputHtml = this.md.render(text)
                 result.didProcess = true
@@ -105,10 +105,10 @@ class AdaptiveCardViewer extends React.Component<Props> {
             >
                 <div className={this.props.onNext ? "cl-adaptivecardviewer-body" : ""}>
                     <div className="cl-wc-disabled wc-app wc-card wc-adaptive-card">
-                        {card 
-                            ? <div dangerouslySetInnerHTML={{__html: card.outerHTML}} />
+                        {card
+                            ? <div dangerouslySetInnerHTML={{ __html: card.outerHTML }} />
                             : `Unable to render Card Template with the given variables: ${this.props.template.name}`
-                        }  
+                        }
                     </div>
                 </div>
                 {this.props.onNext && this.props.onPrevious && this.props.totalCards !== undefined && this.props.curIndex !== undefined &&
@@ -131,25 +131,25 @@ class AdaptiveCardViewer extends React.Component<Props> {
                     </div>
                 }
             </OF.Modal>
-        );
+        )
     }
 }
 
 interface ReceivedProps {
-    open: boolean;
+    open: boolean
     template: Template | undefined
     actionArguments: RenderedActionArgument[]
     onDismiss: () => void
     curIndex?: number
     totalCards?: number
-    onNext?: () => void 
-    onPrevious?: () => void 
+    onNext?: () => void
+    onPrevious?: () => void
     hideUndefined: boolean
 }
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     return {

@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 
- export interface FuseResult<T> {
+export interface FuseResult<T> {
     item: T
     matches: FuseMatch[]
 }
