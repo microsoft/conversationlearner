@@ -482,6 +482,21 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
 
         const hasNoScorerStep = curRound.scorerSteps.length === 0 || curRound.scorerSteps[0].labelAction === undefined
+        let isScorerStepCallbackAction = false
+        if (typeof clData.scoreIndex === 'number') {
+            let action = (curRound.scorerSteps[clData.scoreIndex].scoredAction as unknown) as CLM.ActionBase | undefined
+            if (!action) {
+                const actionId = curRound.scorerSteps[clData.scoreIndex].labelAction
+                const selectedAction = this.props.actions.find(a => a.actionId === actionId)
+                if (selectedAction) {
+                    action = selectedAction
+                }
+            }
+
+            if (action) {
+                isScorerStepCallbackAction = action.actionType === CLM.ActionTypes.API_LOCAL
+            }
+        }
 
         // Can only delete first user input if it has no scorer steps
         // and is followed by user input
@@ -501,6 +516,28 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         const isEndSession = isLastActivity && this.state.hasEndSession
         return (
             <div className="cl-wc-buttonbar">
+                {isScorerStepCallbackAction &&
+                    <div className="cl-wc-buttonbar__stub-dropdown">
+                        <OF.Dropdown
+                            data-testid="webchat-stub-dropdown"
+                            selectedKey={'0'}
+                            options={[
+                                {
+                                    key: '0',
+                                    text: 'None',
+                                },
+                                {
+                                    key: '1',
+                                    text: 'Option 1',
+                                },
+                                {
+                                    key: '2',
+                                    text: 'Option 2',
+                                },
+                            ]}
+                        />
+                    </div>
+                }
                 {!isEndSession &&
                     <AddButtonInput
                         onClick={() => this.onClickAddUserInput(selectionType)}

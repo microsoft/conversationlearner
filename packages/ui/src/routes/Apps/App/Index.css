@@ -78,3 +78,14 @@
     margin-bottom: 1em;
 }
 
+.cl-custom-playground {
+    height: 400px;
+}
+
+.cl-custom-playground > * {
+    display: grid;
+    grid-auto-flow: column;
+    grid-gap: 1em;
+    align-items: flex-end;
+}
+
