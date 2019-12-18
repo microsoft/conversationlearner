@@ -2,22 +2,22 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import { ConversationLearner } from './ConversationLearner'
-import { CLOptions } from './CLOptions'
+import ConversationLearnerFactory from './ConversationLearnerFactory'
 import { CLModelOptions } from './CLModelOptions'
 import { ClientMemoryManager, ReadOnlyClientMemoryManager } from './Memory/ClientMemoryManager'
 import { RedisStorage } from './RedisStorage'
 import { FileStorage } from './FileStorage'
 import uiRouter from './uiRouter'
+import { CLClient } from './CLClient'
 import { SessionEndState, MemoryValue } from '@conversationlearner/models'
 import { EntityDetectionCallback, OnSessionStartCallback, OnSessionEndCallback, LogicCallback, RenderCallback, ICallbackInput } from './CLRunner'
 import { ILogStorage } from './Memory/ILogStorage'
 import { CosmosLogStorage } from './CosmosLogStorage'
 
 export {
+    CLClient,
     uiRouter,
-    ConversationLearner,
-    CLOptions as ICLOptions,
+    ConversationLearnerFactory,
     CLModelOptions,
     ClientMemoryManager,
     ReadOnlyClientMemoryManager,

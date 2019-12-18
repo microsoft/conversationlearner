@@ -19,12 +19,12 @@ import getAppDefinitionChange from '../upgrade'
 import { CLDebug } from '../CLDebug'
 import { CLClient, ICLClientOptions } from '../CLClient'
 import { CLRunner, SessionStartFlags } from '../CLRunner'
-import { ConversationLearner } from '../ConversationLearner'
-import { CLState } from '../Memory/CLState'
+import { CLStateFactory } from '../Memory/CLStateFactory'
 import { CLRecognizerResult } from '../CLRecognizeResult'
 import { TemplateProvider } from '../TemplateProvider'
 import { CLStrings } from '../CLStrings'
 import { UIMode } from '../Memory/BotState'
+import { ILogStorage } from '..'
 
 // Extract error text from HTML error
 export const HTML2Error = (htmlText: string): string => {
@@ -122,7 +122,20 @@ const getBanner = (source: string): Promise<CLM.Banner | null> => {
     })
 }
 
-export const getRouter = (client: CLClient, options: ICLClientOptions): express.Router => {
+/**
+ * Create Express.Router using given options (LUIS_AUTHORING_KEY, etc)
+ * 
+ * Requests that need to manipulate the Bot such as operations from UI on train dialogs must be intercepted, deconstructed, then forwarded using the ClClient
+ * Requests that do NOT need to manipulate the Bot can flow through uninterrupted and go through HttpProxy middleware.
+ * 
+ * @param options Options for Conversation Learner client
+ */
+export const getRouter = (
+    client: CLClient,
+    stateFactory: CLStateFactory,
+    options: ICLClientOptions,
+    logStorage: ILogStorage | undefined,
+): express.Router => {
     const router = express.Router({ caseSensitive: false })
     router.use(cors())
     router.use(bodyParser.json({
@@ -144,7 +157,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
             const key = getMemoryKey(req)
             const app: CLM.AppBase = req.body
 
-            const state = CLState.Get(key)
+            const state = stateFactory.get(key)
             await state.SetAppAsync(app)
             res.sendStatus(200)
         } catch (error) {
@@ -157,7 +170,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
         try {
             const key = getMemoryKey(req)
             const { conversationId, userName } = getQuery(req)
-            const state = CLState.Get(key)
+            const state = stateFactory.get(key)
             await state.BotState.CreateConversationReference(userName, key, conversationId)
             res.sendStatus(200)
         } catch (error) {
@@ -177,10 +190,10 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
 
             // TODO: This is code smell, this is using internal knowledge that BrowserState full key is static and will be the same regardless of key
             // It makes BrowserState accessed in consistent way other states. Would be more natural as static object but need to share underlying storage.
-            const state = CLState.Get('')
+            const state = stateFactory.get('')
             // Generate id
             const browserSlotId = await state.BrowserSlotState.get(browserId)
-            const key = ConversationLearner.options!.LUIS_AUTHORING_KEY!
+            const key = options.LUIS_AUTHORING_KEY
             const hashedKey = key ? crypto.createHash('sha256').update(key).digest('hex') : ""
             const id = `${browserSlotId}-${hashedKey}`
 
@@ -235,7 +248,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
             res.send(app)
 
             // Initialize memory
-            CLState.Get(key).SetAppAsync(app)
+            stateFactory.get(key).SetAppAsync(app)
         } catch (error) {
             HandleError(res, error)
         }
@@ -250,7 +263,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
             await client.ArchiveApp(appId)
 
             // Did I delete my loaded app, if so clear my state
-            const state = CLState.Get(key)
+            const state = stateFactory.get(key)
             const app = await state.BotState.GetApp()
             if (app?.appId === appId) {
                 await state.SetAppAsync(null)
@@ -272,7 +285,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
             const apps = await client.GetApps(query)
 
             // Get lookup table for which apps packages are being edited
-            const state = CLState.Get(key)
+            const state = stateFactory.get(key)
             const activeApps = await state.BotState.GetEditingPackages()
 
             const uiAppList = { appList: apps, activeApps: activeApps } as CLM.UIAppList
@@ -375,7 +388,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
                 }
             }
 
-            const state = CLState.Get(key)
+            const state = stateFactory.get(key)
             const updatedPackageVersions = await state.BotState.SetEditingPackage(appId, packageId)
             res.send(updatedPackageVersions)
 
@@ -493,7 +506,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
             const { appId, logDialogId, turnIndex } = req.params
             const userInput: CLM.UserInput = req.body
             const extractResponse = await client.LogDialogExtract(appId, logDialogId, turnIndex, userInput)
-            const state = CLState.Get(key)
+            const state = stateFactory.get(key)
 
             const memories = await state.EntityState.DumpMemory()
             const uiExtractResponse: CLM.UIExtractResponse = { extractResponse, memories }
@@ -508,8 +521,8 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
 
         try {
             let logDialog
-            if (ConversationLearner.logStorage) {
-                logDialog = await ConversationLearner.logStorage.Get(appId, logDialogId)
+            if (logStorage) {
+                logDialog = await logStorage.Get(appId, logDialogId)
             }
             else {
                 logDialog = await client.GetLogDialog(appId, logDialogId)
@@ -529,13 +542,15 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
             if (typeof packageIds === "string") {
                 packageIds = [packageIds]
             }
+
             let logQueryResult: CLM.LogQueryResult
-            if (ConversationLearner.logStorage) {
-                logQueryResult = await ConversationLearner.logStorage.GetMany(appId, packageIds, continuationToken, maxPageSize)
+            if (logStorage) {
+                logQueryResult = await logStorage.GetMany(appId, packageIds, continuationToken, maxPageSize)
             }
             else {
                 logQueryResult = await client.GetLogDialogs(appId, packageIds, continuationToken, maxPageSize)
             }
+
             res.send(logQueryResult)
         } catch (error) {
             HandleError(res, error)
@@ -547,8 +562,8 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
         const { appId, logDialogId } = req.params
 
         try {
-            if (ConversationLearner.logStorage) {
-                await ConversationLearner.logStorage.Delete(appId, logDialogId)
+            if (logStorage) {
+                await logStorage.Delete(appId, logDialogId)
             }
             else {
                 await client.DeleteLogDialog(appId, logDialogId)
@@ -567,8 +582,8 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
             logDialogIds = [logDialogIds]
         }
         try {
-            if (ConversationLearner.logStorage) {
-                ConversationLearner.logStorage.DeleteMany(appId, logDialogIds)
+            if (logStorage) {
+                logStorage.DeleteMany(appId, logDialogIds)
             }
             else {
                 await client.DeleteLogDialogs(appId, logDialogIds)
@@ -592,7 +607,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
             const userInput: CLM.UserInput = req.body
             const extractResponse = await client.TrainDialogExtract(appId, trainDialogId, turnIndex, userInput)
 
-            const state = CLState.Get(key)
+            const state = stateFactory.get(key)
             const memories = await state.EntityState.DumpMemory()
             const uiExtractResponse: CLM.UIExtractResponse = { extractResponse, memories }
             res.send(uiExtractResponse)
@@ -613,7 +628,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
             trainDialog.rounds = trainDialog.rounds.slice(0, turnIndex)
 
             // Get activities and replay to put bot into last round
-            const state = CLState.Get(key)
+            const state = stateFactory.get(key)
             const clRunner = CLRunner.GetRunnerForUI(appId)
             const teachWithActivities = await clRunner.GetActivities(trainDialog, userName, userId, state)
             if (!teachWithActivities) {
@@ -649,7 +664,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
             const clRunner = CLRunner.GetRunnerForUI(appId)
             validateBot(req, clRunner.botChecksum())
 
-            const state = CLState.Get(key)
+            const state = stateFactory.get(key)
 
             // Clear memory when running Log from UI
             state.EntityState.ClearAsync()
@@ -667,7 +682,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
     router.put('/app/:appId/session', async (req, res, next) => {
         try {
             const key = getMemoryKey(req)
-            const state = CLState.Get(key)
+            const state = stateFactory.get(key)
             const conversationId = await state.BotState.GetConversationId()
             // If conversation is empty
             if (!conversationId) {
@@ -698,7 +713,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
             const { appId } = req.params
 
             // Session may be a replacement for an expired one
-            const state = CLState.Get(key)
+            const state = stateFactory.get(key)
 
             const sessionId = await state.BotState.GetSessionIdAsync()
             // May have already been closed
@@ -732,7 +747,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
 
             validateBot(req, clRunner.botChecksum())
 
-            const state = CLState.Get(key)
+            const state = stateFactory.get(key)
 
             const createTeachParams: CLM.CreateTeachParams = {
                 contextDialog: [],
@@ -756,7 +771,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
         try {
             const key = getMemoryKey(req)
             // Update Memory
-            const state = CLState.Get(key)
+            const state = stateFactory.get(key)
             await state.EntityState.ClearAsync()
             res.sendStatus(200)
 
@@ -780,7 +795,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
             const userInput: CLM.UserInput = req.body.userInput
 
             // Get activities and replay to put bot into last round
-            const state = CLState.Get(key)
+            const state = stateFactory.get(key)
 
             const clRunner = CLRunner.GetRunnerForUI(appId)
 
@@ -851,7 +866,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
             const key = getMemoryKey(req)
             const appId = req.params.appId
             const trainDialog: CLM.TrainDialog = req.body
-            const state = CLState.Get(key)
+            const state = stateFactory.get(key)
             const clRunner = CLRunner.GetRunnerForUI(appId)
 
             // Replay the TrainDialog logic (API calls and EntityDetectionCallback)
@@ -902,7 +917,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
             const appId = req.params.appId
             const trainDialog: CLM.TrainDialog = req.body.trainDialog
             const userInput: CLM.UserInput = req.body.userInput
-            const state = CLState.Get(key)
+            const state = stateFactory.get(key)
             const clRunner = CLRunner.GetRunnerForUI(appId)
 
             // Replay the TrainDialog logic (API calls and EntityDetectionCallback)
@@ -937,7 +952,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
             const key = getMemoryKey(req)
             const appId = req.params.appId
             const trainDialog: CLM.TrainDialog = req.body
-            const state = CLState.Get(key)
+            const state = stateFactory.get(key)
             const clRunner = CLRunner.GetRunnerForUI(appId)
             validateBot(req, clRunner.botChecksum())
 
@@ -971,7 +986,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
             }
             const extractResponse = await client.TeachExtract(appId, teachId, userInput, excludeConflictCheckId)
 
-            const state = CLState.Get(key)
+            const state = stateFactory.get(key)
             const memories = await state.EntityState.DumpMemory()
             const uiExtractResponse: CLM.UIExtractResponse = { extractResponse, memories }
             res.send(uiExtractResponse)
@@ -994,7 +1009,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
             const key = getMemoryKey(req)
             const { appId, teachId } = req.params
             const uiScoreInput: CLM.UIScoreInput = req.body
-            const state = CLState.Get(key)
+            const state = stateFactory.get(key)
 
             // There will be no extraction step if performing a 2nd scorer round after a non-terminal action
             if (uiScoreInput.trainExtractorStep) {
@@ -1094,7 +1109,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
             const key = getMemoryKey(req)
             const { appId, teachId } = req.params
             const scoreInput: CLM.ScoreInput = req.body
-            const state = CLState.Get(key)
+            const state = stateFactory.get(key)
 
             // Get new score response re-using scoreInput from previous score request
             const scoreResponse = await client.TeachScore(appId, teachId, scoreInput)
@@ -1128,7 +1143,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
             }
             delete uiTrainScorerStep.trainScorerStep.scoredAction
 
-            const state = CLState.Get(key)
+            const state = stateFactory.get(key)
 
             // Now send the trained intent
             const intent = {
@@ -1187,7 +1202,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
             const response = await client.EndTeach(appId, teachId, save)
             res.send(response)
 
-            const state = CLState.Get(key)
+            const state = stateFactory.get(key)
             const clRunner = CLRunner.GetRunnerForUI(appId)
             clRunner.EndSessionAsync(state, CLM.SessionEndState.OPEN)
         } catch (error) {
@@ -1207,7 +1222,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
             const markdown = useMarkdown === "true"
             const trainDialog: CLM.TrainDialog = req.body
 
-            const state = CLState.Get(key)
+            const state = stateFactory.get(key)
             const clRunner = CLRunner.GetRunnerForUI(appId)
             validateBot(req, clRunner.botChecksum())
 
@@ -1243,7 +1258,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
             const app = await client.GetApp(appId)
 
             // TestId allows us to run multiple validations in parallel
-            const state = CLState.Get(testId)
+            const state = stateFactory.get(testId)
 
             // Need to set app as not using default key
             await state.SetAppAsync(app)
@@ -1334,8 +1349,8 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
                     CLDebug.Error(error.message)
 
                     // Delete log dialog
-                    if (ConversationLearner.logStorage) {
-                        await ConversationLearner.logStorage.Delete(appId, logDialogId)
+                    if (logStorage) {
+                        await logStorage.Delete(appId, logDialogId)
                     }
                     else {
                         await client.DeleteLogDialog(appId, logDialogId)

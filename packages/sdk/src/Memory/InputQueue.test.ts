@@ -7,6 +7,7 @@ import * as BB from 'botbuilder'
 import * as CLM from '@conversationlearner/models'
 import { CLState } from './CLState'
 import { InputQueue } from '../Memory/InputQueue'
+import CLStateFactory from './CLStateFactory'
 
 // InputQueue requires tiny delay between inputs or InputQueue mutex won't fishing setting
 const mutexDelay = 50
@@ -29,14 +30,14 @@ function makeActivity(message: string, conversationId: string): any {
 }
 
 function delay(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 // Simulate AddInput function in CLRunner
 async function addInput(state: CLState, message: string, conversationId: string) {
     const activity = makeActivity(message, conversationId)
-    let addInputPromise = util.promisify(InputQueue.AddInput)
-    let isReady = await addInputPromise(state.MessageState, activity)
+    const addInputPromise = util.promisify(InputQueue.AddInput)
+    const isReady = await addInputPromise(state.MessageState, activity)
 
     if (isReady) {
         // Handle input with a delay to simulate CLRunner ProcessInput
@@ -52,16 +53,16 @@ async function addInput(state: CLState, message: string, conversationId: string)
 }
 
 describe('InputQueue', () => {
+    const stateFactory = new CLStateFactory()
 
     beforeEach(() => {
-        CLState.Init()
         responses = {}
     })
 
     it('should handle all messages in a single queue', async () => {
 
         const conversationId = CLM.ModelUtils.generateGUID()
-        const clState = CLState.Get(conversationId)
+        const clState = stateFactory.get(conversationId)
         const inputs = ["A", "B", "C", "D", "E"]
 
         // Need longer jest timeout for this test
@@ -87,8 +88,8 @@ describe('InputQueue', () => {
 
         const conversation1Id = CLM.ModelUtils.generateGUID()
         const conversation2Id = CLM.ModelUtils.generateGUID()
-        const clState1 = CLState.Get(conversation1Id)
-        const clState2 = CLState.Get(conversation2Id)
+        const clState1 = stateFactory.get(conversation1Id)
+        const clState2 = stateFactory.get(conversation2Id)
         const inputs1 = ["A", "B", "C", "D", "E"]
         const inputs2 = ["1", "2", "3", "4", "5"]
 
