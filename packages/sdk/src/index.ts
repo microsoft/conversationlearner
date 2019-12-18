@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 import ConversationLearnerFactory from './ConversationLearnerFactory'
+import { CLOptions } from './CLOptions'
 import { CLModelOptions } from './CLModelOptions'
 import { ClientMemoryManager, ReadOnlyClientMemoryManager } from './Memory/ClientMemoryManager'
 import { RedisStorage } from './RedisStorage'
@@ -18,6 +19,7 @@ export {
     CLClient,
     uiRouter,
     ConversationLearnerFactory,
+    CLOptions,
     CLModelOptions,
     ClientMemoryManager,
     ReadOnlyClientMemoryManager,

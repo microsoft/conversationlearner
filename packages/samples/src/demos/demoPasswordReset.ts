@@ -65,8 +65,8 @@ let cl = clFactory.create(modelId);
 // Define any API callbacks
 //=================================
 //
-// No API calls are used in this demo, so there are no calls to ConversationLearner.AddAPICallback
-// See other demos, or app.ts in the src directory, for an example of ConversationLearner.AddAPICallback
+// No API calls are used in this demo, so there are no calls to ConversationLearner.AddCallback
+// See other demos, or app.ts in the src directory, for an example of ConversationLearner.AddCallback
 //
 
 //=================================
