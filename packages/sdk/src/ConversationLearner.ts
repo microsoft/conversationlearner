@@ -8,7 +8,8 @@ import { CLClient } from './CLClient'
 import { CLRecognizerResult } from './CLRecognizeResult'
 import CLStateFactory from './Memory/CLStateFactory'
 import { CLOptions } from './CLOptions'
-import { ILogStorage, CLModelOptions } from '.'
+import { CLModelOptions } from './CLModelOptions'
+import { ILogStorage } from './Memory/ILogStorage'
 
 /**
  * Main CL class used by Bot

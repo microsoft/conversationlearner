@@ -10,7 +10,7 @@ import { CLClient } from './CLClient'
 import getRouter from './http/router'
 import CLStateFactory from './Memory/CLStateFactory'
 import { ILogStorage } from './Memory/ILogStorage'
-import { CLModelOptions } from '.'
+import { CLModelOptions } from './CLModelOptions'
 
 /**
  * Conversation Learner Factory. Produces instances that all use the same storage, client, and options.

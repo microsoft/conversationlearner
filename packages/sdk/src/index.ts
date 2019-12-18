@@ -9,14 +9,12 @@ import { ClientMemoryManager, ReadOnlyClientMemoryManager } from './Memory/Clien
 import { RedisStorage } from './RedisStorage'
 import { FileStorage } from './FileStorage'
 import uiRouter from './uiRouter'
-import { CLClient } from './CLClient'
 import { SessionEndState, MemoryValue } from '@conversationlearner/models'
 import { EntityDetectionCallback, OnSessionStartCallback, OnSessionEndCallback, LogicCallback, RenderCallback, ICallbackInput } from './CLRunner'
 import { ILogStorage } from './Memory/ILogStorage'
 import { CosmosLogStorage } from './CosmosLogStorage'
 
 export {
-    CLClient,
     uiRouter,
     ConversationLearnerFactory,
     CLOptions,

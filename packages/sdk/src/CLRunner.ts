@@ -19,8 +19,8 @@ import { ConversationLearner } from './ConversationLearner'
 import { InputQueue } from './Memory/InputQueue'
 import { UIMode } from './Memory/BotState'
 import { EntityState } from './Memory/EntityState'
+import { ILogStorage } from './Memory/ILogStorage'
 import { CLOptions } from './CLOptions'
-import { ILogStorage, CLModelOptions } from '.'
 
 interface RunnerLookup {
     [appId: string]: CLRunner

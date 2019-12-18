@@ -24,7 +24,7 @@ import { CLRecognizerResult } from '../CLRecognizeResult'
 import { TemplateProvider } from '../TemplateProvider'
 import { CLStrings } from '../CLStrings'
 import { UIMode } from '../Memory/BotState'
-import { ILogStorage } from '..'
+import { ILogStorage } from '../Memory/ILogStorage'
 
 // Extract error text from HTML error
 export const HTML2Error = (htmlText: string): string => {
