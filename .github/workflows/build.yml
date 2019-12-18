@@ -22,8 +22,8 @@ jobs:
       - run: node --version
       - run: npm --version
       - run: npx lerna bootstrap
-      - run: npx lerna run test
       - run: npx lerna run build
+      - run: npx lerna run test --ignore @conversationlearner/webchat
 
         env:
           CI: true
@@ -42,8 +42,8 @@ jobs:
       - run: node --version
       - run: npm --version
       - run: npx lerna bootstrap
-      - run: npx lerna run test
       - run: npx lerna run build
+      - run: npx lerna run test --ignore @conversationlearner/webchat
 
         env:
           CI: true

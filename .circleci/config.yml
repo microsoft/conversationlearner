@@ -105,7 +105,7 @@ jobs:
       - run: npm ci
       - run: npx lerna bootstrap
       - run: npx lerna run build
-  
+
       # Setup for e2e tests
       - run: node .circleci/SetLuisAuthoringKey.js >> $BASH_ENV
       - run_bot_and_ui
@@ -250,7 +250,7 @@ jobs:
 
       # https://circleci.com/blog/publishing-npm-packages-using-circleci-2-0/
       - run: npm set //registry.npmjs.org/:_authToken=${NPM_TOKEN}
-      - run: npx lerna publish --yes --conventional-commits --create-release github --dist-tag testing
+      - run: npx lerna publish --yes --conventional-commits --create-release github
 
       # Use Personal Access Token to access different repo
       # https://github.blog/2012-09-21-easier-builds-and-deployments-using-git-over-https-and-oauth/
