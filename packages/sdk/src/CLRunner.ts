@@ -116,7 +116,7 @@ export interface IActionResult {
 export type CallbackMap = { [name: string]: InternalCallback<any> }
 
 /**
- * Runs Conversation Learnern for a given CL Model
+ * Runs Conversation Learner for a given CL Model
  */
 export class CLRunner {
 
@@ -800,27 +800,27 @@ export class CLRunner {
 
         const inputStubs = callbackInput.stubs
         if (inputStubs) {
-            const callbackNameData = {
-                name: callbackInput.name,
-                stubNames: [] as string[]
-            }
-
-            inputStubs.reduce((callbackData, stubCallback) => {
+            // Validate stub names
+            // Must not equal root/parent condition with actual functions
+            // Must be unique within set of stubs
+            const stubNames: string[] = []
+            for (const stubCallback of inputStubs) {
                 const stubHasNoName = (typeof stubCallback.name !== "string" || stubCallback.name.trim().length === 0)
                 if (stubHasNoName) {
-                    throw new Error(`You attempted to add stub callback but did not provide a valid name. Name must be non-empty string.`)
+                    throw new Error(`You attempted to add stub on callback ${callbackInput.name} but did not provide a valid name. Name must be non-empty string.`)
                 }
 
-                const stubNameIsNotUnique = stubCallback.name === callbackNameData.name
-                    || callbackData.stubNames.includes(stubCallback.name)
+                const stubNameIsNotUnique = stubCallback.name === callbackInput.name
+                    || stubNames.includes(stubCallback.name)
 
                 if (stubNameIsNotUnique) {
-                    throw new Error(`You attempted to add a stub with the same name as the callback or one of the other stubs. The stubs names must be unique. Callback: ${callbackNameData.name}`)
+                    throw new Error(`You attempted to add a stub with the same name, ${callbackInput.name}, as the callback or one of the other stubs. The stubs names must be unique.`)
                 }
 
-                return callbackData
-            }, callbackNameData)
-
+                if (!stubCallback.logic && !stubCallback.render) {
+                    throw new Error(`You attempted to add stub ${stubCallback.name} to callback ${callbackInput.name} but did not provide a logic or render function. You must provide at least one of them.`)
+                }
+            }
 
             const internalStubCallbacks = inputStubs.map<InternalCallbackNoStubs<T>>(sc => {
                 const stubCallback: InternalCallbackNoStubs<T> = {
@@ -833,6 +833,7 @@ export class CLRunner {
                     isRenderFunctionProvided: false,
                 }
 
+                // TODO: Look at validating arguments. Can't have greater number on stub than on callback 
                 if (callbackInput.logic) {
                     stubCallback.logic = callbackInput.logic
                     stubCallback.logicArguments = this.GetArguments(callbackInput.logic, 1)
