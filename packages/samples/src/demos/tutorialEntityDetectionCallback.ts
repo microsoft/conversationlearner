@@ -5,7 +5,7 @@
 import * as path from 'path'
 import * as express from 'express'
 import { BotFrameworkAdapter } from 'botbuilder'
-import { ConversationLearner, ClientMemoryManager, FileStorage, uiRouter } from '@conversationlearner/sdk'
+import { ConversationLearnerFactory, ClientMemoryManager, FileStorage, uiRouter } from '@conversationlearner/sdk'
 import chalk from 'chalk'
 import config from '../config'
 import getDolRouter from '../dol'
@@ -41,23 +41,23 @@ const adapter = new BotFrameworkAdapter({ appId: bfAppId, appPassword: bfAppPass
 // Initialize ConversationLearner using file storage.
 // Recommended only for development
 // See "storageDemo.ts" for other storage options
-let fileStorage = new FileStorage(path.join(__dirname, 'storage'))
+const fileStorage = new FileStorage(path.join(__dirname, 'storage'))
 
 //==================================
 // Initialize Conversation Learner
 //==================================
-const sdkRouter = ConversationLearner.Init(clOptions, fileStorage)
+const clFactory = new ConversationLearnerFactory(clOptions, fileStorage)
 if (isDevelopment) {
     console.log(chalk.cyanBright(`Adding /sdk routes`))
-    server.use('/sdk', sdkRouter)
+    server.use('/sdk', clFactory.sdkRouter)
 }
-let cl = new ConversationLearner(modelId)
+const cl = clFactory.create(modelId)
 
 //=========================================================
 // Bots Business Logic
 //=========================================================
-let cities = ['new york', 'boston', 'new orleans', 'chicago']
-let cityMap: { [index: string]: string } = {}
+const cities = ['new york', 'boston', 'new orleans', 'chicago']
+const cityMap: { [key: string]: string } = {}
 cityMap['big apple'] = 'new york'
 cityMap['windy city'] = 'chicago'
 

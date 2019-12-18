@@ -3,51 +3,32 @@
  * Licensed under the MIT License.
  */
 import * as BB from 'botbuilder'
-import * as express from 'express'
-import getRouter from './http/router'
 import { CLRunner, EntityDetectionCallback, OnSessionStartCallback, OnSessionEndCallback, ICallbackInput } from './CLRunner'
-import { CLOptions } from './CLOptions'
-import { CLState } from './Memory/CLState'
-import { CLDebug } from './CLDebug'
 import { CLClient } from './CLClient'
 import { CLRecognizerResult } from './CLRecognizeResult'
-import { CLModelOptions } from '.'
+import CLStateFactory from './Memory/CLStateFactory'
+import { CLOptions } from './CLOptions'
+import { CLModelOptions } from './CLModelOptions'
 import { ILogStorage } from './Memory/ILogStorage'
 
 /**
  * Main CL class used by Bot
  */
 export class ConversationLearner {
-    public static options: CLOptions | null = null
-    public static clClient: CLClient
-    public static logStorage: ILogStorage
     public static models: ConversationLearner[] = []
     public clRunner: CLRunner
+    private stateFactory: CLStateFactory
 
-    public static Init(options: CLOptions, stateStorage?: BB.Storage, logStorage?: ILogStorage): express.Router {
-        ConversationLearner.options = options
-
-        try {
-            this.clClient = new CLClient(options)
-            CLState.Init(stateStorage)
-
-            // Is developer providing their own log storage
-            if (logStorage) {
-                this.logStorage = logStorage
-            }
-        } catch (error) {
-            CLDebug.Error(error, 'Conversation Learner Initialization')
-        }
-
-        return getRouter(this.clClient, options)
-    }
-
-    constructor(modelId: string | undefined, modelOptions?: Partial<CLModelOptions>) {
-        if (!ConversationLearner.options) {
-            throw new Error("Init() must be called on ConversationLearner before instances are created")
-        }
-
-        this.clRunner = CLRunner.Create(modelId, ConversationLearner.clClient, modelOptions)
+    constructor(
+        stateFactory: CLStateFactory,
+        client: CLClient,
+        options: CLOptions,
+        modelId: string | undefined,
+        modelOptions?: CLModelOptions,
+        logStorage?: ILogStorage,
+    ) {
+        this.stateFactory = stateFactory
+        this.clRunner = CLRunner.Create(stateFactory, client, options, modelId, logStorage, modelOptions)
         ConversationLearner.models.push(this)
     }
 
@@ -57,9 +38,9 @@ export class ConversationLearner {
         // If there is more than one model in use for running bot we need to check which model is active for conversation
         // This check avoids doing work for normal singe model model bots
         if (ConversationLearner.models.length > 1) {
-            const context = CLState.GetFromContext(turnContext)
+            const context = this.stateFactory.getFromContext(turnContext)
             const activeModelIdForConversation = await context.ConversationModelState.get<string>()
-            const model = ConversationLearner.models.find(m => m.clRunner.configModelId === activeModelIdForConversation)
+            const model = ConversationLearner.models.find(m => m.clRunner.modelId === activeModelIdForConversation)
             if (model) {
                 activeModel = model
             }

@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import { ConversationLearner } from './ConversationLearner'
+import ConversationLearnerFactory from './ConversationLearnerFactory'
 import { CLOptions } from './CLOptions'
 import { CLModelOptions } from './CLModelOptions'
 import { ClientMemoryManager, ReadOnlyClientMemoryManager } from './Memory/ClientMemoryManager'
@@ -16,8 +16,8 @@ import { CosmosLogStorage } from './CosmosLogStorage'
 
 export {
     uiRouter,
-    ConversationLearner,
-    CLOptions as ICLOptions,
+    ConversationLearnerFactory,
+    CLOptions,
     CLModelOptions,
     ClientMemoryManager,
     ReadOnlyClientMemoryManager,

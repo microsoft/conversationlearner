@@ -8,6 +8,7 @@ import * as CLM from '@conversationlearner/models'
 import * as Utils from './Utils'
 import * as ModelOptions from './CLModelOptions'
 import { CLState } from './Memory/CLState'
+import { CLStateFactory } from './Memory/CLStateFactory'
 import { CLDebug, DebugType } from './CLDebug'
 import { CLClient } from './CLClient'
 import { CLStrings } from './CLStrings'
@@ -18,6 +19,8 @@ import { ConversationLearner } from './ConversationLearner'
 import { InputQueue } from './Memory/InputQueue'
 import { UIMode } from './Memory/BotState'
 import { EntityState } from './Memory/EntityState'
+import { ILogStorage } from './Memory/ILogStorage'
+import { CLOptions } from './CLOptions'
 
 interface RunnerLookup {
     [appId: string]: CLRunner
@@ -115,29 +118,36 @@ export class CLRunner {
     private static Runners: RunnerLookup = {}
     private static UIRunner: CLRunner
 
-    public clClient: CLClient
-    public adapter: BB.BotAdapter | undefined
+    private stateFactory: CLStateFactory
+    private options: CLOptions
+    private modelOptions: ModelOptions.CLModelOptions
+    private logStorage: ILogStorage | undefined
     // Used to detect changes in API callbacks / Templates when bot reloaded and UI running
     private checksum: string | null = null
 
+    public clClient: CLClient
+    public adapter: BB.BotAdapter | undefined
     /* Model Id passed in from configuration.  Used when not running in Conversation Learner UI */
-    public readonly configModelId: string | undefined
-
-    private modelOptions: ModelOptions.CLModelOptions
-
+    public readonly modelId: string | undefined
     /* Mapping between user defined API names and functions */
     public callbacks: CallbackMap = {}
 
-    public static Create(configModelId: string | undefined, client: CLClient, newOptions?: Partial<ModelOptions.CLModelOptions>): CLRunner {
-
+    public static Create(
+        stateFactory: CLStateFactory,
+        client: CLClient,
+        option: CLOptions,
+        modelId: string | undefined,
+        logStorage: ILogStorage | undefined,
+        newOptions?: Partial<ModelOptions.CLModelOptions>,
+    ): CLRunner {
         const modelOptions = this.validiatedModelOptions(newOptions)
 
         // Ok to not provide modelId when just running in training UI.
         // If not, Use UI_RUNNER_APPID const as lookup value
-        let newRunner = new CLRunner(configModelId, client, modelOptions)
-        CLRunner.Runners[configModelId ?? Utils.UI_RUNNER_APPID] = newRunner
+        const newRunner = new CLRunner(stateFactory, client, option, modelId, modelOptions, logStorage)
+        CLRunner.Runners[modelId ?? Utils.UI_RUNNER_APPID] = newRunner
 
-        // Bot can define multiple CLs.  Always run UI on first CL defined in the bot
+        // Bot can define multiple CLs. Always run UI on first CL defined in the bot
         if (!CLRunner.UIRunner) {
             CLRunner.UIRunner = newRunner
         }
@@ -146,14 +156,12 @@ export class CLRunner {
     }
 
     private static validiatedModelOptions(modelOptions?: Partial<ModelOptions.CLModelOptions>): ModelOptions.CLModelOptions {
-        const sessionTimout = (!modelOptions
-            || !modelOptions.sessionTimout
-            || typeof modelOptions.sessionTimout !== 'number')
+        const sessionTimeout = (typeof modelOptions?.sessionTimeout !== 'number')
             ? ModelOptions.DEFAULT_MAX_SESSION_LENGTH
-            : modelOptions.sessionTimout
+            : modelOptions.sessionTimeout
 
         return {
-            sessionTimout
+            sessionTimeout
         }
     }
 
@@ -171,10 +179,20 @@ export class CLRunner {
         return CLRunner.Runners[appId]
     }
 
-    private constructor(configModelId: string | undefined, client: CLClient, modelOptions: ModelOptions.CLModelOptions) {
-        this.configModelId = configModelId
-        this.modelOptions = modelOptions
+    private constructor(
+        stateFactory: CLStateFactory,
+        client: CLClient,
+        options: CLOptions,
+        modelId: string | undefined,
+        modelOptions: ModelOptions.CLModelOptions,
+        logStorage: ILogStorage | undefined,
+    ) {
+        this.stateFactory = stateFactory
         this.clClient = client
+        this.options = options
+        this.modelId = modelId
+        this.modelOptions = modelOptions
+        this.logStorage = logStorage
     }
 
     public botChecksum(): string {
@@ -205,10 +223,10 @@ export class CLRunner {
 
     public async InTrainingUI(turnContext: BB.TurnContext): Promise<boolean> {
         if (turnContext.activity.from?.name === Utils.CL_DEVELOPER) {
-            const state = CLState.GetFromContext(turnContext, this.configModelId)
+            const state = this.stateFactory.getFromContext(turnContext, this.modelId)
             const app = await state.BotState.GetApp()
             // If no app selected in UI or no app set in config, or they don't match return true
-            if (!app || !this.configModelId || app.appId !== this.configModelId) {
+            if (!app || !this.modelId || app.appId !== this.modelId) {
                 return true
             }
         }
@@ -228,7 +246,7 @@ export class CLRunner {
         }
 
         try {
-            const state = CLState.GetFromContext(turnContext, this.configModelId)
+            const state = this.stateFactory.getFromContext(turnContext, this.modelId)
             const app = await this.GetRunningApp(state, false)
 
             if (app) {
@@ -271,7 +289,7 @@ export class CLRunner {
             return null
         }
 
-        const state = CLState.GetFromContext(turnContext, this.configModelId)
+        const state = this.stateFactory.getFromContext(turnContext, this.modelId)
 
         // If I'm in teach or edit mode, or testing process message right away
         let uiMode = await state.BotState.getUIMode()
@@ -342,14 +360,14 @@ export class CLRunner {
         const saveToLog = createParams.saveToLog
 
         // Don't save logs on server if custom storage was provided
-        if (ConversationLearner.logStorage) {
+        if (this.logStorage) {
             createParams.saveToLog = false
         }
 
         const session = await this.clClient.StartSession(appId, createParams as CLM.SessionCreateParams)
 
         // If using customer storage add to log storage
-        if (ConversationLearner.logStorage && saveToLog) {
+        if (this.logStorage && saveToLog) {
             // For self-hosted log storage logDialogId is sessionId
             session.logDialogId = session.sessionId
             const logDialog: CLM.LogDialog = {
@@ -365,7 +383,7 @@ export class CLRunner {
                 lastModifiedDateTime: new Date().toJSON(),
                 metrics: ""
             }
-            await ConversationLearner.logStorage.Add(appId, logDialog)
+            await this.logStorage.Add(appId, logDialog)
         }
         return session
     }
@@ -375,13 +393,13 @@ export class CLRunner {
         const extractResponse = await this.clClient.SessionExtract(appId, sessionId, userInput)
         const stepEndDatetime = new Date().toJSON()
 
-        // Add to dev's self-hosted log storage account (if it exists)
-        if (ConversationLearner.logStorage) {
-            // For self-holsted logDialogId = sessionId
+        // If dev provided log storage, save round in storage
+        if (this.logStorage) {
+            // For provided storage logDialogId = sessionId
             const logDialogId = sessionId
 
             // Append an extractor step to already existing log dialog
-            const logDialog: CLM.LogDialog | undefined = await ConversationLearner.logStorage.Get(appId, logDialogId)
+            const logDialog: CLM.LogDialog | undefined = await this.logStorage.Get(appId, logDialogId)
             if (!logDialog) {
                 throw new Error(`Log Dialog does not exist App:${appId} Id:${logDialogId}`)
             }
@@ -391,8 +409,9 @@ export class CLRunner {
             }
             logDialog.rounds.push(newRound)
             logDialog.lastModifiedDateTime = new Date().toJSON()
-            await ConversationLearner.logStorage.Replace(appId, logDialog)
+            await this.logStorage.Replace(appId, logDialog)
         }
+
         return extractResponse
     }
 
@@ -400,9 +419,9 @@ export class CLRunner {
         const stepBeginDatetime = new Date().toJSON()
         const scoreResponse = await this.clClient.SessionScore(appId, sessionId, scoreInput)
 
-        // Add to dev's log storage account (if it exists)
-        if (ConversationLearner.logStorage) {
-            // For self-hosted storage logDialogId is sessionId
+        // If log storage was provided save score there
+        if (this.logStorage) {
+            // For provided storage logDialogId is sessionId
             const logDialogId = sessionId
             const predictedAction = scoreResponse.scoredActions[0]?.actionId ?? ""
 
@@ -419,6 +438,7 @@ export class CLRunner {
                     actionId: sa.actionId
                 }
             })
+
             // Need to use recursive partial as scored and unscored have only partial data
             const logScorerStep: Utils.RecursivePartial<CLM.LogScorerStep> = {
                 input: scoreInput,
@@ -427,10 +447,10 @@ export class CLRunner {
                 predictionDetails: { scoredActions, unscoredActions },
                 stepBeginDatetime,
                 stepEndDatetime: new Date().toJSON(),
-                metrics: scoreResponse.metrics
+                metrics: scoreResponse.metrics,
             }
 
-            const logDialog: CLM.LogDialog | undefined = await ConversationLearner.logStorage.Get(appId, logDialogId)
+            const logDialog: CLM.LogDialog | undefined = await this.logStorage.Get(appId, logDialogId)
             if (!logDialog) {
                 throw new Error(`Log Dialog does not exist App:${appId} Log:${logDialogId}`)
             }
@@ -440,7 +460,7 @@ export class CLRunner {
             }
             lastRound.scorerSteps.push(logScorerStep as any)
             logDialog.lastModifiedDateTime = new Date().toJSON()
-            await ConversationLearner.logStorage.Replace(appId, logDialog)
+            await this.logStorage.Replace(appId, logDialog)
         }
         return scoreResponse
     }
@@ -450,15 +470,15 @@ export class CLRunner {
         let app = await state.BotState.GetApp()
 
         // If this instance is configured to use a specific model, check conditions to use that model.
-        if (this.configModelId
+        if (this.modelId
             // If current app is not set
             && (!app
                 // If I'm not in the editing UI and config model id differs than the current app
-                || (!inEditingUI && this.configModelId != app.appId))
+                || (!inEditingUI && this.modelId != app.appId))
         ) {
             // Get app specified by options
-            CLDebug.Log(`Switching to app specified in config: ${this.configModelId}`)
-            app = await this.clClient.GetApp(this.configModelId)
+            CLDebug.Log(`Switching to app specified in config: ${this.modelId}`)
+            app = await this.clClient.GetApp(this.modelId)
             await state.SetAppAsync(app)
         }
 
@@ -495,19 +515,19 @@ export class CLRunner {
             const inEditingUI = conversationReference.user?.name === Utils.CL_DEVELOPER
 
             // Validate setup
-            if (!inEditingUI && !this.configModelId) {
+            if (!inEditingUI && !this.modelId) {
                 const msg = 'Must specify modelId in ConversationLearner constructor when not running bot in Editing UI\n\n'
                 CLDebug.Error(msg)
                 return null
             }
 
-            if (!ConversationLearner.options?.LUIS_AUTHORING_KEY) {
+            if (!this.options?.LUIS_AUTHORING_KEY) {
                 const msg = 'Options must specify luisAuthoringKey.  Set the LUIS_AUTHORING_KEY.\n\n'
                 CLDebug.Error(msg)
                 return null
             }
 
-            const state = CLState.GetFromContext(turnContext, this.configModelId)
+            const state = this.stateFactory.getFromContext(turnContext, this.modelId)
             let app = await this.GetRunningApp(state, inEditingUI)
             const uiMode = await state.BotState.getUIMode()
 
@@ -529,7 +549,7 @@ export class CLRunner {
                 const currentTicks = new Date().getTime()
                 let lastActive = await state.BotState.GetLastActive()
                 let passedTicks = currentTicks - lastActive
-                if (passedTicks > this.modelOptions.sessionTimout!) {
+                if (passedTicks > this.modelOptions.sessionTimeout) {
 
                     // Parameters for new session
                     const sessionCreateParams: CLM.SessionCreateParams = {
@@ -551,13 +571,13 @@ export class CLRunner {
                     // If I'm not in the UI, reload the App to get any changes (live package version may have been updated)
                     if (!inEditingUI) {
 
-                        if (!this.configModelId) {
+                        if (!this.modelId) {
                             let error = "ERROR: ModelId not specified.  When running in a channel (i.e. Skype) or the Bot Framework Emulator, CONVERSATION_LEARNER_MODEL_ID must be specified in your Bot's .env file or Application Settings on the server"
                             await this.SendMessage(state, error, activity)
                             return null
                         }
 
-                        app = await this.clClient.GetApp(this.configModelId)
+                        app = await this.clClient.GetApp(this.modelId)
                         await state.SetAppAsync(app)
 
                         if (!app) {
@@ -644,7 +664,7 @@ export class CLRunner {
         } catch (error) {
             // Try to end the session, so use can potentially recover
             try {
-                const state = CLState.GetFromContext(turnContext, this.configModelId)
+                const state = this.stateFactory.getFromContext(turnContext, this.modelId)
                 await this.EndSessionAsync(state, CLM.SessionEndState.OPEN)
             } catch {
                 CLDebug.Log(`Failed to End Session`)
@@ -1194,19 +1214,24 @@ export class CLRunner {
     }
 
     private async forwardInputToModel(modelId: string, state: CLState, changeActiveModel: boolean = false) {
-        if (modelId === this.configModelId) {
+        if (modelId === this.modelId) {
             throw new Error(`Cannot forward input to model with same ID as active model. This shouldn't be possible open an issue.`)
         }
 
         // Reuse model instance from cache or create it
-        let model = ConversationLearner.models.find(m => m.clRunner.configModelId === modelId)
+        let model = ConversationLearner.models.find(m => m.clRunner.modelId === modelId)
         if (!model) {
-            model = new ConversationLearner(modelId)
+            model = new ConversationLearner(
+                this.stateFactory,
+                this.clClient,
+                this.options,
+                modelId
+            )
         }
 
         // Save the model id for the conversation so all future input is directed to it.
         if (changeActiveModel) {
-            state.ConversationModelState.set(model.clRunner.configModelId)
+            state.ConversationModelState.set(model.clRunner.modelId)
         }
 
         const turnContext = state.turnContext

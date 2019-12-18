@@ -6,7 +6,7 @@ import * as path from 'path'
 import * as express from 'express'
 import * as BB from 'botbuilder'
 import { BotFrameworkAdapter } from 'botbuilder'
-import { ConversationLearner, ClientMemoryManager, FileStorage, uiRouter } from '@conversationlearner/sdk'
+import { ConversationLearnerFactory, ClientMemoryManager, FileStorage, uiRouter } from '@conversationlearner/sdk'
 import chalk from 'chalk'
 import config from '../config'
 import getDolRouter from '../dol'
@@ -47,12 +47,12 @@ let fileStorage = new FileStorage(path.join(__dirname, 'storage'))
 //==================================
 // Initialize Conversation Learner
 //==================================
-const sdkRouter = ConversationLearner.Init(clOptions, fileStorage)
+const clFactory = new ConversationLearnerFactory(clOptions, fileStorage)
 if (isDevelopment) {
     console.log(chalk.cyanBright(`Adding /sdk routes`))
-    server.use('/sdk', sdkRouter)
+    server.use('/sdk', clFactory.sdkRouter)
 }
-let cl = new ConversationLearner(modelId)
+const cl = clFactory.create(modelId)
 
 //==================================
 // Add Start / End Session callbacks

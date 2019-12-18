@@ -5,7 +5,7 @@
 import * as path from 'path'
 import * as express from 'express'
 import { BotFrameworkAdapter } from 'botbuilder'
-import { ConversationLearner, ClientMemoryManager, FileStorage, uiRouter, CosmosLogStorage } from '@conversationlearner/sdk'
+import { ConversationLearnerFactory, ClientMemoryManager, FileStorage, uiRouter, CosmosLogStorage } from '@conversationlearner/sdk'
 import chalk from 'chalk'
 import config from '../config'
 import getDolRouter from '../dol'
@@ -54,16 +54,15 @@ async function main() {
     // Use custom log storage
     const logStorage = cosmosServer ? await CosmosLogStorage.Get({ endpoint: cosmosServer, key: cosmosKey }) : undefined
 
-    const sdkRouter = ConversationLearner.Init(clOptions, fileStorage, logStorage)
+    const conversationLearnerFactory = new ConversationLearnerFactory(clOptions, fileStorage, logStorage)
+
     if (isDevelopment) {
         console.log(chalk.cyanBright(`Adding /sdk routes`))
-        server.use('/sdk', sdkRouter)
+        server.use('/sdk', conversationLearnerFactory.sdkRouter)
     }
 
-    const cl = new ConversationLearner(modelId)
-
+    const cl = conversationLearnerFactory.create(modelId)
     cl.EntityDetectionCallback = (async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
-
         memoryManager.Get("name", ClientMemoryManager.AS_STRING)
     })
 

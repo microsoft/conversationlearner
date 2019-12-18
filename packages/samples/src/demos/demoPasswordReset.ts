@@ -5,7 +5,7 @@
 import * as path from 'path'
 import * as express from 'express'
 import { BotFrameworkAdapter } from 'botbuilder'
-import { ConversationLearner, FileStorage, uiRouter } from '@conversationlearner/sdk'
+import { ConversationLearnerFactory, FileStorage, uiRouter } from '@conversationlearner/sdk'
 import chalk from 'chalk'
 import config from '../config'
 import getDolRouter from '../dol'
@@ -46,12 +46,12 @@ let fileStorage = new FileStorage(path.join(__dirname, 'storage'))
 //==================================
 // Initialize Conversation Learner
 //==================================
-const sdkRouter = ConversationLearner.Init(clOptions, fileStorage)
+const clFactory = new ConversationLearnerFactory(clOptions, fileStorage)
 if (isDevelopment) {
     console.log(chalk.cyanBright(`Adding /sdk routes`))
-    server.use('/sdk', sdkRouter)
+    server.use('/sdk', clFactory.sdkRouter)
 }
-let cl = new ConversationLearner(modelId)
+let cl = clFactory.create(modelId);
 
 //=================================
 // Add Entity Logic
@@ -65,8 +65,8 @@ let cl = new ConversationLearner(modelId)
 // Define any API callbacks
 //=================================
 //
-// No API calls are used in this demo, so there are no calls to ConversationLearner.AddAPICallback
-// See other demos, or app.ts in the src directory, for an example of ConversationLearner.AddAPICallback
+// No API calls are used in this demo, so there are no calls to ConversationLearner.AddCallback
+// See other demos, or app.ts in the src directory, for an example of ConversationLearner.AddCallback
 //
 
 //=================================

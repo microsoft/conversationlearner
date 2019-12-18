@@ -10,7 +10,7 @@ export interface LogQueryResult {
 }
 
 /**
- * Interface for generating custom LogStorage implimentations
+ * Interface for generating custom LogStorage implementations
  */
 export declare class ILogStorage {
 
@@ -29,7 +29,7 @@ export declare class ILogStorage {
      */
     GetMany(appId: string, packageIds: string[], continuationToken?: string, pageSize?: number): Promise<LogQueryResult>
 
-    /** Replace and exisiting log dialog */
+    /** Replace and existing log dialog */
     Replace(appId: string, logDialog: CLM.LogDialog): Promise<void>
 
     /** Delete a log dialog in storage */

@@ -1,68 +1,68 @@
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema
 
 trigger:
-- master
+  - master
 
 pr:
   autoCancel: true
   branches:
     include:
-    - master
+      - master
 
 jobs:
-- job: linux_build
-  pool:
-    vmImage: 'ubuntu-16.04'
+  - job: linux_build
+    pool:
+      vmImage: "ubuntu-16.04"
 
-  steps:
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '10.x'
-    displayName: 'Install Node.js 10.x'
+    steps:
+      - task: NodeTool@0
+        inputs:
+          versionSpec: "10.x"
+        displayName: "Install Node.js 10.x"
 
-  - bash: npm --version
-    displayName: 'npm --version'
+      - bash: npm --version
+        displayName: "npm --version"
 
-  - bash: npx lerna boostrap
-    displayName: 'npx lerna boostrap'
+      - bash: npx lerna boostrap
+        displayName: "npx lerna boostrap"
 
-  # - task: CacheBeta@0
-  #   inputs:
-  #   key: $(Build.SourcesDirectory)/package-lock.json
-  #   path: $(npm_config_cache)
-  #   displayName: Cache npm
+      # - task: CacheBeta@0
+      #   inputs:
+      #   key: $(Build.SourcesDirectory)/package-lock.json
+      #   path: $(npm_config_cache)
+      #   displayName: Cache npm
 
-  - bash: npx lerna run build
-    displayName: 'npx lerna run build'
+      - bash: npx lerna run build
+        displayName: "npx lerna run build"
 
-  - bash: npx lerna run test --ignore @conversationlearner/webchat
-    displayName: 'npx lerna run test --ignore @conversationlearner/webchat'
+      - bash: npx lerna run test --ignore @conversationlearner/webchat
+        displayName: "npx lerna run test --ignore @conversationlearner/webchat"
 
-- job: windows_build
-  pool:
-    vmImage: 'windows-2019'
+  - job: windows_build
+    pool:
+      vmImage: "windows-2019"
 
-  steps:
-  - task: securedevelopmentteam.vss-secure-development-tools.build-task-credscan.CredScan@2
-    displayName: 'Run CredScan'
-    inputs:
-      debugMode: false
+    steps:
+      - task: securedevelopmentteam.vss-secure-development-tools.build-task-credscan.CredScan@2
+        displayName: "Run CredScan"
+        inputs:
+          debugMode: false
 
-  - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@1
-    displayName: 'Post Analysis'
-    inputs:
-      CredScan: true
+      - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@1
+        displayName: "Post Analysis"
+        inputs:
+          CredScan: true
 
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '10.x'
-    displayName: 'Install Node.js 10.x'
+      - task: NodeTool@0
+        inputs:
+          versionSpec: "10.x"
+        displayName: "Install Node.js 10.x"
 
-  - script: npm ci
-    displayName: 'npm ci'
+      - script: npm ci
+        displayName: "npm ci"
 
-  - script: npx lerna run build
-    displayName: 'npx lerna run build'
+      - script: npx lerna run build
+        displayName: "npx lerna run build"
 
-  - script: npx lerna run test
-    displayName: 'npx lerna run test'
+      - script: npx lerna run test --ignore @conversationlearner/webchat
+        displayName: "npx lerna run test --ignore @conversationlearner/webchat"

@@ -5,7 +5,7 @@
 import * as path from 'path'
 import * as express from 'express'
 import * as botBuilder from 'botbuilder'
-import { ConversationLearner, ClientMemoryManager, FileStorage, ReadOnlyClientMemoryManager, uiRouter } from '@conversationlearner/sdk'
+import { ConversationLearnerFactory, ClientMemoryManager, FileStorage, ReadOnlyClientMemoryManager, uiRouter } from '@conversationlearner/sdk'
 import chalk from 'chalk'
 import config from '../config'
 import getDolRouter from '../dol'
@@ -14,15 +14,15 @@ const server = express()
 
 const { bfAppId, bfAppPassword, modelId, ...clOptions } = config
 const adapter = new botBuilder.BotFrameworkAdapter({ appId: bfAppId, appPassword: bfAppPassword })
-let fileStorage = new FileStorage(path.join(__dirname, 'storage'))
-const sdkRouter = ConversationLearner.Init(clOptions, fileStorage)
+const fileStorage = new FileStorage(path.join(__dirname, 'storage'))
+const clFactory = new ConversationLearnerFactory(clOptions, fileStorage)
 const isDevelopment = process.env.NODE_ENV === 'development'
 if (isDevelopment) {
     console.log(chalk.yellowBright(`Adding /directline routes`))
     server.use(getDolRouter(config.botPort))
 
     console.log(chalk.cyanBright(`Adding /sdk routes`))
-    server.use('/sdk', sdkRouter)
+    server.use('/sdk', clFactory.sdkRouter)
 
     console.log(chalk.greenBright(`Adding /ui routes`))
     server.use(uiRouter as any)
@@ -35,14 +35,13 @@ server.listen(config.botPort, () => {
     console.log(`Server listening at: http://localhost:${config.botPort}`)
 })
 
-const cl = new ConversationLearner(modelId)
+const cl = clFactory.create(modelId)
 
 //=========================================================
 // Bots Business Logic
 //=========================================================
-
-var inStock = ["cheese", "sausage", "mushrooms", "olives", "peppers"]
-var isInStock = function (topping: string) {
+const inStock = ["cheese", "sausage", "mushrooms", "olives", "peppers"]
+const isInStock = function (topping: string) {
     return (inStock.indexOf(topping.toLowerCase()) > -1)
 }
 
@@ -55,7 +54,7 @@ var isInStock = function (topping: string) {
 * @param {ClientMemoryManager} memoryManager Allows for viewing and manipulating Bot's memory
 * @returns {Promise<void>}
 */
-cl.EntityDetectionCallback = async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
+cl.EntityDetectionCallback = async (text, memoryManager) => {
     let entityError = memoryManager.Get("entityError", ClientMemoryManager.AS_STRING)
     console.log(chalk.redBright(`entityError: ${entityError}`))
     if (entityError === "entityError") {
