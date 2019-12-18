@@ -73,10 +73,14 @@ export const defaultLogicCallback = async () => { }
  */
 export type RenderCallback<T> = (logicResult: T, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => Promise<Partial<BB.Activity> | string>
 
-export interface ICallbackInput<T> {
+export interface ICallbackInputNoStubs<T> {
     name: string
     logic?: LogicCallback<T>
     render?: RenderCallback<T>
+}
+
+export interface ICallbackInput<T> extends ICallbackInputNoStubs<T> {
+    stubs?: ICallbackInput<T>[]
 }
 
 interface ICallback<T> {
