@@ -38,7 +38,9 @@ export enum SessionStartFlags {
     IN_TEST = 1 << 2
 }
 
-export interface InternalCallback<T> extends CLM.Callback, ICallback<T> {
+export interface InternalCallbackNoStubs<T> extends CLM.Callback, ICallback<T> { }
+export interface InternalCallback<T> extends InternalCallbackNoStubs<T> {
+    stubs: InternalCallbackNoStubs<T>[]
 }
 
 /**
@@ -780,7 +782,8 @@ export class CLRunner {
             isLogicFunctionProvided: false,
             render: undefined,
             renderArguments: [],
-            isRenderFunctionProvided: false
+            isRenderFunctionProvided: false,
+            stubs: [],
         }
 
         if (callbackInput.logic) {
@@ -793,6 +796,59 @@ export class CLRunner {
             callback.render = callbackInput.render
             callback.renderArguments = this.GetArguments(callbackInput.render, 2)
             callback.isRenderFunctionProvided = true
+        }
+
+        const inputStubs = callbackInput.stubs
+        if (inputStubs) {
+            const callbackNameData = {
+                name: callbackInput.name,
+                stubNames: [] as string[]
+            }
+
+            inputStubs.reduce((callbackData, stubCallback) => {
+                const stubHasNoName = (typeof stubCallback.name !== "string" || stubCallback.name.trim().length === 0)
+                if (stubHasNoName) {
+                    throw new Error(`You attempted to add stub callback but did not provide a valid name. Name must be non-empty string.`)
+                }
+
+                const stubNameIsNotUnique = stubCallback.name === callbackNameData.name
+                    || callbackData.stubNames.includes(stubCallback.name)
+
+                if (stubNameIsNotUnique) {
+                    throw new Error(`You attempted to add a stub with the same name as the callback or one of the other stubs. The stubs names must be unique. Callback: ${callbackNameData.name}`)
+                }
+
+                return callbackData
+            }, callbackNameData)
+
+
+            const internalStubCallbacks = inputStubs.map<InternalCallbackNoStubs<T>>(sc => {
+                const stubCallback: InternalCallbackNoStubs<T> = {
+                    name: callbackInput.name,
+                    logic: defaultLogicCallback,
+                    logicArguments: [],
+                    isLogicFunctionProvided: false,
+                    render: undefined,
+                    renderArguments: [],
+                    isRenderFunctionProvided: false,
+                }
+
+                if (callbackInput.logic) {
+                    stubCallback.logic = callbackInput.logic
+                    stubCallback.logicArguments = this.GetArguments(callbackInput.logic, 1)
+                    stubCallback.isLogicFunctionProvided = true
+                }
+
+                if (callbackInput.render) {
+                    stubCallback.render = callbackInput.render
+                    stubCallback.renderArguments = this.GetArguments(callbackInput.render, 2)
+                    stubCallback.isRenderFunctionProvided = true
+                }
+
+                return stubCallback
+            })
+
+            callback.stubs = internalStubCallbacks
         }
 
         this.callbacks[callbackInput.name] = callback

@@ -199,6 +199,35 @@ cl.AddCallback({
     }
 })
 
+cl.AddCallback({
+    name: 'MyCallbackWithStubs',
+    logic: async memory => {
+        const randomNumber = Math.round(Math.random() * 100)
+        memory.Set("myNumber", randomNumber)
+        return randomNumber
+    },
+    render: async n => {
+        return `My random number is ${n}`
+    },
+    stubs: [
+        {
+            name: 'Number is 3',
+            async logic(memory) {
+                memory.Set("myNumber", 3)
+            },
+            async render(n) {
+                return `This is a stubbed render fn. Value is ${n}`
+            },
+        },
+        {
+            name: 'Number is 67',
+            async logic(memory) {
+                memory.Set("myNumber", 67)
+            },
+        },
+    ],
+})
+
 
 //=================================
 // Handle Incoming Messages
