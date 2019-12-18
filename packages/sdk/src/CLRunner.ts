@@ -120,7 +120,7 @@ export class CLRunner {
 
     private stateFactory: CLStateFactory
     private options: CLOptions
-    private modelOptions: CLModelOptions
+    private modelOptions: ModelOptions.CLModelOptions
     private logStorage: ILogStorage | undefined
     // Used to detect changes in API callbacks / Templates when bot reloaded and UI running
     private checksum: string | null = null
@@ -184,7 +184,7 @@ export class CLRunner {
         client: CLClient,
         options: CLOptions,
         modelId: string | undefined,
-        modelOptions: CLModelOptions,
+        modelOptions: ModelOptions.CLModelOptions,
         logStorage: ILogStorage | undefined,
     ) {
         this.stateFactory = stateFactory
