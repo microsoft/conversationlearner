@@ -26,7 +26,7 @@ export interface TestItem {
 
 export interface SourceComparison {
     conversationId: string
-    sourceNames: [string, string] 
+    sourceNames: [string, string]
     result: ComparisonResultType
 }
 
@@ -40,8 +40,8 @@ export enum RatingResult {
 export interface RatingPair {
     conversationId: string
     // Source names in alphabetical order
-    sourceNames: [string, string] 
-    result: RatingResult 
+    sourceNames: [string, string]
+    result: RatingResult
 }
 
 export class TestSet {
@@ -50,11 +50,11 @@ export class TestSet {
     items: TestItem[]
     sourceNames: string[]
     ratingPairs: RatingPair[]
-    lgItems: CLM.LGItem[]    
+    lgItems: CLM.LGItem[]
     usesLgMap: Map<string, boolean>   // <sourceName, does it use  LG>
 
     private comparisons: SourceComparison[]
-    
+
     static Create(source?: Partial<TestSet>): TestSet {
         let init = Util.deepCopy(source)
         return new TestSet(init)
@@ -98,7 +98,7 @@ export class TestSet {
         return this.items
             .filter(i => i.sourceName === sourceName)
             .map(i => i.transcript)
-            .filter(i => i !== undefined) as BB.Activity[][]    
+            .filter(i => i !== undefined) as BB.Activity[][]
     }
 
     getTranscript(sourceName: string, conversationId: string): BB.Activity[] | undefined {
@@ -147,10 +147,10 @@ export class TestSet {
             const sourceName = this.sourceName(transcript)
             const conversationId = this.conversationId(transcript)
 
-            const item: TestItem = { 
+            const item: TestItem = {
                 sourceName: sourceName,
                 conversationId,
-                logDialogId: null, 
+                logDialogId: null,
                 ranking: undefined,
                 transcript
             }
@@ -207,7 +207,7 @@ export class TestSet {
                 if (innerSource !== outerSource) {
 
                     // Get existing comparisons between these two
-                    const comparisons  = this.getSourceComparisons(innerSource, outerSource)
+                    const comparisons = this.getSourceComparisons(innerSource, outerSource)
 
                     // Loop through all conversations
                     const allConversationIds = this.getAllConversationIds()
@@ -222,7 +222,7 @@ export class TestSet {
 
                             // If either has no transcript
                             if (!innerItem || !innerItem.transcript || !outerItem || !outerItem.transcript) {
-                                this.comparisons.push({ 
+                                this.comparisons.push({
                                     conversationId,
                                     sourceNames: [innerSource, outerSource],
                                     result: ComparisonResultType.NO_TRANSCRIPT
@@ -239,8 +239,8 @@ export class TestSet {
                                 catch {
                                     result = ComparisonResultType.INVALID_TRANSCRIPT
                                 }
-                                
-                                this.comparisons.push({ 
+
+                                this.comparisons.push({
                                     conversationId,
                                     sourceNames: [innerSource, outerSource],
                                     result
@@ -271,7 +271,7 @@ export class TestSet {
 
                     // Add new pair if it doesn't already exits
                     if (!possiblePairs.find(p => p.sourceNames[0] === sourceNames[0] && p.sourceNames[1] === sourceNames[1])) {
-                        possiblePairs.push({conversationId: '', sourceNames: [sourceNames[0], sourceNames[1]], result: RatingResult.UNKNOWN})
+                        possiblePairs.push({ conversationId: '', sourceNames: [sourceNames[0], sourceNames[1]], result: RatingResult.UNKNOWN })
                     }
                 }
             }
@@ -313,7 +313,7 @@ export class TestSet {
     numRatingsNeeded(): number {
         return this.ratingPairs.filter(rp => rp.result === RatingResult.UNKNOWN).length
     }
-    
+
     getRating(pivotSource: string, source: string, conversationId: string): RatingResult {
         const ratingPair = this.getRatingPair(pivotSource, source, conversationId)
         return ratingPair ? ratingPair.result : RatingResult.UNKNOWN
@@ -322,10 +322,10 @@ export class TestSet {
     getRatingPair(pivotSource: string, source: string, conversationId: string): RatingPair | undefined {
         // Lookup is always alphabetical
         const sourceNames = [pivotSource, source].sort()
-        return this.ratingPairs.find(rp => 
+        return this.ratingPairs.find(rp =>
             rp.conversationId === conversationId
             && rp.sourceNames[0] === sourceNames[0]
-            && rp.sourceNames[1] === sourceNames[1]) 
+            && rp.sourceNames[1] === sourceNames[1])
     }
 
     // Add a rating pair result
@@ -338,8 +338,8 @@ export class TestSet {
         // Remove existing rating
         this.ratingPairs = this.ratingPairs.filter(rp =>
             !(rp.conversationId === pairAB.conversationId &&
-            rp.sourceNames[0] === sourceA &&
-            rp.sourceNames[1] === sourceB))
+                rp.sourceNames[0] === sourceA &&
+                rp.sourceNames[1] === sourceB))
 
         // Add new one
         this.ratingPairs.push(pairAB)
@@ -414,7 +414,7 @@ export class TestSet {
             }
         })
     }
-        
+
     // Converts pairwise ratings between transcripts to a ranking between all (>2 transcripts)
     calcRankings(): void {
 
@@ -424,7 +424,7 @@ export class TestSet {
 
             // Clear any old ranking
             item.ranking = 0
-            
+
             // Give a point for each time it was voted as better
             for (const ratingPair of ratingPairs) {
                 if (ratingPair.result === RatingResult.FIRST && ratingPair.sourceNames[0] === item.sourceName) {
@@ -440,10 +440,10 @@ export class TestSet {
     // Return count of unratable items because there are
     // no matching transcripts between the two sources
     unratableConversationIds(source: string, pivotSource?: string): string[] {
-        const filterConversationIds = pivotSource 
+        const filterConversationIds = pivotSource
             ? this.items.filter(i => i.sourceName === pivotSource).map(i => i.conversationId)
             : this.getAllConversationIds()
-            
+
         const conversationIds = this.items.filter(i => i.sourceName === source).map(i => i.conversationId)
         return filterConversationIds.filter(id => !conversationIds.includes(id))
     }
@@ -452,23 +452,23 @@ export class TestSet {
     unratedConversationIds(source: string, filterSource?: string): string[] {
 
         // Get list of conversations that exist for both
-        const filterConversationIds = filterSource 
+        const filterConversationIds = filterSource
             ? this.items.filter(i => i.sourceName === filterSource).map(i => i.conversationId)
             : this.getAllConversationIds()
 
         const sourceConversationIds = this.items.filter(i => i.sourceName === source).map(i => i.conversationId)
         const sharedConversationIds = filterConversationIds.filter(id => sourceConversationIds.includes(id))
-        
+
         // Lookup is always alphabetical
         const sourceNames = [filterSource, source].sort()
 
         // Find ones that still need to be rated
-        return this.ratingPairs.filter(rp => 
-                rp.result === RatingResult.UNKNOWN
-                && ((filterSource === undefined && rp.sourceNames.includes(source))
-                    || (rp.sourceNames[0] === sourceNames[0] && rp.sourceNames[1] === sourceNames[1]))
-                && sharedConversationIds.includes(rp.conversationId))
-                .map(rp => rp.conversationId)
+        return this.ratingPairs.filter(rp =>
+            rp.result === RatingResult.UNKNOWN
+            && ((filterSource === undefined && rp.sourceNames.includes(source))
+                || (rp.sourceNames[0] === sourceNames[0] && rp.sourceNames[1] === sourceNames[1]))
+            && sharedConversationIds.includes(rp.conversationId))
+            .map(rp => rp.conversationId)
     }
 
     // Return a random pair of sources needing to be rated
@@ -512,10 +512,10 @@ export class TestSet {
     whichIsBetter(better: string, worse: string, conversationId: string): string | null {
         const ratingPair = this.getRatingPair(better, worse, conversationId)
         if (ratingPair) {
-            if (ratingPair.result === RatingResult.FIRST) { 
+            if (ratingPair.result === RatingResult.FIRST) {
                 return ratingPair.sourceNames[0]
-            }   
-            else if (ratingPair.result === RatingResult.SECOND) { 
+            }
+            else if (ratingPair.result === RatingResult.SECOND) {
                 return ratingPair.sourceNames[1]
             }
         }
@@ -526,7 +526,7 @@ export class TestSet {
     setFirstIsBetter(better: string, worse: string, conversationId: string) {
         const ratingPair = this.getRatingPair(better, worse, conversationId)
         if (ratingPair) {
-            if (better.localeCompare(worse) <= 0)  {
+            if (better.localeCompare(worse) <= 0) {
                 ratingPair.result = RatingResult.FIRST
             }
             else {

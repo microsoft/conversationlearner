@@ -60,7 +60,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 return (<React.Fragment>
                     {entityValues.map((value, i) => {
                         const changeClass = memoryChangeClassMap[value.changeStatus] ?? ''
-                        let renderedValue;
+                        let renderedValue
 
                         const valuesAsObject = component.valuesAsObject(value.displayText)
                         if (valuesAsObject && value.displayText) {
@@ -112,7 +112,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isResizable: true,
             getSortValue: entity => {
                 const display = entity.resolverType ?? "none"
-                return display.toLowerCase();
+                return display.toLowerCase()
             },
             render: entity => {
                 const display = entity.resolverType ?? "none"
@@ -157,7 +157,7 @@ interface ComponentState {
 
 class MemoryTable extends React.Component<Props, ComponentState> {
     constructor(p: any) {
-        super(p);
+        super(p)
         this.state = {
             columns: getColumns(this.props.intl),
             sortColumn: null
@@ -168,7 +168,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
     }
 
     onColumnClick(event: any, column: IRenderableColumn) {
-        const { columns } = this.state;
+        const { columns } = this.state
         let isSortedDescending = column.isSortedDescending
 
         // If we've sorted this column, flip it.
@@ -185,20 +185,20 @@ class MemoryTable extends React.Component<Props, ComponentState> {
                     col.isSortedDescending = isSortedDescending
                 }
 
-                return col;
+                return col
             }),
             sortColumn: column
-        });
+        })
     }
 
     previousMemory(entityName: string) {
         const prevMemories = this.props.prevMemories
-        return prevMemories.find(m => m.entityName === entityName);
+        return prevMemories.find(m => m.entityName === entityName)
     }
 
     getMemoryChangeStatus(entityName: string): MemoryChangeStatus {
-        const curEntity = this.props.memories.find(m => m.entityName === entityName);
-        const prevEntity = this.props.prevMemories.find(m => m.entityName === entityName);
+        const curEntity = this.props.memories.find(m => m.entityName === entityName)
+        const prevEntity = this.props.prevMemories.find(m => m.entityName === entityName)
 
         // In old but not new
         if (prevEntity && !curEntity) {
@@ -219,7 +219,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         }
 
         try {
-            const obj = JSON.parse(entityValues);
+            const obj = JSON.parse(entityValues)
             if (typeof obj !== 'number' && typeof obj !== 'boolean') {
                 return obj
             }
@@ -240,7 +240,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         const prevValues = prevMemoryValues.map(pmv => pmv.userText)
 
         // Find union and remove duplicates
-        const unionMemoryValues = [...curMemoryValues, ...prevMemoryValues.filter(pmv => !curMemoryValues.some(cmv => cmv.userText === pmv.userText))];
+        const unionMemoryValues = [...curMemoryValues, ...prevMemoryValues.filter(pmv => !curMemoryValues.some(cmv => cmv.userText === pmv.userText))]
 
         return unionMemoryValues.map((memoryValue, index) => {
             let changeStatus = MemoryChangeStatus.Unchanged
@@ -292,7 +292,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
             [
                 ...this.props.memories.map(m => m.entityName),
                 ...this.props.prevMemories.map(m => m.entityName)
-            ];
+            ]
 
         unionMemoryNames = Array.from(new Set(unionMemoryNames))
 
@@ -320,10 +320,10 @@ class MemoryTable extends React.Component<Props, ComponentState> {
                 } else {
                     return firstValue > secondValue ? 1 : -1
                 }
-            });
+            })
         }
 
-        return unionMemoryNames;
+        return unionMemoryNames
     }
     render() {
         const memoryNames = this.getMemoryNames()
@@ -352,7 +352,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
@@ -366,8 +366,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
 type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
 export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(MemoryTable) as any)

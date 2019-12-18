@@ -60,9 +60,9 @@ function generaterministicDispatcherSource(
     sourceModelPairs: SourceAndModelPair[],
     transitionAtFirstNRounds: number,
 ): CLM.AppDefinition {
-    generateDispatchActions(sourceModelPairs);
+    generateDispatchActions(sourceModelPairs)
     const modelsTrainDialogs = associateModelDialogsWithDispatchActionsAndClean(sourceModelPairs)
-    const trainDialogs = determisticSingleTransfer(modelsTrainDialogs, transitionAtFirstNRounds);
+    const trainDialogs = determisticSingleTransfer(modelsTrainDialogs, transitionAtFirstNRounds)
     return {
         trainDialogs,
         actions: sourceModelPairs.map(sm => sm.action),
@@ -81,7 +81,7 @@ function generateRandomTransitonDispatcherSource(
     // 2 transitions in 5 step dialog is better?
     getPercentageOfRoundsToTransferAt: (x: number) => number,
 ): CLM.AppDefinition {
-    generateDispatchActions(sourceModelPairs);
+    generateDispatchActions(sourceModelPairs)
     const modelsTrainDialogs = associateModelDialogsWithDispatchActionsAndClean(sourceModelPairs)
     const trainDialogs = randomSingleTransfer(modelsTrainDialogs, getPercentageOfRoundsToTransferAt)
     return {
@@ -96,7 +96,7 @@ function generateRandomMultiTransferDispatcherSource(
     numberOfTransitionsPerDialog: number,
     numberOfDialogs: number,
 ): CLM.AppDefinition {
-    generateDispatchActions(sourceModelPairs);
+    generateDispatchActions(sourceModelPairs)
     const modelsTrainDialogs = associateModelDialogsWithDispatchActionsAndClean(sourceModelPairs)
     const trainDialogs = randomMultiTransfer(
         modelsTrainDialogs,
@@ -400,7 +400,7 @@ function generateRandomDialogTransitionGroups(
                     // For each transition point generate a new dialog with rounds up to that point
                     return transitionRoundIncies
                         .map(transitionRoundIndex => {
-                            const dialogCopy = Util.deepCopy(t);
+                            const dialogCopy = Util.deepCopy(t)
                             dialogCopy.rounds = dialogCopy.rounds.slice(0, transitionRoundIndex)
                             return dialogCopy
                         })

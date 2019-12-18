@@ -17,7 +17,7 @@ import { State } from '../../types'
 import { CL_IMPORT_TUTORIALS_USER_ID, ErrorType } from '../../types/const'
 import { OBIImportData } from '../../Utils/obiUtils'
 import { SourceAndModelPair } from '../../types/models'
-import { DispatcherAlgorithmType } from '../../components/modals/DispatcherCreator';
+import { DispatcherAlgorithmType } from '../../components/modals/DispatcherCreator'
 
 class AppsIndex extends React.Component<Props> {
     updateAppsAndBot() {
@@ -26,13 +26,13 @@ class AppsIndex extends React.Component<Props> {
         }
     }
     componentDidMount() {
-        this.updateAppsAndBot();
+        this.updateAppsAndBot()
     }
 
     componentDidUpdate(prevProps: Props, _prevState: {}) {
         // TODO: See if this code can be removed. It seems like componentWillMount is called every time the user navigates to /home route
         if (typeof (this.props.user.id) === 'string' && this.props.user.id !== prevProps.user.id) {
-            this.updateAppsAndBot();
+            this.updateAppsAndBot()
         }
 
         const { history, location } = this.props
@@ -90,8 +90,8 @@ class AppsIndex extends React.Component<Props> {
     }
 
     onImportTutorial = (tutorial: CLM.AppBase) => {
-        const srcUserId = CL_IMPORT_TUTORIALS_USER_ID;
-        const destUserId = this.props.user.id;
+        const srcUserId = CL_IMPORT_TUTORIALS_USER_ID
+        const destUserId = this.props.user.id
 
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
         this.props.copyApplicationThunkAsync(srcUserId, destUserId, tutorial.appId)

@@ -97,7 +97,7 @@ class LogDialogEditor extends React.Component<Props, ComponentState> {
     }
 
     async componentDidUpdate(prevProps: Props) {
-    
+
         // A hack to prevent the screen from flashing
         // Will go away once Edit/Teach dialogs are merged
         if (this.props.teachSession && this.props.teachSession !== prevProps.teachSession) {
@@ -111,13 +111,13 @@ class LogDialogEditor extends React.Component<Props, ComponentState> {
             if (this.props.logDialog) {
                 // Reset WebChat scroll position
                 this.props.clearWebchatScrollPosition()
-    
+
                 // Convert to trainDialog until schema update change, and pass in app definition too
                 const trainDialog = CLM.ModelUtils.ToTrainDialog(this.props.logDialog, this.props.actions, this.props.entities)
-    
+
                 try {
                     const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
-    
+
                     this.setState({
                         activityHistory: teachWithActivities.activities,
                         lastAction: teachWithActivities.lastAction,
@@ -167,7 +167,7 @@ class LogDialogEditor extends React.Component<Props, ComponentState> {
         if (this.state.currentLogDialogId) {
             await ((this.props.deleteLogDialogThunkAsync(this.props.app, this.state.currentLogDialogId, this.props.editingPackageId) as any) as Promise<void>)
         }
-        await this.onCloseEditDialogModal();
+        await this.onCloseEditDialogModal()
     }
 
     @autobind
@@ -624,7 +624,7 @@ class LogDialogEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    render() {    
+    render() {
         const { intl } = this.props
 
         const editState = (this.props.editingPackageId !== this.props.app.devPackageId)
@@ -706,7 +706,7 @@ class LogDialogEditor extends React.Component<Props, ComponentState> {
                     onAccept={this.onAcceptConflictChanges}
                 />
             </>
-        );
+        )
     }
 
     // User has edited an Activity in a TeachSession

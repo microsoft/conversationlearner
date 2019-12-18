@@ -300,7 +300,7 @@ export const fetchAppSourceThunkAsync = (appId: string, packageId: string, updat
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_APPSOURCE_ASYNC))
-            return null;
+            return null
         }
     }
 }
@@ -339,7 +339,7 @@ export const copyApplicationThunkAsync = (srcUserId: string, destUserId: string,
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.COPY_APPLICATION_ASYNC))
             throw error
         }
-        return;
+        return
     }
 }
 
@@ -399,11 +399,11 @@ export const deleteApplicationThunkAsync = (appId: string) => {
             await clClient.appsDelete(appId)
             poller.removePoll(appId)
             dispatch(deleteApplicationFulfilled(appId))
-            return true;
+            return true
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_APPLICATION_ASYNC))
-            return false;
+            return false
         }
     }
 }
@@ -434,7 +434,7 @@ export const fetchTutorialsThunkAsync = (userId: string) => {
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_TUTORIALS_ASYNC))
-            return null;
+            return null
         }
     }
 }
@@ -461,13 +461,13 @@ export const fetchExtractionsThunkAsync = (appId: string, userUtterances: string
         dispatch(fetchExtractionsAsync())
 
         try {
-            const extractResponses = await clClient.appExtract(appId, userUtterances);
-            dispatch(fetchExtractionsFulfilled(extractResponses));
-            return extractResponses;
+            const extractResponses = await clClient.appExtract(appId, userUtterances)
+            dispatch(fetchExtractionsFulfilled(extractResponses))
+            return extractResponses
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_EXTRACTIONS_ASYNC))
-            return false;
+            return false
         }
     }
 }

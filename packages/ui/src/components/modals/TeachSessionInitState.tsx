@@ -14,7 +14,7 @@ import { connect } from 'react-redux'
 import { State } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
 
 interface ComponentState {
     filledEntityMap: CLM.FilledEntityMap
@@ -25,7 +25,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
 
     constructor(props: Props) {
         super(props)
-        this.state = { 
+        this.state = {
             filledEntityMap: new CLM.FilledEntityMap(),
             isEntityEditorModalOpen: false,
         }
@@ -66,7 +66,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
 
     @autobind
     updateFilledEntityMap(map: { [key: string]: CLM.FilledEntity }) {
-        this.setState({filledEntityMap: new CLM.FilledEntityMap({map: map})})
+        this.setState({ filledEntityMap: new CLM.FilledEntityMap({ map: map }) })
     }
 
     render() {
@@ -85,7 +85,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                     <MemorySetter
                         map={this.state.filledEntityMap.map}
                         onUpdate={this.updateFilledEntityMap}
-                    />  
+                    />
                 </div>
                 <div className="cl-modal_footer cl-modal-buttons cl-modal_footer--border">
                     <div className="cl-modal-buttons_secondary">
@@ -123,13 +123,13 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                     entityTypeFilter={null}
                 />
             </OF.Modal>
-        );
+        )
     }
 }
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     return {
@@ -145,8 +145,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
 type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
 export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TeachSessionInitState))

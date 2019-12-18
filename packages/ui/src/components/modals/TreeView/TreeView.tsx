@@ -6,7 +6,7 @@ import * as React from 'react'
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../../Utils/util'
-import Tree from 'react-d3-tree';
+import Tree from 'react-d3-tree'
 import { TreeUtils } from '../../../Utils/TreeUtils'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -16,8 +16,8 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { TreeNodeLabel, TreeNode, TreeScorerStep } from './TreeNodeLabel'
 import { TreeNodeExpanded } from './TreeNodeExpanded'
 import { EditDialogType, EditState } from '../../../types/const'
-import './TreeView.css';
-import { autobind } from 'core-decorators';
+import './TreeView.css'
+import { autobind } from 'core-decorators'
 
 const NODE_WIDTH = 250
 const NODE_HEIGHT = 200
@@ -59,7 +59,7 @@ class TreeView extends React.Component<Props, ComponentState> {
                     this.setState({ translateX: NODE_WIDTH })
                 }
                 else {
-                    const dimensions = this.treeContainerRef.current.getBoundingClientRect();
+                    const dimensions = this.treeContainerRef.current.getBoundingClientRect()
                     this.setState({
                         translateX: dimensions.width / 2.5,
                     })
@@ -70,8 +70,8 @@ class TreeView extends React.Component<Props, ComponentState> {
 
     @autobind
     onNodeDetail(nodeId: string): void {
-        const matches: TreeNode[] = this.state.treeElement.findNodesById(nodeId, this.state.treeElement.state.data, []);
-        const expandedNode = matches[0];
+        const matches: TreeNode[] = this.state.treeElement.findNodesById(nodeId, this.state.treeElement.state.data, [])
+        const expandedNode = matches[0]
         this.setState({ expandedNode: expandedNode || null })
     }
 
@@ -82,17 +82,17 @@ class TreeView extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickExpando(nodeId: string): void {
-        const matches = this.state.treeElement.findNodesById(nodeId, this.state.treeElement.state.data, []);
-        const targetNode = matches[0];
-        targetNode._collapsed ? this.state.treeElement.expandNode(targetNode) : this.state.treeElement.collapseNode(targetNode);
+        const matches = this.state.treeElement.findNodesById(nodeId, this.state.treeElement.state.data, [])
+        const targetNode = matches[0]
+        targetNode._collapsed ? this.state.treeElement.expandNode(targetNode) : this.state.treeElement.collapseNode(targetNode)
 
-        this.state.treeElement.setState({ data: this.state.treeElement.state.data, isTransitioning: false });
+        this.state.treeElement.setState({ data: this.state.treeElement.state.data, isTransitioning: false })
 
         setTimeout(
             () => this.state.treeElement.setState({ isTransitioning: false }),
             this.state.treeElement.props.transitionDuration as number + 10,
-        );
-        this.state.treeElement.internalState.targetNode = targetNode;
+        )
+        this.state.treeElement.internalState.targetNode = targetNode
     }
 
     @autobind
@@ -315,7 +315,7 @@ class TreeView extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     return {
@@ -342,8 +342,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
 type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
 export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TreeView))

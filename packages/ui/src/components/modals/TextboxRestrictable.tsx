@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
 
 interface ComponentState {
     value: string
@@ -49,7 +49,7 @@ class TextboxRestrictableModal extends React.Component<Props, ComponentState> {
     @autobind
     onKeyDown(event: React.KeyboardEvent<HTMLElement>) {
         if ((event.key === 'Enter') && !this.isContinueDisabled()) {
-            this.onClickOK();
+            this.onClickOK()
         }
     }
 
@@ -102,7 +102,7 @@ class TextboxRestrictableModal extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     return {
@@ -122,8 +122,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
 type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
 export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TextboxRestrictableModal))

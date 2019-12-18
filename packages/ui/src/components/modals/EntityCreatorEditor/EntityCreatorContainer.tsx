@@ -170,7 +170,7 @@ class Container extends React.Component<Props, ComponentState> {
                             ? nextProps.entityTypeFilter
                             : NONE_RESOLVER_KEY,
                         enumValues: this.initEnumValues(undefined)
-                    });
+                    })
                 } else {
                     this.entityOptions = [...this.staticEntityOptions, ...localePreBuiltOptions]
                     this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
@@ -578,7 +578,7 @@ class Container extends React.Component<Props, ComponentState> {
             <div className="dropdownExample-option">
                 <span className={option.style}>{option.text}</span>
             </div>
-        );
+        )
     }
 
     isInUse(): boolean {
@@ -940,7 +940,7 @@ const mapDispatchToProps = (dispatch: any) => {
         editActionThunkAsync: actions.action.editActionThunkAsync,
         fetchEntityDeleteValidationThunkAsync: actions.entity.fetchEntityDeleteValidationThunkAsync,
         fetchEntityEditValidationThunkAsync: actions.entity.fetchEntityEditValidationThunkAsync
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
@@ -961,8 +961,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
 type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps & RouteComponentProps<any>
 
 export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(Container)))

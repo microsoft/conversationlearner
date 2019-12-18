@@ -34,17 +34,17 @@ function getTagName(logDialog: CLM.LogDialog, component: LogDialogs): string {
     if (component.props.editingPackageId !== component.props.app.devPackageId) {
         return ''
     }
-    let tagName = `UNKNOWN`; // Cover bug case of missing package
+    let tagName = `UNKNOWN` // Cover bug case of missing package
     if (logDialog.packageId === component.props.app.devPackageId) {
         tagName = 'Master'
     }
     else {
-        const packageVersion = component.props.app.packageVersions.find((pv: any) => pv.packageId === logDialog.packageId);
+        const packageVersion = component.props.app.packageVersions.find((pv: any) => pv.packageId === logDialog.packageId)
         if (packageVersion) {
-            tagName = packageVersion.packageVersion;
+            tagName = packageVersion.packageVersion
         }
     }
-    return tagName;
+    return tagName
 }
 
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {
@@ -57,8 +57,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 120,
             isResizable: true,
             render: (logDialog, component) => {
-                const tagName = getTagName(logDialog, component);
-                return <span className={OF.FontClassNames.mediumPlus}>{tagName}</span>;
+                const tagName = getTagName(logDialog, component)
+                return <span className={OF.FontClassNames.mediumPlus}>{tagName}</span>
             },
             getSortValue: (logDialog, component) => {
                 const tagName = getTagName(logDialog, component)
@@ -306,7 +306,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     @autobind
     onSearch(newValue: string) {
-        const lcString = newValue.toLowerCase();
+        const lcString = newValue.toLowerCase()
         this.setState({
             searchValue: lcString
         })
@@ -336,7 +336,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
         return logDialogs
             .filter(logDialog => {
-                const keys = [];
+                const keys = []
                 for (const round of logDialog.rounds) {
                     keys.push(round.extractorStep.text)
 
@@ -365,8 +365,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     }
                 }
 
-                const searchString = keys.join(' ').toLowerCase();
-                return searchString.includes(searchValue);
+                const searchString = keys.join(' ').toLowerCase()
+                return searchString.includes(searchValue)
             })
     }
 
@@ -409,8 +409,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         const { intl } = this.props
         const computedLogDialogs = this.getFilteredAndSortedDialogs()
         const isPlaceholderVisible = this.props.logDialogs.length === 0
-        const isEditingDisabled = this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot;
-        
+        const isEditingDisabled = this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot
+
         return (
             <div className="cl-page">
                 <div data-testid="log-dialogs-title" className={`cl-dialog-title cl-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
@@ -528,7 +528,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     title={Util.formatMessageId(intl, FM.LOGDIALOGS_CONFIRMCANCEL_DELETESELECTED, { selectionCount: this.state.selectionCount })}
                 />
             </div>
-        );
+        )
     }
 
     private focusNewChatButton() {

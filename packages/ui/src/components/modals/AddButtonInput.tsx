@@ -18,10 +18,10 @@ interface Props {
 class AddButtonInput extends React.Component<Props> {
     render() {
         const fillType = (this.props.editType === EditDialogType.LOG_ORIGINAL || this.props.editType === EditDialogType.LOG_EDITED)
-            ? "log" 
+            ? "log"
             : (this.props.editType === EditDialogType.IMPORT)
-            ? "import"
-            : "train"
+                ? "import"
+                : "train"
 
         return (
             <div

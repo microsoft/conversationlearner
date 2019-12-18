@@ -25,8 +25,8 @@ export class InProcessMessageState {
 
     async remove<T>(): Promise<T> {
         let currentValue = await this.getStateAsync<T>()
-        await this.setStateAsync(null);
-        return currentValue;
+        await this.setStateAsync(null)
+        return currentValue
     }
 
     async set<T>(message: T | null): Promise<void> {
@@ -37,14 +37,14 @@ export class InProcessMessageState {
         const key = this.getKey()
 
         try {
-            let data = await this.storage.GetAsync(key);
-            return JSON.parse(data) as T;
+            let data = await this.storage.GetAsync(key)
+            return JSON.parse(data) as T
         }
         catch {
             // If brand new use, need to initialize
-            await this.set(null);
+            await this.set(null)
             const data = await this.storage.GetAsync(key)
-            return JSON.parse(data) as T;
+            return JSON.parse(data) as T
         }
     }
 

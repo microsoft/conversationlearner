@@ -58,7 +58,7 @@ class TrainingStatusContainer extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchApplicationTrainingStatusThunkAsync
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
@@ -70,8 +70,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
-type Props = stateProps & dispatchProps & ReceivedProps;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
+type Props = stateProps & dispatchProps & ReceivedProps
 
 export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(TrainingStatusContainer)

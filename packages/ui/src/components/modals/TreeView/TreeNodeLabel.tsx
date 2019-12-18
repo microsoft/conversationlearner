@@ -4,8 +4,8 @@
  */
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
-import './TreeView.css';
-import { autobind } from 'core-decorators';
+import './TreeView.css'
+import { autobind } from 'core-decorators'
 
 export interface TreeScorerStep {
     memory: string[]
@@ -29,7 +29,7 @@ interface ReactD3TreeItem {
 export interface TreeNode extends ReactD3TreeItem {
     name: string
     userInput?: TreeUserInput[]
-    attributes: { [key: string]: string; } | undefined
+    attributes: { [key: string]: string } | undefined
     trainDialogIds: string[]
     sourceLogDialogIds: string[]
     roundIndex?: number
@@ -49,7 +49,7 @@ interface TreeNodeReceivedProps {
     onDetailClick?: (nodeId: string) => void
     onPinClick?: (treeNode: TreeNode, isSelected: boolean) => void
     onExpandoClick: (nodeId: string) => void
-    onOpenTrainDialog: (treeNode: TreeNode, trainDialogId: string) => void 
+    onOpenTrainDialog: (treeNode: TreeNode, trainDialogId: string) => void
 }
 
 const MAX_LINES = 7
@@ -62,8 +62,8 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
             this.props.nodeData.sourceLogDialogIds.length > 0) {
             return true
         }
-        
-        if (this.props.selectedNode && this.props.nodeData)  {
+
+        if (this.props.selectedNode && this.props.nodeData) {
             if (this.props.selectedNode.roundIndex === this.props.nodeData.roundIndex) {
                 if (this.props.selectedNode.trainDialogIds.includes(this.props.nodeData.trainDialogIds[0])) {
                     return true
@@ -129,13 +129,13 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
                 scorerSteps = scorerSteps.slice(0, num_scorer_lines)
                 scorerStepMore = true
             }
-            }
+        }
 
         this.props.generateActionDescriptions(scorerSteps)
 
         return (
             <div>
-                <div 
+                <div
                     className={`cl-treeview-userBox${isNodeelected ? ` cl-treeview-botBoxSelected` : ''}`}
                 >
                     {userInputs?.map((input, index) =>
@@ -149,52 +149,52 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
                         </div>
                     )}
                     {userInputMore &&
-                    <OF.IconButton 
-                        className="cl-treeview-footerButton"
-                        iconProps={{ iconName: 'More' }}
-                        onClick={() => this.onClickDetail(treeNode.id!)}
-                        ariaDescription="View More"
-                    />}
+                        <OF.IconButton
+                            className="cl-treeview-footerButton"
+                            iconProps={{ iconName: 'More' }}
+                            onClick={() => this.onClickDetail(treeNode.id!)}
+                            ariaDescription="View More"
+                        />}
                 </div>
                 <div className="cl-treeview-scorerBox">
-                    {scorerSteps.map((s, index) => 
+                    {scorerSteps.map((s, index) =>
+                        <div
+                            key={`${treeNode.id}${index}SH`}
+                        >
                             <div
-                                key={`${treeNode.id}${index}SH`} 
+                                className="cl-treeview-memoryBox cl-treeview-ellipse"
                             >
-                                <div 
-                                    className="cl-treeview-memoryBox cl-treeview-ellipse"
-                                >
-                                    {`(${s.memory.length}) ${s.memory.join(', ') || '-'}`}
-                                </div>
-                                <div
-                                    key={`${treeNode.id}${index}SS`} 
-                                    className="cl-treeview-scorerStep cl-treeview-ellipse"
-                                >
-                                    {s.description}
-                                </div>
+                                {`(${s.memory.length}) ${s.memory.join(', ') || '-'}`}
                             </div>
+                            <div
+                                key={`${treeNode.id}${index}SS`}
+                                className="cl-treeview-scorerStep cl-treeview-ellipse"
+                            >
+                                {s.description}
+                            </div>
+                        </div>
                     )}
-                    {scorerStepMore && 
-                        <OF.IconButton 
+                    {scorerStepMore &&
+                        <OF.IconButton
                             className="cl-treeview-footerButton cl-treeview-moreButton-scorer"
                             iconProps={{ iconName: 'More' }}
                             onClick={() => this.onClickDetail(treeNode.id!)}
                             ariaDescription="View More"
                         />}
                 </div>
-                    <OF.IconButton 
-                        className={`cl-treeview-footerButton cl-treeview-cl-treeview-footerButton-pin${isNodeelected ? ` cl-treeview-cl-treeview-footerButton-pin--selected` : ''}`}
-                        iconProps={{ iconName: isNodeelected ? 'PinnedFill' : 'Pin' }}
-                        onClick={() => this.onClickPin(treeNode)}
-                        ariaDescription="Pin Node"
-                    />
-                    <OF.IconButton 
-                        className="cl-treeview-footerButton cl-treeview-moreButton-bottom"
-                        iconProps={{ iconName: 'More' }}
-                        onClick={() => this.onClickDetail(treeNode.id!)}
-                        ariaDescription="View More"
-                    />
-                {!treeNode.children && 
+                <OF.IconButton
+                    className={`cl-treeview-footerButton cl-treeview-cl-treeview-footerButton-pin${isNodeelected ? ` cl-treeview-cl-treeview-footerButton-pin--selected` : ''}`}
+                    iconProps={{ iconName: isNodeelected ? 'PinnedFill' : 'Pin' }}
+                    onClick={() => this.onClickPin(treeNode)}
+                    ariaDescription="Pin Node"
+                />
+                <OF.IconButton
+                    className="cl-treeview-footerButton cl-treeview-moreButton-bottom"
+                    iconProps={{ iconName: 'More' }}
+                    onClick={() => this.onClickDetail(treeNode.id!)}
+                    ariaDescription="View More"
+                />
+                {!treeNode.children &&
                     <div
                         key={`${treeNode.id}END`}
                         className="cl-treeview-endConversation"

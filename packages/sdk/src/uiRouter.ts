@@ -9,7 +9,7 @@ import * as clUI from '@conversationlearner/ui'
 // console.log(`@conversationlearner/ui default file path: `, clUI.defaultFilePath)
 
 const router = express.Router({ caseSensitive: false })
-router.use('/ui', express.static(clUI.directoryPath));
+router.use('/ui', express.static(clUI.directoryPath))
 router.get('/ui/*', (_, res) => {
     res.sendFile(clUI.defaultFilePath)
 })

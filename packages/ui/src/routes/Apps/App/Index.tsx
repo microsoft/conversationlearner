@@ -67,7 +67,7 @@ class Index extends React.Component<Props, ComponentState> {
             return
         }
 
-        const editPackageId = this.props.activeApps[app.appId] ?? app.devPackageId;
+        const editPackageId = this.props.activeApps[app.appId] ?? app.devPackageId
         if (!editPackageId) {
             throw new Error(`You attempted to load an app, but editPackageId is not defined. This is likely a problem with the code. Please open an issue.`)
         }
@@ -87,12 +87,12 @@ class Index extends React.Component<Props, ComponentState> {
         }
 
         if (this.state.packageId !== editPackageId) {
-            this.loadApp(app, editPackageId);
+            this.loadApp(app, editPackageId)
         }
 
         if ((newProps.actions !== this.props.actions || newProps.botInfo !== this.props.botInfo) && newProps.botInfo) {
-            const botValidationErrors = this.botValidationErrors(newProps.botInfo, newProps.actions);
-            this.setState({ botValidationErrors });
+            const botValidationErrors = this.botValidationErrors(newProps.botInfo, newProps.actions)
+            this.setState({ botValidationErrors })
         }
     }
 
@@ -187,8 +187,8 @@ class Index extends React.Component<Props, ComponentState> {
             tag = packageReference.packageVersion
         }
 
-        const trainDialogValidity = this.getTrainDialogValidity();
-        const invalidBot = this.state.botValidationErrors && this.state.botValidationErrors.length > 0;
+        const trainDialogValidity = this.getTrainDialogValidity()
+        const invalidBot = this.state.botValidationErrors && this.state.botValidationErrors.length > 0
         const filteredLogDialogs = this.props.logDialogs.filter(l => !l.targetTrainDialogIds || l.targetTrainDialogIds.length === 0)
         const logDialogCount = `${filteredLogDialogs.length}${this.props.logContinuationToken ? "+" : ""}`
 
@@ -310,7 +310,7 @@ class Index extends React.Component<Props, ComponentState> {
                                 />
                                 <Route
                                     path={`${match.url}/trainDialogs`}
-                                    render={props => <TrainDialogs {...props} app={app} editingPackageId={editPackageId} invalidBot={invalidBot} filteredAction={location.state.actionFilter} filteredEntity={location.state.entityFilter} onDeleteApp={this.onDeleteApp}/>}
+                                    render={props => <TrainDialogs {...props} app={app} editingPackageId={editPackageId} invalidBot={invalidBot} filteredAction={location.state.actionFilter} filteredEntity={location.state.entityFilter} onDeleteApp={this.onDeleteApp} />}
                                 />
                                 <Route
                                     path={`${match.url}/logDialogs`}
@@ -318,11 +318,11 @@ class Index extends React.Component<Props, ComponentState> {
                                 />
                                 <Route
                                     path={`${match.url}/testing`}
-                                    render={props => <Testing {...props} app={app} editingPackageId={editPackageId}/>}
+                                    render={props => <Testing {...props} app={app} editingPackageId={editPackageId} />}
                                 />
                                 <Route
                                     path={`${match.url}/review`}
-                                    render={props => <Review {...props} app={app} editingPackageId={editPackageId} invalidBot={invalidBot}/>}
+                                    render={props => <Review {...props} app={app} editingPackageId={editPackageId} invalidBot={invalidBot} />}
                                 />
                                 <Route
                                     exact={true}
@@ -345,7 +345,7 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchLogDialogsThunkAsync: actions.log.fetchLogDialogsThunkAsync,
         fetchBotInfoThunkAsync: actions.bot.fetchBotInfoThunkAsync,
         deleteApplicationThunkAsync: actions.app.deleteApplicationThunkAsync
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     if (!state.user.user) {
@@ -368,8 +368,8 @@ const mapStateToProps = (state: State) => {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
 interface MatchParams {
     appId: string
 }
@@ -378,6 +378,6 @@ type LocationState = {
     actionFilter?: CLM.ActionBase
     entityFilter?: CLM.EntityBase
 }
-type Props = stateProps & dispatchProps & RouteComponentProps<MatchParams, StaticContext, LocationState> & InjectedIntlProps;
+type Props = stateProps & dispatchProps & RouteComponentProps<MatchParams, StaticContext, LocationState> & InjectedIntlProps
 
-export default connect<stateProps, dispatchProps, RouteComponentProps<MatchParams, StaticContext, LocationState>>(mapStateToProps, mapDispatchToProps)(injectIntl(Index));
+export default connect<stateProps, dispatchProps, RouteComponentProps<MatchParams, StaticContext, LocationState>>(mapStateToProps, mapDispatchToProps)(injectIntl(Index))

@@ -100,20 +100,20 @@ export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps
                     onRenderColumnHeaderTooltip: (tooltipHostProps: OF.ITooltipHostProps) => {
 
                         const id = tooltipHostProps.id ? tooltipHostProps.id.split('-')[1] : 'unknown-tip-id'
-                        const tip = getTip(id);
+                        const tip = getTip(id)
                         if (tip) {
                             const ttHP = {
                                 ...tooltipHostProps,
                                 directionalHint: OF.DirectionalHint.topLeftEdge
-                            };
+                            }
                             ttHP.tooltipProps = {
                                 onRenderContent: () => { return tip },
                                 delay: OF.TooltipDelay.medium,
                                 directionalHint: OF.DirectionalHint.topLeftEdge
-                            };
+                            }
                             return <OF.TooltipHost {...ttHP} />
                         } else {
-                            return null;
+                            return null
                         }
                     }
                 }
@@ -145,7 +145,7 @@ export function wrap(content: JSX.Element, tooltip: string, directionalHint: OF.
         >
             {content}
         </OF.TooltipHost>
-    );
+    )
 }
 
 const memoryConverterSample =
@@ -300,11 +300,11 @@ export function getTip(tipType: string) {
                     { key: '--', value: null },
                     { key: 'Response:', value: FM.TOOLTIP_ACTION_DISQUAL_ROW3 },
                     { key: 'Disqualifying:', value: FM.TOOLTIP_ACTION_DISQUAL_ROW4 }
-                ]);
+                ])
         case TipType.ACTION_REPROMPT:
-            return render(FM.TOOLTIP_ACTION_REPROMPT_TITLE, [FM.TOOLTIP_ACTION_REPROMPT]);
+            return render(FM.TOOLTIP_ACTION_REPROMPT_TITLE, [FM.TOOLTIP_ACTION_REPROMPT])
         case TipType.ACTION_IS_ENTRY_NODE:
-            return render(FM.TOOLTIP_ACTION_IS_ENTRY_NODE_TITLE, [FM.TOOLTIP_ACTION_IS_ENTRY_NODE]);
+            return render(FM.TOOLTIP_ACTION_IS_ENTRY_NODE_TITLE, [FM.TOOLTIP_ACTION_IS_ENTRY_NODE])
         case TipType.ACTION_REQUIRED:
             return render(
                 FM.TOOLTIP_ACTION_REQUIRED_TITLE,
@@ -316,7 +316,7 @@ export function getTip(tipType: string) {
                     { key: '--', value: null },
                     { key: 'Response:', value: FM.TOOLTIP_ACTION_REQUIRED_ROW3 },
                     { key: 'Required:', value: FM.TOOLTIP_ACTION_REQUIRED_ROW4 }
-                ]);
+                ])
         case TipType.ACTION_RESPONSE:
             return (<FormattedMessageId id={FM.TOOLTIP_ACTION_RESPONSE} />)
         case TipType.ACTION_RESPONSE_TEXT:
@@ -330,7 +330,7 @@ export function getTip(tipType: string) {
                     { key: 'Response:', value: FM.TOOLTIP_ACTION_RESPONSE_ROW2 },
                     { key: '--', value: null },
                     { key: 'Response:', value: FM.TOOLTIP_ACTION_RESPONSE_ROW3 }
-                ]);
+                ])
         case TipType.ACTION_SCORE:
             return (
                 <div>
@@ -350,7 +350,7 @@ export function getTip(tipType: string) {
                 [
                     { key: 'Response:', value: FM.TOOLTIP_ACTION_SUGGESTED_ROW1 },
                     { key: 'Expected:', value: FM.TOOLTIP_ACTION_SUGGESTED_ROW2 }
-                ]);
+                ])
         case TipType.ACTION_TYPE:
             return (
                 <div>
@@ -369,7 +369,7 @@ export function getTip(tipType: string) {
                 </div>
             )
         case TipType.ACTION_WAIT:
-            return render(FM.TOOLTIP_ACTION_WAIT_TITLE, [FM.TOOLTIP_ACTION_WAIT]);
+            return render(FM.TOOLTIP_ACTION_WAIT_TITLE, [FM.TOOLTIP_ACTION_WAIT])
 
         case TipType.TRANSCRIPT_IMPORTER:
             return (
@@ -432,7 +432,7 @@ export function getTip(tipType: string) {
                 </div>
             )
         case TipType.ENTITY_NAME:
-            return (<FormattedMessageId id={FM.TOOLTIP_ENTITY_NAME} />);
+            return (<FormattedMessageId id={FM.TOOLTIP_ENTITY_NAME} />)
         case TipType.ENTITY_ACTION_DISQUALIFIED:
             return (<FormattedMessageId id={FM.TOOLTIP_ENTITY_ACTION_DISQUALIFIED} />)
         case TipType.ENTITY_ACTION_REQUIRED:
@@ -440,7 +440,7 @@ export function getTip(tipType: string) {
         case TipType.ENTITY_EXTRACTOR_WARNING:
             return (<FormattedMessageId id={FM.TOOLTIP_ENTITY_EXTRACTOR_MATCH_WARNING} />)
         case TipType.ENTITY_VALUE:
-            return (<FormattedMessageId id={FM.TOOLTIP_ENTITY_VALUE} />);
+            return (<FormattedMessageId id={FM.TOOLTIP_ENTITY_VALUE} />)
         case TipType.ENTITY_MULTIVALUE:
             return (
                 <div>
@@ -689,7 +689,7 @@ export function getTip(tipType: string) {
                 </div>
             )
         case TipType.LOGGING_TOGGLE:
-            return (<FormattedMessageId id={FM.TOOLTIP_LOGGING_TOGGLE} />);
+            return (<FormattedMessageId id={FM.TOOLTIP_LOGGING_TOGGLE} />)
         case TipType.LUIS_OVERVIEW:
             return (
                 <div>
@@ -765,7 +765,7 @@ export function getTip(tipType: string) {
                 </div>
             )
         case TipType.PACKAGECREATOR_LIVE_TOGGLE:
-            return (<FormattedMessageId id={FM.TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE} />);
+            return (<FormattedMessageId id={FM.TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE} />)
 
         case TipType.REPLAYERROR_DESC_ACTION_AFTER_WAIT:
             return (
@@ -966,13 +966,13 @@ export function getTip(tipType: string) {
             )
 
         case TipType.MODEL_VERSION_EDITING:
-            return (<FormattedMessageId id={FM.TOOLTIP_TAG_EDITING} />);
+            return (<FormattedMessageId id={FM.TOOLTIP_TAG_EDITING} />)
 
         case TipType.MODEL_VERSION_LIVE:
-            return (<FormattedMessageId id={FM.TOOLTIP_TAG_LIVE} />);
+            return (<FormattedMessageId id={FM.TOOLTIP_TAG_LIVE} />)
 
         default:
-            return (<div>{tipType}</div>);
+            return (<div>{tipType}</div>)
     }
 }
 
@@ -997,12 +997,12 @@ function render(title: FM, body: FM[], example: FM | null = null, tableItems: IT
                 ) : null
             }
         </div>
-    );
+    )
 }
 
 export function prebuilt(memoryValue: CLM.MemoryValue, content: JSX.Element): JSX.Element {
     if (!memoryValue.builtinType || (memoryValue.resolution && Object.keys(memoryValue.resolution).length === 0)) {
-        return content;
+        return content
     }
     return (
         <span>

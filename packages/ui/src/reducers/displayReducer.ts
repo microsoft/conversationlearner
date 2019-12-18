@@ -13,15 +13,15 @@ const initialState: DisplayState = {
     tipType: TipType.NONE,
     clearedBanner: null,
     webchatScrollPosition: undefined
-};
+}
 
 const spinnerName = (spinner: string): string => {
-    const cut = spinner.lastIndexOf("_");
-    return spinner.slice(0, cut);
+    const cut = spinner.lastIndexOf("_")
+    return spinner.slice(0, cut)
 }
 
 const removeSpinner = (spinners: string[], oldSpinner: string): string[] => {
-    return spinners.filter(o => o !== spinnerName(oldSpinner));
+    return spinners.filter(o => o !== spinnerName(oldSpinner))
 }
 
 const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, action: ActionObject) => {
@@ -48,7 +48,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
                 case AT.FETCH_BOTINFO_ASYNC:
                 case AT.FETCH_ENTITIES_ASYNC:
                 case AT.FETCH_ACTIONS_ASYNC:
-                    return { ...initialState, displaySpinner: [] };
+                    return { ...initialState, displaySpinner: [] }
                 default:
                     state.displaySpinner = []
                     return
@@ -174,7 +174,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.FETCH_ACTIVITIES_FULFILLED:
         case AT.FETCH_LOG_DIALOG_FULFILLED:
         case AT.FETCH_LOG_DIALOG_NOTFOUND:
-        case AT.FETCH_LOG_DIALOGS_FULFILLED: 
+        case AT.FETCH_LOG_DIALOGS_FULFILLED:
         case AT.FETCH_SCOREFROMTRAINDIALOG_FULFILLED:
         case AT.FETCH_SCOREFROMTRAINDIALOG_REJECTED:
         case AT.FETCH_EXTRACTFROMTRAINDIALOG_FULFILLED:
@@ -198,4 +198,4 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
     }
 }, initialState)
 
-export default displayReducer;
+export default displayReducer

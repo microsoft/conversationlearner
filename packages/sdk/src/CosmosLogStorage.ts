@@ -230,7 +230,7 @@ export class CosmosLogStorage implements ILogStorage {
 
                 continuationToken = feedResponse.continuation
             }
-            while (continuationToken);
+            while (continuationToken)
         }
         catch (err) {
             CLDebug.Error(err)
@@ -239,6 +239,6 @@ export class CosmosLogStorage implements ILogStorage {
 
     /** Generate document id used in cosmos */
     private GetDialogDocumentId(appId: string, dialogId: string): string {
-        return `${appId}_${dialogId}`;
+        return `${appId}_${dialogId}`
     }
 }

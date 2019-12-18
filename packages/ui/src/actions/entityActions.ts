@@ -37,19 +37,19 @@ export const createEntityThunkAsync = (appId: string, entity: CLM.EntityBase) =>
         const clClient = ClientFactory.getInstance(AT.CREATE_ENTITY_ASYNC)
 
         try {
-            const posEntity = await clClient.entitiesCreate(appId, entity);
-            dispatch(createEntityFulfilled(posEntity));
+            const posEntity = await clClient.entitiesCreate(appId, entity)
+            dispatch(createEntityFulfilled(posEntity))
 
             if (posEntity.negativeId) {
                 // Need to load negative entity in order to load it into memory
                 const negEntity = await clClient.entitiesGetById(appId, posEntity.negativeId)
-                dispatch(createEntityFulfilled(negEntity));
+                dispatch(createEntityFulfilled(negEntity))
             }
 
             // If created entity has resolver, we fetch all entities to make sure
             // that definition of prebuilt entity is in the memory
             if (entity.resolverType !== undefined && entity.resolverType !== null) {
-                void dispatch(fetchAllEntitiesThunkAsync(appId));
+                void dispatch(fetchAllEntitiesThunkAsync(appId))
             }
 
             return posEntity.entityId
@@ -109,7 +109,7 @@ export const editEntityThunkAsync = (appId: string, entity: CLM.EntityBase, prev
             // If updated entity has a different resolver, we fetch all entities to make sure
             // that definition of prebuilt entity is in the memory
             if (entity.resolverType !== prevEntity.resolverType) {
-                void dispatch(fetchAllEntitiesThunkAsync(appId));
+                void dispatch(fetchAllEntitiesThunkAsync(appId))
             }
             // If an enum entity, new EnumValuesIds have been set and actions may have been invalidated
             else if (entity.entityType === CLM.EntityType.ENUM) {
@@ -120,7 +120,7 @@ export const editEntityThunkAsync = (appId: string, entity: CLM.EntityBase, prev
 
             // If any train dialogs were modified fetch train dialogs
             if (changedEntityResponse.trainDialogIds?.length > 0) {
-                void dispatch(fetchAllTrainDialogsThunkAsync(appId));
+                void dispatch(fetchAllTrainDialogsThunkAsync(appId))
             }
 
             void dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
@@ -159,7 +159,7 @@ export const deleteEntityThunkAsync = (appId: string, entity: CLM.EntityBase) =>
         const clClient = ClientFactory.getInstance(AT.DELETE_ENTITY_ASYNC)
 
         try {
-            const deleteEditResponse = await clClient.entitiesDelete(appId, entityId);
+            const deleteEditResponse = await clClient.entitiesDelete(appId, entityId)
             dispatch(deleteEntityFulfilled(entityId))
             if (entity.isNegatible) {
                 // If entity is negatable assume it has negativeId
@@ -170,7 +170,7 @@ export const deleteEntityThunkAsync = (appId: string, entity: CLM.EntityBase) =>
             // If deleted entity is prebuilt entity, we fetch all entities to make sure
             // that entities in the memory are all up to date
             if (CLM.isPrebuilt(entity)) {
-                void dispatch(fetchAllEntitiesThunkAsync(appId));
+                void dispatch(fetchAllEntitiesThunkAsync(appId))
             }
 
             // If any actions were modified, reload them
@@ -184,11 +184,11 @@ export const deleteEntityThunkAsync = (appId: string, entity: CLM.EntityBase) =>
             }
 
             void dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
-            return true;
+            return true
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_ENTITY_ASYNC))
-            return false;
+            return false
         }
     }
 }
@@ -222,7 +222,7 @@ export const fetchAllEntitiesThunkAsync = (appId: string) => {
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_ENTITIES_ASYNC))
-            return null;
+            return null
         }
     }
 }
@@ -257,7 +257,7 @@ export const fetchEntityDeleteValidationThunkAsync = (appId: string, packageId: 
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_ENTITY_DELETE_VALIDATION_ASYNC))
-            return null;
+            return null
         }
     }
 }
@@ -292,7 +292,7 @@ export const fetchEntityEditValidationThunkAsync = (appId: string, packageId: st
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC))
-            return null;
+            return null
         }
     }
 }

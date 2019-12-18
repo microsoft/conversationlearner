@@ -22,11 +22,11 @@ import { EditDialogType, EditState } from '../../types/const'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import './EditDialogAdmin.css'
 import "./TeachSessionModal.css"
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
 
 class EditDialogAdmin extends React.Component<Props, ComponentState> {
     constructor(p: Props) {
-        super(p);
+        super(p)
         this.state = {
             senderType: null,
             roundIndex: null,
@@ -192,7 +192,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
 
     render() {
         if (!this.props.trainDialog) {
-            return null;
+            return null
         }
 
         const isLogDialog = (this.props.editType === EditDialogType.LOG_EDITED || this.props.editType === EditDialogType.LOG_ORIGINAL)
@@ -206,15 +206,15 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                         <OF.Icon
                             iconName={this.props.editType === EditDialogType.IMPORT
                                 ? 'DownloadDocument'
-                                :  isLogDialog 
-                                ? 'UserFollowed' 
-                                : 'EditContact'}
+                                : isLogDialog
+                                    ? 'UserFollowed'
+                                    : 'EditContact'}
                         />
                         {this.props.editType === EditDialogType.IMPORT
                             ? "Import"
-                            : isLogDialog 
-                            ? 'Log Dialog' 
-                            : 'Train Dialog'}
+                            : isLogDialog
+                                ? 'Log Dialog'
+                                : 'Train Dialog'}
                         {this.props.editType === EditDialogType.IMPORT &&
                             <div className="cl-dialog-importcount">
                                 {`${this.props.importIndex} of ${this.props.importCount}`}
@@ -230,7 +230,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                         onRemoveTag={this.props.onRemoveTag}
                         readOnly={this.props.editState !== EditState.CAN_EDIT}
                     />
-                    <b/>
+                    <b />
                 </div>
                 {this.props.selectedActivity && (this.state.senderType === CLM.SenderType.User
                     ? (
@@ -343,7 +343,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                     </div>
                 }
             </div>
-        );
+        )
     }
 }
 const mapDispatchToProps = (dispatch: any) => {
@@ -351,7 +351,7 @@ const mapDispatchToProps = (dispatch: any) => {
         clearExtractResponses: actions.teach.clearExtractResponses,
         fetchTextVariationConflictThunkAsync: actions.train.fetchTextVariationConflictThunkAsync,
         setTextVariationConflict: actions.train.setTextVariationConflict
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     return {
@@ -398,8 +398,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
 type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
 export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(EditDialogAdmin))

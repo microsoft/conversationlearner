@@ -22,7 +22,7 @@ export default function optionalPlugin(inputOptions: Partial<IOptions> = {}) {
     return {
         onKeyDown(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {
             const isWithinOptionalNode = change.value.inlines.size > 0 && change.value.inlines.last().type === NodeTypes.Optional
-            
+
             if (!isWithinOptionalNode && event.key === options.openingCharacter) {
                 event.preventDefault()
                 change
@@ -47,11 +47,11 @@ export default function optionalPlugin(inputOptions: Partial<IOptions> = {}) {
             if (event.key === options.closingCharacter) {
                 if (isWithinOptionalNode) {
                     event.preventDefault()
-                    
+
                     change
-                    .insertText(options.closingCharacter)
-                    .collapseToStartOfNextText()
-                    
+                        .insertText(options.closingCharacter)
+                        .collapseToStartOfNextText()
+
                     return true
                 }
                 else {
@@ -69,11 +69,11 @@ export default function optionalPlugin(inputOptions: Partial<IOptions> = {}) {
 
                     const lastTextOfPreviousOptionalNode = previousSibling.getLastText()
                     if (!lastTextOfPreviousOptionalNode) {
-                        return    
+                        return
                     }
 
                     event.preventDefault()
-                    
+
                     // Intention is to extend the optional node to the end of current text
                     // 1. Remove all text from current node
                     // 2. If optional node already ends in closing character remove it

@@ -6,10 +6,10 @@ import * as React from 'react'
 import { IPickerItemProps, Icon, ITag } from 'office-ui-fabric-react'
 
 export interface ICLPickerItemProps<T> extends IPickerItemProps<T> {
-    locked: boolean;
-    strike: boolean;
-    highlight: boolean;
-    children: string;
+    locked: boolean
+    strike: boolean
+    highlight: boolean
+    children: string
 }
 
 export const CLTagItem = (props: ICLPickerItemProps<ITag>) => (
@@ -26,8 +26,8 @@ export const CLTagItem = (props: ICLPickerItemProps<ITag>) => (
             {props.children}
         </span>
         {!props.disabled && !props.locked &&
-            <span 
-                className={'ms-TagItem-close'} 
+            <span
+                className={'ms-TagItem-close'}
                 onClick={props.onRemoveItem}
                 role="button"
             >
@@ -35,6 +35,6 @@ export const CLTagItem = (props: ICLPickerItemProps<ITag>) => (
             </span>
         }
     </div>
-);
+)
 
-export default CLTagItem;
+export default CLTagItem

@@ -8,16 +8,16 @@ import { Reducer } from 'redux'
 import { replace } from '../Utils/util'
 import produce from 'immer'
 
-const initialState: ActionState = [];
+const initialState: ActionState = []
 
 const actionsReducer: Reducer<ActionState> = produce((state: ActionState, actionObject: ActionObject) => {
     switch (actionObject.type) {
         case AT.USER_LOGOUT:
             return [...initialState]
         case AT.FETCH_ACTIONS_FULFILLED:
-            return actionObject.allActions;
+            return actionObject.allActions
         case AT.FETCH_APPSOURCE_FULFILLED:
-            return actionObject.appDefinition.actions;
+            return actionObject.appDefinition.actions
         case AT.SOURCE_PROMOTE_UPDATED_APP_DEFINITION:
             return actionObject.updatedAppDefinition.actions
         case AT.CREATE_APPLICATION_FULFILLED:
@@ -34,4 +34,4 @@ const actionsReducer: Reducer<ActionState> = produce((state: ActionState, action
     }
 }, initialState)
 
-export default actionsReducer;
+export default actionsReducer

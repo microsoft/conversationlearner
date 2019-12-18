@@ -8,7 +8,7 @@ import { EntityBase } from './Entity'
 
 export interface FilledEntity {
   entityId: string | null
-  values: MemoryValue[] 
+  values: MemoryValue[]
 }
 
 export const filledEntityValueAsString = (fe: FilledEntity): string => memoryValuesAsString(fe.values)
@@ -48,14 +48,14 @@ export const getEntityDisplayValueMap = (filledEntityMap: FilledEntityMap): Map<
       let missingValue = key
 
       // If key is an entityId, try to get value from name key
-      if (filledEntityMap.map[key].entityId ===  key) {
+      if (filledEntityMap.map[key].entityId === key) {
         for (let k of Object.keys(filledEntityMap.map)) {
           if (k !== key && filledEntityMap.map[k].entityId === key) {
             missingValue = k
           }
         }
       }
-      m.set(key,`[$${missingValue}]`)
+      m.set(key, `[$${missingValue}]`)
     }
 
     return m

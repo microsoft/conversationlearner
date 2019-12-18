@@ -21,7 +21,7 @@ const initialState: TeachSessionState = {
     botAPIError: null,
     scoreResponse: undefined,
     autoTeach: false
-};
+}
 
 const teachSessionReducer: Reducer<TeachSessionState> = produce((state: TeachSessionState, action: ActionObject) => {
     switch (action.type) {
@@ -59,8 +59,8 @@ const teachSessionReducer: Reducer<TeachSessionState> = produce((state: TeachSes
             return
         case AT.RUN_EXTRACTOR_FULFILLED:
             // Replace existing extract response (if any) with new one
-            const extractResponses = state.extractResponses.filter(e => e.text !== action.uiExtractResponse.extractResponse.text);
-            extractResponses.push(action.uiExtractResponse.extractResponse);
+            const extractResponses = state.extractResponses.filter(e => e.text !== action.uiExtractResponse.extractResponse.text)
+            extractResponses.push(action.uiExtractResponse.extractResponse)
 
             state.extractResponses = extractResponses
             state.dialogMode = DialogMode.Extractor
@@ -69,7 +69,7 @@ const teachSessionReducer: Reducer<TeachSessionState> = produce((state: TeachSes
             return
         case AT.UPDATE_EXTRACT_RESPONSE:
             // Replace existing extract response (if any) with new one and maintain ordering
-            const index = state.extractResponses.findIndex(e => e.text === action.extractResponse.text);
+            const index = state.extractResponses.findIndex(e => e.text === action.extractResponse.text)
             // Should never happen, but protect just in case
             if (index < 0) {
                 return
@@ -94,10 +94,10 @@ const teachSessionReducer: Reducer<TeachSessionState> = produce((state: TeachSes
             state.uiScoreInput = action.uiScoreInput
             return
         case AT.GET_SCORES_FULFILLED:
-            state.dialogMode =  DialogMode.Scorer
-            state.memories =  action.uiScoreResponse.memories!
-            state.scoreInput =  action.uiScoreResponse.scoreInput
-            state.scoreResponse =  action.uiScoreResponse.scoreResponse
+            state.dialogMode = DialogMode.Scorer
+            state.memories = action.uiScoreResponse.memories!
+            state.scoreInput = action.uiScoreResponse.scoreInput
+            state.scoreResponse = action.uiScoreResponse.scoreResponse
             return
         case AT.FETCH_TEXTVARIATION_CONFLICT_FULFILLED:
             if (action.extractResponse) {

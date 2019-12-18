@@ -18,7 +18,7 @@ let getClientHeaders = (): ClientHeaders => {
 }
 
 export const getInstance = (actionType: AT): ClClient => {
-    const forceError = (actionType && ErrorInjector.ShouldError(actionType));
+    const forceError = (actionType && ErrorInjector.ShouldError(actionType))
 
     /**
      * Notice we provide wrapping get functions which invoke the local functions

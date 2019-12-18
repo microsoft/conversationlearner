@@ -24,7 +24,7 @@ class UserInputModal extends React.Component<Props, ComponentState> {
 
     componentDidMount() {
         if (this.props.initialInput) {
-            this.setState({userInputVal: this.props.initialInput})
+            this.setState({ userInputVal: this.props.initialInput })
         }
     }
 
@@ -58,7 +58,7 @@ class UserInputModal extends React.Component<Props, ComponentState> {
         // On enter attempt to create the model if required fields are set
         // Not on import as explicit button press is required to pick the file
         if ((this.onGetInputErrorMessage(this.state.userInputVal) === "") && (event.key === 'Enter') && this.state.userInputVal) {
-            this.onClickSubmit();
+            this.onClickSubmit()
         }
     }
 
@@ -129,7 +129,7 @@ class UserInputModal extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     return {
@@ -148,8 +148,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
 type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
 export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(UserInputModal))

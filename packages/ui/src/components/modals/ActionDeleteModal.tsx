@@ -45,7 +45,7 @@ const ConfirmCancelModal: React.FC<Props> = (props) => {
 
     const onChangeDeleteType = React.useCallback((event: React.FormEvent<HTMLInputElement>, option: OF.IChoiceGroupOption) => {
         setDeleteTypeKey(option.key)
-    }, []);
+    }, [])
     React.useLayoutEffect(() => {
         if (props.open) {
             if (deleteTypeKey !== defaultDeleteTypeKey) {

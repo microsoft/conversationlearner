@@ -33,7 +33,7 @@ const { bfAppId, bfAppPassword, modelId, ...clOptions } = config
 //==================
 // Create Adapter
 //==================
-const adapter = new BotFrameworkAdapter({ appId: bfAppId, appPassword: bfAppPassword });
+const adapter = new BotFrameworkAdapter({ appId: bfAppId, appPassword: bfAppPassword })
 
 //==================================
 // Storage
@@ -56,9 +56,9 @@ let cl = clFactory.create(modelId);
 //=========================================================
 // Bots Buisness Logic
 //=========================================================
-var inStock = ["cheese", "sausage", "mushrooms", "olives", "peppers"];
+var inStock = ["cheese", "sausage", "mushrooms", "olives", "peppers"]
 var isInStock = function (topping: string) {
-    return (inStock.indexOf(topping.toLowerCase()) > -1);
+    return (inStock.indexOf(topping.toLowerCase()) > -1)
 }
 
 //=================================
@@ -73,15 +73,15 @@ var isInStock = function (topping: string) {
 cl.EntityDetectionCallback = async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
 
     // Get list of requested Toppings
-    let toppings = memoryManager.Get("Toppings", ClientMemoryManager.AS_STRING_LIST);
+    let toppings = memoryManager.Get("Toppings", ClientMemoryManager.AS_STRING_LIST)
 
     // Check each to see if it is in stock
     for (let topping of toppings) {
 
         // If not in stock, move from Toppings List of OutOfStock list
         if (!isInStock(topping)) {
-            memoryManager.Delete("Toppings", topping);
-            memoryManager.Set("OutOfStock", topping);
+            memoryManager.Delete("Toppings", topping)
+            memoryManager.Set("OutOfStock", topping)
         }
     }
 }
@@ -124,10 +124,10 @@ cl.AddCallback({
     name: "UseLastToppings",
     logic: async (memoryManager: ClientMemoryManager) => {
         // Restore last toppings
-        memoryManager.Copy("LastToppings", "Toppings");
+        memoryManager.Copy("LastToppings", "Toppings")
 
         // Clear last toppings
-        memoryManager.Delete("LastToppings");
+        memoryManager.Delete("LastToppings")
     }
 })
 
@@ -139,7 +139,7 @@ server.post('/api/messages', (req, res) => {
         let result = await cl.recognize(context)
 
         if (result) {
-            return cl.SendResult(result);
+            return cl.SendResult(result)
         }
     })
 })

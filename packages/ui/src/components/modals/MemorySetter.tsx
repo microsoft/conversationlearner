@@ -12,7 +12,7 @@ import { State } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import './MemorySetter.css'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
 
 class MemorySetter extends React.Component<Props> {
 
@@ -106,7 +106,7 @@ class MemorySetter extends React.Component<Props> {
             }
         }
         else {
-            map[entity.entityName].values.push(memoryValue);
+            map[entity.entityName].values.push(memoryValue)
         }
     }
 
@@ -226,7 +226,7 @@ class MemorySetter extends React.Component<Props> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     return {
@@ -240,8 +240,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
 type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
 export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(MemorySetter))

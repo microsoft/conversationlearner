@@ -189,6 +189,6 @@ export function renderReplayError(replayError: CLM.ReplayError): React.ReactNode
             )
         */
         default:
-            throw new Error(`Unhandled ReplayErrorType case: ${replayError.type}`);
+            throw new Error(`Unhandled ReplayErrorType case: ${replayError.type}`)
     }
 }

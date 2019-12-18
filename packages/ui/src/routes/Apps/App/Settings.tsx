@@ -19,7 +19,7 @@ import { bindActionCreators } from 'redux'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import './Settings.css'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
 
 interface ComponentState {
     localeVal: string
@@ -126,7 +126,7 @@ class Settings extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickAddBot() {
-        const newBotApps = this.state.botFrameworkAppsVal.concat(this.state.newBotVal);
+        const newBotApps = this.state.botFrameworkAppsVal.concat(this.state.newBotVal)
         this.setState({
             botFrameworkAppsVal: newBotApps,
             newBotVal: ''
@@ -224,7 +224,7 @@ class Settings extends React.Component<Props, ComponentState> {
         }
 
         // Check that name isn't in use
-        const foundApp = this.props.apps.find(a => (a.appName === value && a.appId !== this.props.app.appId));
+        const foundApp = this.props.apps.find(a => (a.appName === value && a.appId !== this.props.app.appId))
         if (foundApp) {
             return Util.formatMessageId(this.props.intl, FM.FIELDERROR_DISTINCT)
         }
@@ -315,7 +315,7 @@ class Settings extends React.Component<Props, ComponentState> {
     }
 
     packageOptions() {
-        const packageReferences = Util.packageReferences(this.props.app);
+        const packageReferences = Util.packageReferences(this.props.app)
 
         return Object.values(packageReferences)
             .map<OF.IDropdownOption>(pr => {
@@ -354,7 +354,7 @@ class Settings extends React.Component<Props, ComponentState> {
             key: this.state.localeVal,
             text: this.state.localeVal,
         }]
-        const packageOptions = this.packageOptions();
+        const packageOptions = this.packageOptions()
         return (
             <div className="cl-page">
                 <span data-testid="settings-title" className={OF.FontClassNames.xxLarge}>
@@ -571,7 +571,7 @@ class Settings extends React.Component<Props, ComponentState> {
                     />
                 }
             </div>
-        );
+        )
     }
 }
 const mapDispatchToProps = (dispatch: any) => {
@@ -581,7 +581,7 @@ const mapDispatchToProps = (dispatch: any) => {
         editAppLiveTagThunkAsync: actions.app.editAppLiveTagThunkAsync,
         fetchAppSourceThunkAsync: actions.app.fetchAppSourceThunkAsync,
         createAppTagThunkAsync: actions.app.createAppTagThunkAsync,
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     if (!state.user.user) {
@@ -605,8 +605,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
-type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
+type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps
 
 export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(Settings))

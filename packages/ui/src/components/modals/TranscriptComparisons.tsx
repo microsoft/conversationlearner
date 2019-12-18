@@ -58,7 +58,7 @@ class TranscriptComparisons extends React.Component<Props, ComponentState> {
 
     @autobind
     onCompare(comparePivot: string | undefined): void {
-        this.setState({comparePivot})
+        this.setState({ comparePivot })
         this.props.onCompare(comparePivot)
     }
 
@@ -73,11 +73,11 @@ class TranscriptComparisons extends React.Component<Props, ComponentState> {
         for (const sourceName of this.props.testSet.sourceNames) {
 
             let items: Test.TestItem[] = this.props.testSet.items
-            .filter(i => i.sourceName === sourceName) 
+                .filter(i => i.sourceName === sourceName)
 
             // Skip the pivot
             if (this.state.comparePivot && sourceName !== this.state.comparePivot) {
-                const comparisons  = this.props.testSet.getSourceComparisons(sourceName, this.state.comparePivot)
+                const comparisons = this.props.testSet.getSourceComparisons(sourceName, this.state.comparePivot)
 
                 const reproduced = comparisons.filter(c => c.result === Test.ComparisonResultType.REPRODUCED)
                 const changed = comparisons.filter(c => c.result === Test.ComparisonResultType.CHANGED)
@@ -109,131 +109,132 @@ class TranscriptComparisons extends React.Component<Props, ComponentState> {
 
     render() {
         const renderResults = this.resultRenderData()
-        
+
         const hasNoTranscript = renderResults.some(rr => rr.no_transcript.length > 0)
         const hasInvalidTranscript = renderResults.some(rr => rr.invalid_transcript.length > 0)
 
-        const numConversations = this.props.testSet 
+        const numConversations = this.props.testSet
             ? this.props.testSet.numConversations()
             : 0
 
         return (
             <div>
-            {this.props.testSet && this.props.testSet.sourceNames.length > 1 
-                ?
-                <>
-                    <div className={`cl-testing-dropbox ${OF.FontClassNames.mediumPlus}`}>
-                        <OF.Dropdown
-                            disabled={!this.props.testSet || this.props.testSet.sourceNames.length < 2}
-                            ariaLabel={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTCOMPARISONS_DROPDOWN_TITLE)}
-                            label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTCOMPARISONS_DROPDOWN_TITLE)}
-                            selectedKey={this.props.testSet && this.state.comparePivot 
-                                ? this.props.testSet.sourceNames.indexOf(this.state.comparePivot)
-                                : -1
-                            }
-                            onChange={this.onChangeCompareSource}
-                            options={this.props.testSet 
-                                ? this.props.testSet.sourceNames
-                                    .map<OF.IDropdownOption>((tag, i) => ({
-                                        key: i,
-                                        text: tag
-                                    })) 
-                                : []
-                            }
-                        />
-                    </div>
-                    <div className={`cl-testing-result-group ${!this.props.testSet || this.props.testSet.items.length === 0 ? ' cl-test-disabled' : ''}`}>
-                        <div className="cl-testing-result cl-testing-source-title"/>
-                        <div className="cl-testing-result">
-                            <span className="cl-testing-source-title">Reproduced: </span>
+                {this.props.testSet && this.props.testSet.sourceNames.length > 1
+                    ?
+                    <>
+                        <div className={`cl-testing-dropbox ${OF.FontClassNames.mediumPlus}`}>
+                            <OF.Dropdown
+                                disabled={!this.props.testSet || this.props.testSet.sourceNames.length < 2}
+                                ariaLabel={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTCOMPARISONS_DROPDOWN_TITLE)}
+                                label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTCOMPARISONS_DROPDOWN_TITLE)}
+                                selectedKey={this.props.testSet && this.state.comparePivot
+                                    ? this.props.testSet.sourceNames.indexOf(this.state.comparePivot)
+                                    : -1
+                                }
+                                onChange={this.onChangeCompareSource}
+                                options={this.props.testSet
+                                    ? this.props.testSet.sourceNames
+                                        .map<OF.IDropdownOption>((tag, i) => ({
+                                            key: i,
+                                            text: tag
+                                        }))
+                                    : []
+                                }
+                            />
                         </div>
-                        <div className="cl-testing-result">
-                            <span className="cl-testing-source-title">Changed: </span>
-                        </div>
-                        {hasNoTranscript &&
+                        <div className={`cl-testing-result-group ${!this.props.testSet || this.props.testSet.items.length === 0 ? ' cl-test-disabled' : ''}`}>
+                            <div className="cl-testing-result cl-testing-source-title" />
                             <div className="cl-testing-result">
-                                <span className="cl-testing-source-title">No Transcript: </span>
+                                <span className="cl-testing-source-title">Reproduced: </span>
                             </div>
-                        }
-                        {hasInvalidTranscript &&
                             <div className="cl-testing-result">
-                                <span className="cl-testing-source-title">Invalid Transcript: </span>
+                                <span className="cl-testing-source-title">Changed: </span>
                             </div>
-                        }
+                            {hasNoTranscript &&
+                                <div className="cl-testing-result">
+                                    <span className="cl-testing-source-title">No Transcript: </span>
+                                </div>
+                            }
+                            {hasInvalidTranscript &&
+                                <div className="cl-testing-result">
+                                    <span className="cl-testing-source-title">Invalid Transcript: </span>
+                                </div>
+                            }
+                        </div>
+                    </>
+                    :
+                    <div className="cl-testing-warning">
+                        {Util.formatMessageId(this.props.intl, FM.TRANSCRIPTCOMPARISONS_WARNING_TITLE)}
                     </div>
-                </>
-                :
-                <div className="cl-testing-warning">
-                    {Util.formatMessageId(this.props.intl, FM.TRANSCRIPTCOMPARISONS_WARNING_TITLE)}
-                </div>
-            }
-            {this.state.comparePivot && renderResults
-                .filter(rr => this.state.comparePivot && rr.sourceName !== this.state.comparePivot)
-                .map(rr => {
-                return (
-                    <div 
-                        className={`cl-testing-result-group ${!this.props.testSet || this.props.testSet.items.length === 0 ? ' cl-test-disabled' : ''}`}
-                        key={rr.sourceName}
-                    >
-                        <div className="cl-testing-result cl-testing-source-title">
-                            {rr.sourceName}
-                        </div>
-                        <div 
-                            className="cl-testing-result"
-                            onClick={() => this.props.onView(Test.ComparisonResultType.REPRODUCED, this.state.comparePivot, rr.sourceName)}
-                            role="button"
-                        >
-                            <span className="cl-testing-result-item cl-testing-result-value">
-                                {rr.reproduced.length}
-                            </span>
-                            <span className="cl-testing-result-item cl-testing-result-percent">
-                                {Util.percentOf(rr.reproduced.length, numConversations)}
-                            </span>
-                        </div>
-                        <div 
-                            className="cl-testing-result"
-                            onClick={() => this.props.onView(Test.ComparisonResultType.CHANGED, this.state.comparePivot, rr.sourceName)}
-                            role="button"
-                        >
-                            <span className="cl-testing-result-item cl-testing-result-value">
-                                {rr.changed.length}
-                            </span>
-                            <span className="cl-testing-result-item cl-testing-result-percent">
-                                {Util.percentOf(rr.changed.length, numConversations)}
-                            </span>
-                        </div>
-                        {hasNoTranscript &&
-                            <div 
-                                className="cl-testing-result"
-                                onClick={() => this.props.onView(Test.ComparisonResultType.NO_TRANSCRIPT, this.state.comparePivot, rr.sourceName)}
-                                role="button"
+                }
+                {this.state.comparePivot && renderResults
+                    .filter(rr => this.state.comparePivot && rr.sourceName !== this.state.comparePivot)
+                    .map(rr => {
+                        return (
+                            <div
+                                className={`cl-testing-result-group ${!this.props.testSet || this.props.testSet.items.length === 0 ? ' cl-test-disabled' : ''}`}
+                                key={rr.sourceName}
                             >
-                                <span className="cl-testing-result-item cl-testing-result-item--mismatch cl-testing-result-value">
-                                    {rr.no_transcript.length}
-                                </span>
-                                <span className="cl-testing-result-item cl-testing-result-item--mismatch cl-testing-result-percent">
-                                    {Util.percentOf(rr.no_transcript.length, numConversations)}
-                                </span>
+                                <div className="cl-testing-result cl-testing-source-title">
+                                    {rr.sourceName}
+                                </div>
+                                <div
+                                    className="cl-testing-result"
+                                    onClick={() => this.props.onView(Test.ComparisonResultType.REPRODUCED, this.state.comparePivot, rr.sourceName)}
+                                    role="button"
+                                >
+                                    <span className="cl-testing-result-item cl-testing-result-value">
+                                        {rr.reproduced.length}
+                                    </span>
+                                    <span className="cl-testing-result-item cl-testing-result-percent">
+                                        {Util.percentOf(rr.reproduced.length, numConversations)}
+                                    </span>
+                                </div>
+                                <div
+                                    className="cl-testing-result"
+                                    onClick={() => this.props.onView(Test.ComparisonResultType.CHANGED, this.state.comparePivot, rr.sourceName)}
+                                    role="button"
+                                >
+                                    <span className="cl-testing-result-item cl-testing-result-value">
+                                        {rr.changed.length}
+                                    </span>
+                                    <span className="cl-testing-result-item cl-testing-result-percent">
+                                        {Util.percentOf(rr.changed.length, numConversations)}
+                                    </span>
+                                </div>
+                                {hasNoTranscript &&
+                                    <div
+                                        className="cl-testing-result"
+                                        onClick={() => this.props.onView(Test.ComparisonResultType.NO_TRANSCRIPT, this.state.comparePivot, rr.sourceName)}
+                                        role="button"
+                                    >
+                                        <span className="cl-testing-result-item cl-testing-result-item--mismatch cl-testing-result-value">
+                                            {rr.no_transcript.length}
+                                        </span>
+                                        <span className="cl-testing-result-item cl-testing-result-item--mismatch cl-testing-result-percent">
+                                            {Util.percentOf(rr.no_transcript.length, numConversations)}
+                                        </span>
+                                    </div>
+                                }
+                                {hasInvalidTranscript &&
+                                    <div
+                                        className="cl-testing-result"
+                                        onClick={() => this.props.onView(Test.ComparisonResultType.INVALID_TRANSCRIPT, this.state.comparePivot, rr.sourceName)}
+                                        role="button"
+                                    >
+                                        <span className="cl-testing-result-item cl-testing-result-item--mismatch cl-testing-result-value">
+                                            {rr.invalid_transcript.length}
+                                        </span>
+                                        <span className="cl-testing-result-item cl-testing-result-item--mismatch cl-testing-result-percent">
+                                            {Util.percentOf(rr.invalid_transcript.length, numConversations)}
+                                        </span>
+                                    </div>
+                                }
                             </div>
-                        }
-                        {hasInvalidTranscript &&
-                            <div 
-                                className="cl-testing-result"
-                                onClick={() => this.props.onView(Test.ComparisonResultType.INVALID_TRANSCRIPT, this.state.comparePivot, rr.sourceName)}
-                                role="button"            
-                            >
-                                <span className="cl-testing-result-item cl-testing-result-item--mismatch cl-testing-result-value">
-                                    {rr.invalid_transcript.length}
-                                </span>
-                                <span className="cl-testing-result-item cl-testing-result-item--mismatch cl-testing-result-percent">
-                                    {Util.percentOf(rr.invalid_transcript.length, numConversations)}
-                                </span>
-                            </div>
-                        }
-                    </div>
-                )}
-            )}
-        </div>
+                        )
+                    }
+                    )}
+            </div>
         )
     }
 }

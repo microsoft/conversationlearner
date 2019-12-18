@@ -10,7 +10,7 @@ import * as stringify from 'fast-json-stable-stringify'
 import { MessageValue } from 'react-intl'
 
 export function notNullOrUndefined<TValue>(value: TValue | null | undefined): value is TValue {
-    return value !== null && value !== undefined;
+    return value !== null && value !== undefined
 }
 
 export function equal<T extends number | string | boolean>(as: T[], bs: T[]): boolean {
@@ -34,8 +34,8 @@ export function percentOf(count: number, total: number): string {
 export function rgbToHex(r: number, g: number, b: number) {
     // tslint:disable:prefer-template
     // tslint:disable:no-bitwise
-    return "#" + ((1 << 24) + (Math.trunc(r) << 16) + (Math.trunc(g) << 8) + Math.trunc(b)).toString(16).slice(1);
-  }
+    return "#" + ((1 << 24) + (Math.trunc(r) << 16) + (Math.trunc(g) << 8) + Math.trunc(b)).toString(16).slice(1)
+}
 
 export function replace<T>(xs: T[], updatedX: T, getId: (x: T) => object | number | string): T[] {
     const index = xs.findIndex(x => getId(x) === getId(updatedX))
@@ -56,11 +56,11 @@ export function isNullOrWhiteSpace(str: string | null): boolean {
 
 export function entityDisplayName(entity: CLM.EntityBase) {
     if (entity.positiveId) {
-        return `-${entity.entityName.slice(1)}`;
+        return `-${entity.entityName.slice(1)}`
     } else if (entity.negativeId) {
-        return `+${entity.entityName}`;
+        return `+${entity.entityName}`
     } else {
-        return entity.entityName;
+        return entity.entityName
     }
 }
 
@@ -129,8 +129,8 @@ export function setStateAsync(that: any, newState: any) {
     return new Promise((resolve) => {
         that.setState(newState, () => {
             resolve()
-        });
-    });
+        })
+    })
 }
 
 export const delay = <T>(ms: number, value?: T): Promise<T> => new Promise<T>(resolve => setTimeout(() => resolve(value), ms))
@@ -174,8 +174,8 @@ export function deepCopy<T>(obj: T): T {
 
     // Date
     if (obj instanceof Date) {
-        copy = new Date();
-        copy.setTime(obj.getTime());
+        copy = new Date()
+        copy.setTime(obj.getTime())
         return copy as T
     }
 
@@ -202,7 +202,7 @@ export function deepCopy<T>(obj: T): T {
         return copy as T
     }
 
-    throw new Error("Unknown Type");
+    throw new Error("Unknown Type")
 }
 
 export const returnStringWhenError = (s: string) => {
@@ -286,15 +286,15 @@ export const getSetEntityActionsFromEnumEntity = (entity: CLM.EntityBase): CLM.A
 
 export function readFileAsync(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
-        const reader = new FileReader();
+        const reader = new FileReader()
 
         reader.onload = (e: Event) => {
-            resolve(reader.result as any);
-        };
+            resolve(reader.result as any)
+        }
 
-        reader.onerror = reject;
+        reader.onerror = reject
 
-        reader.readAsText(file);
+        reader.readAsText(file)
     })
 }
 
@@ -306,7 +306,7 @@ export function isTemplateTitleGeneric(template: CLM.Template): boolean {
 
 // Create recursive partial of an object
 export type RecursivePartial<T> = {
-    [P in keyof T]?: RecursivePartial<T[P]>;
+    [P in keyof T]?: RecursivePartial<T[P]>
 }
 
 export function isFeatureEnabled(featureString: string | undefined, feature: Const.FeatureStrings) {
@@ -318,28 +318,28 @@ export function isFeatureEnabled(featureString: string | undefined, feature: Con
 
 // Generate colors that scale with number from red (neg) to green (pos)
 export function scaledColor(rating?: number): string {
-        if (rating === undefined) {
-            return "#ffffff"
-        }
-        if (rating === 0) {
-            // Yellow at zero
-            return '#ffec8c'
-        }
-        if (rating > 0) {
-            const scale = Math.pow(0.9, rating - 1)
-            const r = scale * 224
-            const g = 255
-            const b = scale * 224
-            return rgbToHex(r, g, b)
-        }
-        else {
-            const scale = Math.pow(0.8, (-rating) - 1)
-            const r = 255
-            const g = scale * 224
-            const b = scale * 224
-            return rgbToHex(r, g, b)
-        }
+    if (rating === undefined) {
+        return "#ffffff"
     }
+    if (rating === 0) {
+        // Yellow at zero
+        return '#ffec8c'
+    }
+    if (rating > 0) {
+        const scale = Math.pow(0.9, rating - 1)
+        const r = scale * 224
+        const g = 255
+        const b = scale * 224
+        return rgbToHex(r, g, b)
+    }
+    else {
+        const scale = Math.pow(0.8, (-rating) - 1)
+        const r = 255
+        const g = scale * 224
+        const b = scale * 224
+        return rgbToHex(r, g, b)
+    }
+}
 
 // Can be used by JSON.stringify to serialize Map type objects
 // i.e. JSON.stringify({object with map}, mapReplacer)

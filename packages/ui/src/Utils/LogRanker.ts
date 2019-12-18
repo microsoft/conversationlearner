@@ -26,7 +26,7 @@ function calcScore(knownPath: boolean, validEndAction: boolean, numberUnknownUtt
         + (validEndAction ? 0 : 1)
         + Math.min(1, numberUnknownUtterances * 0.1)
         + Math.min(1, numberLowConfidence * 0.1)
-    
+
     return +(score / 4).toFixed(4)
 }
 
@@ -34,7 +34,7 @@ function calcScore(knownPath: boolean, validEndAction: boolean, numberUnknownUtt
 function isLastActionInSet(trainDialog: CLM.TrainDialog, actionIds: string[]) {
     const lastRound = trainDialog
         .rounds[trainDialog.rounds.length - 1]
-    
+
     if (lastRound.scorerSteps.length === 0) {
         return false
     }
@@ -92,7 +92,7 @@ function getUtterances(trainDialog: CLM.TrainDialog): string[] {
 
 // Remove punctuation and lowercases input string
 function removePunctuationAndLowercase(text: string): string {
-    const regex = /[!"#$%&'ʼ()*+,-./:;<=>?@[\]^_`{|}~]/g;
+    const regex = /[!"#$%&'ʼ()*+,-./:;<=>?@[\]^_`{|}~]/g
     return text.replace(regex, '').toLowerCase()
 }
 

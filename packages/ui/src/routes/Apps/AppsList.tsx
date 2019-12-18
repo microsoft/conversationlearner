@@ -15,7 +15,7 @@ import { fetchTutorialsThunkAsync } from '../../actions/appActions'
 import { CL_IMPORT_TUTORIALS_USER_ID, State, AppCreatorType } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { autobind } from 'core-decorators'
-import { DispatcherAlgorithmType } from '../../components/modals/DispatcherCreator';
+import { DispatcherAlgorithmType } from '../../components/modals/DispatcherCreator'
 
 interface ComponentState {
     isDispatcherCreateModalOpen: boolean
@@ -197,7 +197,7 @@ class AppsList extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchTutorialsThunkAsync
-    }, dispatch);
+    }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     if (!state.user.user) {
@@ -220,8 +220,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-type stateProps = ReturnType<typeof mapStateToProps>;
-type dispatchProps = ReturnType<typeof mapDispatchToProps>;
+type stateProps = ReturnType<typeof mapStateToProps>
+type dispatchProps = ReturnType<typeof mapDispatchToProps>
 type Props = stateProps & dispatchProps & ReceivedProps & InjectedIntlProps & RouteComponentProps<any>
 
 export default connect<stateProps, dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(AppsList)))

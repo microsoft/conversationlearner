@@ -14,10 +14,11 @@ export const component = (props: Props) => {
         <>
             <OF.DefaultButton
                 onClick={props.onPrevious}
-                iconProps={{ iconName: 
-                    props.curIndex === 0
-                        ? 'ChevronLeftEnd6' 
-                        : 'ChevronLeftSmall'
+                iconProps={{
+                    iconName:
+                        props.curIndex === 0
+                            ? 'ChevronLeftEnd6'
+                            : 'ChevronLeftSmall'
                 }}
                 ariaDescription={Util.formatMessageId(props.intl, FM.BUTTON_PREVIOUS)}
                 text={Util.formatMessageId(props.intl, FM.BUTTON_PREVIOUS)}
@@ -27,10 +28,11 @@ export const component = (props: Props) => {
             </div>
             <OF.DefaultButton
                 onClick={props.onNext}
-                iconProps={{ iconName: 
-                    props.curIndex === props.total - 1
-                    ? 'ChevronRightEnd6'
-                    : 'ChevronRightSmall' 
+                iconProps={{
+                    iconName:
+                        props.curIndex === props.total - 1
+                            ? 'ChevronRightEnd6'
+                            : 'ChevronRightSmall'
                 }}
                 ariaDescription={Util.formatMessageId(props.intl, FM.BUTTON_NEXT)}
                 text={Util.formatMessageId(props.intl, FM.BUTTON_NEXT)}

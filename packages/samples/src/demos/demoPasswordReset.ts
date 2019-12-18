@@ -33,7 +33,7 @@ const { bfAppId, bfAppPassword, modelId, ...clOptions } = config
 //==================
 // Create Adapter
 //==================
-const adapter = new BotFrameworkAdapter({ appId: bfAppId, appPassword: bfAppPassword });
+const adapter = new BotFrameworkAdapter({ appId: bfAppId, appPassword: bfAppPassword })
 
 //==================================
 // Storage 
@@ -77,7 +77,7 @@ server.post('/api/messages', (req, res) => {
         let result = await cl.recognize(context)
 
         if (result) {
-            return cl.SendResult(result);
+            return cl.SendResult(result)
         }
     })
 })

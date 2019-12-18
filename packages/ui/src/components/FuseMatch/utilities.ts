@@ -3,30 +3,30 @@
  * Licensed under the MIT License.
  */
 
- import * as models from './models'
+import * as models from './models'
 
- /**
-  * Convert Fuse.io search results into match options which are renderable by React
-  * Works similarly to the function in ExtractorEditor to segement a string by start and end indicies from label entities
-  * Except we're segmenting the start and end indicies from the Fuse result
-  *
-  * Input:
-  *  012345678901234
-  * 'I am some text', [[5,9] [10,14]]
-  *
-  * Segments:
-  * 'I am some text'
-  * 'I am ','some text'
-  * 'I am ','some',' text'
-  * 'I am ','some',' ','text'
-  *
-  * Output:
-  * ['I am ', 'some', ' ', 'text']
-  *
-  * @param inputText text string
-  * @param matches List of [startIndex, endIndex] pairs
-  * @param original Unmodified original result
-  */
+/**
+ * Convert Fuse.io search results into match options which are renderable by React
+ * Works similarly to the function in ExtractorEditor to segement a string by start and end indicies from label entities
+ * Except we're segmenting the start and end indicies from the Fuse result
+ *
+ * Input:
+ *  012345678901234
+ * 'I am some text', [[5,9] [10,14]]
+ *
+ * Segments:
+ * 'I am some text'
+ * 'I am ','some text'
+ * 'I am ','some',' text'
+ * 'I am ','some',' ','text'
+ *
+ * Output:
+ * ['I am ', 'some', ' ', 'text']
+ *
+ * @param inputText text string
+ * @param matches List of [startIndex, endIndex] pairs
+ * @param original Unmodified original result
+ */
 export const convertMatchedTextIntoMatchedOption = <T>(inputText: string, matches: [number, number][], original: T): models.MatchedOption<T> => {
     const initialSegment: models.ISegement = {
         text: inputText,
