@@ -265,6 +265,7 @@ jobs:
       - run:
           command: |
             cd << parameters.clone_path >>
+            npm i
             git add -A
             git status --short
 
