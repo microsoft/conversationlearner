@@ -125,11 +125,35 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isResizable: true,
             getSortValue: () => '',
             render: (action: CLM.ActionBase, component) => {
-                return actionListViewRenderer(action,
+                const actionResponseComponent = actionListViewRenderer(action,
                     component.props.entities,
                     component.props.memories,
                     component.props.botInfo.callbacks,
                     component.onClickViewCard)
+
+                if (action.actionType === CLM.ActionTypes.API_LOCAL) {
+                    return <div className="cl-action-scorer-callback">
+                        {actionResponseComponent}
+                        <div>
+                            <OF.Dropdown
+                                ariaLabel={'Stubs' ?? Util.formatMessageId(intl, FM.APPCREATOR_FIELDS_LOCALE_LABEL)}
+                                label={'Stubs' ?? Util.formatMessageId(intl, FM.APPCREATOR_FIELDS_LOCALE_LABEL)}
+                                options={[
+                                    {
+                                        key: '0',
+                                        text: 'Stub 0',
+                                    },
+                                    {
+                                        key: '1',
+                                        text: 'Stub 1',
+                                    },
+                                ]}
+                            />
+                        </div>
+                    </div>
+                }
+
+                return actionResponseComponent
             }
         },
         {

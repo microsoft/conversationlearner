@@ -15,3 +15,9 @@
 .cl-action-scorer-warning {
     line-height: 30px;
 }
+
+.cl-action-scorer-callback {
+    display: grid;
+    grid-auto-flow: column;
+    grid-gap: 1em;
+}
