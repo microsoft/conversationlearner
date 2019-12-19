@@ -97,12 +97,16 @@ enum ActionInputType {
     LOGIC_AND_RENDER = "LOGIC_AND_RENDER"
 }
 
-interface IActionInputLogic {
-    type: ActionInputType.RENDER_ONLY
-    logicResult: CLM.LogicResult | undefined
+interface IActionInputBase {
     stubName?: string
 }
-interface IActionInputRenderOnly {
+
+interface IActionInputRenderOnly extends IActionInputBase {
+    type: ActionInputType.RENDER_ONLY
+    logicResult: CLM.LogicResult | undefined
+}
+
+interface IActionInputLogic extends IActionInputBase {
     type: Exclude<ActionInputType, ActionInputType.RENDER_ONLY>
 }
 
@@ -1561,7 +1565,6 @@ export class CLRunner {
         }
 
         try {
-            // Invoke Logic part of callback
             const renderedLogicArgumentValues = this.GetRenderedArguments(callback.logicArguments, apiAction.logicArguments, filledEntityMap)
             const memoryManager = await this.CreateMemoryManagerAsync(state, allEntities)
             let replayError: CLM.ReplayError | null = null
@@ -1584,8 +1587,21 @@ export class CLRunner {
                     // the copy of map is created because the passed infilledEntityMap contains "filledEntities by Id" too
                     // and this causes issues when calculating changedFilledEntities.
                     const entityMapBeforeCall = new CLM.FilledEntityMap(await state.EntityState.FilledEntityMap())
-                    // Store logic callback value
-                    const logicObject = await callback.logic(memoryManager, ...renderedLogicArgumentValues)
+
+                    // Determine appropriate logic function to execute, default to real if stub doesn't define one.
+                    let logicFn = callback.logic
+                    if (actionInput.stubName) {
+                        const stubCallback = callback.stubs.find(c => c.name === actionInput.stubName)
+                        if (!stubCallback) {
+                            throw new Error(`A stub name ${actionInput.stubName} was provided but no stub by that name was found`)
+                        }
+
+                        if (stubCallback.isLogicFunctionProvided) {
+                            logicFn = stubCallback.logic
+                        }
+                    }
+
+                    const logicObject = await logicFn(memoryManager, ...renderedLogicArgumentValues)
                     logicResult.logicValue = JSON.stringify(logicObject)
                     // Update memory with changes from logic callback
                     await state.EntityState.RestoreFromMemoryManagerAsync(memoryManager)
@@ -1625,12 +1641,25 @@ export class CLRunner {
                 else {
                     // Invoke Render part of callback
                     const renderedRenderArgumentValues = this.GetRenderedArguments(callback.renderArguments, apiAction.renderArguments, filledEntityMap)
-
                     const readOnlyMemoryManager = await this.CreateReadOnlyMemoryManagerAsync(state, allEntities)
+                    const logicObject = logicResult.logicValue ? JSON.parse(logicResult.logicValue) : undefined
 
-                    let logicObject = logicResult.logicValue ? JSON.parse(logicResult.logicValue) : undefined
-                    if (callback.render) {
-                        response = await callback.render(logicObject, readOnlyMemoryManager, ...renderedRenderArgumentValues)
+                    // TODO: Find way to not do this in two places
+                    // Determine appropriate render function to execute, default to real if stub doesn't define one.
+                    let renderFn = callback.render
+                    if (actionInput.stubName) {
+                        const stubCallback = callback.stubs.find(c => c.name === actionInput.stubName)
+                        if (!stubCallback) {
+                            throw new Error(`A stub name ${actionInput.stubName} was provided but no stub by that name was found`)
+                        }
+
+                        if (stubCallback.isRenderFunctionProvided) {
+                            renderFn = stubCallback.render
+                        }
+                    }
+
+                    if (renderFn) {
+                        response = await renderFn(logicObject, readOnlyMemoryManager, ...renderedRenderArgumentValues)
                     }
 
                     if (response && !Utils.IsCardValid(response)) {
@@ -2294,7 +2323,6 @@ export class CLRunner {
                                 const actionInput: IActionInput = {
                                     type: ActionInputType.RENDER_ONLY,
                                     logicResult: scorerStep.logicResult,
-                                    stubName: scorerStep.stubName,
                                 }
 
                                 botResponse = await this.TakeAPIAction(apiAction, filledEntityMap, state, entityList.entities, true, actionInput)
