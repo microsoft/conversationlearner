@@ -4,14 +4,13 @@
  */
 
 import * as trainDialogsGrid from './TrainDialogsGrid'
-import * as popupModal from './PopupModal'
 import * as scorerModal from './ScorerModal'
 import * as helpers from '../Helpers'
 
 export function VerifyChatPanelIsDisabled() { cy.Get('div.cl-chatmodal_webchat').find('div.cl-overlay') }
 export function VerifyChatPanelIsEnabled() { cy.Get('div.cl-chatmodal_webchat').DoesNotContain('div.cl-overlay') }
 
-export function GetAllChatMessageElements() { 
+export function GetAllChatMessageElements() {
   const elements = Cypress.$('div[data-testid="web-chat-utterances"] > div.wc-message-content > div')
   helpers.DumpElements('GetAllChatMessageElements', elements)
   return elements
@@ -32,7 +31,7 @@ export function GetAllChatMessages(retainMarkup = false) {
 
   helpers.ConLog(funcName, `Number of Chat Elements Found: ${elements.length}`)
   let returnValues = []
-  for (let i = 0; i < elements.length; i++)  {
+  for (let i = 0; i < elements.length; i++) {
     let text = GetChatTurnText(elements[i], retainMarkup)
     returnValues.push(text)
     helpers.ConLog(funcName, text)
@@ -42,19 +41,19 @@ export function GetAllChatMessages(retainMarkup = false) {
 
 export function VerifyNoChatTurnSelected() { cy.Get('[data-testid="chat-edit-add-user-input-button"], [data-testid="chat-edit-delete-turn-button"]').should('have.length', 0) }
 
-export function VerifySelectedChatTurn(expectedMessage) { 
+export function VerifySelectedChatTurn(expectedMessage) {
   cy.Get('[data-testid="chat-edit-add-user-input-button"], [data-testid="chat-edit-delete-turn-button"]')
     .parents('div.wc-message-wrapper')
     .find('div[data-testid="web-chat-utterances"] > div.wc-message-content > div')
     .then(elements => {
       let text = GetChatTurnText(elements[0])
-      if (text !== expectedMessage) { throw new Error (`Expecting selected chat turn to be '${expectedMessage}', instead '${text}' was selected.`) }
+      if (text !== expectedMessage) { throw new Error(`Expecting selected chat turn to be '${expectedMessage}', instead '${text}' was selected.`) }
     })
 }
 
 export function VerifyChatMessageCount(expectedCount) {
   cy.WaitForStableDOM()
-  cy.wrap(1, {timeout: 10000}).should(() => {
+  cy.wrap(1, { timeout: 10000 }).should(() => {
     let actualCount = GetAllChatMessageElements().length
     if (actualCount != expectedCount) {
       throw new Error(`Expecting the number of chat messages to be ${expectedCount} instead it is ${actualCount}.`)
@@ -107,11 +106,13 @@ export function SelectLastChatTurn() {
   })
 }
 
-export function SelectChatTurnExactMatch(message, index = 0) { 
-  return SelectChatTurnInternal(message, index, (elementText, transformedMessage) => elementText === transformedMessage)}
+export function SelectChatTurnExactMatch(message, index = 0) {
+  return SelectChatTurnInternal(message, index, (elementText, transformedMessage) => elementText === transformedMessage)
+}
 
 export function SelectChatTurnStartsWith(message, index = 0) {
-  return SelectChatTurnInternal(message, index, (elementText, transformedMessage) => elementText.startsWith(transformedMessage))}
+  return SelectChatTurnInternal(message, index, (elementText, transformedMessage) => elementText.startsWith(transformedMessage))
+}
 
 function SelectChatTurnInternal(message, index, matchPredicate) {
   const funcName = `SelectChatTurnInternal('${message}', ${index})`
@@ -129,7 +130,7 @@ function SelectChatTurnInternal(message, index, matchPredicate) {
           index--
         } else {
           helpers.ConLog(funcName, `FOUND!`)
-          
+
           // It appears that this does not work all the time, seen it happen once so far.
           // Perhaps because it needs to be scrolled into view.
           elements[i].click()
@@ -207,15 +208,15 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
   cy.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `Start`)
   cy.Enqueue(() => { return SelectChatTurnExactMatch(existingMessage, index) }).then(indexOfSelectedChatTurn => {
     helpers.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `indexOfSelectedChatTurn: ${indexOfSelectedChatTurn}`)
-    
+
     // This ODD way of clicking is to avoid the "Illegal Invocation" error that
     // happens with this specific UI element.
     cy.RunAndExpectDomChange(() => { Cypress.$('[data-testid="chat-edit-add-bot-response-button"]')[0].click() })
-    
+
     if (newMessage) {
       cy.WaitForStableDOM()
-      
-      cy.Enqueue(() => { 
+
+      cy.Enqueue(() => {
         // Sometimes the UI has already automaticly selected the Bot response we want
         // so we need to confirm that we actually need to click on the action, 
         // otherwise an unnecessary message box pops up that we don't want to deal with.
@@ -234,27 +235,27 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
 
 export function VerifyChatTurnIsNotAnExactMatch(turnTextThatShouldNotMatch, expectedTurnCount, turnIndex) {
   VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
-    if (chatMessageFound === turnTextThatShouldNotMatch) { 
-      throw new Error(`Chat turn ${turnIndex} should NOT be an exact match to: ${turnTextThatShouldNotMatch}, but it is`) 
+    if (chatMessageFound === turnTextThatShouldNotMatch) {
+      throw new Error(`Chat turn ${turnIndex} should NOT be an exact match to: ${turnTextThatShouldNotMatch}, but it is`)
     }
   })
 }
 
-export function VerifyChatTurnIsAnExactMatch(expectedTurnText, expectedTurnCount, turnIndex) { 
+export function VerifyChatTurnIsAnExactMatch(expectedTurnText, expectedTurnCount, turnIndex) {
   VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
-    if (chatMessageFound !== expectedTurnText) { 
+    if (chatMessageFound !== expectedTurnText) {
       if (chatMessageFound !== expectedTurnText) {
-        throw new Error(`Chat turn ${turnIndex} should be an exact match to: ${expectedTurnText}, however, we found ${chatMessageFound} instead`) 
+        throw new Error(`Chat turn ${turnIndex} should be an exact match to: ${expectedTurnText}, however, we found ${chatMessageFound} instead`)
       }
     }
   })
 }
 
-export function VerifyChatTurnIsAnExactMatchWithMarkup(expectedTurnText, expectedTurnCount, turnIndex) { 
+export function VerifyChatTurnIsAnExactMatchWithMarkup(expectedTurnText, expectedTurnCount, turnIndex) {
   VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
-    if (chatMessageFound !== expectedTurnText) { 
+    if (chatMessageFound !== expectedTurnText) {
       if (chatMessageFound !== expectedTurnText) {
-        throw new Error(`Chat turn ${turnIndex} should be an exact match to: '${expectedTurnText}', however, we found '${chatMessageFound}' instead`) 
+        throw new Error(`Chat turn ${turnIndex} should be an exact match to: '${expectedTurnText}', however, we found '${chatMessageFound}' instead`)
       }
     }
   }, true)
@@ -265,16 +266,16 @@ export function VerifyChatTurnIsAnExactMatchWithMarkup(expectedTurnText, expecte
 function VerifyChatTurnInternal(expectedTurnCount, turnIndex, verificationFunc, retainMarkup = false) {
   cy.WaitForStableDOM()
   let chatMessages
-  cy.wrap(1).should(() => { 
+  cy.wrap(1).should(() => {
     chatMessages = GetAllChatMessages(retainMarkup)
-    if (chatMessages.length != expectedTurnCount) { 
+    if (chatMessages.length != expectedTurnCount) {
       throw new Error(`${chatMessages.length} chat turns were found, however we were expecting ${expectedTurnCount}`)
     }
   }).then(() => {
-    if(chatMessages.length < turnIndex) { 
-      throw new Error(`VerifyChatTurnInternal(${expectedTurnCount}, ${turnIndex}): ${chatMessages.length} is not enough chat turns to find the requested turnIndex`) 
+    if (chatMessages.length < turnIndex) {
+      throw new Error(`VerifyChatTurnInternal(${expectedTurnCount}, ${turnIndex}): ${chatMessages.length} is not enough chat turns to find the requested turnIndex`)
     }
-    
+
     verificationFunc(chatMessages[turnIndex])
   })
 }
@@ -331,7 +332,7 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0) {
 
     cy.Get('@branchButton').Click()
     cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
-  
+
     cy.WaitForStableDOM().then(() => {
       trainDialogsGrid.TdGrid.BranchTrainDialog()
       VerifyAllChatMessages(branchedChatMessages)
@@ -341,12 +342,12 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0) {
 
 export function SelectAndVerifyEachChatTurnHasExpectedButtons() { SelectAndVerifyEachChatTurn(VerifyChatTurnControlButtons) }
 export function SelectAndVerifyEachChatTurnHasNoButtons() { SelectAndVerifyEachChatTurn(VerifyThereAreNoChatEditControls) }
-export function SelectAndVerifyEachBotChatTurnHasNoSelectActionButtons() { SelectAndVerifyEachChatTurn( scorerModal.VerifyNoEnabledSelectActionButtons, 1, 2) }
+export function SelectAndVerifyEachBotChatTurnHasNoSelectActionButtons() { SelectAndVerifyEachChatTurn(scorerModal.VerifyNoEnabledSelectActionButtons, 1, 2) }
 
 function SelectAndVerifyEachChatTurn(verificationFunction, index = 0, increment = 1, initialized = false) {
-  if (!initialized) { 
+  if (!initialized) {
     // Create an alias for all chat turns
-    cy.Get('[data-testid="web-chat-utterances"]').as('allChatTurns') 
+    cy.Get('[data-testid="web-chat-utterances"]').as('allChatTurns')
   }
 
   cy.Get('@allChatTurns').then(elements => {
@@ -363,7 +364,7 @@ export function VerifyEachBotChatTurn(verificationFunction) {
   cy.Get('div.wc-message-from-bot[data-testid="web-chat-utterances"]').then(botChatElements => {
     for (let i = 0; i < botChatElements.length; i++) {
       const chatText = helpers.TextContentWithoutNewlines(botChatElements[i])
-      cy.log(`Select Bot Response: ${chatText.substring(0,32)}`)
+      cy.log(`Select Bot Response: ${chatText.substring(0, 32)}`)
       cy.wrap(botChatElements[i]).Click()
       verificationFunction()
     }
@@ -378,7 +379,7 @@ export function VerifyTextChatMessage(expectedMessage, expectedIndexOfMessage) {
     if (elements.length == 0) {
       throw new Error(`Did not find expected Text Chat Message '${expectedMessage}' at index: ${expectedIndexOfMessage}`)
     }
-    
+
     let textContentWithoutNewlines = helpers.TextContentWithoutNewlines(elements[0])
     helpers.ConLog('VerifyTextChatMessage', textContentWithoutNewlines)
 
@@ -402,11 +403,11 @@ export function VerifyCardChatMessage(expectedCardTitle, expectedCardText, expec
     if (elements.length == 0) {
       throw new Error(`Did not find expected content element for API Call card that should contain '${expectedCardText}' at index: ${expectedIndexOfMessage}`)
     }
-    
+
     // Log the contents of the API Call card so that we can copy the exact string into the .spec.js file.
     let textContentWithoutNewlines = helpers.TextContentWithoutNewlines(elements[0])
     helpers.ConLog('VerifyCardChatMessage', textContentWithoutNewlines)
-    
+
     if (!textContentWithoutNewlines.includes(expectedCardText)) {
       throw new Error(`Expected to find '${expectedCardTitle}' card with '${expectedCardText}', instead we found '${textContentWithoutNewlines}' at index: ${expectedIndexOfMessage}`)
     }
@@ -419,20 +420,20 @@ export function VerifyPhotoCardChatMessage(expectedCardTitle, expectedCardText, 
   cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
     if (!expectedIndexOfMessage) expectedIndexOfMessage = allChatElements.length - 1
     let errorMessage = ''
-    
+
     if (Cypress.$(allChatElements[expectedIndexOfMessage]).find(`p:contains('${expectedCardTitle}')`).length == 0) {
       errorMessage += `Did not find expected card title: '${expectedCardTitle}' - `
     }
-    
+
     if (Cypress.$(allChatElements[expectedIndexOfMessage]).find(`p:contains('${expectedCardText}')`).length == 0) {
       errorMessage += `Did not find expected card text: '${expectedCardText}' - `
     }
-    
+
     if (Cypress.$(allChatElements[expectedIndexOfMessage]).find(`img[src="${expectedCardImage}"]`).length == 0) {
       errorMessage += `Did not find expected image: '${expectedCardImage}' - `
     }
 
-    if (errorMessage.length > 0)  {
+    if (errorMessage.length > 0) {
       helpers.ConLog(`VerifyPhotoCardChatMessage("${expectedCardTitle}", "${expectedCardText}", "${expectedCardImage}", ${expectedIndexOfMessage})`, `Chat Element at index ${expectedIndexOfMessage}: ${allChatElements[expectedIndexOfMessage].outerHTML}`)
       throw new Error(`${errorMessage}at chat turn index ${expectedIndexOfMessage}`)
     }
@@ -454,7 +455,7 @@ export function PreSaveDataUsedToVerifyTdGrid(description, tagList) {
   cy.WaitForStableDOM().then(() => {
     // When the TD ends with a user turn, the lastResponse needs to be an empty string.
     let lastResponse = ''
-    
+
     let elements = GetAllChatMessageElements()
     const lastBotElement = Cypress.$(elements[elements.length - 1]).parents('div.wc-message-from-bot')
     if (lastBotElement.length == 1) {
@@ -469,8 +470,36 @@ export function PreSaveDataUsedToVerifyTdGrid(description, tagList) {
     elements = Cypress.$('div.wc-message-from-me[data-testid="web-chat-utterances"] > div.wc-message-content > div')
     const firstInput = GetChatTurnText(elements[0])
     const lastInput = GetChatTurnText(elements[elements.length - 1])
-    
+
     cy.Enqueue(() => { trainDialogsGrid.TdGrid.SaveTrainDialog(firstInput, lastInput, lastResponse, description, tagList) })
   })
 }
 
+export function VerifyNoBotErrorAfterUserTurn(expectedUserTurnMessage) {
+  const funcName = `VerifyNoBotErrorAfterUserTurn('${expectedUserTurnMessage}')`
+  let failureMessage
+  cy.WaitForStableDOM()
+  cy.wrap(1).should(() => {
+    let elements = Cypress.$('div[data-testid="web-chat-utterances"]')
+    if (elements.length == 0) {
+      throw new Error('Retry - We are expecting at least one user turn in the chat panel')
+    }
+
+    if (Cypress.$(elements[elements.length - 1]).attr('class').includes('wc-border-error-from-bot')) {
+      const botErrorMessage = GetChatTurnText(elements[elements.length - 1])
+      const actualUserTurnMessage = GetChatTurnText(elements[elements.length - 2])
+      failureMessage = `Bot returned an unexpected error: >>>${botErrorMessage}<<<`
+      helpers.ConLog(funcName, failureMessage)
+      helpers.ConLog(funcName, `Actual user turn message: >>>${actualUserTurnMessage}<<<`)
+      if (actualUserTurnMessage != expectedUserTurnMessage) {
+        throw new Error('Retry - Bot returned an error message, yet expected user turn is not what we are expecting. See log for full details.')
+      }
+    } else {
+      failureMessage = undefined
+    }
+  }).then(() => {
+    if (failureMessage) {
+      throw new Error(failureMessage)
+    }
+  })
+}
