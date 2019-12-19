@@ -100,6 +100,7 @@ enum ActionInputType {
 interface IActionInputLogic {
     type: ActionInputType.RENDER_ONLY
     logicResult: CLM.LogicResult | undefined
+    stubName?: string
 }
 interface IActionInputRenderOnly {
     type: Exclude<ActionInputType, ActionInputType.RENDER_ONLY>
@@ -2292,7 +2293,8 @@ export class CLRunner {
                                 const apiAction = new CLM.ApiAction(curAction)
                                 const actionInput: IActionInput = {
                                     type: ActionInputType.RENDER_ONLY,
-                                    logicResult: scorerStep.logicResult
+                                    logicResult: scorerStep.logicResult,
+                                    stubName: scorerStep.stubName,
                                 }
 
                                 botResponse = await this.TakeAPIAction(apiAction, filledEntityMap, state, entityList.entities, true, actionInput)
