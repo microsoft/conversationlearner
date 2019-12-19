@@ -9,6 +9,7 @@ dist/
 # Testing
 coverage/
 results/
+packages/ui/testResultReporting
 
 # Others
 lerna-debug.log
