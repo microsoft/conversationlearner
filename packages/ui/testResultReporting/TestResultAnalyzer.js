@@ -5,7 +5,7 @@ const fs = require('fs')
 const triageData = require('./TriageData').triageData
 ttf.SetTriageData(triageData);
 
-(async function() {
+(async function () {
 
   let buildNumber
   let logs = []
@@ -25,7 +25,7 @@ ttf.SetTriageData(triageData);
 
   buildNumber = process.argv[2]
 
-  const artifacts = await apiData.Get(`https://circleci.com/api/v1.1/project/github/microsoft/ConversationLearner-UI/${buildNumber}/artifacts?circle-token=2ad1e457047948114cb3bbb1957d6f90c1e2ee25`)
+  const artifacts = await apiData.Get(`https://circleci.com/api/v1.1/project/github/microsoft/conversationLearner/${buildNumber}/artifacts?circle-token=2ad1e457047948114cb3bbb1957d6f90c1e2ee25`)
   MoveArtifactJsonIntoArrays()
   console.log('Processing the Failed Test Results ----------------------------------')
   await ProcessFailingTestArtifacts()
@@ -43,25 +43,25 @@ ttf.SetTriageData(triageData);
       const suffix = artifact.url.substring(artifact.url.length - 3)
       switch (suffix) {
         case 'log':
-            iStart = artifact.url.indexOf('/cypress/') + '/cypress/'.length
-            iEnd = artifact.url.length - '.19.12.05.02.42.14..456.log'.length
-            key = artifact.url.substring(iStart, iEnd)
-            console.log('key:', key)
-            console.log('url:', artifact.url)
-            logs.push({ key: key, url: artifact.url })
+          iStart = artifact.url.indexOf('/cypress/') + '/cypress/'.length
+          iEnd = artifact.url.length - '.19.12.05.02.42.14..456.log'.length
+          key = artifact.url.substring(iStart, iEnd)
+          console.log('key:', key)
+          console.log('url:', artifact.url)
+          logs.push({ key: key, url: artifact.url })
           break
 
         case 'mp4':
-            iStart = artifact.url.indexOf('/videos/') + '/videos/'.length
-            iEnd = artifact.url.length - 4
-            testName = artifact.url.substring(iStart, iEnd)
-            key = testName.replace(/\/|\\/g, '-')
-            console.log('testName:', testName)
-            console.log('key:', key)
-            console.log('url:', artifact.url)
-            mp4s.push({ testName: testName, key: key, url: artifact.url })
+          iStart = artifact.url.indexOf('/videos/') + '/videos/'.length
+          iEnd = artifact.url.length - 4
+          testName = artifact.url.substring(iStart, iEnd)
+          key = testName.replace(/\/|\\/g, '-')
+          console.log('testName:', testName)
+          console.log('key:', key)
+          console.log('url:', artifact.url)
+          mp4s.push({ testName: testName, key: key, url: artifact.url })
           break
-        
+
         case 'png':
           iStart = artifact.url.indexOf('/screenshots/') + '/screenshots/'.length
           iSpec = artifact.url.indexOf('.spec.', iStart)
@@ -73,7 +73,7 @@ ttf.SetTriageData(triageData);
           console.log('url:', artifact.url)
           pngs.push({ testName: testName, key: key, url: artifact.url })
           break
-        
+
         default:
           console.log('!!!*** What file is this? ***!!!', artifact.url)
           break
@@ -82,22 +82,22 @@ ttf.SetTriageData(triageData);
   }
 
   async function ProcessFailingTestArtifacts() {
-    for(let i = 0; i < pngs.length; i++) {
+    for (let i = 0; i < pngs.length; i++) {
       const png = pngs[i]
       let error
       let failureDetails
-      
+
       //if (png.testName.endsWith('.ts')) continue
 
       console.log(`*** PNG: ${png.testName} *****************************`)
 
       const log = logs.find(log => log.key === png.key)
       if (!log) {
-        console.log(`ProcessFailingTestArtifacts - going to return since log is undefined`)  
+        console.log(`ProcessFailingTestArtifacts - going to return since log is undefined`)
         errors.push({ testName: png.testName, key: png.key, url: 'page error: Log file not found' })
         continue
       }
-      
+
       console.log(`ProcessFailingTestArtifacts - going to await GetTriageDetailsAboutTestFailure`)
       failureDetails = await ttf.GetTriageDetailsAboutTestFailure(log)
       if (typeof failureDetails == 'string') {
@@ -250,7 +250,7 @@ ttf.SetTriageData(triageData);
   </body>
 </html>`
   }
-  
+
   function RenderUnknownFailures() {
     console.log(`${unknownTestFailures.length} UNKNOWN TEST FAILURES -------------------------------------------------------`)
 
@@ -273,12 +273,12 @@ ttf.SetTriageData(triageData);
 
           <div class="grid-item">
         `
-          
-          if (unknownTestFailure.errorPanelText) {
-            htmlContent += `<b>UI Error Panel:</b> ${unknownTestFailure.errorPanelText}<br>`
-          }
-  
-          htmlContent += `
+
+        if (unknownTestFailure.errorPanelText) {
+          htmlContent += `<b>UI Error Panel:</b> ${unknownTestFailure.errorPanelText}<br>`
+        }
+
+        htmlContent += `
             <b>Failure Message:</b> ${ReplaceSpecialHtmlCharacters(unknownTestFailure.failureMessage)}<br>
             <a href='${unknownTestFailure.logUrl}' target='_blank'>
               Log File
@@ -326,7 +326,7 @@ ttf.SetTriageData(triageData);
               Log File
             </a><br>
         `
-        
+
         if (knownTestFailure.bugs) {
           knownTestFailure.bugs.forEach(bugNumber => {
             htmlContent += `
