@@ -13,7 +13,7 @@ import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 import * as train from '../../support/Train'
 
 describe('zTemp', () => {
-  it('Experiment with action-scorer-entity-toggle', () => {
+  it('Experiment with action-scorer-entity-toggle.', () => {
     homePage.Visit()
     homePage.LoadModel('expectedEntityLablel')
     modelPage.NavigateToTrainDialogs()
@@ -30,21 +30,21 @@ describe('zTemp', () => {
 
   it.skip('Experiment with scroll bar on home page', () => {
     //models.ImportModel('z-importTest', 'z-whatsYourName.cl')
-    
+
     homePage.Visit()
 
     cy.get(document).then((element) => {
-    // cy.get('div.cl-app_content')
-    //   .parent('div.cl-o-app-columns')
-    //   .then((element) => {
+      // cy.get('div.cl-app_content')
+      //   .parent('div.cl-o-app-columns')
+      //   .then((element) => {
       helpers.ConLog('ScrollBar', `isScrollable: ${Cypress.dom.isScrollable(element)}`)
       if (Cypress.dom.isScrollable(element)) {
-        cy.scrollTo('bottom')     
+        cy.scrollTo('bottom')
       }
 
-      if (Cypress.$(document).height() > Cypress.$(window).height()) { 
+      if (Cypress.$(document).height() > Cypress.$(window).height()) {
         helpers.ConLog('ScrollBar', `isScrollable!!!`)
-        cy.scrollTo('bottom')     
+        cy.scrollTo('bottom')
       }
 
     })
@@ -58,7 +58,7 @@ describe('zTemp', () => {
     modelPage.NavigateToTrainDialogs()
     trainDialogsGrid.TdGrid.CreateNewTrainDialog()
 
-    train.AddTags(['Apple', 'Banana', 'Carrot', 'Duck', 'Egg', 'Food', 'Green Chilli', 'Habanero','Ice Cream', 'Jalapeno', 'Kale', 'Letuce', 'Mango', 'Necterine', 'Orange', 'Plum', 'QQQ', 'Raisin', 'Salt', 'Tangerine', 'UUUuuu', 'VVV', 'WwWwWwW', 'X', 'YYYyy', 'ZzZzZ'])
+    train.AddTags(['Apple', 'Banana', 'Carrot', 'Duck', 'Egg', 'Food', 'Green Chilli', 'Habanero', 'Ice Cream', 'Jalapeno', 'Kale', 'Letuce', 'Mango', 'Necterine', 'Orange', 'Plum', 'QQQ', 'Raisin', 'Salt', 'Tangerine', 'UUUuuu', 'VVV', 'WwWwWwW', 'X', 'YYYyy', 'ZzZzZ'])
   })
 })
 
@@ -68,8 +68,8 @@ function ModelShouldBeDeleted(modelName) {
     return false
   }
 
-const funcName = `ModelShouldBeDeleted(${modelName})`
-helpers.ConLog(funcName, 'Starts with "z-"')
+  const funcName = `ModelShouldBeDeleted(${modelName})`
+  helpers.ConLog(funcName, 'Starts with "z-"')
 
   // Test created Model names end with a suffix like this...  "-0425-135703x"
   // The moment format for the suffix is...                   "-MMDD-HHmmss*" where '*' is the Build Key
@@ -83,7 +83,7 @@ helpers.ConLog(funcName, 'Starts with "z-"')
     return false
   }
 
-helpers.ConLog(funcName, 'Suffix starts with "-"')
+  helpers.ConLog(funcName, 'Suffix starts with "-"')
 
   if (modelNameSuffix[suffixLength - 1] == helpers.GetBuildKey()) {
     // The Build Key in the model matches the Build Key of this test 
@@ -91,7 +91,7 @@ helpers.ConLog(funcName, 'Suffix starts with "-"')
     return true
   }
 
-helpers.ConLog(funcName, 'Key is from another build')
+  helpers.ConLog(funcName, 'Key is from another build')
 
   // This model was created by some other test run, so we need to verify
   // that the model is too old to still be in use. 5 minutes old is adequate
@@ -100,7 +100,7 @@ helpers.ConLog(funcName, 'Key is from another build')
   const modelCreatedTime = Cypress.moment(modelNameSuffix, suffixFormat)
   let momentModelIsTooOldToSave = Cypress.moment().subtract(5, 'm')
 
-helpers.ConLog(funcName, `Model is old enough to delete: ${modelCreatedTime.isBefore(momentModelIsTooOldToSave)}`)
+  helpers.ConLog(funcName, `Model is old enough to delete: ${modelCreatedTime.isBefore(momentModelIsTooOldToSave)}`)
 
   return modelCreatedTime.isBefore(momentModelIsTooOldToSave)
 }
