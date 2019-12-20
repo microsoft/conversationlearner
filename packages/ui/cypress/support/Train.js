@@ -43,8 +43,8 @@ export function VerifyCloseButtonLabel() { cy.Get('[data-testid="edit-teach-dial
 export function VerifySaveBranchButtonLabel() { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').contains('Save Branch') }
 
 export function ClickAbandonDeleteButton() { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').Click() }
-export function ClickConfirmAbandonButton() { popupModal.VerifyExactTitleNoContentClickButton('Are you sure you want to abandon your edits?', '[data-testid="confirm-cancel-modal-accept"]')}
-export function ClickConfirmDeleteLogDialogButton() { popupModal.VerifyExactTitleNoContentClickButton('Are you sure you want to delete this Log Dialog?', '[data-testid="confirm-cancel-modal-accept"]')}
+export function ClickConfirmAbandonButton() { popupModal.VerifyExactTitleNoContentClickButton('Are you sure you want to abandon your edits?', '[data-testid="confirm-cancel-modal-accept"]') }
+export function ClickConfirmDeleteLogDialogButton() { popupModal.VerifyExactTitleNoContentClickButton('Are you sure you want to delete this Log Dialog?', '[data-testid="confirm-cancel-modal-accept"]') }
 export function VerifyDeleteButtonLabel() { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').contains('Delete') }
 export function VerifyAbandonBranchButtonLabel() { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').contains('Abandon Branch') }
 
@@ -76,7 +76,7 @@ export function AbandonBranchChanges() {
   popupModal.VerifyExactTitleNoContentClickButton('Are you sure you want to abandon this Training Dialog?', '[data-testid="confirm-cancel-modal-accept"]')
 }
 
-export function VerifyTags(tags) { 
+export function VerifyTags(tags) {
   cy.Enqueue(() => {
     helpers.ConLog('VerifyTags', 'Start')
     const tagsOnPage = helpers.StringArrayFromElementText('[data-testid="train-dialog-tags"] > div.cl-tags__tag > span')
@@ -91,7 +91,7 @@ export function VerifyTags(tags) {
 // Pass in an array of tag strings.
 // If you try to call this twice in a row, it will fail to find the "Add Tag Button"
 // so don't do it, this was designed to take multiple tags.
-export function AddTags(tags) { 
+export function AddTags(tags) {
   ClickAddTagButton()
   let tagList = ''
   tags.forEach(tag => { tagList += `${tag}{enter}` })
@@ -131,7 +131,7 @@ export function PreSaveDataUsedToVerifyTdGrid() {
   })
 }
 
-export function SaveAsIsVerifyInGrid() { 
+export function SaveAsIsVerifyInGrid() {
   PreSaveDataUsedToVerifyTdGrid()
   cy.Enqueue(() => { SaveAsIs() }).then(() => {
     trainDialogsGrid.TdGrid.VerifySavedTrainDialogIsInGridAlongWithAllOtherExpectedTDs()
@@ -145,7 +145,7 @@ export function SaveAsIs() {
   cy.Enqueue(() => {
     cy.WaitForStableDOM()
     let renderingShouldBeCompleteTime = new Date().getTime() + 1000
-    cy.wrap(1, {timeout: 60000}).should(() => {
+    cy.wrap(1, { timeout: 60000 }).should(() => {
       if (mergeModal.IsVisible()) {
         helpers.ConLog(funcName, 'mergeModal.IsVisible')
 
@@ -178,7 +178,7 @@ export function SaveVerifyNoMergePopup() {
   cy.Enqueue(() => {
     cy.WaitForStableDOM()
     let renderingShouldBeCompleteTime = new Date().getTime() + 1000
-    cy.wrap(1, {timeout: 60000}).should(() => {
+    cy.wrap(1, { timeout: 60000 }).should(() => {
       if (mergeModal.IsVisible()) {
         helpers.ConLog(funcName, 'mergeModal.IsVisible')
         mergeModalIsVisible = true
@@ -215,8 +215,10 @@ export function VerifyCloseIsTheOnlyEnabledButton() {
   cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').should('be.enabled')
 }
 
-export function TypeYourMessage(message) { 
+export function TypeYourMessage(message, ignoreBotErrorMessages = false) {
   cy.Get(TypeYourMessageSelector).type(`${message}{enter}`)
   entityDetectionPanel.VerifyEntityDetectionPhrase(message)
+  if (!ignoreBotErrorMessages) {
+    chatPanel.VerifyNoBotErrorAfterUserTurn(message)
+  }
 }
-

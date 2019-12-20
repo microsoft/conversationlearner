@@ -19,8 +19,6 @@ describe('Bug 2379 Repro', () => {
     })
   })
 
-  TestRemoval('Expected Entity', () => { actionModal.RemoveExpectedEntity('anEntity') })
-
   TestRemoval('Required Conditions', () => { actionModal.RemoveRequiredCondition('anEntity == 1') })
 
   TestRemoval('Expected Entity', () => { actionModal.RemoveDisqualifyingCondition('anEntity') })
@@ -34,7 +32,7 @@ function TestRemoval(title, removeFunction) {
     })
 
     it(`Remove ${title}`, () => {
-      removeFunction() 
+      removeFunction()
     })
 
     it('Save the changed Action', () => {
@@ -43,17 +41,17 @@ function TestRemoval(title, removeFunction) {
 
     // Bug 2379: Editing Action Failed - Using "Reprompt" option in Action and changing a condition fails to save 
     // Once this bug is fixed comment out this block of code and uncomment the next block
-    it('Verify that the Bug reproduced', () => {
-      helpers.VerifyErrorMessageContains('Request failed with status code 400')
-      helpers.VerifyErrorMessageContains("Action refers to a RepromptActionId that doesn't exist in the source.")
-      helpers.CloseErrorMessagePanel()
-    })
-    
+    // it('Verify that the Bug reproduced', () => {
+    //   helpers.VerifyErrorMessageContains('Request failed with status code 400')
+    //   helpers.VerifyErrorMessageContains("Action refers to a RepromptActionId that doesn't exist in the source.")
+    //   helpers.CloseErrorMessagePanel()
+    // })
+
     // Bug 2379: Editing Action Failed - Using "Reprompt" option in Action and changing a condition fails to save 
     // This code should work once this bug is fixed...
     // Uncomment this and comment out the above to detect a regression.
-    // it('Verify that the Bug did not reproduce', () => {
-    //   helpers.VerifyNoErrorMessages()
-    // })
+    it('Verify that the Bug did not reproduce', () => {
+      helpers.VerifyNoErrorMessages()
+    })
   })
 }
