@@ -222,4 +222,3 @@ export function TypeYourMessage(message, ignoreBotErrorMessages = false) {
     chatPanel.VerifyNoBotErrorAfterUserTurn(message)
   }
 }
-

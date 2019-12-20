@@ -12,7 +12,7 @@ import * as helpers from '../../../support/Helpers'
 
 describe('Bug 2119 Repro', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
-  
+
   let chatMessages
 
   context('Setup', () => {
@@ -30,7 +30,7 @@ describe('Bug 2119 Repro', () => {
     it('Get all of the existing chat messages', () => {
       cy.WaitForStableDOM().then(() => {
         chatMessages = chatPanel.GetAllChatMessages()
-      })      
+      })
     })
 
     it('Add an additional user and Bot turn', () => {
@@ -66,7 +66,7 @@ describe('Bug 2119 Repro', () => {
     it('Get all of the existing chat messages', () => {
       cy.WaitForStableDOM().then(() => {
         chatMessages = chatPanel.GetAllChatMessages()
-      })      
+      })
     })
 
     it('Add an additional user and Bot turn', () => {
@@ -77,8 +77,8 @@ describe('Bug 2119 Repro', () => {
 
     // Bug 2119: User turn with error is automagically deleted when a new user turn is added
     // Once this bug is fixed comment out this block of code.
-    it('Verify that Bug 2119 reproduced', () => {
-      // Adjust our array of chatMessages to what the bug produces.
+    it('A hack to adjust for Bug 2119', () => {
+      // Delete messages from our array of chatMessages to match what the bug produces.
       chatMessages.splice(chatMessages.indexOf('User utterance #4'), 1)
       chatMessages.splice(chatMessages.indexOf('User utterance #2'), 1)
     })
