@@ -38,9 +38,23 @@ export enum SessionStartFlags {
     IN_TEST = 1 << 2
 }
 
-export interface InternalCallbackNoStubs<T> extends CLM.Callback, ICallback<T> { }
+export interface InternalCallbackNoStubs<T> extends Omit<CLM.Callback, "stubs">, ICallback<T> { }
 export interface InternalCallback<T> extends InternalCallbackNoStubs<T> {
     stubs: InternalCallbackNoStubs<T>[]
+}
+
+export const convertInternalCallbackToCallback = <T>(c: InternalCallback<T>): CLM.Callback => {
+    const { logic, render, stubs, ...callback } = c
+
+    const stubInfoObjects = stubs.map<CLM.StubInfo>(s => ({
+        name: s.name,
+        // TODO: Calculate changes to entities made within stub
+        entityValues: {},
+    }))
+    return {
+        ...callback,
+        stubs: stubInfoObjects,
+    }
 }
 
 /**
@@ -209,16 +223,11 @@ export class CLRunner {
     public botChecksum(): string {
         // Create bot checksum is doesn't already exist
         if (!this.checksum) {
-            const callbacks = Object.values(this.callbacks).map(this.convertInternalCallbackToCallback)
+            const callbacks = Object.values(this.callbacks).map(convertInternalCallbackToCallback)
             const templates = TemplateProvider.GetTemplates()
             this.checksum = Utils.botChecksum(callbacks, templates)
         }
         return this.checksum
-    }
-
-    public convertInternalCallbackToCallback = <T>(c: InternalCallback<T>): CLM.Callback => {
-        const { logic, render, ...callback } = c
-        return callback
     }
 
     public async onTurn(turnContext: BB.TurnContext, next: (result: CLRecognizerResult | null) => Promise<void>): Promise<void> {
@@ -829,7 +838,7 @@ export class CLRunner {
 
             const internalStubCallbacks = inputStubs.map<InternalCallbackNoStubs<T>>(sc => {
                 const stubCallback: InternalCallbackNoStubs<T> = {
-                    name: callbackInput.name,
+                    name: sc.name,
                     logic: defaultLogicCallback,
                     logicArguments: [],
                     isLogicFunctionProvided: false,
@@ -2530,7 +2539,7 @@ export class CLRunner {
     }
 
     // Generate a card to show for an API action w/o output
-    private RenderAPICard(callback: CLM.Callback, args: string[]): Partial<BB.Activity> {
+    private RenderAPICard(callback: InternalCallback<any>, args: string[]): Partial<BB.Activity> {
         return this.renderPlaceholderCard("API Call:", `${callback.name}(${args.join(', ')})`)
     }
 

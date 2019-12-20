@@ -517,25 +517,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return (
             <div className="cl-wc-buttonbar">
                 {isScorerStepCallbackAction &&
-                    <div className="cl-wc-buttonbar__stub-dropdown">
-                        <OF.Dropdown
-                            data-testid="webchat-stub-dropdown"
-                            selectedKey={'0'}
-                            options={[
-                                {
-                                    key: '0',
-                                    text: 'None',
-                                },
-                                {
-                                    key: '1',
-                                    text: 'Option 1',
-                                },
-                                {
-                                    key: '2',
-                                    text: 'Option 2',
-                                },
-                            ]}
-                        />
+                    <div className="cl-wc-buttonbar__stub-name">
+                        Stub: Number is 54
                     </div>
                 }
                 {!isEndSession &&

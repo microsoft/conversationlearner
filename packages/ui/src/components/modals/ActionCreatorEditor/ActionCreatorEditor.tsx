@@ -1657,7 +1657,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                         {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.API_LOCAL
                             && <div>
-                                <div className="cl-inputWithButton-input">
+                                <div className="cl-action-creator-input-with-button">
                                     <TC.Dropdown
                                         data-testid="dropdown-api-option"
                                         label="API"
@@ -1669,7 +1669,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         tipType={ToolTip.TipType.ACTION_API1}
                                     />
                                     <OF.IconButton
-                                        className="ms-Button--primary cl-inputWithButton-button"
+                                        className="ms-Button--primary"
                                         onClick={() => this.onClickSyncBotInfo()}
                                         ariaDescription="Refresh"
                                         iconProps={{ iconName: 'Sync' }}
@@ -1720,6 +1720,29 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                             )
                                                         })}
                                                 </div>}
+
+                                            <OF.Label>Stubs <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS} /></OF.Label>
+
+                                            {/* In future include stubs defined in UI */}
+                                            <div className="cl-action-creator-section">
+                                                {callback.stubs.length > 0
+                                                    ? callback.stubs.map(stubInfo => {
+                                                        return <div className="cl-action-creator-input-with-button">
+                                                            <OF.TextField
+                                                                data-testid="action-creator-editor-stub-name"
+                                                                value={stubInfo.name}
+                                                                disabled={true}
+                                                            />
+                                                            <OF.IconButton
+                                                                className="ms-Button--primary"
+                                                                onClick={() => { console.log('preview stub', stubInfo) }}
+                                                                ariaDescription="View Stub"
+                                                                iconProps={{ iconName: 'EntryView' }}
+                                                            />
+                                                        </div>
+                                                    })
+                                                    : <div>No Stubs Defined</div>}
+                                            </div>
                                         </div>
                                         : <div className="cl-errorpanel" data-testid="action-creator-editor-error-callback">
                                             <div>
@@ -1734,7 +1757,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                         {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CARD
                             && <div>
-                                <div className="cl-inputWithButton-input">
+                                <div className="cl-action-creator-input-with-button">
                                     <TC.Dropdown
                                         data-testid="action-card-template"
                                         label="Template"
@@ -1748,7 +1771,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     <OF.IconButton
                                         className="ms-Button--primary cl-inputWithButton-button"
                                         onClick={() => this.onClickViewCard()}
-                                        ariaDescription="Refresh"
+                                        ariaDescription="View Card"
                                         iconProps={{ iconName: 'RedEye' }}
                                         disabled={this.state.cardOptions.length === 0}
                                     />

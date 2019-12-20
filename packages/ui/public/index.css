@@ -367,6 +367,15 @@ i[data-icon-name="Edit"]:hover {
   background-color: transparent;
 }
 
+/* TODO: Remove absolute positioning */
+.cl-wc-buttonbar__stub-name {
+  font-size: 90%;
+  position: absolute !important;
+  bottom: 0;
+  z-index: 1000;
+  left: 80px;
+}
+
 .cl-wc-deleteturn {
   border: none !important;
   position: absolute !important;

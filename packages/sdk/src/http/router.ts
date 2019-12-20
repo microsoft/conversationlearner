@@ -18,7 +18,7 @@ import * as cors from 'cors'
 import getAppDefinitionChange from '../upgrade'
 import { CLDebug } from '../CLDebug'
 import { CLClient, ICLClientOptions } from '../CLClient'
-import { CLRunner, SessionStartFlags } from '../CLRunner'
+import { CLRunner, SessionStartFlags, convertInternalCallbackToCallback } from '../CLRunner'
 import { CLStateFactory } from '../Memory/CLStateFactory'
 import { CLRecognizerResult } from '../CLRecognizeResult'
 import { TemplateProvider } from '../TemplateProvider'
@@ -212,7 +212,7 @@ export const getRouter = (
                 }
             }
 
-            const callbacks = Object.values(clRunner.callbacks).map(clRunner.convertInternalCallbackToCallback)
+            const callbacks = Object.values(clRunner.callbacks).map(convertInternalCallbackToCallback)
             const templates = TemplateProvider.GetTemplates()
 
             const botInfo: CLM.BotInfo = {

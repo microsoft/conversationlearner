@@ -29,7 +29,21 @@
     margin-left: 40px;
 }
 
+.cl-action-creator-section {
+    /* margin-left: 1rem; */
+    display: grid;
+    grid-gap: 0.5rem;
+}
+
 .cl-tag-item-suggestion--add-condition {
     background-color: white;
     width: 100%;
+}
+
+.cl-action-creator-input-with-button {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: 1fr;
+    grid-gap: 0.75rem;
+    align-items: end;
 }

@@ -13,4 +13,10 @@ export interface Callback {
   isLogicFunctionProvided: boolean
   renderArguments: string[]
   isRenderFunctionProvided: boolean
+  stubs: StubInfo[]
+}
+
+export interface StubInfo {
+  name: string
+  entityValues: Record<string, string>
 }

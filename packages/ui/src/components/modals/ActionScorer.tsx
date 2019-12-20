@@ -5,6 +5,8 @@
 import * as React from 'react'
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
+import * as TC from '../tipComponents'
+import * as ToolTip from '../ToolTips/ToolTips'
 import * as Util from '../../Utils/util'
 import * as DialogEditing from '../../Utils/dialogEditing'
 import * as DialogUtils from '../../Utils/dialogUtils'
@@ -132,24 +134,47 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     component.onClickViewCard)
 
                 if (action.actionType === CLM.ActionTypes.API_LOCAL) {
+                    const apiAction = new CLM.ApiAction(action)
+                    const callback = component.props.botInfo.callbacks.find(c => c.name === apiAction.name)
+
+                    // Compute list of stubs from callbacks
+                    // If no stubs defined, show None and Disable preview.
+                    // If stubs defined list stub names and none selected.
+                    const noneOptionKey = 'none'
+                    const stubOptions: OF.IDropdownOption[] = [
+                        {
+                            key: noneOptionKey,
+                            text: 'None',
+                        },
+                    ]
+                    const selectedStubOptionKey = noneOptionKey
+                    if (callback?.stubs) {
+                        const definedStubOptions = callback.stubs.map(stubInfo => ({
+                            key: stubInfo.name,
+                            text: stubInfo.name,
+                        }))
+
+                        stubOptions.push(...definedStubOptions)
+                    }
+
+                    const isStubPreviewDisabled = selectedStubOptionKey === noneOptionKey
                     return <div className="cl-action-scorer-callback">
                         {actionResponseComponent}
-                        <div>
-                            <OF.Dropdown
-                                ariaLabel={'Stubs' ?? Util.formatMessageId(intl, FM.APPCREATOR_FIELDS_LOCALE_LABEL)}
-                                label={'Stubs' ?? Util.formatMessageId(intl, FM.APPCREATOR_FIELDS_LOCALE_LABEL)}
-                                options={[
-                                    {
-                                        key: '0',
-                                        text: 'Stub 0',
-                                    },
-                                    {
-                                        key: '1',
-                                        text: 'Stub 1',
-                                    },
-                                ]}
-                            />
-                        </div>
+                        <TC.Dropdown
+                            ariaLabel={'Stubs' ?? Util.formatMessageId(intl, FM.APPCREATOR_FIELDS_LOCALE_LABEL)}
+                            label={'Stubs' ?? Util.formatMessageId(intl, FM.APPCREATOR_FIELDS_LOCALE_LABEL)}
+                            options={stubOptions}
+                            selectedKey={noneOptionKey}
+                            tipType={ToolTip.TipType.ACTION_SET_ENTITY_VALUE}
+                        />
+
+                        <OF.IconButton
+                            className="ms-Button--primary cl-inputWithButton-button"
+                            onClick={() => { console.log('preview stub') }}
+                            ariaDescription="View Stub"
+                            iconProps={{ iconName: 'EntryView' }}
+                            disabled={isStubPreviewDisabled}
+                        />
                     </div>
                 }
 

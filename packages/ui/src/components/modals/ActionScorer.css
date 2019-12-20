@@ -21,3 +21,9 @@
     grid-auto-flow: column;
     grid-gap: 1em;
 }
+
+.cl-action-scorer-callback__preview-button {
+    width: 30px !important;
+    min-width: 30px !important;
+    align-self: end;
+}
