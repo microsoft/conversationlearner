@@ -13,6 +13,7 @@ exports.triageData = [
   {
     and: [`Timed out retrying: Expected to find element: 'button.ms-Dropdown-item[title="Enum"]', but never found it.`],
     bugs: [2409],
+    comment: 'Fails to create an entity - only on CircleCI',
   },
   {
     and: [`Bugs 2389 & 2400 - Entity Detection panel shows a phrase that is different than the user's utterance.`],

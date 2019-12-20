@@ -26,7 +26,9 @@ ttf.SetTriageData(triageData);
 
   buildNumber = process.argv[2]
 
-  const artifacts = await apiData.Get(`https://circleci.com/api/v1.1/project/github/microsoft/conversationLearner/${buildNumber}/artifacts?circle-token=2ad1e457047948114cb3bbb1957d6f90c1e2ee25`)
+  const circleCiToken = GetCircleCiToken()
+
+  const artifacts = await apiData.Get(`https://circleci.com/api/v1.1/project/github/microsoft/conversationLearner/${buildNumber}/artifacts?circle-token=${circleCiToken}`)
   MoveArtifactJsonIntoArrays()
   console.log('Processing the Failed Test Results ----------------------------------')
   await ProcessFailingTestArtifacts()
@@ -41,6 +43,25 @@ ttf.SetTriageData(triageData);
   fs.writeFileSync(outputPath, htmlContent)
 
   child_process.exec(outputPath)
+
+  // --- End of Main process - worker functions below -----------------
+
+  function GetCircleCiToken() {
+    const envFileContents = fs.readFileSync('.env', { encoding: 'utf8' })
+    const CIRCLECI_TOKEN = 'circle-token='
+    const iStart = envFileContents.indexOf(CIRCLECI_TOKEN)
+    //console.log(typeof envFileContents, '\n', envFileContents)
+    if (iStart == -1) {
+      throw new Error('circle-token= is missing from the .env file')
+    }
+    let iEnd = envFileContents.indexOf('\n', iStart + CIRCLECI_TOKEN.length)
+    if (iEnd == -1) {
+      iEnd = envFileContents.length
+    }
+    const returnValue = envFileContents.substring(iStart + CIRCLECI_TOKEN.length, iEnd).trim()
+    //console.log(returnValue)
+    return returnValue
+  }
 
   function MoveArtifactJsonIntoArrays() {
     artifacts.forEach(artifact => {
@@ -154,51 +175,6 @@ ttf.SetTriageData(triageData);
         videoUrl: mp4.url,
         logUrl: log.url,
       })
-    })
-  }
-
-  function OLD_RenderResults() {
-    console.log(`${unknownTestFailures.length} UNKNOWN TEST FAILURES -------------------------------------------------------`)
-    unknownTestFailures.forEach(unknownTestFailure => {
-      console.log(`unknownTestFailures.push({
-        testName: '${unknownTestFailure.testName}',
-        key: ${unknownTestFailure.key},
-        snapshotUrl: '${unknownTestFailure.snapshotUrl}',
-        videoUrl: '${unknownTestFailure.videoUrl}',
-        logUrl: '${unknownTestFailure.logUrl}',
-        failureMessage: '${unknownTestFailure.failureMessage}',
-      })`)
-    })
-
-    console.log(`${knownTestFailures.length} KNOWN TEST FAILURES ---------------------------------------------------------`)
-    knownTestFailures.forEach(knownTestFailure => {
-      console.log(`knownTestFailures.push({
-        testName: '${knownTestFailure.testName}',
-        key: ${knownTestFailure.key},
-        snapshotUrl: '${knownTestFailure.snapshotUrl}',
-        videoUrl: '${knownTestFailure.videoUrl}',
-        logUrl: '${knownTestFailure.logUrl}',
-        failureMessage: '${knownTestFailure.failureMessage}',
-        bugs: '${knownTestFailure.bugs}',
-      })`)
-    })
-
-    console.log(`${passingTests.length} PASSING TESTS ---------------------------------------------------------------`)
-    passingTests.forEach(passingTest => {
-      console.log(`passingTests.push({
-        testName: '${passingTest.testName}',
-        videoUrl: '${passingTest.videoUrl}',
-        logUrl: '${passingTest.logUrl}',
-      })`)
-    })
-
-    console.log(`${errors.length} ERRORS ---------------------------------------------------------------`)
-    errors.forEach(error => {
-      console.log(`errors.push({
-        testName: '${error.testName}',
-        key: '${error.key}',
-        url: '${error.url}',
-      })`)
     })
   }
 
