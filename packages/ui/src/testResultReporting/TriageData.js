@@ -10,7 +10,7 @@ exports.triageData = [
     ],
     bugs: [2415]
   },
-  { 
+  {
     and: [`Timed out retrying: Expected to find element: 'button.ms-Dropdown-item[title="Enum"]', but never found it.`],
     bugs: [2409],
   },
@@ -91,6 +91,15 @@ exports.triageData = [
     comment: 'Bug in Test_SelectWord',
   },
   {
+    testName: 'Regression-Train-DateTimeResolver.spec.js',
+    and: [
+      `Found ZERO elements that exactly matches 'You are leaving on`,
+      `and returning on`,
+    ],
+    bugs: [1816],
+    comment: 'This bug happens mid afternoon because the server is in one timezone and the UI in another.',
+  },
+  {
     testName: 'Regression-BugRepro-Bug2319Repro.spec.js',
     and: [`Expected to find 'X' in the text chat pane, instead we found 'ERROR: Missing ConversationReference' at index: 4`],
     bugs: [2319],
@@ -135,7 +144,7 @@ exampleTriageData = [
         or: [
           `This will NOT be found`, // Since we are now in an OR this one can be FALSE if the other is TRUE
           {                         // Starting a new block that is ORed with the prior test
-            and : [                 
+            and: [
               `Should import a model to test against and navigate to Train Dialogs view`, // this should also be found in the FULL_LOG
               {                       // Starting a new block that is ANDed with the prior test
                 searchBy: ERROR_PANEL,// Search will now occur in the ERROR_PANEL
