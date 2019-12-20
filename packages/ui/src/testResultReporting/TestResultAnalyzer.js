@@ -1,6 +1,7 @@
-const ttf = require('./TriageTestFailure.js')
+const ttf = require('./TriageTestFailure')
 const apiData = require('./ApiData')
 const fs = require('fs')
+const child_process = require('child_process')
 
 const triageData = require('./TriageData').triageData
 ttf.SetTriageData(triageData);
@@ -35,8 +36,11 @@ ttf.SetTriageData(triageData);
   console.log('Rendering all Results to HTML ----------------------------------')
   RenderResults()
 
-  console.log('Writing HTML to File ..\\results\\TestResults.html ----------------------------------')
-  fs.writeFileSync('..\\results\\TestResults.html', htmlContent)
+  const outputPath = `${process.env.TEMP}\\TestResults.${buildNumber}.html`
+  console.log(`Writing HTML to File ${outputPath} ----------------------------------`)
+  fs.writeFileSync(outputPath, htmlContent)
+
+  child_process.exec(outputPath)
 
   function MoveArtifactJsonIntoArrays() {
     artifacts.forEach(artifact => {
