@@ -486,10 +486,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     async handleActionSelection(scoredBase: CLM.ScoredBase) {
         // If placeholder get data before selecting
         if (CLM.ActionBase.isPlaceholderAPI(scoredBase)) {
-            const action = this.props.actions.find(a => a.actionId === scoredBase.actionId)
-            if (action) {
-                this.onOpenAPIPlaceholderCreator(new CLM.ApiAction(action).name)
-            }
+            this.onOpenAPIPlaceholderCreator(new CLM.ApiAction(scoredBase as CLM.ActionBase).name)
             return
         }
         let scoredAction: CLM.ScoredAction | undefined
@@ -518,11 +515,27 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             throw new Error(`Scored action could not be found in list of available actions`)
         }
 
+        // TODO: Get stub name user selected from dropdown?
+        // Pick random stub for now
+        let stubName = undefined
+        if (scoredBase.actionType === CLM.ActionTypes.API_LOCAL) {
+            const apiAction = new CLM.ApiAction(scoredBase as CLM.ActionBase)
+            const callback = this.props.botInfo.callbacks.find(c => c.name === apiAction.name)
+
+            if (callback?.stubs) {
+                const randomStubIndex = Math.floor(Math.random() * callback?.stubs.length)
+                const randomStub = callback.stubs[randomStubIndex]
+                console.log(`Random stub chosen: `, randomStub)
+                stubName = randomStub.name
+            }
+        }
+
         const trainScorerStep: CLM.TrainScorerStep = {
             input: this.props.scoreInput,
             labelAction: scoredAction.actionId,
             logicResult: undefined,
-            scoredAction: scoredAction
+            scoredAction,
+            stubName,
         }
 
         this.setState({ haveEdited: true })

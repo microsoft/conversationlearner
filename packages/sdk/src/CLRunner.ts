@@ -1160,6 +1160,7 @@ export class CLRunner {
                 }
                 case CLM.ActionTypes.API_LOCAL: {
                     const apiAction = new CLM.ApiAction(clRecognizeResult.scoredAction as any)
+                    // TODO: Send stub selected from uiTrainScorerStep
                     actionResult = await this.TakeAPIAction(
                         apiAction,
                         filledEntityMap,
