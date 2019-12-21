@@ -33,15 +33,15 @@ async function GetTriageDetailsAboutTestFailure(log) {
     let returnValue = _query()
     console.log(`query returned:`, returnValue, '\n')
     return returnValue
-    
+
     function _query() {
       // Determine which string will be searched...
       let searchBy = defaultSearchBy
       if (queryObj.searchBy) {
-        searchBy = queryObj.searchBy  
+        searchBy = queryObj.searchBy
       }
       let sourceText
-      switch(searchBy) {
+      switch (searchBy) {
         case FAILURE_MESSAGE:
           sourceText = failureMessage
           break;
@@ -54,7 +54,7 @@ async function GetTriageDetailsAboutTestFailure(log) {
         default:
           throw new Error(`Unexpected searchBy value: '${searchBy}'`)
       }
-      
+
       if (!sourceText) {
         console.log(`sourceText for searchBy '${searchBy}' is undefined`)
         return false
@@ -64,14 +64,14 @@ async function GetTriageDetailsAboutTestFailure(log) {
       // Determine whether multiple conditions will be ANDed or ORed together to form the result...
       let and
       let queryArray
-      if(queryObj.and) {
+      if (queryObj.and) {
         and = true
         queryArray = queryObj.and
-      } else if(queryObj.or) {
+      } else if (queryObj.or) {
         and = false
         queryArray = queryObj.or
       }
-      
+
       console.log(`query`, searchBy, and ? 'AND' : 'OR', queryArray)
 
       // Do the actual search here...
@@ -88,8 +88,8 @@ async function GetTriageDetailsAboutTestFailure(log) {
         } else {
           throw new Error(`Unexpected item type in Query Array: ${typeof item}`)
         }
-        
-        if (and) { 
+
+        if (and) {
           if (!result) { return false }
         } else { // this is an 'OR' test
           if (result) { return true }
@@ -98,7 +98,7 @@ async function GetTriageDetailsAboutTestFailure(log) {
       return and
     }
   }
-  
+
   function GetFailureMessage() {
     const searchForFailureMessage = '\nFailure Message: '
     let iStart
@@ -132,18 +132,18 @@ async function GetTriageDetailsAboutTestFailure(log) {
     const errorPanelMarker = 'Error Panel found in Current HTML'
     const index = fullLogText.indexOf(errorPanelMarker)
     if (index == -1) { return undefined }
-  
+
     let start = fullLogText.indexOf('\n', index + errorPanelMarker.length) + 6
     let end = fullLogText.indexOf('\n-+- ', start)
     let errorMessage = fullLogText.substring(start, end).trim()
-  
+
     console.log(`start: ${start} - end: ${end}`)
     console.log('Extracted:\n' + errorMessage + '\n')
-  
+
     // Adding spaces to the end of each potential text string just to be sure there is a break between words.
     // Later we will remove any extra spaces this might create.
     errorMessage = errorMessage.replace(/<\//g, ' </')
-  
+
     const $ = cheerio.load(errorMessage)
     let text = $('div.cl-errorpanel').text().trim().replace(/\\"/g, '"').replace(/  |\\n/g, ' ')
     console.log(`Error Message:\n${text}<===\n`)
@@ -153,6 +153,16 @@ async function GetTriageDetailsAboutTestFailure(log) {
   console.log(`GetTriageDetailsAboutTestFailure - start`)
   return await apiData.Get(log.url).then(data => {
     try {
+      if (!data || typeof data != 'string') {
+        console.log(`GetTriageDetailsAboutTestFailure - Error reading log file. Returned data is either undefined or not in the expected form`)
+        console.log('Log:', log)
+        console.log('data:', data)
+        return {
+          message: `failed to find the expected data in: ${log.url}`,
+          comment: 'Error Processing this Test Failure - try re-running the tool',
+        }
+      }
+
       fullLogText = data
       // console.log(fullLogText)
       // console.log()
@@ -161,11 +171,11 @@ async function GetTriageDetailsAboutTestFailure(log) {
       errorPanelText = GetErrorPanelText()
 
       let returnValue = {
-        message: failureMessage, 
+        message: failureMessage,
         errorPanelText: errorPanelText,
       }
-  
-      for(let i = 0; i < triageData.length; i++) {
+
+      for (let i = 0; i < triageData.length; i++) {
         console.log(`GetTriageDetailsAboutTestFailure - for i=${i}`)
         // testName is an "AND" condition with the other query conditions.
         if (triageData[i].testName) {
@@ -186,8 +196,12 @@ async function GetTriageDetailsAboutTestFailure(log) {
       console.log(returnValue)
       return returnValue
     }
-    catch(error) {
+    catch (error) {
       console.log(`!!! ERROR: ${error.message}`)
+      return {
+        message: `failed to find the expected data in: ${log.url}`,
+        comment: 'Error Processing this Test Failure - try re-running the tool',
+      }
     }
   })
 }
@@ -217,20 +231,21 @@ if (require.main === module) {
       },
       { // Should be a match
         and: [
-          `Expected to find element:`, 
+          `Expected to find element:`,
           `but never found it.`,
           {
             searchBy: FULL_LOG,
             or: [
               `This will NOT be found`,
-              { 
-                and : [
-                `Should import a model to test against and navigate to Train Dialogs view`,
-                { 
-                  searchBy: ERROR_PANEL,
-                  and: [`Creating Application Failed Request failed with status code 400 "Bad Request {"Locale":["The Locale field is required."]}`],
-                },
-              ]},
+              {
+                and: [
+                  `Should import a model to test against and navigate to Train Dialogs view`,
+                  {
+                    searchBy: ERROR_PANEL,
+                    and: [`Creating Application Failed Request failed with status code 400 "Bad Request {"Locale":["The Locale field is required."]}`],
+                  },
+                ]
+              },
             ],
           },
         ],
@@ -242,11 +257,12 @@ if (require.main === module) {
         comment: 'This is the correct answer'
       }
     ]
-   
+
     SetTriageData(triageData)
 
     await GetTriageDetailsAboutTestFailure({
       key: 'WeDoNotNeedToMatchThis',
-      url: 'https://5509-94457606-gh.circle-artifacts.com/0/root/project/results/cypress/Regression-EditAndBranching-LastTurnUndo.spec.js.19.12.13.01.21.57..846.log'})
+      url: 'https://5509-94457606-gh.circle-artifacts.com/0/root/project/results/cypress/Regression-EditAndBranching-LastTurnUndo.spec.js.19.12.13.01.21.57..846.log'
+    })
   }())
 }

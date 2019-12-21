@@ -142,11 +142,7 @@ ttf.SetTriageData(triageData);
 
       console.log(`ProcessFailingTestArtifacts - going to await GetTriageDetailsAboutTestFailure`)
       failureDetails = await ttf.GetTriageDetailsAboutTestFailure(log)
-      if (typeof failureDetails == 'string') {
-        console.log(`ProcessFailingTestArtifacts got failureDetails: ${failureDetails}`)
-      } else {
-        console.log(`ProcessFailingTestArtifacts got failureDetails: { message: ${failureDetails.message}, bugs: ${failureDetails.bugs}, comment: ${failureDetails.comment} }`)
-      }
+      console.log(`ProcessFailingTestArtifacts got failureDetails: { message: ${failureDetails.message}, bugs: ${failureDetails.bugs}, comment: ${failureDetails.comment} }`)
 
       const mp4 = mp4s.find(mp4 => mp4.key === png.key)
       if (!mp4) {
