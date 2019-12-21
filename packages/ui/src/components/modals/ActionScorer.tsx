@@ -5,8 +5,6 @@
 import * as React from 'react'
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
-import * as TC from '../tipComponents'
-import * as ToolTip from '../ToolTips/ToolTips'
 import * as Util from '../../Utils/util'
 import * as DialogEditing from '../../Utils/dialogEditing'
 import * as DialogUtils from '../../Utils/dialogUtils'
@@ -26,6 +24,7 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import './ActionScorer.css'
 import { autobind } from 'core-decorators'
+import ActionStubDropdown from './ActionStubDropdown'
 
 const MISSING_ACTION = 'missing_action'
 
@@ -34,6 +33,7 @@ interface ActionForRender extends CLM.ScoredBase {
     score?: number
     reason?: CLM.ScoreReason | null
     repromptActionId?: string | undefined
+    selectedStub?: CLM.StubInfo
 }
 
 interface IRenderableColumn extends OF.IColumn {
@@ -126,7 +126,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isMultiline: true,
             isResizable: true,
             getSortValue: () => '',
-            render: (action: CLM.ActionBase, component) => {
+            render: (actionForRender, component) => {
+                const action = actionForRender as CLM.ActionBase
                 const actionResponseComponent = actionListViewRenderer(action,
                     component.props.entities,
                     component.props.memories,
@@ -135,47 +136,17 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 
                 if (action.actionType === CLM.ActionTypes.API_LOCAL) {
                     const apiAction = new CLM.ApiAction(action)
-                    const callback = component.props.botInfo.callbacks.find(c => c.name === apiAction.name)
-
-                    // Compute list of stubs from callbacks
-                    // If no stubs defined, show None and Disable preview.
-                    // If stubs defined list stub names and none selected.
-                    const noneOptionKey = 'none'
-                    const stubOptions: OF.IDropdownOption[] = [
-                        {
-                            key: noneOptionKey,
-                            text: 'None',
-                        },
-                    ]
-                    const selectedStubOptionKey = noneOptionKey
-                    if (callback?.stubs) {
-                        const definedStubOptions = callback.stubs.map(stubInfo => ({
-                            key: stubInfo.name,
-                            text: stubInfo.name,
-                        }))
-
-                        stubOptions.push(...definedStubOptions)
+                    if (!apiAction.isPlaceholder) {
+                        const callback = component.props.botInfo.callbacks.find(c => c.name === apiAction.name)
+                        return <div className="cl-action-scorer-callback">
+                            {actionResponseComponent}
+                            <ActionStubDropdown
+                                action={apiAction}
+                                callback={callback}
+                                selectedStub={actionForRender.selectedStub}
+                            />
+                        </div>
                     }
-
-                    const isStubPreviewDisabled = selectedStubOptionKey === noneOptionKey
-                    return <div className="cl-action-scorer-callback">
-                        {actionResponseComponent}
-                        <TC.Dropdown
-                            ariaLabel={'Stubs' ?? Util.formatMessageId(intl, FM.APPCREATOR_FIELDS_LOCALE_LABEL)}
-                            label={'Stubs' ?? Util.formatMessageId(intl, FM.APPCREATOR_FIELDS_LOCALE_LABEL)}
-                            options={stubOptions}
-                            selectedKey={noneOptionKey}
-                            tipType={ToolTip.TipType.ACTION_SET_ENTITY_VALUE}
-                        />
-
-                        <OF.IconButton
-                            className="ms-Button--primary cl-inputWithButton-button"
-                            onClick={() => { console.log('preview stub') }}
-                            ariaDescription="View Stub"
-                            iconProps={{ iconName: 'EntryView' }}
-                            disabled={isStubPreviewDisabled}
-                        />
-                    </div>
                 }
 
                 return actionResponseComponent
@@ -291,7 +262,7 @@ interface ComponentState {
     apiPlaceholderName: string | null
     apiPlaceholderCreatorFilledEntityMap: CLM.FilledEntityMap | null
     columns: OF.IColumn[]
-    actionForRender: CLM.ScoredBase[]
+    actionForRender: ActionForRender[]
     sortColumn: IRenderableColumn
     haveEdited: boolean
     cardViewerAction: CLM.ActionBase | null
@@ -513,7 +484,6 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
     @autobind
     async handleActionSelection(scoredBase: CLM.ScoredBase) {
-
         // If placeholder get data before selecting
         if (CLM.ActionBase.isPlaceholderAPI(scoredBase)) {
             const action = this.props.actions.find(a => a.actionId === scoredBase.actionId)

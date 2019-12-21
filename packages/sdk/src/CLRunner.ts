@@ -21,6 +21,7 @@ import { UIMode } from './Memory/BotState'
 import { EntityState } from './Memory/EntityState'
 import { ILogStorage } from './Memory/ILogStorage'
 import { CLOptions } from './CLOptions'
+import { FilledEntityMap } from '@conversationlearner/models'
 
 interface RunnerLookup {
     [appId: string]: CLRunner
@@ -46,11 +47,29 @@ export interface InternalCallback<T> extends InternalCallbackNoStubs<T> {
 export const convertInternalCallbackToCallback = <T>(c: InternalCallback<T>): CLM.Callback => {
     const { logic, render, stubs, ...callback } = c
 
-    const stubInfoObjects = stubs.map<CLM.StubInfo>(s => ({
-        name: s.name,
+    const stubInfoObjects = stubs.map<CLM.StubInfo>(s => {
+
         // TODO: Calculate changes to entities made within stub
-        entityValues: {},
-    }))
+        // Call logic and render functions from stub to determine what entity values are after
+
+        // const defaultSessionInfo = {
+        //     userName: '',
+        //     userId: '',
+        //     logDialogId: ''
+        // }
+        // const filledEntityMap = new FilledEntityMap()
+        // const memory = new ClientMemoryManager(filledEntityMap, filledEntityMap, [], defaultSessionInfo)
+        // logic(memory)
+        // Object.values(memory.curMemories.map)
+
+        const entityValues = {}
+
+        return {
+            name: s.name,
+            entityValues,
+        }
+    })
+
     return {
         ...callback,
         stubs: stubInfoObjects,
@@ -847,7 +866,7 @@ export class CLRunner {
                     isRenderFunctionProvided: false,
                 }
 
-                // TODO: Look at validating arguments. Can't have greater number on stub than on callback 
+                // TODO: Look at validating arguments. Probably should not have greater number on stub than on callback.
                 if (callbackInput.logic) {
                     stubCallback.logic = callbackInput.logic
                     stubCallback.logicArguments = this.GetArguments(callbackInput.logic, 1)

@@ -1,0 +1,13 @@
+
+.cl-stub-selector {
+    display: grid;
+    grid-auto-flow: column;
+    grid-gap: 1em;
+    grid-template-columns: 150px;
+    align-items: end;
+}
+
+.cl-stub-selector__preview-button {
+    width: 30px !important;
+    min-width: 30px !important;
+}

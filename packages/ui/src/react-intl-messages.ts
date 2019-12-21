@@ -459,6 +459,11 @@ export enum FM {
     SETTINGS_MODEL_VERSIONS_TITLE = 'Settings.modelVersionsTitle',
     SETTINGS_MODEL_VERSIONS_DESCRIPTION = 'Settings.modelVersionsDescription',
 
+    // Stub Creator Editor Modal
+    STUB_DROPDOWN_LABEL = 'StubDropdown.label',
+    STUB_MODAL_TITLE = 'StubModal.title',
+    STUB_MODAL_ENTITY_VALUES = 'StubModal.entityValues',
+
     // Tags and Description
     TAGSINPUT_ADD = 'TagsInput.add',
     TAGSINPUT_ERROR_DUPLICATE = 'TagsInput.error.duplicate',
@@ -1123,6 +1128,11 @@ export default {
         [FM.SETTINGS_MODEL_VERSIONS_CREATE]: 'New Version',
         [FM.SETTINGS_MODEL_VERSIONS_TITLE]: 'Model Versions',
         [FM.SETTINGS_MODEL_VERSIONS_DESCRIPTION]: 'Creating a new version will save a snapshot of the currently active model. You can promote this version to "live" for use in deployed bots while you continue to edit the latest version.  You can also recall these snapshots at any point in time.',
+
+        // Stub Creator Editor Modal
+        [FM.STUB_DROPDOWN_LABEL]: 'Stubs',
+        [FM.STUB_MODAL_TITLE]: 'Stub Modal',
+        [FM.STUB_MODAL_ENTITY_VALUES]: 'Entity Values',
 
         // TagsInput
         [FM.TAGSINPUT_ADD]: 'Add Tag',

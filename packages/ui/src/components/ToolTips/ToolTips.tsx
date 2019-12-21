@@ -87,8 +87,9 @@ export enum TipType {
     REPLAYERROR_DESC_ACTION_STUB = "REPLAYERROR_DESC_ACTION_STUB",
 
     PLACEHOLDER_API = 'PLACEHOLDER_API',
-
-    TRANSCRIPT_IMPORTER = 'transcriptImporter'
+    STUB_DROPDOWN = 'STUB_DROPDOWN',
+    STUB_MODAL_ENTITY_VALUES = 'STUB_MODAL_ENTITY_VALUES',
+    TRANSCRIPT_IMPORTER = 'transcriptImporter',
 }
 
 export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps, defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) {
@@ -962,6 +963,22 @@ export function getTip(tipType: string) {
                     <p>For example, you may need an API call to check whether an item is in stock (say for a pizza bot).  Your temporary placeholder call can move an item from the "Toppings" Entity to the "OutOfStock" Entity </p>
                     <p>Placeholders must be replaced with actual API callbacks for your Bot to function.</p>
                     <div><br />More about <HelpLink label="API callbacks" tipType={TipType.ACTION_API1} /></div>
+                </div>
+            )
+
+        case TipType.STUB_DROPDOWN:
+            return (
+                <div>
+                    <h2>Using Stubs</h2>
+                    <p>Not implemented</p>
+                </div>
+            )
+
+        case TipType.STUB_MODAL_ENTITY_VALUES:
+            return (
+                <div>
+                    <h2>Using Stubs</h2>
+                    <p>Not implemented</p>
                 </div>
             )
 
