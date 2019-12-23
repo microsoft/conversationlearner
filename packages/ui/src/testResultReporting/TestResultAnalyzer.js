@@ -1,3 +1,20 @@
+// USAGE NOTES:
+//
+// 1) Go to https://circleci.com/account/api
+// 2) Create a new token, copy to the clipboard, and paste into an ".env" file in the root folder on a new line like this...
+//      circle-token=[paste-token-string-here]
+// 3) Run the tool from the root folder like this...
+//      npm run viewTestResults [build-number]
+//    You will find the build number on the page https://circleci.com/gh/microsoft/conversationlearner.
+//    Be sure to select the build number that coresponds to either a "test-smoke" or "test-regression" run.
+//
+//    The expected result from using this tool is you will get a lot logging spew in the command window
+//    as the tool makes progress processing the test results artifacts. Once it completes, it will open
+//    the resulting report in your default browser window.
+//
+// The data used to triage each test failure is found in this folder "TriageData.js", it contains plenty
+// of examples that you can follow to expand it as necessary.
+
 const ttf = require('./TriageTestFailure')
 const apiData = require('./ApiData')
 const fs = require('fs')
@@ -26,7 +43,9 @@ ttf.SetTriageData(triageData);
 
   buildNumber = process.argv[2]
 
-  const artifacts = await apiData.Get(`https://circleci.com/api/v1.1/project/github/microsoft/conversationLearner/${buildNumber}/artifacts?circle-token=2ad1e457047948114cb3bbb1957d6f90c1e2ee25`)
+  const circleCiToken = GetCircleCiToken()
+
+  const artifacts = await apiData.Get(`https://circleci.com/api/v1.1/project/github/microsoft/conversationLearner/${buildNumber}/artifacts?circle-token=${circleCiToken}`)
   MoveArtifactJsonIntoArrays()
   console.log('Processing the Failed Test Results ----------------------------------')
   await ProcessFailingTestArtifacts()
@@ -41,6 +60,25 @@ ttf.SetTriageData(triageData);
   fs.writeFileSync(outputPath, htmlContent)
 
   child_process.exec(outputPath)
+
+  // --- End of Main process - worker functions below -----------------
+
+  function GetCircleCiToken() {
+    const envFileContents = fs.readFileSync('.env', { encoding: 'utf8' })
+    const CIRCLECI_TOKEN = 'circle-token='
+    const iStart = envFileContents.indexOf(CIRCLECI_TOKEN)
+    //console.log(typeof envFileContents, '\n', envFileContents)
+    if (iStart == -1) {
+      throw new Error('circle-token= is missing from the .env file')
+    }
+    let iEnd = envFileContents.indexOf('\n', iStart + CIRCLECI_TOKEN.length)
+    if (iEnd == -1) {
+      iEnd = envFileContents.length
+    }
+    const returnValue = envFileContents.substring(iStart + CIRCLECI_TOKEN.length, iEnd).trim()
+    //console.log(returnValue)
+    return returnValue
+  }
 
   function MoveArtifactJsonIntoArrays() {
     artifacts.forEach(artifact => {
@@ -104,11 +142,7 @@ ttf.SetTriageData(triageData);
 
       console.log(`ProcessFailingTestArtifacts - going to await GetTriageDetailsAboutTestFailure`)
       failureDetails = await ttf.GetTriageDetailsAboutTestFailure(log)
-      if (typeof failureDetails == 'string') {
-        console.log(`ProcessFailingTestArtifacts got failureDetails: ${failureDetails}`)
-      } else {
-        console.log(`ProcessFailingTestArtifacts got failureDetails: { message: ${failureDetails.message}, bugs: ${failureDetails.bugs}, comment: ${failureDetails.comment} }`)
-      }
+      console.log(`ProcessFailingTestArtifacts got failureDetails: { message: ${failureDetails.message}, bugs: ${failureDetails.bugs}, comment: ${failureDetails.comment} }`)
 
       const mp4 = mp4s.find(mp4 => mp4.key === png.key)
       if (!mp4) {
@@ -154,51 +188,6 @@ ttf.SetTriageData(triageData);
         videoUrl: mp4.url,
         logUrl: log.url,
       })
-    })
-  }
-
-  function OLD_RenderResults() {
-    console.log(`${unknownTestFailures.length} UNKNOWN TEST FAILURES -------------------------------------------------------`)
-    unknownTestFailures.forEach(unknownTestFailure => {
-      console.log(`unknownTestFailures.push({
-        testName: '${unknownTestFailure.testName}',
-        key: ${unknownTestFailure.key},
-        snapshotUrl: '${unknownTestFailure.snapshotUrl}',
-        videoUrl: '${unknownTestFailure.videoUrl}',
-        logUrl: '${unknownTestFailure.logUrl}',
-        failureMessage: '${unknownTestFailure.failureMessage}',
-      })`)
-    })
-
-    console.log(`${knownTestFailures.length} KNOWN TEST FAILURES ---------------------------------------------------------`)
-    knownTestFailures.forEach(knownTestFailure => {
-      console.log(`knownTestFailures.push({
-        testName: '${knownTestFailure.testName}',
-        key: ${knownTestFailure.key},
-        snapshotUrl: '${knownTestFailure.snapshotUrl}',
-        videoUrl: '${knownTestFailure.videoUrl}',
-        logUrl: '${knownTestFailure.logUrl}',
-        failureMessage: '${knownTestFailure.failureMessage}',
-        bugs: '${knownTestFailure.bugs}',
-      })`)
-    })
-
-    console.log(`${passingTests.length} PASSING TESTS ---------------------------------------------------------------`)
-    passingTests.forEach(passingTest => {
-      console.log(`passingTests.push({
-        testName: '${passingTest.testName}',
-        videoUrl: '${passingTest.videoUrl}',
-        logUrl: '${passingTest.logUrl}',
-      })`)
-    })
-
-    console.log(`${errors.length} ERRORS ---------------------------------------------------------------`)
-    errors.forEach(error => {
-      console.log(`errors.push({
-        testName: '${error.testName}',
-        key: '${error.key}',
-        url: '${error.url}',
-      })`)
     })
   }
 
