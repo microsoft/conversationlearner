@@ -4,6 +4,21 @@ const FULL_LOG = 'fl'
 
 exports.triageData = [
   {
+    searchBy: ERROR_PANEL,
+    and: [`LUIS Programmatic APIs v2.0 have exceeded rate limit of your current LUIS API`],
+    comment: 'Not much we can do about this except review our algorithm in .circleci\\SetLuisAuthoringKey.js to make sure there is enough keys to cycle through...or just pay for a LUIS license.',
+  },
+  {
+    searchBy: ERROR_PANEL,
+    and: [`Creating Application Failed Request failed with status code 400 "Bad Request {"Locale":["The Locale field is required."]}`],
+    bugs: [2408],
+  },
+  {
+    searchBy: ERROR_PANEL,
+    and: [`Running extractor Failed Request failed with status code 502 "Bad Gateway "LUIS error:`],
+    comment: 'Network Issues - It should eventually fix itself.',
+  },
+  {
     or: [
       `Timed out retrying: Stauts is queued - Still Waiting for Status == Running or Completed - Queued Wait Time:`,
       `Timed out retrying: Status is queued - Still Waiting for Status == Running or Completed - Queued Wait Time:`,
@@ -71,16 +86,6 @@ exports.triageData = [
       `http://localhost:3000/`
     ],
     comment: 'This happens from time to time and there is no known fix for it.',
-  },
-  {
-    searchBy: ERROR_PANEL,
-    and: [`Creating Application Failed Request failed with status code 400 "Bad Request {"Locale":["The Locale field is required."]}`],
-    bugs: [2408],
-  },
-  {
-    searchBy: ERROR_PANEL,
-    and: [`Running extractor Failed Request failed with status code 502 "Bad Gateway "LUIS error:`],
-    comment: 'Network Issues - It should eventually fix itself.',
   },
   {
     searchBy: FULL_LOG,
