@@ -1,6 +1,6 @@
 /**
 * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Licensed under the MIT License.
 */
 
 import * as actionTypeSelector from '../../support/components/ActionTypeSelector'
@@ -29,19 +29,19 @@ export class Row {
   }
 
   EditAction() { cy.Get('@responseDetailsRow').Click() }
-  
-  VerifyActionType(actionType) {cy.Get('@responseDetailsRow').find('[data-testid="action-details-action-type"]').ExactMatch(actionType)}
-  
+
+  VerifyActionType(actionType) { cy.Get('@responseDetailsRow').find('[data-testid="action-details-action-type"]').ExactMatch(actionType) }
+
   VerifyExpectedEntity(entity) { this._VerifyEntities('[data-testid="action-details-expected-entity"]', '[data-testid="action-details-empty-expected-entity"]', entity) }
 
   // The UI automatically populates the Required Entities field with entities found in the response text,
   // so the additionalRequiredEntities parameter allows the caller to specify entities not found in the response text.
   VerifyRequiredEntities(requiredEntitiesFromResponse, additionalRequiredEntities) { this._VerifyEntities('[data-testid="action-details-required-entities"]', '[data-testid="action-details-empty-required-entities"]', requiredEntitiesFromResponse, additionalRequiredEntities) }
-  
+
   // The UI automatically populates the Disqualtifying Entities field with the expected entity,
   // so the disqualifyingEntities parameter allows the caller to specify entities not found in expectedEntity.
   VerifyDisqualifyingEntities(expectedEntity, disqualifyingEntities) { this._VerifyEntities('[data-testid="action-details-disqualifying-entities"]', '[data-testid="action-details-empty-disqualifying-entities"]', expectedEntity, disqualifyingEntities) }
-  
+
   VerifyIncidentTriangle() { cy.Get('@responseDetailsRow').find('[data-icon-name="IncidentTriangle"]') }
 
   VerifyWaitForResponse(checked) { cy.Get('@responseDetailsRow').find(`[data-icon-name="${checked ? 'CheckMark' : 'Remove'}"][data-testid="action-details-wait"]`) }
@@ -53,7 +53,7 @@ export class Row {
     if (!entities1 && !entities2) return this._VerifyEntitiesIsEmpty(emptySelector)
 
     let entities = []
-    if (entities1) { 
+    if (entities1) {
       if (!Array.isArray(entities1)) { entities = [entities1] }
       else { entities = entities1 }
     }
@@ -87,7 +87,7 @@ export function VerifyAllActionRows(rows) {
       helpers.ConLog('VerifyAllActionRows', `${row.response}, ${row.type}, ${row.requiredEntities}, ${row.disqualifyingEntities}, ${row.expectedEntity}, ${row.wait}`)
       VerifyActionRow(row.response, row.type, row.requiredEntities, row.disqualifyingEntities, row.expectedEntity, row.wait)
     })
-    
+
     const gridRowCount = Cypress.$('div[role="presentation"].ms-List-cell').length
     if (gridRowCount > rows.length) {
       throw new Error(`Found all of the expected Action Rows, however there are an additional ${gridRowCount - rows.length} Action Rows in the grid that we were not expecting.`)
@@ -95,7 +95,7 @@ export function VerifyAllActionRows(rows) {
   })
 }
 
-export function GetAllRows() { 
+export function GetAllRows() {
   const funcName = 'GetAllRows'
   helpers.ConLog(funcName, 'start')
 
@@ -112,16 +112,16 @@ export function GetAllRows() {
     let expectedEntity = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-expected-entity"]')[0])
     let wait = Cypress.$(allRowElements[i]).find('[data-icon-name="CheckMark"][data-testid="action-details-wait"]').length == 1
 
-    allRowData.push({ 
-      response: response, 
-      type: type, 
-      requiredEntities: requiredEntities, 
-      disqualifyingEntities: disqualifyingEntities, 
-      expectedEntity: expectedEntity, 
-      wait: wait, 
+    allRowData.push({
+      response: response,
+      type: type,
+      requiredEntities: requiredEntities,
+      disqualifyingEntities: disqualifyingEntities,
+      expectedEntity: expectedEntity,
+      wait: wait,
     })
     helpers.ConLog(funcName, `${response}, ${type}, ${requiredEntities}, ${disqualifyingEntities}, ${expectedEntity}, ${wait}`)
   }
-    
+
   return allRowData
 }

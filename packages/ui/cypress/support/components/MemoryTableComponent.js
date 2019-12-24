@@ -1,7 +1,7 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
- */
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
+*/
 
 export function VerifyEntityValues(entityName, entityValues) { _VerifyEntitiesInMemory(entityName, false, entityValues) }
 export function VerifyDisplacedEntityValues(entityName, entityValues) { _VerifyEntitiesInMemory(entityName, false, entityValues, true) }
@@ -10,11 +10,11 @@ export function VerifyDeletedEntityValues(entityName, entityValues) { _VerifyEnt
 function _VerifyEntitiesInMemory(entityName, deleted, entityValues, displaced) {
   let entityNameFont = '.cl-font--emphasis'
   if (deleted) {
-    entityNameFont = '.cl-font--deleted'  
+    entityNameFont = '.cl-font--deleted'
   }
 
   let entityValueFont = '.cl-font--emphasis'
-  if(deleted || displaced) {
+  if (deleted || displaced) {
     entityValueFont = '.cl-font--deleted'
   }
 

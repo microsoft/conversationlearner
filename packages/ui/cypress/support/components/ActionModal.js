@@ -1,6 +1,6 @@
 /**
 * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Licensed under the MIT License.
 */
 
 import * as popupModal from './PopupModal'
@@ -18,7 +18,7 @@ export function ClickCancelDeleteButton() { popupModal.VerifyExactTitleNoContent
 
 // TODO: VERIFY EVERY TEST THAT USES THIS...AND THEN FIX THE CANCEL VERSION AS WELL!!!
 export function ClickConfirmDeleteWithWarningButton() { popupModal.VerifyExactTitleAndContentContainsClickButton('Are you sure you want to delete this Action?', 'This Action is used by one or more Training Dialogs.', '[data-testid="action-delete-confirm"]') }
-  //popupModal.VerifyContentAnyTitleClickButton('This Action is used by one or more Training Dialogs.', '[data-testid="confirm-cancel-modal-accept"]') }
+//popupModal.VerifyContentAnyTitleClickButton('This Action is used by one or more Training Dialogs.', '[data-testid="confirm-cancel-modal-accept"]') }
 export function ClickCancelDeleteWithWarningButton() { popupModal.VerifyContentAnyTitleClickButton('This Action is used by one or more Training Dialogs.', '[data-testid="confirm-cancel-modal-cancel"]') }
 
 export function ClickTrainDialogFilterButton() { cy.Get('[data-testid="action-creator-editor-train-dialog-filter-button"]').Click() }
@@ -35,7 +35,7 @@ export function TypeCardLine3(line) { TypeInField('[data-testid="action-card-arg
 export function TypeCardButton1(buttonText) { TypeInField('[data-testid="action-card-argument-button1"] div[data-slate-editor="true"]', buttonText) }
 export function TypeCardButton2(buttonText) { TypeInField('[data-testid="action-card-argument-button2"] div[data-slate-editor="true"]', buttonText) }
 
-function TypeInField(fieldSelector, text) { 
+function TypeInField(fieldSelector, text) {
   cy.Get(fieldSelector).clear().type(text)
   ClickOnNoOpHack()
 }
@@ -45,8 +45,7 @@ export function VerifyActionTypeDisabled() { cy.Get('[aria-disabled="true"][data
 
 export function VerifyErrorMessage(expectedMessage) { cy.Get('[data-testid="action-creator-editor-error-callback"]').ExactMatch(expectedMessage) }
 
-function SelectFromDropdown(selector, option)
-{
+function SelectFromDropdown(selector, option) {
   cy.Get(selector).Click()
   cy.Get('button.ms-Dropdown-item').ExactMatch(option).Click()
 }
@@ -63,11 +62,11 @@ export function TypeResponse(textToType) {
 export function TypeApiLogicArgs(args) { TypeApiArgs('Logic Arguments', args) }
 export function TypeApiRenderArgs(args) { TypeApiArgs('Render Arguments', args) }
 
-function ClickOnNoOpHack() { 
+function ClickOnNoOpHack() {
   // This has no effect on the data in this Action Modal but it some how
   // resets something in the UI that enables picking an entity.
   // Bug 2132: TEST BLOCKER: Automation cannot trigger 2nd Entity picker in API Action arguments
-  cy.get('[data-testid="action-creator-wait-checkbox"]').click() 
+  cy.get('[data-testid="action-creator-wait-checkbox"]').click()
 }
 
 function TypeApiArgs(apiArgLabel, args) {
@@ -142,7 +141,7 @@ export function RemoveExpectedEntity(entityName) { RemoveEntityOrCondition('acti
 export function RemoveRequiredCondition(entityNameOrCondition) { RemoveEntityOrCondition('action-required-entities', entityNameOrCondition) }
 export function RemoveDisqualifyingCondition(entityNameOrCondition) { RemoveEntityOrCondition('action-disqualifying-entities', entityNameOrCondition) }
 
-function RemoveEntityOrCondition(dataTestId, entityNameOrCondition) { 
+function RemoveEntityOrCondition(dataTestId, entityNameOrCondition) {
   cy.Get(`[data-testid="${dataTestId}"]`)
     .find('[data-testid="tag-item"]')
     // We need 'contains' here as well as 'ExactMatch' because it returns a single element
