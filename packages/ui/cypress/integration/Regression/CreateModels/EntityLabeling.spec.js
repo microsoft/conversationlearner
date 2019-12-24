@@ -48,16 +48,16 @@ describe('Entity Labeling - Create Model', () => {
       train.SelectTextAction('Hello')
     })
 
-    it('Save the training and re-edit it to later verify Entity recognition', () => {
-      train.SaveAsIsVerifyInGrid()
-      cy.WaitForTrainingStatusCompleted()
-      trainDialogsGrid.TdGrid.EditTrainingByDescriptionAndOrTags('Both Tag & Frog')
-    })
+    // it('Save the training and re-edit it to later verify Entity recognition', () => {
+    //   train.SaveAsIsVerifyInGrid()
+    //   cy.WaitForTrainingStatusCompleted()
+    //   trainDialogsGrid.TdGrid.EditTrainingByDescriptionAndOrTags('Both Tag & Frog')
+    // })
 
     it('Label multiple words as the same entity.', () => {
       train.TypeYourMessage('This is Frog and Tag.')
       memoryTableComponent.VerifyEntityValues('multi', ['Tag'])
-      entityDetectionPanel.VerifyTextIsLabeledAsEntity('Tag', 'multi')
+      entityDetectionPanel.LabelTextAsEntity('Tag', 'multi', 0, false)
       entityDetectionPanel.LabelTextAsEntity('Frog', 'multi', 0, false)
       train.ClickScoreActionsButton()
       memoryTableComponent.VerifyEntityValues('multi', ['Tag', 'Frog'])
