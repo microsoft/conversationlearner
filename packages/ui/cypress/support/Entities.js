@@ -1,7 +1,7 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
- */
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
+*/
 
 import * as modelPage from '../support/components/ModelPage'
 import * as entitiesGrid from './components/EntitiesGrid'
@@ -25,15 +25,15 @@ export const pretrainedEntityTypes = [
   "keyPhrase",
 ]
 
-export function CreateNewEntity({ 
-    name, 
-    multiValued, 
-    negatable, 
-    resolverType, 
-    type = 'Custom Trained', 
-    expectPopup,
-    enumValues,
-  }) {
+export function CreateNewEntity({
+  name,
+  multiValued,
+  negatable,
+  resolverType,
+  type = 'Custom Trained',
+  expectPopup,
+  enumValues,
+}) {
 
   if (type != 'Custom Trained') SelectEntityType(type)
   if (name) { entityModal.TypeEntityName(name) }
@@ -46,14 +46,14 @@ export function CreateNewEntity({
   if (expectPopup) { entityModal.ClickOkButtonOnNoteAboutPreTrained() }
 }
 
-export function CreateNewEntityThenVerifyInGrid({ 
-    name, 
-    multiValued, 
-    negatable, 
-    resolverType, 
-    type = 'Custom Trained', 
-    expectPopup 
-  }) {
+export function CreateNewEntityThenVerifyInGrid({
+  name,
+  multiValued,
+  negatable,
+  resolverType,
+  type = 'Custom Trained',
+  expectPopup
+}) {
 
   modelPage.NavigateToEntities()
   entitiesGrid.ClickButtonNewEntity()

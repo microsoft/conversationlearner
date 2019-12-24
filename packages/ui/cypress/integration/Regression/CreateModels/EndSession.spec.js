@@ -1,6 +1,6 @@
 /**
 * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -14,7 +14,7 @@ const preliminaryTrainingDescription = 'Preliminary Training to cause some expec
 
 describe('End Session - Create Model', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
-  
+
   context('Should create a new model', () => {
     it('Create a model to test against', () => {
       models.CreateNewModel('z-EndSession')
@@ -45,7 +45,7 @@ describe('End Session - Create Model', () => {
       train.ClickScoreActionsButton()
       train.SelectTextAction('Okay')
     })
-    
+
     it('Should add a description and save the Train Dialog', () => {
       train.TypeDescription(preliminaryTrainingDescription)
       train.SaveAsIsVerifyInGrid()
@@ -87,7 +87,7 @@ describe('End Session - Create Model', () => {
       train.ClickScoreActionsButton()
       train.SelectTextAction('Okay')
     })
-    
+
     it('Should train model to respond to "Bye"', () => {
       train.TypeYourMessage('Bye')
       train.ClickScoreActionsButton()

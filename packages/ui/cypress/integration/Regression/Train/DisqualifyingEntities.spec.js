@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -70,7 +70,7 @@ describe('Disqualifying Entities - Train', () => {
       it('Should verify the labeled Entity still appears in the Memory pane', () => {
         memoryTableComponent.VerifyEntityValues('name', ['Sam'])
       })
-    
+
       generatedScoreActionsData.VerifyScoreActionsList()
 
       it('Should select an action', () => {

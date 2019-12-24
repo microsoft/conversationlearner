@@ -1,8 +1,6 @@
-import { func } from "prop-types";
-
 /**
 * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Licensed under the MIT License.
 */
 
 // Use this in an `afterEach` function to cause all remaining tests of a suite to be skipped when
@@ -15,12 +13,12 @@ import { func } from "prop-types";
 //            helpers.SkipRemainingTestsOfSuiteIfFailed()
 //            DoSomeOtherWork()
 //          })
-export function SkipRemainingTestsOfSuiteIfFailed() { 
+export function SkipRemainingTestsOfSuiteIfFailed() {
   if (this.currentTest == undefined) {
     throw new Error('Test Code Error: Cannot use arrow/lambda function to call the SkipRemainingTestsOfSuiteIfFailed() function.')
   }
   if (this.currentTest.state === 'failed') {
-    this.skip() 
+    this.skip()
   }
 }
 
@@ -41,8 +39,8 @@ export function NumberToStringWithLeadingZeros(number, length) {
 
 export function DumpElements(funcName, elements) {
   let elementList = `Dump of ${elements.length} elements:\n`
-  for (let i = 0; i < elements.length; i++) { 
-    elementList += `${NumberToStringWithLeadingZeros(i,3)}: ${elements[i].outerHTML.replace(/\n/g, '\n     ')}\n` 
+  for (let i = 0; i < elements.length; i++) {
+    elementList += `${NumberToStringWithLeadingZeros(i, 3)}: ${elements[i].outerHTML.replace(/\n/g, '\n     ')}\n`
   }
   ConLog(funcName, elementList)
 }
@@ -61,7 +59,7 @@ export function StringArrayFromElementText(selector, retainMarkup = false) {
   let elements = Cypress.$(selector)
   ConLog(funcName, `Number of Elements Found: ${elements.length}`)
   let returnValues = []
-  for (let i = 0; i < elements.length; i++)  {
+  for (let i = 0; i < elements.length; i++) {
     let text = retainMarkup ? elements[i].innerHTML : TextContentWithoutNewlines(elements[i])
     returnValues.push(text)
     ConLog(funcName, `"${text}"`)
@@ -93,7 +91,7 @@ export function Moment(dateTime) {
 // ...also converts the “ and ” to a " and...
 // ...also keeps the '◾️' and '…' charcters and throws away anything else outside of the typical printable set.
 export function TextContentWithoutNewlines(element) {
-  if (element === undefined) { 
+  if (element === undefined) {
     ConLog('TextContentWithoutNewlines', 'undefined element has been passed in.')
     return undefined
   }
@@ -108,9 +106,9 @@ export function TextContentWithoutNewlines(element) {
 
   // See the Cheat Sheet on https://www.regextester.com/15 for help with this 'NOT ^' regex string
   const returnValue = textContent.trim()
-                                 .replace(/‘|’/g, "'")
-                                 .replace(/“|”/g, '"')
-                                 .replace(/([^◾️…\x20-\x7E])/gm, '')
+    .replace(/‘|’/g, "'")
+    .replace(/“|”/g, '"')
+    .replace(/([^◾️…\x20-\x7E])/gm, '')
   ConLog('TextContentWithoutNewlines', `"${returnValue}"`)
   return returnValue
 }
@@ -164,7 +162,7 @@ export function CloseErrorMessagePanel() { cy.Get('button.ms-Panel-closeButton[t
 export function ExactMatch(elements, expectedText) {
   const funcName = `ExactMatch('${expectedText}')`
   ConLog(funcName, `Start`)
-  
+
   for (let i = 0; i < elements.length; i++) {
     const elementText = TextContentWithoutNewlines(elements[i])
     ConLog(funcName, `elementText: '${elementText}'`)

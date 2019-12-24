@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as helpers from '../../support/Helpers'
@@ -45,12 +45,12 @@ describe('Experiment with Getting Return Value from Function with Mixed JavaScri
     function aFunc() {
       helpers.ConLog('aFunc', 'Some plain JavaScript was just executed')
       let result
-      
+
       cy.Enqueue(() => {
         helpers.ConLog('aFunc', 'A cy.command started execution')
         result = 'The aFunc Result'
       })
-      
+
       cy.Enqueue(() => {
         helpers.ConLog('aFunc', `Another cy.command which should use the result from last cy.command: '${result}'`)
         result = `The modified result='${result}'`
@@ -72,8 +72,8 @@ describe('Experiment with Getting Return Value from Function with Mixed JavaScri
   // The 'should' cypress command behaves differently with respect to return values...
   // it does not return them down the chain of commands.
   it('Test3 - wrap ".should()"', () => {
-    function aFunc() { return {data: 123, anArray: ['a', 'b', 'c']} }
-    
+    function aFunc() { return { data: 123, anArray: ['a', 'b', 'c'] } }
+
     let returnedResult
     cy.wrap(1).should(() => {
       returnedResult = aFunc()
@@ -94,14 +94,14 @@ describe('Experiment with Getting Return Value from Function with Mixed JavaScri
   // The 'should' cypress command behaves differently with respect to return values...
   // it does not return them down the chain of commands.
   it('Test4 - wrap ".then()" after a call to ".should()"', () => {
-    function aFunc() {   
+    function aFunc() {
       let returnedFromShould
       cy.wrap(1).should(() => {
         returnedFromShould = 'Value returned from .should() is lost, but value returned from then is preserved'
         return returnedFromShould
       }).then(shouldResult => {
-        if (shouldResult != 1) { 
-          throw new Error('THEN shouldResult.data SHOULD BE 1') 
+        if (shouldResult != 1) {
+          throw new Error('THEN shouldResult.data SHOULD BE 1')
         }
         return returnedFromShould
       })
@@ -109,8 +109,8 @@ describe('Experiment with Getting Return Value from Function with Mixed JavaScri
 
     cy.Enqueue(() => { return aFunc() }).then(returnedResult => {
       helpers.ConLog('main', `returnedResult: ${returnedResult}`)
-      if (returnedResult != 'Value returned from .should() is lost, but value returned from then is preserved') { 
-        throw new Error('Unexpected Result. Review the Log File.') 
+      if (returnedResult != 'Value returned from .should() is lost, but value returned from then is preserved') {
+        throw new Error('Unexpected Result. Review the Log File.')
       }
     })
   })

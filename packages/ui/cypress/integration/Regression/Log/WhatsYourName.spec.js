@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -25,7 +25,7 @@ describe("What's Your Name - Log", () => {
     it('Should create a new log dialog', () => {
       logDialogsGrid.CreateNewLogDialogButton()
     })
-    
+
     it('Should say "Hello" and receive simple Bot response', () => {
       logDialogModal.TypeYourMessageValidateResponse('Hello', common.whatsYourName)
     })
@@ -33,7 +33,7 @@ describe("What's Your Name - Log", () => {
     it(`Should say, "My name is Martha" and receive Bot response, "Hello Martha"`, () => {
       logDialogModal.TypeYourMessageValidateResponse('My name is Martha', 'Hello Martha')
     })
-    
+
     it('Should complete the log dialog', () => {
       logDialogModal.ClickDoneTestingButton()
     })

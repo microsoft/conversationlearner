@@ -1,6 +1,6 @@
 /**
 * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -28,12 +28,12 @@ describe('Bot Missing API - ErrorHandling', () => {
       modelPage.VerifyHomeLinkShowsIncidentTriangle()
       helpers.VerifyErrorMessageContains('Please check that the correct version of your Bot is running.')
     })
-    
+
     it('Should verify the Action grid shows an IncidentTriangle', () => {
       modelPage.NavigateToActions()
       new actionsGrid.Row('API', 'RandomGreetinglogic(memoryManager)render(result, memoryManager)').VerifyIncidentTriangle()
     })
-    
+
     it('Should edit the Action and verify it contains the expected error message', () => {
       actionsGrid.EditApiAction('RandomGreetinglogic(memoryManager)render(result, memoryManager)')
       actionModal.VerifyErrorMessage('ERROR: Bot Missing Callback: RandomGreeting')
@@ -50,7 +50,7 @@ describe('Bot Missing API - ErrorHandling', () => {
       chatPanel.VerifyChatTurnIsAnExactMatch('ERROR: API callback with name "RandomGreeting" is not defined', 6, 1)
       train.VerifyWarningMessage('Running Bot not compatible with this Model')
     })
-    
+
     it('Should verify that the turns have no actionable buttons', () => {
       chatPanel.SelectAndVerifyEachChatTurnHasNoButtons()
     })
@@ -62,7 +62,7 @@ describe('Bot Missing API - ErrorHandling', () => {
     it('Should verify that there only the Close button is enabled', () => {
       train.VerifyCloseIsTheOnlyEnabledButton()
     })
-    
+
     it('Should close the Train Dialog', () => {
       train.ClickSaveCloseButton()
     })
@@ -84,7 +84,7 @@ describe('Bot Missing API - ErrorHandling', () => {
       modelPage.VerifyHomeLinkDoesNotShowIncidentTriangle()
       helpers.VerifyNoErrorMessages()
     })
-    
+
     it('Should verify that the New Train Dialog button is enabled', () => {
       modelPage.NavigateToTrainDialogs()
       trainDialogsGrid.VerifyNewTrainDialogButtonIsEnabled()

@@ -6,15 +6,15 @@ async function Get(url) {
   return await axios.get(url).then(response => {
     return response.data
   })
-  .catch(err => {
-    console.log(`GetApiData - Error accessing: ${url}`)
-    console.log(err.message)
-  })
+    .catch(err => {
+      console.log(`GetApiData - Error accessing: ${url}`)
+      console.log(err.message)
+    })
 }
 
 // UNIT TESTS - These are triggered ONLY when running this as a standalone module.
 if (require.main === module) {
-  (async function() {
+  (async function () {
     let buildNumber = process.argv[2]
     if (!buildNumber) {
       buildNumber = 5501

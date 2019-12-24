@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -95,9 +95,9 @@ describe('Duplicate Entity Labels - ErrorHandling', () => {
     it('Submit the change and verify warning message under Chat Panel changes', () => {
       train.ClickSubmitChangesButton()
     })
-    
+
     it('Verify the Action uses the corrected value in the name Entity', () => {
-      chatPanel.VerifyChatTurnIsAnExactMatch('Hello Joe', 2, 1) 
+      chatPanel.VerifyChatTurnIsAnExactMatch('Hello Joe', 2, 1)
     })
   })
 })

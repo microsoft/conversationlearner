@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -48,7 +48,7 @@ describe('Bug 2259 Repro', () => {
     //     }
     //   })
     // })
-    
+
     // This code should work once bug 2259 is fixed...
     // Uncomment this and comment out the above to detect a regression.
     it('Verify that Bug 2259 did not reproduce', () => {

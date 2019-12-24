@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -31,7 +31,7 @@ describe('Entity Value-Name Toggle - Score Actions', () => {
       // While verifying everything in the Score Actions Panel this also verifies 
       // the presence or absense of the toggle switch on all Actions at each turn.
       // These will vary due to the values contained (or not) in Entities.
-      chatPanel.VerifyEachBotChatTurn(() => { generatedScoreActionsData.VerifyScoreActionsListUnwrapped() })      
+      chatPanel.VerifyEachBotChatTurn(() => { generatedScoreActionsData.VerifyScoreActionsListUnwrapped() })
     })
 
 

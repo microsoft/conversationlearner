@@ -75,6 +75,6 @@ describe('API Callbacks - Train', () => {
       chatPanel.VerifyTextChatMessage("The Logic Args: 'ThingOne', 'ThingTwo', '333', '4444', 'five', 'six', 'seven'The Render Args: 'ThingOne', 'ThingTwo', 'three', 'four', '55555', '666666', '7777777'", 5)
       chatPanel.VerifyCardChatMessage('Greetings', 'Have a great day!', 7)
       train.ClickSaveCloseButton()
-    })    
+    })
   })
 })

@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -15,7 +15,7 @@ describe.skip('Consistent Entity Labeling', () => {
   const textEntityPairs = [{ text: 'Tag', entity: 'multi' }, { text: 'Frog', entity: 'multi' }]
 
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
-  
+
   context('Setup', () => {
     it('Import a model, wait for training to complete and start a new Train Dialog', () => {
       models.ImportModel('z-cnstntEntLabel', 'z-entityLabeling.cl')
@@ -109,7 +109,7 @@ describe.skip('Consistent Entity Labeling', () => {
       entityDetectionPanel.RemoveEntityLabel('Tag', 'multi', 1)
       entityDetectionPanel.RemoveEntityLabel('Frog', 'multi', 2)
     })
-    
+
     it('Verify user cannot submit changes without accepting auto-re-labling of the 1st alternative input that we changed', () => {
       train.ClickSubmitChangesButton()
       entityDetectionPanel.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
@@ -151,9 +151,9 @@ describe.skip('Consistent Entity Labeling', () => {
     })
 
     it('Error Triangle in the Train Dialog Grid should be showing for the effected Train Dialog', () => {
-      trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid('This is Tag.', 'This is Tag.', 'Hi', '', '', 3)  
+      trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid('This is Tag.', 'This is Tag.', 'Hi', '', '', 3)
     })
-    
+
     it('Edit the Train Dialog that got changed', () => {
       trainDialogsGrid.TdGrid.EditTrainingByChatInputs('This is Tag.', 'This is Tag.', 'Hi')
     })
@@ -172,7 +172,7 @@ describe.skip('Consistent Entity Labeling', () => {
     //   train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
     //   chatPanel.VerifyChatTurnHasError(0)
     // })
-    
+
     it('Select the user turn and verify there is an error message', () => {
       chatPanel.SelectChatTurnExactMatch('This is Tag.')
       entityDetectionPanel.VerifyMatchWarning(1)

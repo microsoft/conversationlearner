@@ -1,21 +1,21 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
- * 
- * AUTHOR: Michael Skowronski
- *
- * This code eliminiates the need for adding cy.wait() commands to your code and also
- * cy.route() commands used only for waiting. It does this by constantly monitoring the
- * DOM for changes and tracking the Milliseconds Since the Last Change and also resetting
- * those Milliseconds to zero when we see the spinner is displayed. Certain cy.commands(),
- * such as cy.Get(), are then modified to prevent execution until this Millisecond count
- * reaches at least 700.
- * 
- * The basic premis this works on is that when the application under test is making API
- * calls, the spinner is displayed, therefore further test steps should be paused. Also when 
- * the spinner is not visible, the Javascript on the page should either be actively updating
- * the DOM or should not be running. Experience shows that these updates almost always complete
- * within 700 milliseconds since the last change, or another one occures to reset the count.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
+* 
+* AUTHOR: Michael Skowronski
+*
+* This code eliminiates the need for adding cy.wait() commands to your code and also
+* cy.route() commands used only for waiting. It does this by constantly monitoring the
+* DOM for changes and tracking the Milliseconds Since the Last Change and also resetting
+* those Milliseconds to zero when we see the spinner is displayed. Certain cy.commands(),
+* such as cy.Get(), are then modified to prevent execution until this Millisecond count
+* reaches at least 700.
+* 
+* The basic premis this works on is that when the application under test is making API
+* calls, the spinner is displayed, therefore further test steps should be paused. Also when 
+* the spinner is not visible, the Javascript on the page should either be actively updating
+* the DOM or should not be running. Experience shows that these updates almost always complete
+* within 700 milliseconds since the last change, or another one occures to reset the count.
 */
 
 import * as helpers from './Helpers.js'
@@ -35,14 +35,14 @@ import * as helpers from './Helpers.js'
 
   function MillisecondsSinceLastChange() {
     if (new Date().getTime() > lastMonitorTime + 50) LookForChange()
-    
+
     // Some operations are known to take a long time without rendering, so while this count
     // is greater than zero, we will reset our lastChangeTime and return zero which will
     // effectively cause a wait until the specified number of changes pass and then resume
     // our normal monitoring for stable DOM.
-    if (waitTillNChangesOccur > 0) { 
+    if (waitTillNChangesOccur > 0) {
       lastChangeTime = new Date().getTime()
-      return 0 
+      return 0
     }
 
     return (new Date().getTime() - lastChangeTime)
@@ -117,7 +117,7 @@ import * as helpers from './Helpers.js'
               let elementText = helpers.TextContentWithoutNewlines(elements[i])
               if ((exactMatch && elementText === textItShouldNotContain) || (!exactMatch && elementText.includes(textItShouldNotContain))) {
                 helpers.ConLog(funcName, `Found "${textItShouldNotContain}" in this element >>> ${elements[i].outerHTML}`)
-                foundCount ++;
+                foundCount++;
               }
             }
           }
@@ -155,7 +155,7 @@ import * as helpers from './Helpers.js'
     // it takes too long to occur. This is typically a product bug, but if not, or to temporarily workaround the
     // product bug you can consult the logs and see what changes come and determine the count of those changes
     // that must occur before normal operations are to resume.
-    Cypress.Commands.add('WaitTillNChangesOccur', { prevSubject: 'optional'}, (elements, changeCount) => {
+    Cypress.Commands.add('WaitTillNChangesOccur', { prevSubject: 'optional' }, (elements, changeCount) => {
       helpers.ConLog(`cy.WaitTillNChangesOccur(${changeCount})`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
       waitTillNChangesOccur = changeCount
     })
@@ -206,14 +206,14 @@ import * as helpers from './Helpers.js'
     if (currentHtml != lastHtml) {
       if (waitTillNChangesOccur > 0) { waitTillNChangesOccur-- }
       helpers.ConLog(funcName, `Change Found - Milliseconds since last change: ${(currentTime - lastChangeTime)}`)
-      if (dumpHtml) { 
-        helpers.ConLog(funcName, `Current HTML:\n${currentHtml}`) 
+      if (dumpHtml) {
+        helpers.ConLog(funcName, `Current HTML:\n${currentHtml}`)
       } else {
         // If the error panel is up dump its elements to the log file so that they can be used to help
         // identify a bug using our test result evaluation tool.
         const errorPanelElements = Cypress.$('div.cl-errorpanel')
         if (errorPanelElements.length > 0) {
-          helpers.DumpElements(`${funcName} - Error Panel found in Current HTML`, errorPanelElements)   
+          helpers.DumpElements(`${funcName} - Error Panel found in Current HTML`, errorPanelElements)
         }
       }
 

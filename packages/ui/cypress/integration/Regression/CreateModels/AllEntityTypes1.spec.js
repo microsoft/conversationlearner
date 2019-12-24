@@ -1,6 +1,6 @@
 /**
 * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -18,7 +18,7 @@ describe('All Entity Types 1 - CreateModels', () => {
 
   context('Create Entities', () => {
     it('Should create a custom trained entity', () => {
-      entities.CreateNewEntityThenVerifyInGrid({ type: 'Custom Trained', name: 'customTrainedEntity'})
+      entities.CreateNewEntityThenVerifyInGrid({ type: 'Custom Trained', name: 'customTrainedEntity' })
     })
 
     it('Should create a custom trained multivalued entity', () => {
@@ -34,20 +34,20 @@ describe('All Entity Types 1 - CreateModels', () => {
     })
 
     it('Should create a programmatic entity', () => {
-      entities.CreateNewEntityThenVerifyInGrid({ type: 'Programmatic', name: 'programmaticEntity'})
+      entities.CreateNewEntityThenVerifyInGrid({ type: 'Programmatic', name: 'programmaticEntity' })
     })
 
     it('Should create a programmatic entity', () => {
-      entities.CreateNewEntityThenVerifyInGrid({ type: 'Programmatic', name: 'programmaticMultiValuedEntity', multiValued: true})
+      entities.CreateNewEntityThenVerifyInGrid({ type: 'Programmatic', name: 'programmaticMultiValuedEntity', multiValued: true })
     })
 
-    entities.pretrainedEntityTypes.forEach(entityType => { 
+    entities.pretrainedEntityTypes.forEach(entityType => {
       it(`Should create the '${entityType}' pretrained entity type`, () => {
-        entities.CreateNewEntityThenVerifyInGrid({ type: entityType, multiValued: false, expectPopup: true }) 
+        entities.CreateNewEntityThenVerifyInGrid({ type: entityType, multiValued: false, expectPopup: true })
       })
 
       it(`Should create a custom trained entity with the '${entityType}' resolver type`, () => {
-        entities.CreateNewEntityThenVerifyInGrid({ type: 'Custom Trained', name: `ct-${entityType}`, resolverType: entityType, multiValued: false, negatable: false }) 
+        entities.CreateNewEntityThenVerifyInGrid({ type: 'Custom Trained', name: `ct-${entityType}`, resolverType: entityType, multiValued: false, negatable: false })
       })
     })
 
