@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -40,7 +40,7 @@ describe("Bug 2253 Repro", () => {
     it('Verify that Bug 2253 reproduced', () => {
       entityDetectionPanel.VerifyEntityLabelConflictPopup()
     })
-    
+
     // it('Verify that Bug 2253 did not reproduce', () => {
     //   entityDetectionPanel.VerifyNoEntityLabelConflictPopup()
     // })

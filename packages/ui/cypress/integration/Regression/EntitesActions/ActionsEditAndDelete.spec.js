@@ -1,6 +1,6 @@
 /**
 * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -23,7 +23,7 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
   context('Verify Disabled & Enabled Action Type Dropdown', () => {
     it('Should edit some existing Actions to verify that the Action Type Dropdown is disabled', () => {
       modelPage.NavigateToActions()
-      
+
       actionsGrid.EditApiAction('LogicWithNoArgslogic(memoryManager)')
       actionModal.VerifyActionTypeDisabled()
       actionModal.ClickCancelButton()
@@ -106,7 +106,7 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
 
     it('Should verify that delete Action can be canceled', () => {
       actionModal.ClickDeleteButton()
-      
+
       // Bug 2188: Delete Action does not give warning if Action is used in Train Dialog that has errors.
       // When this bug is fixed, the next line of code will fail and should be removed...
       // ...also remove the comment from the other line.
@@ -118,7 +118,7 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
       actionModal.ClickTrainDialogFilterButton()
       train.VerifyActionFilter('Something extra')
       trainDialogsGrid.VerifyListOfTrainDialogs([
-        {firstInput: 'My entity: AABBCC', lastInput: 'Error is Intentional', lastResponse: 'Something extra'},
+        { firstInput: 'My entity: AABBCC', lastInput: 'Error is Intentional', lastResponse: 'Something extra' },
       ])
     })
 
@@ -154,8 +154,8 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
       actionModal.ClickTrainDialogFilterButton()
       train.VerifyActionFilter('Your entity contains: $entity')
       trainDialogsGrid.VerifyListOfTrainDialogs([
-        {firstInput: 'My entity: AABBCC', lastInput: 'Error is Intentional', lastResponse: ''},
-        {firstInput: 'An entity: EEEFFFGGG', lastInput: 'An entity: EEEFFFGGG', lastResponse: 'Your entity contains: $entity'},
+        { firstInput: 'My entity: AABBCC', lastInput: 'Error is Intentional', lastResponse: '' },
+        { firstInput: 'An entity: EEEFFFGGG', lastInput: 'An entity: EEEFFFGGG', lastResponse: 'Your entity contains: $entity' },
       ])
     })
 

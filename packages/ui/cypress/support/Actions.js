@@ -1,7 +1,7 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
- */
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
+*/
 
 import * as actionModal from '../support/components/ActionModal'
 import * as actionsGrid from '../support/components/ActionsGrid'
@@ -15,12 +15,12 @@ import * as helpers from '../support/Helpers'
 // However, there are cases where the caller may want to explicitly specify these autopopulated 
 // values anyway, and this code does allow for that.
 
-export function CreateNewAction({ 
+export function CreateNewAction({
   responseNameData, // TEXT-response, API-name, CARD-full-details, END_SESSION-data - Used by create operation
-  expectedEntity, 
-  requiredEntities, 
-  disqualifyingEntities, 
-  uncheckWaitForResponse, 
+  expectedEntity,
+  requiredEntities,
+  disqualifyingEntities,
+  uncheckWaitForResponse,
   logicArgs,  // provide an array of strings
   renderArgs, // provide an array of strings
   title,
@@ -47,7 +47,7 @@ export function CreateNewAction({
   if (expectedEntity) actionModal.SelectExpectedEntity(expectedEntity)
   if (requiredEntities) actionModal.SelectRequiredEntities(requiredEntities)
 
-  switch(type) {
+  switch (type) {
     case 'TEXT':
     case 'END_SESSION':
       actionModal.TypeResponse(responseNameData)
@@ -74,7 +74,7 @@ export function CreateNewAction({
   actionModal.ClickCreateSaveButton()
 }
 
-export function CreateNewActionThenVerifyInGrid({ 
+export function CreateNewActionThenVerifyInGrid({
   responseNameData, // TEXT-response, API-name, CARD-full-details, END_SESSION-data - Used by create operation
   expectedEntity,
   requiredEntities,
@@ -106,13 +106,13 @@ export function CreateNewActionThenVerifyInGrid({
   // Get the row that we are going to validate and assign a Cypress Alias to it.
   // If we skip this step, the validations that follow will fail.
   let actionsGridRow = new actionsGrid.Row(type, responseNameData)
-  
+
   //if (validateApiResponse) actionsGridRow.VerifyApi(validateApiResponse)
   actionsGridRow.VerifyActionType(type)
   actionsGridRow.VerifyRequiredEntities(requiredEntitiesFromResponse, requiredEntities)
   actionsGridRow.VerifyDisqualifyingEntities(expectedEntity, disqualifyingEntities)
   actionsGridRow.VerifyExpectedEntity(expectedEntity)
-  
+
   // Type END_SESSION must have "Wait for Response" checked even if uncheckWaitForResponse is true.
   actionsGridRow.VerifyWaitForResponse((type === 'END_SESSION') || !uncheckWaitForResponse)
 }
@@ -158,7 +158,7 @@ function IsAlphaNumeric(string) {
   return true
 }
 
-export function DeleteActionThatIsUsedByATrainDialog(action, actionType="TEXT") {
+export function DeleteActionThatIsUsedByATrainDialog(action, actionType = "TEXT") {
   new actionsGrid.Row(actionType, action).EditAction()
   actionModal.ClickDeleteButton()
   actionModal.ClickConfirmDeleteWithWarningButton()

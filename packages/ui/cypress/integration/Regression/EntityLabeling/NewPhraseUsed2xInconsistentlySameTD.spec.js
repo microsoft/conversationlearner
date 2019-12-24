@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -44,10 +44,10 @@ describe('New Phrase Used 2 Times Inconsistently - Entity Labeling', () => {
       entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToPevious([{ text: 'unique', entity: 'anEntity' }])
       train.SelectTextAction('The only response')
     })
-  
-  // -----------------------------------------------------------------------------------------------------------------------------
-  // Bug 2301: "Change attempted labels to match..." option fails to update the markup on affected chat turns
-  // Once this bug is fixed comment out this block of code.
+
+    // -----------------------------------------------------------------------------------------------------------------------------
+    // Bug 2301: "Change attempted labels to match..." option fails to update the markup on affected chat turns
+    // Once this bug is fixed comment out this block of code.
   })
   context('A detour to verify that Bug 2301 reproduced and work around it', () => {
     it('Verify that both user turns have the expected markup that bug 2301 produces', () => {
@@ -62,19 +62,19 @@ describe('New Phrase Used 2 Times Inconsistently - Entity Labeling', () => {
   })
 
   context('Resume the normal test path...', () => {
-  // -----------------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------------
 
     it('Verify that both user turns have the expected markup', () => {
       chatPanel.VerifyChatTurnIsAnExactMatchWithMarkup('A totally <strong><em>unique</em></strong> phrase', 4, 0)
       chatPanel.VerifyChatTurnIsAnExactMatchWithMarkup('A totally <strong><em>unique</em></strong> phrase', 4, 2)
     })
-    
+
     it('Remove the Entity label from one of the phrases', () => {
       chatPanel.SelectChatTurnExactMatch('A totally unique phrase')
       entityDetectionPanel.RemoveEntityLabel('unique', 'anEntity')
       train.ClickSubmitChangesButton()
     })
-    
+
     it('Change the other turn in this TD to our Attempted change', () => {
       entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToAttempted([{ text: 'unique', entity: 'anEntity' }])
     })

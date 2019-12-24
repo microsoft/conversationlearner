@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../../support/Models'
@@ -27,8 +27,8 @@ describe('Comprehensive 4 - Score Actions', () => {
   context('Continue Training', () => {
     it('Edit existing Train Dialog', () => {
       trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Hi',
-                         'Set Entities: 1stArg: FirstArg - 2ndArg: SecondArg - fruit: PEACHES - name: Cindy - disqualifier: DISQUALIFIED', 
-                         'Uhhhh...')
+        'Set Entities: 1stArg: FirstArg - 2ndArg: SecondArg - fruit: PEACHES - name: Cindy - disqualifier: DISQUALIFIED',
+        'Uhhhh...')
     })
 
     it('User Turn Apples and Bananas', () => {
@@ -37,11 +37,11 @@ describe('Comprehensive 4 - Score Actions', () => {
     })
 
     it('Bot Response APPLES', () => {
-        scorerModal.ClickSetEntityAction('fruit: APPLES')
+      scorerModal.ClickSetEntityAction('fruit: APPLES')
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()
-    
+
     it('Bot Response BANANAS', () => {
       scorerModal.ClickSetEntityAction('fruit: BANANAS')
     })
@@ -65,7 +65,7 @@ describe('Comprehensive 4 - Score Actions', () => {
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()
-    
+
     it('Bot Response PEACHES', () => {
       scorerModal.ClickSetEntityAction('fruit: PEACHES')
     })

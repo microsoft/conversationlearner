@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -39,7 +39,7 @@ describe('Bug 2305 Repro', () => {
     //   helpers.VerifyErrorMessageContains('Request failed with status code 404')
     //   helpers.VerifyErrorMessageContains('{"errorMessages":["No such training dialog exists"]}')
     // })
-    
+
     // Bug 2305: "Save As Is" Fails with status code 404
     // This code should work once this bug is fixed...
     // Uncomment this and comment out the above to detect a regression.

@@ -1,6 +1,6 @@
 /**
 * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -28,7 +28,7 @@ describe('Last Turn and Undo - Edit and Branching', () => {
       train.VerifyTypeYourMessageIsPresent()
       train.VerifyTurnUndoButtonIsMissing()
     })
-    
+
     it('Preserve all chat messages for later verification', () => {
       cy.WaitForStableDOM().then(() => { chatMessages = chatPanel.GetAllChatMessages() })
     })

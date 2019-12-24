@@ -1,6 +1,6 @@
 /**
 * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -15,7 +15,7 @@ import * as helpers from '../../../support/Helpers'
 
 describe('Entity Labeling - Create Model', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
-  
+
   context('Create', () => {
     it('Create a model to test against', () => {
       models.CreateNewModel('z-entityLabeling')
@@ -47,7 +47,7 @@ describe('Entity Labeling - Create Model', () => {
       train.ClickScoreActionsButton()
       train.SelectTextAction('Hello')
     })
-    
+
     it('Save the training and re-edit it to later verify Entity recognition', () => {
       train.SaveAsIsVerifyInGrid()
       cy.WaitForTrainingStatusCompleted()
@@ -75,11 +75,11 @@ describe('Entity Labeling - Create Model', () => {
       train.TypeYourMessage('This is Tag and Frog.')
       memoryTableComponent.VerifyEntityValues('multi', ['Tag', 'Frog'])
       entityDetectionPanel.VerifyTextIsLabeledAsEntity('Tag', 'multi')
-      
+
       // Sometimes it is labeled, sometimes it is not - bug 2351
       entityDetectionPanel.LabelTextAsEntity('Frog', 'multi', 0, false) // should not need this line of code
       //entityDetectionPanel.VerifyTextIsLabeledAsEntity('Frog', 'multi') // this is the line of code we should need
-      
+
       train.ClickScoreActionsButton()
       train.SelectTextAction('Hi')
     })
@@ -94,7 +94,7 @@ describe('Entity Labeling - Create Model', () => {
       train.TypeYourMessage('This is Bag and Grog.')
       entityDetectionPanel.VerifyTextIsLabeledAsEntity('Bag', 'multi')
       entityDetectionPanel.VerifyTextIsLabeledAsEntity('Grog', 'multi')
-      
+
       train.ClickScoreActionsButton()
       train.SelectTextAction('Hi')
 

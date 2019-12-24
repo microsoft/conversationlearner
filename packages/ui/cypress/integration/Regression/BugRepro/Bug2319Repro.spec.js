@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -20,7 +20,7 @@ describe('Bug 2319 Repro', () => {
   context('Setup', () => {
     it('Create a new model with one action to test against and navigate to Train Dialog view', () => {
       models.CreateNewModel('z-bug2319Repro')
-      actions.CreateNewActionThenVerifyInGrid({responseNameData: "X"})
+      actions.CreateNewActionThenVerifyInGrid({ responseNameData: "X" })
       modelPage.NavigateToTrainDialogs()
     })
   })
@@ -53,7 +53,7 @@ describe('Bug 2319 Repro', () => {
     // it('Verify that Bug 2319 reproduced', () => {
     //   chatPanel.VerifyChatTurnIsAnExactMatch('ERROR: Score Actions: No Action can be chosen based on current constraints. All Actions are disqualified.', 4, 3)
     // })
-    
+
     // Bug 2319: Undo causes Score Actions to happen at the wrong time and errors out
     // This code should work once this bug is fixed...
     // Uncomment this and comment out the above to detect a regression.

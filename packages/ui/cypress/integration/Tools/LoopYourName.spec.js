@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as helpers from '../../support/Helpers'
@@ -23,10 +23,10 @@ describe("Loop What's Your Name - Log", () => {
   })
 
   context(`Repeat Test ${maxIterationsToRun} Times`, () => {
-    for(let i = 0; i < maxIterationsToRun; i ++) {
+    for (let i = 0; i < maxIterationsToRun; i++) {
       context(`Iteration #${i + 1}`, () => {
         // If one of these fails, we need to reload the page so we are at a good starting point again.
-        afterEach(function() { if (this.currentTest.state === 'failed') { cy.reload() } })
+        afterEach(function () { if (this.currentTest.state === 'failed') { cy.reload() } })
         afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
         it('Should create a new log dialog', () => {
@@ -44,7 +44,7 @@ describe("Loop What's Your Name - Log", () => {
         it(`Should say, "${userUtterance}" and receive Bot response, "${botResponse}"`, () => {
           logDialogModal.TypeYourMessageValidateResponse(userUtterance, botResponse)
         })
-        
+
         it('Should complete the log dialog', () => {
           logDialogModal.ClickDoneTestingButton()
         })

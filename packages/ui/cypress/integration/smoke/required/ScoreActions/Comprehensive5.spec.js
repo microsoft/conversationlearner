@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../../support/Models'
@@ -30,7 +30,7 @@ describe('Comprehensive 5 - Score Actions', () => {
     })
 
     it('Select and Verify Each Bot Turn', () => {
-      chatPanel.VerifyEachBotChatTurn(() => { generatedScoreActionsData.VerifyScoreActionsListUnwrapped() })      
+      chatPanel.VerifyEachBotChatTurn(() => { generatedScoreActionsData.VerifyScoreActionsListUnwrapped() })
     })
   })
 
@@ -61,7 +61,7 @@ describe('Comprehensive 5 - Score Actions', () => {
     })
 
     it('Select and Verify Each Bot Turn', () => {
-      chatPanel.VerifyEachBotChatTurn(() => { generatedScoreActionsData.VerifyScoreActionsListUnwrapped() })      
+      chatPanel.VerifyEachBotChatTurn(() => { generatedScoreActionsData.VerifyScoreActionsListUnwrapped() })
     })
 
     it('Save the Train Dialog', () => {

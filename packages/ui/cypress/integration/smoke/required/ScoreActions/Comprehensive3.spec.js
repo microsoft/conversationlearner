@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../../support/Models'
@@ -29,9 +29,9 @@ describe('Comprehensive 3 - Score Actions', () => {
 
   context('Continue Training', () => {
     it('Edit existing Train Dialog', () => {
-      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Hi', 
-                         'Render these API Arguments: OneFromAnEntity, TwoToBeUsedByApiCall - and temporarily disqualify the Api response', 
-                         'RenderTheArgs')
+      trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Hi',
+        'Render these API Arguments: OneFromAnEntity, TwoToBeUsedByApiCall - and temporarily disqualify the Api response',
+        'RenderTheArgs')
     })
 
     it('Add two more entities', () => {
@@ -68,11 +68,11 @@ describe('Comprehensive 3 - Score Actions', () => {
     it('Create an API Action to clear Entities listed in the "clear" Entity', () => {
       scorerModal.ClickAddActionButton()
 
-      actions.CreateNewAction({ 
+      actions.CreateNewAction({
         responseNameData: 'ClearMemory',
         type: 'API',
         logicArgs: ['$clear{enter}'],
-                                                  
+
         uncheckWaitForResponse: true
       })
     })
@@ -81,7 +81,7 @@ describe('Comprehensive 3 - Score Actions', () => {
 
     it('Next Bot Response - Create Prompt with Picture that uses the fruit entity', () => {
       scorerModal.ClickAddActionButton()
-      actions.CreateNewAction({ 
+      actions.CreateNewAction({
         type: 'CARD',
         responseNameData: 'promptWithPicture',
         title: 'Do you like flowers?',
@@ -92,7 +92,7 @@ describe('Comprehensive 3 - Score Actions', () => {
         button1: 'I Like Flowers',
         button2: 'Flowers are for the birds and bees',
         //requiredEntities: ['fruit'], 
-        disqualifyingEntities: ['1stArg', '2ndArg'], 
+        disqualifyingEntities: ['1stArg', '2ndArg'],
       })
     })
 
@@ -107,10 +107,10 @@ describe('Comprehensive 3 - Score Actions', () => {
 
     it('Create an action to set some entities', () => {
       scorerModal.ClickAddActionButton()
-      actions.CreateNewAction({ 
+      actions.CreateNewAction({
         responseNameData: 'SetMemory',
         type: 'API',
-        logicArgs: ['$set{enter}'],                                          
+        logicArgs: ['$set{enter}'],
         uncheckWaitForResponse: true
       })
     })

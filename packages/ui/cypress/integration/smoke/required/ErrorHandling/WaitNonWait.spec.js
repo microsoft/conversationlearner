@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../../support/Models'
@@ -13,7 +13,7 @@ import * as helpers from '../../../../support/Helpers'
 
 describe('Wait Non Wait Error Handling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
-  
+
   it('Imports a model to test against and verifies no errors on Model page', () => {
     models.ImportModel('z-errWaitNoWait', 'z-waitNoWait.cl')
     modelPage.NavigateToTrainDialogs()
@@ -21,7 +21,7 @@ describe('Wait Non Wait Error Handling', () => {
 
     modelPage.VerifyNoErrorTriangleOnPage()
   })
-  
+
   context('Create Errors', () => {
     it('Deletes a user turn to create an error, verifies expected (and no other) error messages come up', () => {
       trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Duck', 'Fish', common.fishJustSwim)

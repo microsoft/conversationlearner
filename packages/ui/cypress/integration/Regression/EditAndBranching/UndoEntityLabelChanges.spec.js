@@ -1,6 +1,6 @@
 /**
 * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -15,7 +15,7 @@ import * as helpers from '../../../support/Helpers'
 
 describe('Undo Entity Labeling - Edit and Branching', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
-  
+
   context('Setup', () => {
     it('Should import a model to test against and navigate to Train Dialogs view', () => {
       models.ImportModel('z-undoEntityLabel', 'z-undoEntityLabel.cl')
@@ -30,7 +30,7 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
       train.VerifySubmitChangesButtonIsDisabled()
       entityDetectionPanel.VerifyEntityLabelUndoButtonIsDisabled()
     })
-    
+
     it('Verify that after selecting an entity to label, we can select a different user turn and label text', () => {
       entityDetectionPanel.SelectEntityLabel('user', 'one')
       chatPanel.SelectChatTurnExactMatch('The user asks another question')
@@ -116,7 +116,7 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
       chatPanel.SelectChatTurnExactMatch('The user asks their final question')
       entityDetectionPanel.RemoveEntityLabel('user', 'one')
       entityDetectionPanel.RemoveEntityLabel('asks', 'two')
-      
+
       // Bug 2262: Undo Entity Label Changes not-rerendering correctly
       //entityDetectionPanel.LabelTextAsEntity('asks', 'one')
 
@@ -157,7 +157,7 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
       entityDetectionPanel.VerifyEntityLabelUndoButtonIsEnabled()
       entityDetectionPanel.ClickEntityLabelUndoButton()
     })
-    
+
     // Bug 2263: Submit Changes button is enabled, select user turns disabled, after no net change
     // Confirm that this bug no longer reproduces.
     // it('Verify that the "Submit Changes" and "Undo" buttons are disabled', () => {

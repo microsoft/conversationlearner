@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as homePage from '../../../../support/components/HomePage'
@@ -40,7 +40,7 @@ describe("Settings - Settings", () => {
           trainDialog.description = train.GetDescription()
           trainDialog.tags = train.GetAllTags()
           trainDialog.chatMessages = chatPanel.GetAllChatMessages()
-  
+
           train.ClickSaveCloseButton()
         })
       })
@@ -76,7 +76,7 @@ describe("Settings - Settings", () => {
       cy.reload(true) // Force reload of the page without using the cache
       homePage.LoadModel(copyModelName)
     })
-    
+
     VerifyModelIsTrueCopy()
   })
 
