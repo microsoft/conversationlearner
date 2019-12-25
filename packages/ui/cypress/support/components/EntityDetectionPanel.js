@@ -248,7 +248,7 @@ function _VerifyEntityLabelConflictPopupAndClickButton(previousTextEntityPairs, 
 }
 
 export function VerifyEntityDetectionPhrase(expectedPhrase) {
-  function StringFromEntityDetectionUiElements() {
+  function CompletePhraseFromEntityDetectionUiElements() {
     let funcName = `StringFromEntityDetectionUiElements('span[data-offset-key]')`
     let elements = Cypress.$('div[class="entity-labeler__editor"]').find('span[data-offset-key]')
     helpers.ConLog(funcName, `Number of Elements Found: ${elements.length}`)
@@ -263,10 +263,29 @@ export function VerifyEntityDetectionPhrase(expectedPhrase) {
   }
 
   cy.WaitForStableDOM().then(() => {
-    const detectionPhrase = StringFromEntityDetectionUiElements()
+    const detectionPhrase = CompletePhraseFromEntityDetectionUiElements()
 
     if (detectionPhrase != expectedPhrase) {
       throw new Error(`Bugs 2389 & 2400 - Entity Detection panel shows a phrase that is different than the user's utterance. Detection Phrase: "${detectionPhrase}" --- Expected Phrase: "${expectedPhrase}"`)
     }
   })
+}
+
+export function VerifyEntityDetectionLabeling(textEntityPairs) {
+  function ListOfDetectedEntitiesAndLabeledText() {
+    const entityElements = Cypress.$('[data-testid="custom-entity-name-button"]')
+    let labeledText = []
+    for (let i = 0; i < entityElements.length; i++) {
+      const entity = entityElements[i].textContent
+      const textElement = Cypress.$(entityElements[i])
+        .parents('.cl-entity-node--custom')
+        .find('[data-testid="token-node-entity-value"]')
+      const text = textElement[i].textContent
+      labeledText.push({ text: text, entity: entity })
+    }
+    return labeledText()
+  }
+
+
+
 }
