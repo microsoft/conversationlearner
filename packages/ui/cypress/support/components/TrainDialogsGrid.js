@@ -1,14 +1,14 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
- */
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
+*/
 
 import * as modelPage from './ModelPage'
 import * as helpers from '../Helpers'
 import * as chatPanel from './ChatPanel'
 
 // Path to product code: ConversationLearner-UI\src\routes\Apps\App\TrainDialogs.tsx
-export function VerifyPageTitle() { 
+export function VerifyPageTitle() {
   cy.Get('[data-testid="train-dialogs-title"]').contains('Train Dialogs')
   cy.Enqueue(() => {
     if (modelPage.IsOverlaid()) {
@@ -27,7 +27,7 @@ export function ClickReplaySelectedButton() { cy.Get('[data-testid="button-repla
 export function SearchBox() { cy.Get('label[for="traindialogs-input-search"]').contains('input.ms-SearchBox-field') }
 export function EntityDropDownFilter() { cy.Get('[data-testid="dropdown-filter-by-entity"]') }
 export function ActionDropDownFilter() { cy.Get('[data-testid="dropdown-filter-by-action"]') }
-export function ClickTraining(row) { cy.Get('[data-testid="train-dialogs-description"]').then(elements => { cy.wrap(elements[row]).Click({force: true}) }) }
+export function ClickTraining(row) { cy.Get('[data-testid="train-dialogs-description"]').then(elements => { cy.wrap(elements[row]).Click({ force: true }) }) }
 
 // These functions circumvent the Cypress retry logic by using jQuery
 export function GetFirstInputs() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-first-input"]') }
@@ -48,7 +48,7 @@ export function VerifyDescriptionForRow(row, description) { cy.Get(`div[data-ite
 // The purpose of the TdGrid class is to find a specific row in the Train Dialog Grid and to wait till the 
 // Train Dialog Grid is ready before attempting to perform the find operation.
 export class TdGrid {
-// Public:
+  // Public:
   // 1) Start here, do not call the constructor. This will construct an instance for you and pass it to 
   //    the "thenDoFunction" that you pass in.
   //
@@ -71,7 +71,7 @@ export class TdGrid {
     // We set the Cypress time out higher so that it never triggers. The intention is to run this code in a retry
     // loop that will not fail, and exit after 4 seconds if we don't achieve stability. This allows the calling
     // functions to log more information before throwing an error.
-    cy.wrap(1, {timeout: 5000}).should(() => {
+    cy.wrap(1, { timeout: 5000 }).should(() => {
       try {
         const currentTime = new Date().getTime()
         if (!TdGrid.monitorIsActivated) {
@@ -83,7 +83,7 @@ export class TdGrid {
           TdGrid.monitorIsActivated = true
           TdGrid.MonitorGrid()
         }
-        
+
         if (TdGrid.isStable) {
           helpers.ConLog(funcName, 'The Train Dialog Grid IS STABLE!')
           TdGrid.monitorIsActivated = false
@@ -97,22 +97,22 @@ export class TdGrid {
           TdGrid.tdGrid = new TdGrid()
           return
         }
-      } 
+      }
       catch (error) {
         helpers.ConLog(funcName, `Caught Errors: ${error.message}`)
       }
-      
+
       helpers.ConLog(funcName, 'Failed attempt, the Train Dialog Grid is not stable yet.')
       throw new Error(`Train Dialog Grid is not stable yet, however, if you see this in the Cypress UI it is a TEST BUG`)
       // Its a test bug if this error shows up in the Cypress UI because this function was designed to NOT time out.
-    }).then(() => { 
-      return thenDoFunction(TdGrid.tdGrid) 
+    }).then(() => {
+      return thenDoFunction(TdGrid.tdGrid)
     })
   }
 
   // 2) this should be called from an object returned from TdGrid.GetTdGrid
   // Returns the index of the row that was found or -1 if not found
-  FindGridRowByChatInputs(firstInput, lastInput, lastResponse){
+  FindGridRowByChatInputs(firstInput, lastInput, lastResponse) {
     const funcName = `TdGrid.FindGridRowByChatInputs("${firstInput}", "${lastInput}", "${lastResponse}")`
     helpers.ConLog(funcName, this.feedback)
 
@@ -127,7 +127,7 @@ export class TdGrid {
         return i
       }
     }
-    
+
     helpers.ConLog(funcName, 'Not Found')
     return -1
   }
@@ -135,7 +135,7 @@ export class TdGrid {
   // 2) this should be called from an object returned from TdGrid.GetTdGrid
   // Returns the index of the row that was found or -1 if not found
   // You may provide both description and tags or just one of them.
-  FindGridRowByDescriptionAndOrTags(description, tagList){
+  FindGridRowByDescriptionAndOrTags(description, tagList) {
     const funcName = `TdGrid.FindGridRowByDescriptionAndOrTags("${description}", "${tagList}")`
     helpers.ConLog(funcName, this.feedback)
 
@@ -146,7 +146,7 @@ export class TdGrid {
     if (description && tagList && this.descriptions.length != this.tagLists.length) {
       throw new Error(`Somethings wrong in TdGrid.FindGridRowByDescriptionAndOrTags - ${this.feedback}`)
     }
-    
+
     const length = description ? this.descriptions.length : (tagList ? this.tagLists : undefined)
     for (let i = 0; i < length; i++) {
       if ((!description || this.descriptions[i] === description) && (!tagList || this.tagLists[i] == tagList)) {
@@ -154,7 +154,7 @@ export class TdGrid {
         return i
       }
     }
-    
+
     helpers.ConLog(funcName, 'Not Found')
     return -1
   }
@@ -163,30 +163,30 @@ export class TdGrid {
   // Returns the index of the row that was found or -1 if not found
   // If firstInput is empty string it will not use any of these 3 in the search: firstInput, lastInput, lastResponse
   // If either decription or tagList is an empty string it will not be used in the search.
-  FindGridRowByAll(firstInput, lastInput, lastResponse, description, tagList){
+  FindGridRowByAll(firstInput, lastInput, lastResponse, description, tagList) {
     const funcName = `TdGrid.FindGridRowByAll("${firstInput}", "${lastInput}", "${lastResponse}", "${description}", "${tagList}")`
     helpers.ConLog(funcName, this.feedback)
     try {
       if (// Since this.rowCount is derived from this.firstInputs.length we don't need to verify it.
-          this.rowCount != this.lastInputs.length ||
-          this.rowCount != this.lastResponses.length ||
-          this.rowCount != this.descriptions.length || 
-          this.rowCount != this.tagLists.length) {
-          throw new Error(`Somethings wrong in TdGrid.FindGridRowByAll - ${this.feedback}`)
+        this.rowCount != this.lastInputs.length ||
+        this.rowCount != this.lastResponses.length ||
+        this.rowCount != this.descriptions.length ||
+        this.rowCount != this.tagLists.length) {
+        throw new Error(`Somethings wrong in TdGrid.FindGridRowByAll - ${this.feedback}`)
       }
 
       for (let i = 0; i < this.firstInputs.length; i++) {
-        if ((!firstInput || 
-            (this.firstInputs[i] === firstInput && 
-            this.lastInputs[i] === lastInput && 
+        if ((!firstInput ||
+          (this.firstInputs[i] === firstInput &&
+            this.lastInputs[i] === lastInput &&
             this.lastResponses[i] === lastResponse)) &&
-            (!description || this.descriptions[i] === description) && 
-            (!tagList || this.tagLists[i] === tagList)) {
+          (!description || this.descriptions[i] === description) &&
+          (!tagList || this.tagLists[i] === tagList)) {
           helpers.ConLog(funcName, `Found on row ${i}`)
           return i
         }
       }
-      
+
       helpers.ConLog(funcName, 'Not Found')
       return -1
     }
@@ -198,53 +198,53 @@ export class TdGrid {
 
   get rowCount() { return this.firstInputs.length }
 
-  get firstInputs() { 
-    if (!this._firstInputs) { 
+  get firstInputs() {
+    if (!this._firstInputs) {
       this._firstInputs = GetFirstInputs()
       this.feedback += ` - Length First Inputs: ${this._firstInputs.length}`
-    } 
+    }
     return this._firstInputs
   }
 
-  get lastInputs() { 
-    if (!this._lastInputs) { 
+  get lastInputs() {
+    if (!this._lastInputs) {
       this._lastInputs = GetLastInputs()
       this.feedback += ` - Length Last Inputs: ${this._lastInputs.length}`
-    } 
+    }
     return this._lastInputs
   }
 
-  get lastResponses() { 
-    if (!this._lastResponses) { 
+  get lastResponses() {
+    if (!this._lastResponses) {
       this._lastResponses = GetLastResponses()
       this.feedback += ` - Length Last Responses: ${this._lastResponses.length}`
-    } 
+    }
     return this._lastResponses
   }
 
-  get descriptions() { 
-    if (!this._descriptions) { 
+  get descriptions() {
+    if (!this._descriptions) {
       this._descriptions = GetDescriptions()
       this.feedback += ` - Length Descriptions: ${this._descriptions.length}`
-    } 
+    }
     return this._descriptions
   }
 
-  get tagLists() { 
-    if (!this._tagLists) { 
+  get tagLists() {
+    if (!this._tagLists) {
       this._tagLists = GetTagLists()
       this.feedback += ` - Length Tags: ${this._tagLists.length}`
     }
     return this._tagLists
   }
 
-// STATICS:
-// Once CreateNewTrainDialog or one of the two EditTraining* functions are used, the Train Dialog Grid is hidden,
-// it should not change, there is no need to access it again until a change is saved from the Train Dialog Editor
-// and the Model page is once again the top most view.
-//
-// These static methods then allow for expected changes to be made to internal data that can be later used to verify
-// that any changes made to Train Dialogs are reflected in the grid once it refreshes.
+  // STATICS:
+  // Once CreateNewTrainDialog or one of the two EditTraining* functions are used, the Train Dialog Grid is hidden,
+  // it should not change, there is no need to access it again until a change is saved from the Train Dialog Editor
+  // and the Model page is once again the top most view.
+  //
+  // These static methods then allow for expected changes to be made to internal data that can be later used to verify
+  // that any changes made to Train Dialogs are reflected in the grid once it refreshes.
 
   static CreateNewTrainDialog(expectedRowCount = -1) {
     cy.Enqueue(() => {
@@ -255,38 +255,38 @@ export class TdGrid {
     })
   }
 
-  static EditTrainingByChatInputs(firstInput, lastInput, lastResponse, expectedRowCount = -1)  {
+  static EditTrainingByChatInputs(firstInput, lastInput, lastResponse, expectedRowCount = -1) {
     const funcName = `EditTrainingByChatInputs(${firstInput}, ${lastInput}, ${lastResponse})`
-    
+
     cy.Enqueue(() => {
       TdGrid.GetAllRows(expectedRowCount)
     }).then(() => {
       let iRow = TdGrid.iCurrentRow = TdGrid.tdGrid.FindGridRowByChatInputs(firstInput, lastInput, lastResponse)
-      if (iRow < 0) { 
+      if (iRow < 0) {
         throw new Error(`Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`)
       }
 
       helpers.ConLog(funcName, `ClickTraining for Train Dialog Row #${iRow} - ${firstInput}, ${lastInput}, ${lastResponse}`)
       ClickTraining(iRow)
-    }).then(() => { 
-      TdGrid.EditTrainingValidationPhase(TdGrid.iCurrentRow) 
+    }).then(() => {
+      TdGrid.EditTrainingValidationPhase(TdGrid.iCurrentRow)
     })
   }
 
   static EditTrainingByDescriptionAndOrTags(description, tagList, expectedRowCount = -1) {
     const funcName = `EditTrainingByDescriptionAndOrTags(${description}, ${tagList})`
-    
+
     cy.Enqueue(() => {
       TdGrid.GetAllRows(expectedRowCount)
     }).then(() => {
       let iRow = TdGrid.iCurrentRow = TdGrid.tdGrid.FindGridRowByDescriptionAndOrTags(description, tagList)
-      if (iRow < 0) { 
+      if (iRow < 0) {
         throw new Error(`Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: Description: '${description}' -- Tags: ${tagList}`)
       }
       helpers.ConLog(funcName, `ClickTraining for row: ${iRow}`)
       ClickTraining(iRow)
-    }).then(() => { 
-      TdGrid.EditTrainingValidationPhase(TdGrid.iCurrentRow) 
+    }).then(() => {
+      TdGrid.EditTrainingValidationPhase(TdGrid.iCurrentRow)
     })
   }
 
@@ -300,21 +300,21 @@ export class TdGrid {
 
     helpers.ConLog(funcName, `Row #${iRow}`)
 
-    cy.wrap(1, {timeout: 8000}).should(() => {
+    cy.wrap(1, { timeout: 8000 }).should(() => {
       const allChatMessageElements = chatPanel.GetAllChatMessageElements()
       if (allChatMessageElements.length > 0) {
         helpers.ConLog(funcName, `The expected Train Dialog from row #${iRow} has loaded`)
         return
       }
-      
+
       helpers.ConLog(funcName, `We are still waiting for the Train Dialog to load`)
       retryCount++
       if (retryCount % 5 == 0) {
         helpers.ConLog(funcName, `Going to click on Train Dialog Row #${iRow} again.`)
-        
+
         // The problem with calling ClickTraining is that it causes the cy.wrap timeout to be canceled.
         // CANNOT USE THIS - ClickTraining(iRow)
-        Cypress.$('[data-testid="train-dialogs-description"]')[iRow].click({force: true})
+        Cypress.$('[data-testid="train-dialogs-description"]')[iRow].click({ force: true })
 
         throw new Error(`Retry - Clicked on Train Dialog Row #${iRow} again - need retry to verify TD loaded this time.`)
       }
@@ -323,11 +323,11 @@ export class TdGrid {
   }
 
   // Get all Train Dialog Grid Rows
-  static GetAllRows(expectedRowCount = -1) { 
+  static GetAllRows(expectedRowCount = -1) {
     const funcName = 'TdGrid.GetAllRows'
     helpers.ConLog(funcName, 'start')
     cy.WaitForStableDOM()
-  
+
     TdGrid.WaitForGridReadyThen(expectedRowCount, () => {
       if (expectedRowCount >= 0 && TdGrid.tdGrid.rowCount != expectedRowCount) {
         throw new Error(`The Train Dialog Grid does not have the ${expectedRowCount} expected rows, instead it has ${TdGrid.tdGrid.rowCount}`)
@@ -338,7 +338,7 @@ export class TdGrid {
       const lastResponses = TdGrid.tdGrid.lastResponses
       const descriptions = TdGrid.tdGrid.descriptions
       const tagLists = TdGrid.tdGrid.tagLists
-  
+
       let allRowData = []
       for (let i = 0; i < firstInputs.length; i++) {
         allRowData.push({
@@ -348,10 +348,10 @@ export class TdGrid {
           description: descriptions[i],
           tagList: tagLists[i],
         })
-  
+
         helpers.ConLog(funcName, `${allRowData[i].firstInput}, ${allRowData[i].lastInput}, ${allRowData[i].lastResponse}, ${allRowData[i].description}, ${allRowData[i].tagList}`)
       }
-      
+
       TdGrid.currentData = allRowData
       return allRowData
     })
@@ -377,11 +377,11 @@ export class TdGrid {
       tagList: tagList,
     }
 
-    if (TdGrid.iCurrentRow == TdGrid.currentData.length) { 
-      TdGrid.currentData.push(newRowData) 
+    if (TdGrid.iCurrentRow == TdGrid.currentData.length) {
+      TdGrid.currentData.push(newRowData)
     }
-    else { 
-      TdGrid.currentData[TdGrid.iCurrentRow] = newRowData 
+    else {
+      TdGrid.currentData[TdGrid.iCurrentRow] = newRowData
     }
   }
 
@@ -389,7 +389,7 @@ export class TdGrid {
     VerifyListOfTrainDialogs(TdGrid.currentData)
   }
 
-// Private:
+  // Private:
   // You should not be calling this directly unless you really know what you are doing.
   constructor() {
     this._firstInputs = undefined
@@ -419,7 +419,7 @@ export class TdGrid {
       setTimeout(TdGrid.MonitorGrid, 50)
       return
     }
-    
+
     if (new Date().getTime() < TdGrid.noMoreOverlaysExpectedTime) {
       helpers.ConLog(funcName, 'No Overlay this time, but we are still watching to make sure no other overlay shows up for at least 1 second')
       setTimeout(TdGrid.MonitorGrid, 50)
@@ -429,7 +429,7 @@ export class TdGrid {
     const elements = Cypress.$('[data-testid="train-dialogs-turns"]')
     const rowCountsMessage = `Expected Row Count: ${TdGrid.expectedRowCount} - Actual Row Count: ${elements.length}`
 
-    if (TdGrid.expectedRowCount >= 0 && elements.length != TdGrid.expectedRowCount) { 
+    if (TdGrid.expectedRowCount >= 0 && elements.length != TdGrid.expectedRowCount) {
       helpers.ConLog(funcName, rowCountsMessage)
       setTimeout(TdGrid.MonitorGrid, 50)
       return
@@ -451,15 +451,15 @@ TdGrid.iCurrentRow = -1         // Index of current row in grid that is being ed
 TdGrid.tdGrid = undefined
 
 export function VerifyIncidentTriangleFoundInTrainDialogsGrid(firstInput, lastInput, lastResponse, description = '', tagList = '', expectedRowCount = -1) {
-  FindGridRowByAllThenDo( firstInput, lastInput, lastResponse, description, tagList, expectedRowCount, VerifyErrorIconForTrainGridRow)
+  FindGridRowByAllThenDo(firstInput, lastInput, lastResponse, description, tagList, expectedRowCount, VerifyErrorIconForTrainGridRow)
 }
 
 export function VerifyNoIncidentTriangleFoundInTrainDialogsGrid(firstInput, lastInput, lastResponse, description = '', tagList = '', expectedRowCount = -1) {
-  FindGridRowByAllThenDo( firstInput, lastInput, lastResponse, description, tagList, expectedRowCount, VerifyNoErrorIconForTrainGridRow)
+  FindGridRowByAllThenDo(firstInput, lastInput, lastResponse, description, tagList, expectedRowCount, VerifyNoErrorIconForTrainGridRow)
 }
 
 export function ToggleRowSelection(firstInput, lastInput, lastResponse, description = '', tagList = '', expectedRowCount = -1) {
-  FindGridRowByAllThenDo( firstInput, lastInput, lastResponse, description, tagList, expectedRowCount, (iRow) => { cy.Get(`div.ms-List-cell[data-list-index="${iRow}"]`).find('div[role="checkbox"]').Click() })
+  FindGridRowByAllThenDo(firstInput, lastInput, lastResponse, description, tagList, expectedRowCount, (iRow) => { cy.Get(`div.ms-List-cell[data-list-index="${iRow}"]`).find('div[role="checkbox"]').Click() })
 }
 
 export function FindGridRowByAllThenDo(firstInput, lastInput, lastResponse, description = '', tagList = '', expectedRowCount = -1, func) {
@@ -474,7 +474,7 @@ export function FindGridRowByAllThenDo(firstInput, lastInput, lastResponse, desc
       throw new Error(`The Train Dialog Grid does not have the ${expectedRowCount} expected rows, instead it has ${TdGrid.tdGrid.rowCount}`)
     }
 
-    if (iRow >= 0) { 
+    if (iRow >= 0) {
       func(iRow)
       return
     }
@@ -487,21 +487,21 @@ export function VerifyListOfTrainDialogs(expectedTrainDialogs) {
   helpers.ConLog(`VerifyListOfTrainDialogs(expectedRowCount: ${expectedRowCount})`, 'Start')
   cy.log('Verify List of Train Dialogs', expectedRowCount)
 
-  TdGrid.WaitForGridReadyThen(expectedRowCount, tdGrid => {    
+  TdGrid.WaitForGridReadyThen(expectedRowCount, tdGrid => {
     let errors = false
     expectedTrainDialogs.forEach(trainDialog => {
-      errors = errors || tdGrid.FindGridRowByAll(trainDialog.firstInput, 
-                                                 trainDialog.lastInput, 
-                                                 trainDialog.lastResponse, 
-                                                 trainDialog.description, 
-                                                 trainDialog.tagList) < 0
+      errors = errors || tdGrid.FindGridRowByAll(trainDialog.firstInput,
+        trainDialog.lastInput,
+        trainDialog.lastResponse,
+        trainDialog.description,
+        trainDialog.tagList) < 0
     })
 
     // We do this validation after we try to find the row so that more information about the potential failure is in the log.
     if (expectedRowCount >= 0 && TdGrid.tdGrid.rowCount != expectedRowCount) {
       throw new Error(`The Train Dialog Grid does not have the ${expectedRowCount} expected rows, instead it has ${TdGrid.tdGrid.rowCount}. Refer to the log file for more details.`)
     }
-  
+
     if (errors) {
       throw new Error('Did not find 1 or more of the expected Train Dialogs in the grid. Refer to the log file for details.')
     }

@@ -1,7 +1,7 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
- */
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
+*/
 
 import * as actionTypeSelector from '../../support/components/ActionTypeSelector'
 import * as helpers from '../../support/Helpers'
@@ -114,7 +114,7 @@ export class GeneratedData {
           cy.writeFile(`cypress/fixtures/scoreActions/${this.dataFileName}`, this.data)
         })
       })
-    }    
+    }
   }
 }
 
@@ -148,7 +148,7 @@ export function ClickActionButon(selector, expectedData) {
     const rowElementsOrErrorMessage = FindActionRowElements(selector, expectedData)
     if (typeof rowElementsOrErrorMessage == 'string') { throw new Error(rowElementsOrErrorMessage) }
 
-    cy.wrap(rowElementsOrErrorMessage).find('[data-testid="action-scorer-button-clickable"]').Click() 
+    cy.wrap(rowElementsOrErrorMessage).find('[data-testid="action-scorer-button-clickable"]').Click()
   })
 }
 
@@ -158,7 +158,7 @@ export function ClickEntityValueNameToggleButon(selector, expectedData) {
     const rowElementsOrErrorMessage = FindActionRowElements(selector, expectedData)
     if (typeof rowElementsOrErrorMessage == 'string') { throw new Error(rowElementsOrErrorMessage) }
 
-    cy.wrap(rowElementsOrErrorMessage).find('[data-testid="action-scorer-entity-toggle"]').Click() 
+    cy.wrap(rowElementsOrErrorMessage).find('[data-testid="action-scorer-entity-toggle"]').Click()
   })
 }
 
@@ -169,7 +169,7 @@ export function VerifyActionState(rowSelector, expectedData, buttonSelector, dis
 
     let elements = Cypress.$(rowElementsOrErrorMessage).find(buttonSelector)
     if (elements.length == 0) { throw new Error(`Found ZERO elements for buttonSelector: '${buttonSelector}' from rowSelector: '${rowSelector}' with expectedData: '${expectedData}'`) }
-    
+
     if (elements[0].disabled != disabled) {
       helpers.ConLog(funcName, `Element that should be ${disabled ? 'Disabled' : 'Enabled'} --- ${elements[0].outerHTML}`)
       throw new Error(`Expected the Action Scorer Button to be ${disabled ? 'Disabled' : 'Enabled'}, but it was not.`)
@@ -192,7 +192,7 @@ export function VerifyNoEnabledSelectActionButtons() {
 
     const length = clickable.length + selected.length + addActionButton.length + addApiButton.length
 
-    if (length > 0 ) {
+    if (length > 0) {
       throw new Error(`We are expecting to find NO enabled Action Scorer buttons, instead we found ${length} of them. See log file for details.`)
     }
   })
@@ -215,10 +215,10 @@ export function VerifyScoreActions(expectedScoreActions, acceptableScoreDeviatio
 
   function FindWithinAndVerify(baseElements, findCommand, verificationFunction, expectedElementCount = 1) {
     const elements = eval(`Cypress.$(baseElements).${findCommand}`)
-    if (elements.length != expectedElementCount) { 
+    if (elements.length != expectedElementCount) {
       AccumulateErrors(`Expected to find exactly ${expectedElementCount} element(s) instead we found ${elements.length} - Selection Command: ${findCommand}`)
-    } else { 
-      verificationFunction(elements) 
+    } else {
+      verificationFunction(elements)
     }
     return elements
   }
@@ -227,7 +227,7 @@ export function VerifyScoreActions(expectedScoreActions, acceptableScoreDeviatio
     for (let i = 0; i < expectedScoreActions.length; i++) {
       expectedScoreAction = expectedScoreActions[i]
       rowIndex = undefined
-      
+
       // This gets the row of the Score Action to validate and it also validates the response while doing so.
       const rowElementsOrErrorMessage = FindActionRowElements(actionTypeSelector.GetSelector(expectedScoreAction.type), expectedScoreAction.response)
       if (typeof rowElementsOrErrorMessage == 'string') {
@@ -239,8 +239,8 @@ export function VerifyScoreActions(expectedScoreActions, acceptableScoreDeviatio
 
       // We use the rowIndex only for the purpose of logging errors as a debugging aid.
       rowIndex = Cypress.$(rowElement).parents('div[role="presentation"].ms-List-cell').attr('data-list-index')
-      
-      
+
+
       // Verify the button.
       FindWithinAndVerify(rowElement, `find('[data-testid^="action-scorer-button-"]')`, elements => {
         const attr = elements.attr('data-testid')
@@ -252,9 +252,9 @@ export function VerifyScoreActions(expectedScoreActions, acceptableScoreDeviatio
       // Verify Entity Value/Name Toggle Control.
       const elements = Cypress.$(rowElement).find('[data-testid="action-scorer-entity-toggle"]')
       if ((elements.length == 1) !== expectedScoreAction.hasEntityValueNameToggle) {
-        AccumulateErrors(`Expected to find the Entity Value/Name Toggle switch to be ${expectedScoreAction.hasEntityValueNameToggle? 'present' : 'absent'}`)
+        AccumulateErrors(`Expected to find the Entity Value/Name Toggle switch to be ${expectedScoreAction.hasEntityValueNameToggle ? 'present' : 'absent'}`)
       }
- 
+
       // Verify the score.
       FindWithinAndVerify(rowElement, `find('[data-testid="action-scorer-score"]')`, elements => {
         const score = helpers.TextContentWithoutNewlines(elements[0])
@@ -275,14 +275,14 @@ export function VerifyScoreActions(expectedScoreActions, acceptableScoreDeviatio
         }
       })
 
-      
+
       // Verify the entities.
       FindWithinAndVerify(rowElement, `find('[data-testid="action-scorer-entities"]').parent('div[role="listitem"]')`, elements => {
         expectedScoreAction.entities.forEach(entity => {
           FindWithinAndVerify(elements, `find('[data-testid="action-scorer-entities"]:contains("${entity.name}")')`, entityElement => {
             const strikeOut = Cypress.$(entityElement).find(`del:contains("${entity.name}")`).length == 1 ? 'Strikeout' : ''
             let entityQualifierState
-  
+
             if (entityElement.hasClass('cl-entity--match')) {
               entityQualifierState = entityQualifierStateEnum.green + strikeOut
             } else if (entityElement.hasClass('cl-entity--mismatch')) {
@@ -290,7 +290,7 @@ export function VerifyScoreActions(expectedScoreActions, acceptableScoreDeviatio
             } else {
               AccumulateErrors(`Expected to find class with either 'cl-entity--match' or 'cl-entity--mismatch' but found neither. Element: ${entityElement[0].outerHTML}`)
             }
-  
+
             if (entity.qualifierState != entityQualifierState) {
               AccumulateErrors(`Expected '${entity.name}' Entity Qualifier to have State: ${entity.qualifierState} but instead found: ${entityQualifierState}`)
             }
@@ -298,7 +298,7 @@ export function VerifyScoreActions(expectedScoreActions, acceptableScoreDeviatio
         })
       }, expectedScoreAction.entities.length)
 
-      
+
       // Verify the Wait flag.
       FindWithinAndVerify(rowElement, `find('[data-testid="action-scorer-wait"]')`, elements => {
         const wait = elements.attr('data-icon-name') == 'CheckMark'
@@ -316,8 +316,8 @@ export function VerifyScoreActions(expectedScoreActions, acceptableScoreDeviatio
         }
       })
     }
-    
-    if (errorMessages.length > 0) {throw new Error(`${errorMessages.length} Errors Detected in Action Scorer Grid - See log file for full list. --- 1st Error: ${errorMessages[0]}`)}    
+
+    if (errorMessages.length > 0) { throw new Error(`${errorMessages.length} Errors Detected in Action Scorer Grid - See log file for full list. --- 1st Error: ${errorMessages[0]}`) }
   })
 }
 
@@ -333,10 +333,10 @@ export function GenerateScoreActionsDataFromGrid() {
 
   function FindWithinAndCapture(baseElements, findCommand, captureFunction, oneElementExpected = true) {
     const elements = eval(`Cypress.$(baseElements).${findCommand}`)
-    if (oneElementExpected && elements.length != 1) { 
+    if (oneElementExpected && elements.length != 1) {
       AccumulateErrors(`Expected to find exactly 1 element instead we found ${elements.length} - Selection Command: ${findCommand}`)
-    } else { 
-      captureFunction(elements) 
+    } else {
+      captureFunction(elements)
     }
     return elements
   }
@@ -363,26 +363,26 @@ export function GenerateScoreActionsDataFromGrid() {
       rowData.response = responseData
     })
 
-    
+
     // Entity Value/Name Toggle Control.
     const elements = Cypress.$(rowElement).find('[data-testid="action-scorer-entity-toggle"]')
     rowData.hasEntityValueNameToggle = elements.length == 1
 
-    
+
     // Action Type.
     FindWithinAndCapture(rowElement, `find('[data-testid="action-details-action-type"]')`, elements => {
       const actionType = helpers.TextContentWithoutNewlines(elements[0])
       rowData.type = actionType
     })
 
-    
+
     // Get the score.
     FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-score"]')`, elements => {
       const score = helpers.TextContentWithoutNewlines(elements[0])
       rowData.score = score
     })
 
-    
+
     // Get the entities and their display attributes.
     let entities = []
     FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-entities"]').parent('div[role="listitem"]')`, elements => {
@@ -392,7 +392,7 @@ export function GenerateScoreActionsDataFromGrid() {
 
           const strikeOut = Cypress.$(elements[i]).find(`del:contains("${name}")`).length == 1 ? 'Strikeout' : ''
           let entityQualifierState
-          
+
           const entityElement = Cypress.$(elements[i]).find('[data-testid="action-scorer-entities"]')
           if (entityElement.hasClass('cl-entity--match')) {
             entityQualifierState = entityQualifierStateEnum.green + strikeOut
@@ -402,23 +402,23 @@ export function GenerateScoreActionsDataFromGrid() {
             entityQualifierState = `ERROR - Expected to find class with either 'cl-entity--match' or 'cl-entity--mismatch' but found neither. Element: ${entityElement[0].outerHTML}`
             AccumulateErrors(entityQualifierState)
           }
-          
+
           entities.push({ name: name, qualifierState: entityQualifierState })
         }
       }
       rowData.entities = entities
     }, false)
 
-    
+
     // Get the Wait flag.
     FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-wait"]')`, elements => {
       const wait = elements.attr('data-icon-name') == 'CheckMark'
       rowData.wait = wait
     })
-    
+
     generatedData.push(rowData)
   }
-  
+
   return generatedData
 }
 
@@ -428,13 +428,13 @@ export function GenerateScoreActionsDataFromGrid() {
 // If there are no entities specified for the action, it still returns the text of the action.
 export function GetTextWithEntityNamesFromSelectedAction() {
   const elements = FindActionRowElements('[data-testid="action-scorer-button-selected"]', 'SelectedSelected')
-  if (typeof elements == 'string') { 
-    throw new Error(elements) 
+  if (typeof elements == 'string') {
+    throw new Error(elements)
   }
 
   const toggleElements = Cypress.$(elements).find('[data-testid="action-scorer-entity-toggle"]')
-  if (toggleElements.length == 1) { 
-    toggleElements.click() 
+  if (toggleElements.length == 1) {
+    toggleElements.click()
   }
 
   return cy.WaitForStableDOM().then(() => {

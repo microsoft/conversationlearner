@@ -1,9 +1,9 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
- */
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
+*/
 
-export function VerifyExactTitleNoContentClickButton(expectedTitle, buttonSelector) { 
+export function VerifyExactTitleNoContentClickButton(expectedTitle, buttonSelector) {
   cy.Get(buttonSelector)
     .parents('div.ms-Dialog-main')
     .find('p.ms-Dialog-title')
@@ -13,10 +13,10 @@ export function VerifyExactTitleNoContentClickButton(expectedTitle, buttonSelect
     .ExactMatch('')
     .parents('div.ms-Dialog-main')
     .find(buttonSelector)
-    .Click() 
+    .Click()
 }
 
-export function VerifyExactTitleAndContentContainsClickButton(expectedTitle, expectedContent, buttonSelector) { 
+export function VerifyExactTitleAndContentContainsClickButton(expectedTitle, expectedContent, buttonSelector) {
   cy.Get(buttonSelector)
     .parents('div.ms-Dialog-main')
     .find('p.ms-Dialog-title')
@@ -26,15 +26,15 @@ export function VerifyExactTitleAndContentContainsClickButton(expectedTitle, exp
     .contains(expectedContent)
     .parents('div.ms-Dialog-main')
     .find(buttonSelector)
-    .Click() 
+    .Click()
 }
 
-export function VerifyContentAnyTitleClickButton(expectedContent, buttonSelector) { 
+export function VerifyContentAnyTitleClickButton(expectedContent, buttonSelector) {
   cy.Get(buttonSelector)
     .parents('div.ms-Dialog-main')
     .find('.ms-Dialog-content')
     .contains(expectedContent)
     .parents('div.ms-Dialog-main')
     .find(buttonSelector)
-    .Click() 
+    .Click()
 }
