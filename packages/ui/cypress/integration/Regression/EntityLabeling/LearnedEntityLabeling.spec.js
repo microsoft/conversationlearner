@@ -34,7 +34,7 @@ describe('Learned Entity Labeling', () => {
     })
 
     it('Should auto-label Entity in user utterance based existing Train Dialog', () => {
-      train.TypeYourMessage('My name is David.')
+      train.TypeYourMessage('My name is David.', [{ text: 'David', entity: 'name' }])
       entityDetectionPanel.VerifyTextIsLabeledAsEntity('David', 'name')
     })
 
@@ -68,7 +68,7 @@ describe('Learned Entity Labeling', () => {
       train.SaveAsIsVerifyInGrid()
     })
   })
-  
+
   context('Train Dialog Next', () => {
     it('Should wait for Training Status to Complete and then create a new Train Dialog', () => {
       cy.WaitForTrainingStatusCompleted()
@@ -76,7 +76,7 @@ describe('Learned Entity Labeling', () => {
     })
 
     it('Should auto-label Entity in user utterance based previous Train Dialog', () => {
-      train.TypeYourMessage('My name is Gabriella.')
+      train.TypeYourMessage('My name is Gabriella.', [{ text: 'Gabriella', entity: 'name' }])
       entityDetectionPanel.VerifyTextIsLabeledAsEntity('Gabriella', 'name')
     })
 

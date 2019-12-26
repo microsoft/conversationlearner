@@ -271,7 +271,20 @@ export function VerifyEntityDetectionPhrase(expectedPhrase) {
   })
 }
 
-export function VerifyEntityDetectionLabeling(textEntityPairs) {
+// Due to: Bug 2396: Entity Labeling is automatically and correctly happening without being trained
+// This function is intended to automatically verify that there are no words/phrases labeled as entities
+// that we are not expecting. At one point LUIS was automatically and randomly labeling entities, but the
+// affect of it was not noticed until some later point in the test where it would result in some random
+// failure, and even in some rare cases went unnoticed.
+//
+// This was not intended to verify that the words/phrases we are expecting to be labeled are actually
+// labeled. There are other functions that do that. So to keep the complexity down we are not doing
+// that here.
+export function VerifyEntityDetectionLabeling(expectedTextEntityPairs = undefined) {
+  if (expectedTextEntityPairs != undefined && !Array.isArray(expectedTextEntityPairs)) {
+    throw new Error(`VerifyEntityDetectionLabeling expects an Array or undefined`)
+  }
+
   function ListOfDetectedEntitiesAndLabeledText() {
     const entityElements = Cypress.$('[data-testid="custom-entity-name-button"]')
     let labeledText = []
@@ -280,12 +293,33 @@ export function VerifyEntityDetectionLabeling(textEntityPairs) {
       const textElement = Cypress.$(entityElements[i])
         .parents('.cl-entity-node--custom')
         .find('[data-testid="token-node-entity-value"]')
-      const text = textElement[i].textContent
+
+      // If the text that was labeled was multiple words, then there will be multiple entityElements.
+      // Piece them all together with a space between words. NOTE: This may fail if other punctuation
+      // is involved. Best to keep it simple and not use it, but if necessary then fix this code.
+      let text = ''
+      for (let ii = 0; ii < textElement.length; ii++) {
+        text += textElement[ii].textContent + ' '
+      }
+      text = text.trim()
       labeledText.push({ text: text, entity: entity })
     }
-    return labeledText()
+    return labeledText
   }
 
+  cy.WaitForStableDOM().then(() => {
+    const labeledText = ListOfDetectedEntitiesAndLabeledText()
 
-
+    let errors = ''
+    labeledText.forEach(labeled => {
+      const found = expectedTextEntityPairs != undefined && expectedTextEntityPairs.find(pair => pair.text == labeled.text && pair.entity == labeled.entity) != undefined
+      helpers.ConLog('VerifyEntityDetectionLabeling', `'${labeled.text}' labeled as Entity '${labeled.entity}' was ${found ? 'expected' : 'NOT EXPECTED'}`)
+      if (!found) {
+        errors += `'${labeled.text}' as '${labeled.entity}' - `
+      }
+    })
+    if (errors.length > 0) {
+      throw new Error(`Unexpected words/phrases labled as entities: ${errors}`)
+    }
+  })
 }

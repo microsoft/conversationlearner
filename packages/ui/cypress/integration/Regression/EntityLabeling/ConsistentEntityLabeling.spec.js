@@ -11,7 +11,7 @@ import * as train from '../../../support/Train'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as helpers from '../../../support/Helpers'
 
-describe.skip('Consistent Entity Labeling', () => {
+describe('Consistent Entity Labeling', () => {
   const textEntityPairs = [{ text: 'Tag', entity: 'multi' }, { text: 'Frog', entity: 'multi' }]
 
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
@@ -27,7 +27,7 @@ describe.skip('Consistent Entity Labeling', () => {
 
   context('Train - Standard Input', () => {
     it('Should get an error message after removing single entity label & prevent scoring actions till fixed', () => {
-      train.TypeYourMessage('This is Tag.')
+      train.TypeYourMessage('This is Tag.', [{ text: 'Tag', entity: 'multi' }])
       entityDetectionPanel.RemoveEntityLabel('Tag', 'multi')
       train.ClickScoreActionsButton()
       entityDetectionPanel.VerifyEntityLabelConflictPopupAndClose([textEntityPairs[0]])
@@ -37,7 +37,7 @@ describe.skip('Consistent Entity Labeling', () => {
     })
 
     it('Should get an error message after removing a different single entity label & prevent scoring actions till fixed', () => {
-      train.TypeYourMessage('This is Frog and Tag.')
+      train.TypeYourMessage('This is Frog and Tag.', [{ text: 'Frog', entity: 'multi' }, { text: 'Tag', entity: 'multi' }])
       entityDetectionPanel.RemoveEntityLabel('Frog', 'multi')
       train.ClickScoreActionsButton()
       entityDetectionPanel.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
@@ -47,7 +47,7 @@ describe.skip('Consistent Entity Labeling', () => {
     })
 
     it('Should get an error message after removing two entity labels & prevent scoring actions till fixed', () => {
-      train.TypeYourMessage('This is Tag and Frog.')
+      train.TypeYourMessage('This is Tag and Frog.', [{ text: 'Frog', entity: 'multi' }, { text: 'Tag', entity: 'multi' }])
       entityDetectionPanel.RemoveEntityLabel('Tag', 'multi')
       entityDetectionPanel.RemoveEntityLabel('Frog', 'multi')
       train.ClickScoreActionsButton()
@@ -68,7 +68,7 @@ describe.skip('Consistent Entity Labeling', () => {
 
   context('Train - Alternative Input', () => {
     it('Automatically label entites in alternative input', () => {
-      train.TypeYourMessage('This is Tag.')
+      train.TypeYourMessage('This is Tag.', [{ text: 'Tag', entity: 'multi' }])
       entityDetectionPanel.TypeAlternativeInput('This is Frog and Tag.')
       entityDetectionPanel.TypeAlternativeInput('This is Tag and Frog.')
 

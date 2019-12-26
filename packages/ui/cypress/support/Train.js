@@ -215,10 +215,12 @@ export function VerifyCloseIsTheOnlyEnabledButton() {
   cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').should('be.enabled')
 }
 
-export function TypeYourMessage(message, ignoreBotErrorMessages = false) {
+export function TypeYourMessage(message, expectedTextEntityPairs = undefined, ignoreBotErrorMessages = false) {
   cy.Get(TypeYourMessageSelector).type(`${message}{enter}`)
   entityDetectionPanel.VerifyEntityDetectionPhrase(message)
   if (!ignoreBotErrorMessages) {
     chatPanel.VerifyNoBotErrorAfterUserTurn(message)
   }
+
+  entityDetectionPanel.VerifyEntityDetectionLabeling(expectedTextEntityPairs)
 }

@@ -135,6 +135,15 @@ exports.triageData = [
     ],
     bugs: [2416],
     comment: 'Another instance of that LUIS bug that mislabels Entities.',
+  },
+  {
+    testName: 'Regression-EntityLabeling-ConsistentEntityLabeling.spec.js',
+    and: [
+      `Timed out retrying: cy.click() failed because this element is not visible:`,
+      `data-testid="edit-teach-dialog-close-save-button"`
+    ],
+    bugs: [2323, 2396, 2343],
+    comment: 'TODO: work out which bug this is really due to and get this test case working again.'
   }
 ]
 
