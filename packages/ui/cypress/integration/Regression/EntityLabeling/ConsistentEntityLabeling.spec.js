@@ -37,7 +37,7 @@ describe('Consistent Entity Labeling', () => {
     })
 
     it('Should get an error message after removing a different single entity label & prevent scoring actions till fixed', () => {
-      train.TypeYourMessage('This is Frog and Tag.', [{ text: 'Frog', entity: 'multi' }, { text: 'Tag', entity: 'multi' }])
+      train.TypeYourMessage('This is Frog and Tag.', [{ text: 'Tag', entity: 'multi' }, { text: 'Frog', entity: 'multi' }])
       entityDetectionPanel.RemoveEntityLabel('Frog', 'multi')
       train.ClickScoreActionsButton()
       entityDetectionPanel.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
@@ -47,7 +47,7 @@ describe('Consistent Entity Labeling', () => {
     })
 
     it('Should get an error message after removing two entity labels & prevent scoring actions till fixed', () => {
-      train.TypeYourMessage('This is Tag and Frog.', [{ text: 'Frog', entity: 'multi' }, { text: 'Tag', entity: 'multi' }])
+      train.TypeYourMessage('This is Tag and Frog.', [{ text: 'Tag', entity: 'multi' }, { text: 'Frog', entity: 'multi' }])
       entityDetectionPanel.RemoveEntityLabel('Tag', 'multi')
       entityDetectionPanel.RemoveEntityLabel('Frog', 'multi')
       train.ClickScoreActionsButton()

@@ -143,7 +143,7 @@ exports.triageData = [
       `data-testid="edit-teach-dialog-close-save-button"`
     ],
     bugs: [2323, 2396, 2343],
-    comment: 'TODO: work out which bug this is really due to and get this test case working again.'
+    comment: 'TODO: work out which bug is the real cause and get this test case working again.'
   }
 ]
 

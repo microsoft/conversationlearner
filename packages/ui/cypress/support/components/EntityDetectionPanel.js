@@ -280,6 +280,9 @@ export function VerifyEntityDetectionPhrase(expectedPhrase) {
 // This was not intended to verify that the words/phrases we are expecting to be labeled are actually
 // labeled. There are other functions that do that. So to keep the complexity down we are not doing
 // that here.
+//
+// Also the current implementation supports passing in text/Entity pairs that might not be labeled
+// for those cases where sometimes LUIS labels a word or phrase and sometimes does not.
 export function VerifyEntityDetectionLabeling(expectedTextEntityPairs = undefined) {
   if (expectedTextEntityPairs != undefined && !Array.isArray(expectedTextEntityPairs)) {
     throw new Error(`VerifyEntityDetectionLabeling expects an Array or undefined`)
