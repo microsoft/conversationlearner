@@ -66,7 +66,7 @@ describe('Comprehensive 1 - Score Actions', () => {
     generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Name Entity in User Turn', () => {
-      train.TypeYourMessage('My name is Jeff')
+      train.TypeYourMessage('My name is Jeff', [{ text: 'My name is Jeff', entity: 'name' }])
       entityDetectionPanel.RemoveEntityLabel('My', 'name')
       entityDetectionPanel.LabelTextAsEntity('Jeff', 'name')
     })

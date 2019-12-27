@@ -37,7 +37,7 @@ describe('Branching - Edit and Branching', () => {
     })
 
     it('Should add another user input and Bot response', () => {
-      train.TypeYourMessage('My name is Guadalupe.')
+      train.TypeYourMessage('My name is Guadalupe.', [{ text: 'Guadalupe', entity: 'name' }])
       train.ClickScoreActionsButton()
       train.SelectTextAction('Hello Guadalupe')
     })
