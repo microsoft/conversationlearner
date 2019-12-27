@@ -142,7 +142,7 @@ exports.triageData = [
       `Timed out retrying: cy.click() failed because this element is not visible:`,
       `data-testid="edit-teach-dialog-close-save-button"`
     ],
-    bugs: [2323, 2396, 2343],
+    bugs: [2300],
     comment: 'TODO: work out which bug is the real cause and get this test case working again.'
   }
 ]

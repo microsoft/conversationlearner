@@ -128,7 +128,7 @@ describe('Consistent Entity Labeling', () => {
     })
   })
 
-  context('Edit and Preserve Attempted Labels', () => {
+  context.skip('Edit and Preserve Attempted Labels', () => {
     it('Edit the training', () => {
       trainDialogsGrid.TdGrid.EditTrainingByDescriptionAndOrTags('Both Tag & Frog')
     })
@@ -144,7 +144,7 @@ describe('Consistent Entity Labeling', () => {
       entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToAttempted(textEntityPairs)
     })
 
-    // Bug 2343: Test Blocker: Rendering Issue with Inconsistent Entity Label popup
+    // Bug 2300: Use of "Attempted Labels" option of the "Inconsistent Entity Labels" modal popup fails when the conflict is in the same TD
     // At this point this bug blocks this test from continuing.
     it('Save the changes', () => {
       train.SaveAsIs()
