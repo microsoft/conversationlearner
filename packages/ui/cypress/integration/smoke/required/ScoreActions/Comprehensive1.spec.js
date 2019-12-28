@@ -99,18 +99,19 @@ describe('Comprehensive 1 - Score Actions', () => {
     })
 
     // Bug 2243: Adding an ENUM entity from Score Actions +Actions +Entity after canceling the +Actions fails to reveal the new possible SET_ENTITY options
-    // Once this bug is fixed remove this block of code and the test suite should work as expected.
-    it('Hack around Bug 2243', () => {
-      scorerModal.ClickTextAction('What kind of fruit do you like?')
-      chatPanel.SelectChatTurnExactMatch('What kind of fruit do you like?', 1)
-    })
+    // Once this bug is fixed comment out this block of code and the test suite should work as expected.
+    // it('Hack around Bug 2243', () => {
+    //   scorerModal.ClickTextAction('What kind of fruit do you like?')
+    //   chatPanel.SelectChatTurnExactMatch('What kind of fruit do you like?', 1)
+    // })
 
     generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Select Set Entity Action fruit: ORANGES', () => {
       scorerModal.ClickSetEntityAction('fruit: ORANGES')
-      train.ClickScoreActionsButton()
-      chatPanel.SelectLastChatTurn()
+      // These were also needed to hack around bug 2243.
+      // train.ClickScoreActionsButton()
+      // chatPanel.SelectLastChatTurn()
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()
