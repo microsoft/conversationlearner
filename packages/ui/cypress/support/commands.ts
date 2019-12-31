@@ -112,11 +112,19 @@ Cypress.Commands.add('RevealPreviousSubject', { prevSubject: true }, (elements) 
 Cypress.Commands.add('Timeout', (timeout) => { return timeout })
 
 const retryLoop = (timeout: number, functionToRun: Function) => {
+  helpers.ConLog('cy.RetryLoop', `timeout: ${timeout}`)
+  let options
   if (timeout && typeof timeout == "number") {
-    cy.wrap(1, { timeout: timeout }).should(() => { return functionToRun() })
-  } else {
-    cy.wrap(1).should(() => { return functionToRun() })
+    options = { timeout: timeout }
   }
+  let tryCount = 0
+  let startTime = new Date().getTime()
+  cy.wrap(1, options).should(() => {
+    tryCount++
+    const returnValue = functionToRun()
+    helpers.ConLog('cy.RetryLoop', `Success after attempting the function ${tryCount} times taking a total of ${new Date().getTime() - startTime} milliseconds`)
+    return returnValue
+  })
 }
 
 // To change the timeout on the RetryLoop call it this way:

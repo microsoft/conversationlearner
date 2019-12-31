@@ -75,7 +75,7 @@ describe('Experiment with Getting Return Value from Function with Mixed JavaScri
     function aFunc() { return { data: 123, anArray: ['a', 'b', 'c'] } }
 
     let returnedResult
-    cy.wrap(1).should(() => {
+    cy.RetryLoop(() => {
       returnedResult = aFunc()
       if (returnedResult.data != 123) { throw new Error('SHOULD returnedResult.data != 123') }
       if (returnedResult.anArray[0] != 'a' || returnedResult.anArray[1] != 'b' || returnedResult.anArray[2] != 'c') {
@@ -96,7 +96,7 @@ describe('Experiment with Getting Return Value from Function with Mixed JavaScri
   it('Test4 - wrap ".then()" after a call to ".should()"', () => {
     function aFunc() {
       let returnedFromShould
-      cy.wrap(1).should(() => {
+      cy.RetryLoop(() => {
         returnedFromShould = 'Value returned from .should() is lost, but value returned from then is preserved'
         return returnedFromShould
       }).then(shouldResult => {

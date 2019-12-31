@@ -145,7 +145,7 @@ export function SaveAsIs() {
   cy.Enqueue(() => {
     cy.WaitForStableDOM()
     let renderingShouldBeCompleteTime = new Date().getTime() + 1000
-    cy.wrap(1, { timeout: 60000 }).should(() => {
+    cy.Timeout(60000).RetryLoop(() => {
       if (mergeModal.IsVisible()) {
         helpers.ConLog(funcName, 'mergeModal.IsVisible')
 
@@ -178,7 +178,7 @@ export function SaveVerifyNoMergePopup() {
   cy.Enqueue(() => {
     cy.WaitForStableDOM()
     let renderingShouldBeCompleteTime = new Date().getTime() + 1000
-    cy.wrap(1, { timeout: 60000 }).should(() => {
+    cy.Timeout(60000).RetryLoop(() => {
       if (mergeModal.IsVisible()) {
         helpers.ConLog(funcName, 'mergeModal.IsVisible')
         mergeModalIsVisible = true

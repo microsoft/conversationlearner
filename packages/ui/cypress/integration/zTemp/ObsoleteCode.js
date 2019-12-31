@@ -23,7 +23,7 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
   helpers.ConLog(funcName, `MomentTrainingEnded: ${trainingSummary.MomentTrainingEnded.format()}`)
 
   let tdGrid
-  cy.wrap(1, { timeout: 60000 }).should(() => {
+  cy.Timeout(60000).RetryLoop(() => {
     tdGrid = trainDialogsGrid.TdGrid.WaitForGridReadyThen(trainingSummary.TrainGridRowCount)
   }).then(() => {
     let iRow = tdGrid.FindGridRowByChatInputs(trainingSummary.FirstInput, trainingSummary.LastInput, trainingSummary.LastResponse)

@@ -41,7 +41,7 @@ describe('Bug 2259 Repro', () => {
     // Once this bug is fixed comment out this block of code and uncomment the next block
     // it('Verify that Bug 2259 reproduced', () => {
     //   cy.WaitForStableDOM()
-    //   cy.wrap(1, {timeout: 15000}).should(() => {
+    //   cy.Timeout(15000).RetryLoop(() => {
     //     const element = Cypress.$('[data-testid="action-creator-cancel-button"]')[0]
     //     if (Cypress.$(element).is(':visible')) {
     //       throw new Error('Retry and wait for error message to show up')
