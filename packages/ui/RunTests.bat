@@ -10,7 +10,7 @@ goto eoj
 :usage
 echo ERROR- Missing path and file name of spec file to run.
 echo Runs all specified tests. Examples:
-echo.   All Smoke tests        --- npm run loopTests Smoke\**\*.spec.js
-echo.   Single Regression test --- npm run loopTests Regression\EntityLabeling\LearnedEntityLabeling.spec.js
+echo.   All Smoke tests        --- RunTests Smoke\**\*.spec.js
+echo.   Single Regression test --- RunTests Regression\EntityLabeling\LearnedEntityLabeling.spec.js
 
 :eoj
