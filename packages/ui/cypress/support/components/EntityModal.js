@@ -56,3 +56,50 @@ export function TypeEnumValues(enumValues) {
   })
 }
 
+// Originally we had these two functions (commented out below) to do this work but we hit a bug where the dropdown
+// did not stay stable. It would appear and then go away...only when testing under the Electron browser.
+// We never could figure out the cause, so instead we came up with this more complex way to deal with this situation.
+// export function ClickEntityTypeDropdown() { cy.Get('[data-testid="entity-creator-entity-type-dropdown"]').Click() }
+// export function ClickEntityType(type) { cy.Get(`button.ms-Dropdown-item[title="${type}"]`).Click() }
+export function SelectEntityType(type) {
+  const funcName = `SelectEntityType(${type})`
+  let state = 'drop'
+  cy.WaitForStableDOM()
+  cy.wrap(1).should(() => {
+    if (state == 'drop') {
+      // This part verifies that the Entity Type is set to the value we want, 
+      // and if not it clicks on the element to cause the drop down to show up.
+      helpers.ConLog(funcName, 'state: drop')
+      const elements = Cypress.$('[data-testid="entity-creator-entity-type-dropdown"]')
+      helpers.ConLog(funcName, `elements.length: ${elements.length}`)
+      if (elements.length != 1) {
+        throw new Error('Failed to find the Entity Creator Dropdown.')
+      }
+      const text = helpers.TextContentWithoutNewlines(elements[0])
+      if (text == type) {
+        helpers.ConLog(funcName, `Selected Entity Type is: '${text}'`)
+        return
+      }
+      elements[0].click()
+
+      state = 'select'
+      throw new Error('Retrying to give the UI a chance to update so we can move on to the next state.')
+    }
+
+    // This part selects from the drop down list...if it hasn't disappeared. ------------------------------
+    helpers.ConLog(funcName, 'state: select')
+
+    // Whatever happens here, we will need to return to the drop state to
+    // either confirm or trigger the drop down list to show up again.
+    state = 'drop'
+
+    const elements = Cypress.$(`button.ms-Dropdown-item[title="${type}"]`)
+    if (elements.length != 1) {
+      helpers.ConLog('Did not find either the dropdown list or the type we are looing for.')
+      throw new Error('Failed to find the type to select.')
+    }
+    elements[0].click()
+
+    throw new Error(`Retrying to confirm we have the Entity Type of '${type}' that we just selected.`)
+  })
+}

@@ -15,13 +15,13 @@ exports.triageData = [
   },
   {
     searchBy: ERROR_PANEL,
-    and: [`Running extractor Failed Request failed with status code 502 "Bad Gateway "LUIS error:`],
-    comment: 'Network Issues - It should eventually fix itself.',
+    and: [`502 "Bad Gateway "`],
+    comment: 'Network or Service Issues - It should eventually fix itself.',
   },
   {
     or: [
-      `Timed out retrying: Stauts is queued - Still Waiting for Status == Running or Completed - Queued Wait Time:`,
-      `Timed out retrying: Status is queued - Still Waiting for Status == Running or Completed - Queued Wait Time:`,
+      `Status is queued - Still Waiting for Status == Running or Completed - Queued Wait Time:`,
+      `Stauts is queued - Still Waiting for Status == Running or Completed - Queued Wait Time:`,
     ],
     bugs: [2415]
   },

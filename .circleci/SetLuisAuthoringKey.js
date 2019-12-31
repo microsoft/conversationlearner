@@ -13,11 +13,14 @@ const authoringKeys = [
   process.env.LUIS_AUTHORING_KEY_ALT_12,
   process.env.LUIS_AUTHORING_KEY_ALT_13,
   process.env.LUIS_AUTHORING_KEY_ALT_14,
+  process.env.LUIS_AUTHORING_KEY_ALT_15,
+  process.env.LUIS_AUTHORING_KEY_ALT_16,
+  process.env.LUIS_AUTHORING_KEY_ALT_17,
 ]
 
 let buildNumber = +process.env.CIRCLE_BUILD_NUM
 
-// We have 11 LUIS Authoring Keys that we rotate through.
+// We have 17 LUIS Authoring Keys that we rotate through.
 // We use the Circle CI Build Number to help us get an index to each in sequence.
 
 // Each time a build workflow is kicked off there multiple workflow jobs:
@@ -35,9 +38,9 @@ let authoringKeyIndex = Math.floor(buildNumber % authoringKeys.length)
 let luisAuthoringKey = authoringKeys[authoringKeyIndex]
 
 // Because of the math used in the algorithm above, the number of authoring keys should
-// be a prime number, otherwise there is a chance that some keys will get used all the time
-// while others are not used. Also there should be enough keys so that at least 4 full runs
-// can complete before it begins reusing keys.
+// be a prime number, otherwise there is a chance that some keys will get used more often
+// while others are not used very much. Also there should be enough keys so that at least
+// 3 full runs can complete before it begins reusing keys.
 //
 // There are other things can influence the next build number to be used, like if the
 // build fails, then the other two jobs won't run so only 1 build number

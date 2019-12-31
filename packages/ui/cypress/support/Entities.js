@@ -75,6 +75,12 @@ export function CreateNewEntityThenVerifyInGrid({
 }
 
 export function SelectEntityType(type) {
-  entityModal.ClickEntityTypeDropdown()
-  entityModal.ClickEntityType(type)
+  entityModal.SelectEntityType(type)
+  // This worked most of the time, then test suite Regression\BugRepro\Bug2259Repro.spec.js
+  // started failing frequently on the Electron browser because the Entity Type Drop Down List
+  // would close almost as soon as it opened before we could select anything. I'm leaving the 
+  // code here because the fix to this issue was more complex than we should need. Perhaps 
+  // someone else will figure it out and we can return to a more simple solution.
+  // entityModal.ClickEntityTypeDropdown()
+  // entityModal.ClickEntityType(type)
 }
