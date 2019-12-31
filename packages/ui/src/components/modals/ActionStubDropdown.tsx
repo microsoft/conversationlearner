@@ -13,6 +13,7 @@ type ReceivedProps = {
     action: CLM.ApiAction,
     callback: CLM.Callback | undefined,
     selectedStub?: CLM.StubInfo,
+    onChangeSelectedStub: (stubInfo: CLM.StubInfo) => void,
 }
 
 type Props = ReceivedProps & InjectedIntlProps
@@ -38,26 +39,29 @@ const Component: React.FC<Props> = (props) => {
         },
     ]
 
-    const [selectedStubOptionKey, setSelectedStubOptionKey] = React.useState(noneOptionKey)
-    const onChangeStubSelected = (event: React.FormEvent<HTMLDivElement>, option?: OF.IDropdownOption | undefined, index?: number | undefined) => {
+    const [selectedStubOptionKey, setSelectedStubOptionKey] = React.useState(props.selectedStub?.name ?? noneOptionKey)
+    const onChangeSelectedStub = (event: React.FormEvent<HTMLDivElement>, option?: OF.IDropdownOption | undefined, index?: number | undefined) => {
         if (!option) {
             return
         }
 
         // TODO: Why need as for types? Keys are all strings
         setSelectedStubOptionKey(option.key as string)
+        props.onChangeSelectedStub(option.data)
     }
 
     const callback = props.callback
     if (callback?.stubs) {
-        const definedStubOptions = callback.stubs.map<OF.IDropdownOption>(stubInfo => ({
+        const stubOptionsFromBot = callback.stubs.map<OF.IDropdownOption>(stubInfo => ({
             key: stubInfo.name,
             text: stubInfo.name,
             data: stubInfo,
         }))
 
-        stubOptions.push(...definedStubOptions)
+        stubOptions.push(...stubOptionsFromBot)
     }
+
+    // TODO: Add options from stubs defined on model
 
     const isStubViewDisabled = selectedStubOptionKey === noneOptionKey
     const selectedStubInfo = callback?.stubs.find(si => si.name === selectedStubOptionKey)
@@ -69,7 +73,7 @@ const Component: React.FC<Props> = (props) => {
                 label={Util.formatMessageId(props.intl, FM.STUB_DROPDOWN_LABEL)}
                 options={stubOptions}
                 selectedKey={selectedStubOptionKey}
-                onChange={onChangeStubSelected}
+                onChange={onChangeSelectedStub}
                 tipType={ToolTips.TipType.STUB_MODAL_ENTITY_VALUES}
             />
 
