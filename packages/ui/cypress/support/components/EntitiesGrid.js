@@ -1,7 +1,7 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
- */
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
+*/
 import * as helpers from '../../support/Helpers'
 
 export function VerifyPageTitle() { cy.Get('[data-testid="entities-title"]').contains('Entities').should('be.visible') }
@@ -18,14 +18,14 @@ export class Row {
   }
 
   EditEntity() { cy.Get('@entityDetailsRow').Click() }
-  
+
   VerifyType(type) { cy.Get('@entityDetailsRow').find('[data-testid="entities-type"]').contains(type) }
-  
-  VerifyResolverType(resolverType) { 
+
+  VerifyResolverType(resolverType) {
     if (resolverType) { cy.Get('@entityDetailsRow').find('[data-testid="entities-resolver"]').ExactMatch(resolverType) }
     else { cy.Get('@entityDetailsRow').find('[data-testid="entities-resolver-none"]') }
   }
-  
+
   VerifyMultiValue(checked) { cy.Get('@entityDetailsRow').find(`i[data-icon-name="${checked ? 'CheckMark' : 'Remove'}"][data-testid="entities-multi-value"]`) }
   VerifyNegatable(checked) { cy.Get('@entityDetailsRow').find(`i[data-icon-name="${checked ? 'CheckMark' : 'Remove'}"][data-testid="entities-negatable"]`) }
 }
@@ -48,7 +48,7 @@ export function VerifyAllEntityRows(rows) {
       helpers.ConLog('VerifyAllEntityRows', `${row.name}, ${row.type}, ${row.resolverType}, ${row.multiValue}, ${row.negatable}`)
       VerifyEntityRow(row.name, row.type, row.resolverType, row.multiValue, row.negatable)
     })
-    
+
     const gridRowCount = Cypress.$('div[role="presentation"].ms-List-cell').length
     if (gridRowCount > rows.length) {
       throw new Error(`Found all of the expected Action Rows, however there are an additional ${gridRowCount - rows.length} Action Rows in the grid that we were not expecting.`)
@@ -57,7 +57,7 @@ export function VerifyAllEntityRows(rows) {
 }
 
 
-export function GetAllRows() { 
+export function GetAllRows() {
   helpers.ConLog('GetAllRows', 'start')
 
   let allRowData = []
@@ -81,7 +81,7 @@ export function GetAllRows() {
 
     helpers.ConLog('GetAllRows', `${name}, ${type}, ${resolverType}, ${multiValue}, ${negatable}`)
   }
-  
+
   return allRowData
 }
 

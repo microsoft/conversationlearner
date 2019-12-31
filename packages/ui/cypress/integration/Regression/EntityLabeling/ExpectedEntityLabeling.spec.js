@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -48,7 +48,7 @@ describe('Expected Entity Labeling', () => {
 
   context('Train Dialog - 2nd Round', () => {
     it('Should type in another user utterance, verify it was labeled as the "name" entity and click Score Actions button', () => {
-      train.TypeYourMessage('David')
+      train.TypeYourMessage('David', [{ text: 'David', entity: 'name' }])
       entityDetectionPanel.VerifyTextIsLabeledAsEntity('David', 'name')
       train.ClickScoreActionsButton()
     })

@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -53,14 +53,14 @@ describe('Bug 2265 Repro', () => {
 
     // Bug 2265: Editing 1st user turn to label entities saves changes to 2nd user turn
     // Once this bug is fixed comment out this block of code and uncomment the next block
-    it('Verify that Bug 2265 reproduced', () => {
-      chatPanel.VerifyChatTurnIsAnExactMatch('The user asks a silly question', 4, 2)
-    })
-    
+    // it('Verify that Bug 2265 reproduced', () => {
+    //   chatPanel.VerifyChatTurnIsAnExactMatch('The user asks a silly question', 4, 2)
+    // })
+
     // This code should work once bug 2265 is fixed...
     // Uncomment this and comment out the above to detect a regression.
-    // it('Verify that Bug 2259 did not reproduce', () => {
-    //   chatPanel.VerifyChatTurnIsAnExactMatch('The user asks another question', 4, 2)
-    // })
+    it('Verify that Bug 2259 did not reproduce', () => {
+      chatPanel.VerifyChatTurnIsAnExactMatch('The user asks another question', 4, 2)
+    })
   })
 })

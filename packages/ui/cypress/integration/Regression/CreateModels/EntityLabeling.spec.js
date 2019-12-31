@@ -1,6 +1,6 @@
 /**
 * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -15,7 +15,7 @@ import * as helpers from '../../../support/Helpers'
 
 describe('Entity Labeling - Create Model', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
-  
+
   context('Create', () => {
     it('Create a model to test against', () => {
       models.CreateNewModel('z-entityLabeling')
@@ -47,17 +47,17 @@ describe('Entity Labeling - Create Model', () => {
       train.ClickScoreActionsButton()
       train.SelectTextAction('Hello')
     })
-    
-    it('Save the training and re-edit it to later verify Entity recognition', () => {
-      train.SaveAsIsVerifyInGrid()
-      cy.WaitForTrainingStatusCompleted()
-      trainDialogsGrid.TdGrid.EditTrainingByDescriptionAndOrTags('Both Tag & Frog')
-    })
+
+    // it('Save the training and re-edit it to later verify Entity recognition', () => {
+    //   train.SaveAsIsVerifyInGrid()
+    //   cy.WaitForTrainingStatusCompleted()
+    //   trainDialogsGrid.TdGrid.EditTrainingByDescriptionAndOrTags('Both Tag & Frog')
+    // })
 
     it('Label multiple words as the same entity.', () => {
       train.TypeYourMessage('This is Frog and Tag.')
       memoryTableComponent.VerifyEntityValues('multi', ['Tag'])
-      entityDetectionPanel.VerifyTextIsLabeledAsEntity('Tag', 'multi')
+      entityDetectionPanel.LabelTextAsEntity('Tag', 'multi', 0, false)
       entityDetectionPanel.LabelTextAsEntity('Frog', 'multi', 0, false)
       train.ClickScoreActionsButton()
       memoryTableComponent.VerifyEntityValues('multi', ['Tag', 'Frog'])
@@ -72,14 +72,14 @@ describe('Entity Labeling - Create Model', () => {
 
     // Bug 2351: Inconsistant Automatic Entity Labeling
     it('Reverse the labeled words and once again label them as the same entity.', () => {
-      train.TypeYourMessage('This is Tag and Frog.')
+      train.TypeYourMessage('This is Tag and Frog.', [{ text: 'Tag', entity: 'multi' }, { text: 'Frog', entity: 'multi' }])
       memoryTableComponent.VerifyEntityValues('multi', ['Tag', 'Frog'])
       entityDetectionPanel.VerifyTextIsLabeledAsEntity('Tag', 'multi')
-      
+
       // Sometimes it is labeled, sometimes it is not - bug 2351
       entityDetectionPanel.LabelTextAsEntity('Frog', 'multi', 0, false) // should not need this line of code
       //entityDetectionPanel.VerifyTextIsLabeledAsEntity('Frog', 'multi') // this is the line of code we should need
-      
+
       train.ClickScoreActionsButton()
       train.SelectTextAction('Hi')
     })
@@ -91,10 +91,10 @@ describe('Entity Labeling - Create Model', () => {
     })
 
     it('Try another version of the labeled words and verify they are automatically labeled.', () => {
-      train.TypeYourMessage('This is Bag and Grog.')
+      train.TypeYourMessage('This is Bag and Grog.', [{ text: 'Bag', entity: 'multi' }, { text: 'Grog', entity: 'multi' }])
       entityDetectionPanel.VerifyTextIsLabeledAsEntity('Bag', 'multi')
       entityDetectionPanel.VerifyTextIsLabeledAsEntity('Grog', 'multi')
-      
+
       train.ClickScoreActionsButton()
       train.SelectTextAction('Hi')
 

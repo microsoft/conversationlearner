@@ -1,6 +1,6 @@
 /**
 * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Licensed under the MIT License.
 */
 
 import * as homePage from '../../support/components/HomePage'
@@ -17,8 +17,7 @@ describe('Delete All Test Generated Models - Tools', () => {
   })
 })
 
-function DeleteAllTestGeneratedModelRows() 
-{
+function DeleteAllTestGeneratedModelRows() {
   const funcName = `DeleteAllTestGeneratedModelRows`
 
   // To override the 'localhost:3978' default, add an environment variable named 'CYPRESS_BOT_DOMAIN_PORT'.
@@ -26,29 +25,26 @@ function DeleteAllTestGeneratedModelRows()
   // See https://docs.cypress.io/guides/guides/environment-variables.html#Option-3-CYPRESS for more info.
   let botDomainAndPort = Cypress.env('BOT_DOMAIN_PORT')
   const deleteRequestUrlRoot = `http://${botDomainAndPort ? botDomainAndPort : 'localhost:3978'}/sdk/app/`
-    
+
   cy.WaitForStableDOM()
-  cy.Enqueue(() => { return homePage.GetModelNameIdList() } ).then(modelNameIdList => {
+  cy.Enqueue(() => { return homePage.GetModelNameIdList() }).then(modelNameIdList => {
     let thereCouldBeMoreModelsToDelete = false
-    modelNameIdList.forEach(modelNameId => 
-    {
-      if (ModelShouldBeDeleted(modelNameId.name))
-      {
+    modelNameIdList.forEach(modelNameId => {
+      if (ModelShouldBeDeleted(modelNameId.name)) {
         thereCouldBeMoreModelsToDelete = true
         helpers.ConLog(funcName, `Sending Request to Delete Model: ${modelNameId.name}`)
         cy.request(
-        { 
-          url: deleteRequestUrlRoot + modelNameId.id,
-          method: "DELETE", 
-          headers: { 'x-conversationlearner-memory-key': 'x' } 
-        }).then(response => 
-        { 
-          helpers.ConLog(funcName, `Response Status: ${response.status} - Model: ${modelNameId.name}`) 
-          expect(response.status).to.eq(200)
-        })
+          {
+            url: deleteRequestUrlRoot + modelNameId.id,
+            method: "DELETE",
+            headers: { 'x-conversationlearner-memory-key': 'x' }
+          }).then(response => {
+            helpers.ConLog(funcName, `Response Status: ${response.status} - Model: ${modelNameId.name}`)
+            expect(response.status).to.eq(200)
+          })
       }
     })
-    
+
     cy.reload()
     if (thereCouldBeMoreModelsToDelete) {
       DeleteAllTestGeneratedModelRows()

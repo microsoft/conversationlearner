@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -13,7 +13,7 @@ import * as helpers from '../../../support/Helpers'
 
 describe('End Session', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
-  
+
   context('Setup', () => {
     it('Should import a model and wait for training to complete', () => {
       models.ImportModel('z-EndSession', 'z-EndSession.cl')

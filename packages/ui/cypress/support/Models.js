@@ -1,7 +1,7 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
- */
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
+*/
 
 import * as homePage from './components/HomePage'
 import * as modelPage from './components/ModelPage'
@@ -20,7 +20,7 @@ export class UniqueModelName {
       time = moment.format("MMDD-HHmmss")
     }
     UniqueModelName._lastTimeUsed = time
-    
+
     return `${modelNamePrefix}-${time}${helpers.GetBuildKey()}`
   }
 }
@@ -54,7 +54,7 @@ export function ImportModel(modelNamePrefix, fileName) {
     homePage.ClickSubmitButton()
 
     helpers.ConLog('ImportModel', `Model '${name}' has been successfully imported from '${fileName}'`)
-    
+
     cy.WaitForStableDOM().then(() => { resolve(name) })
   })
 }

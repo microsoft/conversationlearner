@@ -1,7 +1,7 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
- */
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
+*/
 
 import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 
@@ -23,7 +23,7 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
   helpers.ConLog(funcName, `MomentTrainingEnded: ${trainingSummary.MomentTrainingEnded.format()}`)
 
   let tdGrid
-  cy.wrap(1, {timeout: 60000}).should(() => {
+  cy.wrap(1, { timeout: 60000 }).should(() => {
     tdGrid = trainDialogsGrid.TdGrid.WaitForGridReadyThen(trainingSummary.TrainGridRowCount)
   }).then(() => {
     let iRow = tdGrid.FindGridRowByChatInputs(trainingSummary.FirstInput, trainingSummary.LastInput, trainingSummary.LastResponse)
@@ -31,17 +31,17 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
       const turns = trainDialogsGrid.GetTurns()
       const lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
       const createdDates = trainDialogsGrid.GetCreatedDates()
-      
+
       // Keep these lines of logging code in this method, they come in handy when things go bad.
       helpers.ConLog(funcName, `CreatedDates[${iRow}]: ${createdDates[iRow]} --- ${helpers.Moment(createdDates[iRow]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
       helpers.ConLog(funcName, `LastModifiedDates[${iRow}]: ${lastModifiedDates[iRow]} --- ${helpers.Moment(lastModifiedDates[iRow]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
       helpers.ConLog(funcName, `Turns[${iRow}]: ${turns[iRow]}`)
 
       if (((trainingSummary.LastModifiedDate && lastModifiedDates[iRow] == trainingSummary.LastModifiedDate) ||
-          helpers.Moment(lastModifiedDates[iRow]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) &&
-          turns[iRow] == trainingSummary.Turns &&
-          ((trainingSummary.CreatedDate && createdDates[iRow] == trainingSummary.CreatedDate) ||
-            helpers.Moment(createdDates[iRow]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded))) {
+        helpers.Moment(lastModifiedDates[iRow]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) &&
+        turns[iRow] == trainingSummary.Turns &&
+        ((trainingSummary.CreatedDate && createdDates[iRow] == trainingSummary.CreatedDate) ||
+          helpers.Moment(createdDates[iRow]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded))) {
 
         helpers.ConLog(funcName, 'Found all of the expected data. Validation PASSES!')
         return // Fully VALIDATED! We found what we expected.

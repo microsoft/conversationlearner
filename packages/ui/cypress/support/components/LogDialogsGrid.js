@@ -1,7 +1,7 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
- */
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
+*/
 
 import * as modelPage from './ModelPage'
 import * as helpers from '../Helpers'
@@ -19,12 +19,12 @@ export function GetTurnCounts() { return helpers.StringArrayFromElementText('[da
 export function WaitForLogDialoGridUpdateToComplete(expectedLogDialogCount) {
   const funcName = 'WaitForLogDialoGridUpdateToComplete'
   cy.log(funcName, expectedLogDialogCount)
-  
+
   cy.WaitForStableDOM()
-  
+
   let renderingShouldBeCompleteTime = new Date().getTime()
-  cy.Get('[data-testid="log-dialogs-turns"]', {timeout: 10000})
-    .should(elements => { 
+  cy.Get('[data-testid="log-dialogs-turns"]', { timeout: 10000 })
+    .should(elements => {
       if (modelPage.IsOverlaid()) {
         helpers.ConLog(funcName, 'modalPage.IsOverlaid')
         renderingShouldBeCompleteTime = new Date().getTime() + 1000
@@ -34,7 +34,7 @@ export function WaitForLogDialoGridUpdateToComplete(expectedLogDialogCount) {
         throw new Error(`Waiting till no overlays show up for at least 1 second...retry '${funcName}'`)
       }
 
-      if (elements.length != expectedLogDialogCount) { 
+      if (elements.length != expectedLogDialogCount) {
         const errorMessage = `${elements.length} rows found in the training grid, however we were expecting ${expectedLogDialogCount}`
         helpers.ConLog(funcName, errorMessage)
         throw new Error(errorMessage)
@@ -65,17 +65,17 @@ export function VerifyListOfLogDialogs(expectedLogDialogs) {
           break;
         }
       }
-      
+
       if (!found) {
         helpers.ConLog(funcName, 'ERROR - NOT Found')
         errors = true
       }
     })
-    
+
     if (errors) {
       throw new Error('Did not find 1 or more of the expected Log Dialogs in the grid. Refer to the log file for details.')
     }
-    
+
     if (userInputs.length > expectedLogDialogs.length) {
       throw new Error(`Found all of the expected Train Dialogs, however there are an additional ${userInputs.length - expectedLogDialogs.length} Log Dialogs in the grid that we were not expecting. Refer to the log file for details.`)
     }

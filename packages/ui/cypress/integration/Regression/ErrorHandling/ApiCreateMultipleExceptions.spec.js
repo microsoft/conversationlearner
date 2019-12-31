@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -16,7 +16,7 @@ import * as helpers from '../../../support/Helpers'
 // This test suite is part 1 of 2. The second part is in ApiVerifyMultipleExceptions.
 describe.skip('API Create Multiple Exceptions - ErrorHandling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
-  
+
   context('Setup', () => {
     it('Should import a model to test against and navigate to Train Dialogs view', () => {
       models.ImportModel('z-ApiMultExceptns', 'z-ApiCallbacks.cl')
@@ -140,6 +140,6 @@ describe.skip('API Create Multiple Exceptions - ErrorHandling', () => {
       train.SaveAsIsVerifyInGrid()
     })
   })
-  
+
   // Manually EXPORT this to fixtures folder and name it 'z-ApiMultExceptns.cl'
 })

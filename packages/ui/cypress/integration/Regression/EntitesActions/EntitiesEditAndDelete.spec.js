@@ -1,6 +1,6 @@
 /**
 * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -53,7 +53,7 @@ describe('Entities Edit and Delete - EntitiesActions', () => {
       entityModal.ClickTrainDialogFilterButton()
       train.VerifyEntityFilter('name')
       trainDialogsGrid.VerifyListOfTrainDialogs([
-        {firstInput: 'Hey', lastInput: 'world peace', lastResponse: "Sorry $name, I can't help you get $want"}
+        { firstInput: 'Hey', lastInput: 'world peace', lastResponse: "Sorry $name, I can't help you get $want" }
       ])
     })
   })
@@ -86,7 +86,7 @@ describe('Entities Edit and Delete - EntitiesActions', () => {
       entityModal.ClickTrainDialogFilterButton()
       train.VerifyEntityFilter('sweets')
       trainDialogsGrid.VerifyListOfTrainDialogs([
-        {firstInput: 'I love candy!', lastInput: 'I love candy!', lastResponse: "What's your name?"}
+        { firstInput: 'I love candy!', lastInput: 'I love candy!', lastResponse: "What's your name?" }
       ])
     })
   })
@@ -120,8 +120,8 @@ describe('Entities Edit and Delete - EntitiesActions', () => {
       entityModal.ClickTrainDialogFilterButton()
       train.VerifyEntityFilter('want')
       trainDialogsGrid.VerifyListOfTrainDialogs([
-        {firstInput: 'Hey', lastInput: 'world peace', lastResponse: "Sorry $name, I can't help you get $want"},
-        {firstInput: 'I want a car!', lastInput: 'I want a car!', lastResponse: "What's your name?"}
+        { firstInput: 'Hey', lastInput: 'world peace', lastResponse: "Sorry $name, I can't help you get $want" },
+        { firstInput: 'I want a car!', lastInput: 'I want a car!', lastResponse: "What's your name?" }
       ])
     })
   })
@@ -176,7 +176,7 @@ describe('Entities Edit and Delete - EntitiesActions', () => {
       entityModal.ClickTrainDialogFilterButton()
       train.VerifyEntityFilter('canBeDeletedToo')
       trainDialogsGrid.VerifyListOfTrainDialogs([
-        {firstInput: 'We will delete this entity.', lastInput: 'Will also delete this entity.', lastResponse: "What's your name?"}
+        { firstInput: 'We will delete this entity.', lastInput: 'Will also delete this entity.', lastResponse: "What's your name?" }
       ])
     })
 

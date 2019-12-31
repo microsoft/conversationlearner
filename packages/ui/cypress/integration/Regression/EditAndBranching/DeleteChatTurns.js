@@ -1,6 +1,6 @@
 /**
 * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -12,7 +12,7 @@ import * as helpers from '../../../support/Helpers'
 
 describe('Delete Chat Turns - Edit and Branching', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
-  
+
   context('Setup', () => {
     it('Should import a model to test against and navigate to Train Dialogs view', () => {
       models.ImportModel('z-deleteChatTurns', 'z-comprehensive4.cl')
@@ -24,12 +24,12 @@ describe('Delete Chat Turns - Edit and Branching', () => {
     it('Edit existing Train Dialog', () => {
       trainDialogsGrid.TdGrid.EditTrainingByChatInputs('Hi', 'Mangoes and Peaches', 'Goodbye')
     })
-                
+
     it('Delete a User turn', () => {
       chatPanel.SelectChatTurnExactMatch('Apples and Bananas')
       train.ClickDeleteChatTurn()
     })
-    
+
     // Bug 2267: Delete user turn should autoselect the next turn rather than the next user turn
     // When this block of code breaks, it is likely because this bug has been fixed. Comment it out.
     it('Verify that Bug 2267 reproduces', () => {

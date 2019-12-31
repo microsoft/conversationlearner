@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../../support/Models'
@@ -66,7 +66,7 @@ describe('Comprehensive 1 - Score Actions', () => {
     generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Name Entity in User Turn', () => {
-      train.TypeYourMessage('My name is Jeff')
+      train.TypeYourMessage('My name is Jeff', [{ text: 'My name is Jeff', entity: 'name' }])
       entityDetectionPanel.RemoveEntityLabel('My', 'name')
       entityDetectionPanel.LabelTextAsEntity('Jeff', 'name')
     })
@@ -99,18 +99,19 @@ describe('Comprehensive 1 - Score Actions', () => {
     })
 
     // Bug 2243: Adding an ENUM entity from Score Actions +Actions +Entity after canceling the +Actions fails to reveal the new possible SET_ENTITY options
-    // Once this bug is fixed remove this block of code and the test suite should work as expected.
-    it('Hack around Bug 2243', () => {
-      scorerModal.ClickTextAction('What kind of fruit do you like?')
-      chatPanel.SelectChatTurnExactMatch('What kind of fruit do you like?', 1)
-    })
+    // Once this bug is fixed comment out this block of code and the test suite should work as expected.
+    // it('Hack around Bug 2243', () => {
+    //   scorerModal.ClickTextAction('What kind of fruit do you like?')
+    //   chatPanel.SelectChatTurnExactMatch('What kind of fruit do you like?', 1)
+    // })
 
     generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Select Set Entity Action fruit: ORANGES', () => {
       scorerModal.ClickSetEntityAction('fruit: ORANGES')
-      train.ClickScoreActionsButton()
-      chatPanel.SelectLastChatTurn()
+      // These were also needed to hack around bug 2243.
+      // train.ClickScoreActionsButton()
+      // chatPanel.SelectLastChatTurn()
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()

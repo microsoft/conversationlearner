@@ -1,7 +1,7 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
- */
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
+*/
 
 import * as modelPage from '../support/components/ModelPage'
 import * as entitiesGrid from './components/EntitiesGrid'
@@ -25,15 +25,15 @@ export const pretrainedEntityTypes = [
   "keyPhrase",
 ]
 
-export function CreateNewEntity({ 
-    name, 
-    multiValued, 
-    negatable, 
-    resolverType, 
-    type = 'Custom Trained', 
-    expectPopup,
-    enumValues,
-  }) {
+export function CreateNewEntity({
+  name,
+  multiValued,
+  negatable,
+  resolverType,
+  type = 'Custom Trained',
+  expectPopup,
+  enumValues,
+}) {
 
   if (type != 'Custom Trained') SelectEntityType(type)
   if (name) { entityModal.TypeEntityName(name) }
@@ -46,14 +46,14 @@ export function CreateNewEntity({
   if (expectPopup) { entityModal.ClickOkButtonOnNoteAboutPreTrained() }
 }
 
-export function CreateNewEntityThenVerifyInGrid({ 
-    name, 
-    multiValued, 
-    negatable, 
-    resolverType, 
-    type = 'Custom Trained', 
-    expectPopup 
-  }) {
+export function CreateNewEntityThenVerifyInGrid({
+  name,
+  multiValued,
+  negatable,
+  resolverType,
+  type = 'Custom Trained',
+  expectPopup
+}) {
 
   modelPage.NavigateToEntities()
   entitiesGrid.ClickButtonNewEntity()
@@ -75,6 +75,12 @@ export function CreateNewEntityThenVerifyInGrid({
 }
 
 export function SelectEntityType(type) {
-  entityModal.ClickEntityTypeDropdown()
-  entityModal.ClickEntityType(type)
+  entityModal.SelectEntityType(type)
+  // This worked most of the time, then test suite Regression\BugRepro\Bug2259Repro.spec.js
+  // started failing frequently on the Electron browser because the Entity Type Drop Down List
+  // would close almost as soon as it opened before we could select anything. I'm leaving the 
+  // code here because the fix to this issue was more complex than we should need. Perhaps 
+  // someone else will figure it out and we can return to a more simple solution.
+  // entityModal.ClickEntityTypeDropdown()
+  // entityModal.ClickEntityType(type)
 }

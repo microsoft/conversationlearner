@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -45,7 +45,7 @@ describe('Disqualifying Entities - Train', () => {
 
     context('2nd Round', () => {
       it('Should type in another user utterance, verify it is labled as the "name" Entity and click Score Actions button', () => {
-        train.TypeYourMessage('Sam')
+        train.TypeYourMessage('Sam', [{ text: 'Sam', entity: 'name' }])
         entityDetectionPanel.VerifyTextIsLabeledAsEntity('Sam', 'name')
         train.ClickScoreActionsButton()
       })
@@ -70,7 +70,7 @@ describe('Disqualifying Entities - Train', () => {
       it('Should verify the labeled Entity still appears in the Memory pane', () => {
         memoryTableComponent.VerifyEntityValues('name', ['Sam'])
       })
-    
+
       generatedScoreActionsData.VerifyScoreActionsList()
 
       it('Should select an action', () => {
@@ -80,7 +80,7 @@ describe('Disqualifying Entities - Train', () => {
 
     context('4th Round', () => {
       it('Should type in the last user utterance and click Score Actions button', () => {
-        train.TypeYourMessage('world peace')
+        train.TypeYourMessage('world peace', [{ text: 'world peace', entity: 'want' }])
         train.ClickScoreActionsButton()
       })
 
@@ -125,7 +125,7 @@ describe('Disqualifying Entities - Train', () => {
 
     context('2nd Round', () => {
       it('Should type in a user utterance and click Score Actions button', () => {
-        train.TypeYourMessage('Sandeep')
+        train.TypeYourMessage('Sandeep', [{ text: 'Sandeep', entity: 'name' }])
         entityDetectionPanel.VerifyTextIsLabeledAsEntity('Sandeep', 'name')
         train.ClickScoreActionsButton()
       })

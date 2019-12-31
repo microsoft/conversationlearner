@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -11,11 +11,11 @@ import * as train from '../../../support/Train'
 import * as entityDetectionPanel from '../../../support/components/EntityDetectionPanel'
 import * as helpers from '../../../support/Helpers'
 
-describe.skip('Consistent Entity Labeling', () => {
+describe('Consistent Entity Labeling', () => {
   const textEntityPairs = [{ text: 'Tag', entity: 'multi' }, { text: 'Frog', entity: 'multi' }]
 
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
-  
+
   context('Setup', () => {
     it('Import a model, wait for training to complete and start a new Train Dialog', () => {
       models.ImportModel('z-cnstntEntLabel', 'z-entityLabeling.cl')
@@ -27,7 +27,7 @@ describe.skip('Consistent Entity Labeling', () => {
 
   context('Train - Standard Input', () => {
     it('Should get an error message after removing single entity label & prevent scoring actions till fixed', () => {
-      train.TypeYourMessage('This is Tag.')
+      train.TypeYourMessage('This is Tag.', [{ text: 'Tag', entity: 'multi' }])
       entityDetectionPanel.RemoveEntityLabel('Tag', 'multi')
       train.ClickScoreActionsButton()
       entityDetectionPanel.VerifyEntityLabelConflictPopupAndClose([textEntityPairs[0]])
@@ -37,7 +37,7 @@ describe.skip('Consistent Entity Labeling', () => {
     })
 
     it('Should get an error message after removing a different single entity label & prevent scoring actions till fixed', () => {
-      train.TypeYourMessage('This is Frog and Tag.')
+      train.TypeYourMessage('This is Frog and Tag.', [{ text: 'Tag', entity: 'multi' }, { text: 'Frog', entity: 'multi' }])
       entityDetectionPanel.RemoveEntityLabel('Frog', 'multi')
       train.ClickScoreActionsButton()
       entityDetectionPanel.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
@@ -47,7 +47,7 @@ describe.skip('Consistent Entity Labeling', () => {
     })
 
     it('Should get an error message after removing two entity labels & prevent scoring actions till fixed', () => {
-      train.TypeYourMessage('This is Tag and Frog.')
+      train.TypeYourMessage('This is Tag and Frog.', [{ text: 'Tag', entity: 'multi' }, { text: 'Frog', entity: 'multi' }])
       entityDetectionPanel.RemoveEntityLabel('Tag', 'multi')
       entityDetectionPanel.RemoveEntityLabel('Frog', 'multi')
       train.ClickScoreActionsButton()
@@ -68,7 +68,7 @@ describe.skip('Consistent Entity Labeling', () => {
 
   context('Train - Alternative Input', () => {
     it('Automatically label entites in alternative input', () => {
-      train.TypeYourMessage('This is Tag.')
+      train.TypeYourMessage('This is Tag.', [{ text: 'Tag', entity: 'multi' }])
       entityDetectionPanel.TypeAlternativeInput('This is Frog and Tag.')
       entityDetectionPanel.TypeAlternativeInput('This is Tag and Frog.')
 
@@ -109,7 +109,7 @@ describe.skip('Consistent Entity Labeling', () => {
       entityDetectionPanel.RemoveEntityLabel('Tag', 'multi', 1)
       entityDetectionPanel.RemoveEntityLabel('Frog', 'multi', 2)
     })
-    
+
     it('Verify user cannot submit changes without accepting auto-re-labling of the 1st alternative input that we changed', () => {
       train.ClickSubmitChangesButton()
       entityDetectionPanel.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
@@ -128,7 +128,7 @@ describe.skip('Consistent Entity Labeling', () => {
     })
   })
 
-  context('Edit and Preserve Attempted Labels', () => {
+  context.skip('Edit and Preserve Attempted Labels', () => {
     it('Edit the training', () => {
       trainDialogsGrid.TdGrid.EditTrainingByDescriptionAndOrTags('Both Tag & Frog')
     })
@@ -144,16 +144,16 @@ describe.skip('Consistent Entity Labeling', () => {
       entityDetectionPanel.VerifyEntityLabelConflictPopupAndChangeToAttempted(textEntityPairs)
     })
 
-    // Bug 2343: Test Blocker: Rendering Issue with Inconsistent Entity Label popup
+    // Bug 2300: Use of "Attempted Labels" option of the "Inconsistent Entity Labels" modal popup fails when the conflict is in the same TD
     // At this point this bug blocks this test from continuing.
     it('Save the changes', () => {
       train.SaveAsIs()
     })
 
     it('Error Triangle in the Train Dialog Grid should be showing for the effected Train Dialog', () => {
-      trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid('This is Tag.', 'This is Tag.', 'Hi', '', '', 3)  
+      trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid('This is Tag.', 'This is Tag.', 'Hi', '', '', 3)
     })
-    
+
     it('Edit the Train Dialog that got changed', () => {
       trainDialogsGrid.TdGrid.EditTrainingByChatInputs('This is Tag.', 'This is Tag.', 'Hi')
     })
@@ -172,7 +172,7 @@ describe.skip('Consistent Entity Labeling', () => {
     //   train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
     //   chatPanel.VerifyChatTurnHasError(0)
     // })
-    
+
     it('Select the user turn and verify there is an error message', () => {
       chatPanel.SelectChatTurnExactMatch('This is Tag.')
       entityDetectionPanel.VerifyMatchWarning(1)

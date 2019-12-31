@@ -1,3 +1,8 @@
+/**
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
+*/
+
 import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
 import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
@@ -20,7 +25,7 @@ describe('Description and Tags - Train Dialog', () => {
         modelPage.NavigateToTrainDialogs()
         //cy.WaitForTrainingStatusCompleted()
         trainDialogsGrid.TdGrid.CreateNewTrainDialog()
-        
+
         train.VerifyDescription('')
         train.VerifyTags([])
       })
@@ -30,7 +35,7 @@ describe('Description and Tags - Train Dialog', () => {
         // Set description
         // Save
         // Verify tags and description in list
-        
+
         train.TypeDescription('Test Scenario')
         train.AddTags(['TagX'])
 

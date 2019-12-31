@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../support/Models'
@@ -16,10 +16,12 @@ class UserTurns {
   constructor() {
     this.userTurns = UserTurns.userTurns.slice(0)
   }
-  
+
   GetNext() {
-    if (this.userTurns.length <= 0) { helpers.ConLog('GetNext', 'Reset userTurns')
-      this.userTurns = UserTurns.userTurns.slice(0)}
+    if (this.userTurns.length <= 0) {
+      helpers.ConLog('GetNext', 'Reset userTurns')
+      this.userTurns = UserTurns.userTurns.slice(0)
+    }
     return this.userTurns.splice(Math.floor(Math.random() * this.userTurns.length), 1)
   }
 }
@@ -53,7 +55,7 @@ describe('Create many TDs for New Entity Label test - Train Dialog', () => {
       cy.WaitForTrainingStatusCompleted()
     })
   })
-  
+
   let userTurns = new UserTurns()
 
   context('Create many TDs', () => {
@@ -63,21 +65,21 @@ describe('Create many TDs for New Entity Label test - Train Dialog', () => {
           trainDialogsGrid.TdGrid.CreateNewTrainDialog()
           train.TypeDescription(`Train Dialog ${iTD}`)
         })
-        
+
         const numberOfRounds = Math.floor(Math.random() * 8) + 3
         const indexSpecialTurn = Math.floor(Math.random() * numberOfRounds)
-        for (let iUT = 0; iUT < numberOfRounds; iUT++) {    
+        for (let iUT = 0; iUT < numberOfRounds; iUT++) {
           it('Add a new round of turns', () => {
             train.TypeYourMessage(iUT != indexSpecialTurn ? userTurns.GetNext() : "Pearls of wisdom are useless unless diligently applied to one's own life.")
             train.ClickScoreActionsButton()
             train.SelectTextAction('The only response')
           })
         }
-          
+
         it('Save Train Dialog', () => {
           train.SaveAsIs()
         })
       })
-    }    
+    }
   })
 })

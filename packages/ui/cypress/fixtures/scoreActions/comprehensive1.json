@@ -133,7 +133,7 @@
       "response": "Hello",
       "hasEntityValueNameToggle": false,
       "type": "TEXT",
-      "score": "-",
+      "score": "Training...",
       "entities": [],
       "wait": false
     },
@@ -142,7 +142,7 @@
       "response": "Hello Jeff",
       "hasEntityValueNameToggle": true,
       "type": "TEXT",
-      "score": "-",
+      "score": "Training...",
       "entities": [
         {
           "name": "name",
@@ -152,11 +152,11 @@
       "wait": false
     },
     {
-      "buttonTestId": "action-scorer-button-selected",
+      "buttonTestId": "action-scorer-button-clickable",
       "response": "What kind of fruit do you like?",
       "hasEntityValueNameToggle": false,
       "type": "TEXT",
-      "score": "-",
+      "score": "Training...",
       "entities": [],
       "wait": true
     },
@@ -165,7 +165,7 @@
       "response": "fruit: APPLES",
       "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
-      "score": "-",
+      "score": "Training...",
       "entities": [],
       "wait": false
     },
@@ -174,7 +174,7 @@
       "response": "fruit: BANANAS",
       "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
-      "score": "-",
+      "score": "Training...",
       "entities": [],
       "wait": false
     },
@@ -183,7 +183,7 @@
       "response": "fruit: MANGOES",
       "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
-      "score": "-",
+      "score": "Training...",
       "entities": [],
       "wait": false
     },
@@ -192,7 +192,7 @@
       "response": "fruit: ORANGES",
       "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
-      "score": "-",
+      "score": "Training...",
       "entities": [],
       "wait": false
     },
@@ -201,7 +201,7 @@
       "response": "fruit: PEACHES",
       "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
-      "score": "-",
+      "score": "Training...",
       "entities": [],
       "wait": false
     },
@@ -222,11 +222,11 @@
   ],
   [
     {
-      "buttonTestId": "action-scorer-button-selected",
+      "buttonTestId": "action-scorer-button-clickable",
       "response": "Hello",
       "hasEntityValueNameToggle": false,
       "type": "TEXT",
-      "score": "100.0%",
+      "score": "Training...",
       "entities": [],
       "wait": false
     },
@@ -235,7 +235,7 @@
       "response": "Hello Jeff",
       "hasEntityValueNameToggle": true,
       "type": "TEXT",
-      "score": "-",
+      "score": "Training...",
       "entities": [
         {
           "name": "name",
@@ -249,7 +249,7 @@
       "response": "What kind of fruit do you like?",
       "hasEntityValueNameToggle": false,
       "type": "TEXT",
-      "score": "-",
+      "score": "Training...",
       "entities": [],
       "wait": true
     },
@@ -258,7 +258,7 @@
       "response": "fruit: ORANGES",
       "hasEntityValueNameToggle": false,
       "type": "SET_ENTITY",
-      "score": "-",
+      "score": "Training...",
       "entities": [],
       "wait": false
     },
@@ -267,7 +267,7 @@
       "response": "fruit: APPLES",
       "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
-      "score": "-",
+      "score": "Training...",
       "entities": [],
       "wait": false
     },
@@ -276,7 +276,7 @@
       "response": "fruit: BANANAS",
       "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
-      "score": "-",
+      "score": "Training...",
       "entities": [],
       "wait": false
     },
@@ -285,7 +285,7 @@
       "response": "fruit: MANGOES",
       "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
-      "score": "-",
+      "score": "Training...",
       "entities": [],
       "wait": false
     },
@@ -294,7 +294,7 @@
       "response": "fruit: PEACHES",
       "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
-      "score": "-",
+      "score": "Training...",
       "entities": [],
       "wait": false
     },

@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -12,7 +12,7 @@ import * as helpers from '../../../support/Helpers'
 
 describe('Verify Edit Training Controls And Labels - Edit And Branching', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
-  
+
   let originalTrainDialogCount = 0
   let originalChatMessages
 
@@ -23,7 +23,7 @@ describe('Verify Edit Training Controls And Labels - Edit And Branching', () => 
     })
 
     it('Should capture the count of Train Dialogs in the grid', () => {
-      cy.Enqueue( () => originalTrainDialogCount = trainDialogsGrid.GetTurns().length)
+      cy.Enqueue(() => originalTrainDialogCount = trainDialogsGrid.GetTurns().length)
     })
   })
 
@@ -71,7 +71,7 @@ describe('Verify Edit Training Controls And Labels - Edit And Branching', () => 
 
     it('Should verify the count of Train Dialogs in the grid are the same as when we started', () => {
       cy.WaitForStableDOM()
-      cy.wrap(originalTrainDialogCount).should( originalTrainDialogCount => {
+      cy.wrap(originalTrainDialogCount).should(originalTrainDialogCount => {
         const currentTrainDialogCount = trainDialogsGrid.GetTurns().length
         if (currentTrainDialogCount != originalTrainDialogCount) {
           throw new Error(`We are expecting there to be ${originalTrainDialogCount} Train Dialogs in the grid, instead we find ${currentTrainDialogCount}.`)

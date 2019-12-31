@@ -1,7 +1,7 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
- */
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
+*/
 
 import * as homePage from '../../support/components/HomePage'
 import * as entitiesGrid from '../../support/components/EntitiesGrid'
@@ -32,14 +32,13 @@ export function VerifyErrorTriangleForTrainDialogs() { VerifyIncidentIcon(true, 
 export function VerifyNoWarningTriangleOnPage() { VerifyIncidentIcon(false, 'cl-color-warning') }
 export function VerifyWarningTriangleForTrainDialogs() { VerifyIncidentIcon(true, 'cl-color-warning') }
 
-function VerifyIncidentIcon(errorIconExpected, colorClassSelector)
-{
+function VerifyIncidentIcon(errorIconExpected, colorClassSelector) {
   let funcName = `VerifyErrorIcon(${errorIconExpected})`
 
   cy.WaitForStableDOM()
   cy.wrap({ countFound: -1, timesInARowAtThisCount: 0 }, { timeout: 10000 }).should(retryInfo => {
     const elements = Cypress.$(`i[data-icon-name="IncidentTriangle"].${colorClassSelector}`)
-    if(elements.length === retryInfo.countFound) { retryInfo.timesInARowAtThisCount ++ }
+    if (elements.length === retryInfo.countFound) { retryInfo.timesInARowAtThisCount++ }
     else {
       // The count changed since the last time we looked at this.
       retryInfo.countFound = elements.length
@@ -47,16 +46,16 @@ function VerifyIncidentIcon(errorIconExpected, colorClassSelector)
     }
 
     helpers.ConLog(funcName, `Number of Incident Triangles found on page: ${retryInfo.countFound} - Number of times in a row it was found: ${retryInfo.timesInARowAtThisCount}`)
-    if(retryInfo.timesInARowAtThisCount < 15) {
+    if (retryInfo.timesInARowAtThisCount < 15) {
       throw new Error(`${retryInfo.timesInARowAtThisCount} times in a row we have seen ${retryInfo.countFound} incident triangles on the page, need to see it there 15 times before we can trust it won't change again.`)
     }
-    
+
     // At this point we know that we have seen the same number of incident triangles many times in a row.
     // Now we need to verify that it is in the state we expect, and if this next part fails, it will retry
     // up to the time out setting to see if it changes to what we expect.
 
-    if(!errorIconExpected) {
-      if(elements.length > 0) {
+    if (!errorIconExpected) {
+      if (elements.length > 0) {
         throw new Error(`Expected to find no Incident Triangles on the page, yet ${elements.length} were found`)
       }
     } else {

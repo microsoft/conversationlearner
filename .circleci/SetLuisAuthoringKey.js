@@ -10,20 +10,27 @@ const authoringKeys = [
   process.env.LUIS_AUTHORING_KEY_ALT_9,
   process.env.LUIS_AUTHORING_KEY_ALT_10,
   process.env.LUIS_AUTHORING_KEY_ALT_11,
+  process.env.LUIS_AUTHORING_KEY_ALT_12,
+  process.env.LUIS_AUTHORING_KEY_ALT_13,
+  process.env.LUIS_AUTHORING_KEY_ALT_14,
+  process.env.LUIS_AUTHORING_KEY_ALT_15,
+  process.env.LUIS_AUTHORING_KEY_ALT_16,
+  process.env.LUIS_AUTHORING_KEY_ALT_17,
 ]
 
 let buildNumber = +process.env.CIRCLE_BUILD_NUM
 
-// We have 11 LUIS Authoring Keys that we rotate through.
+// We have 17 LUIS Authoring Keys that we rotate through.
 // We use the Circle CI Build Number to help us get an index to each in sequence.
 
-// Each time a build workflow is kicked off there are 3 jobs:
+// Each time a build workflow is kicked off there multiple workflow jobs:
 //  1) the actual build
 //  2) the smoke test run
 //  3) the regression test run
+//  ...others like 'deploy' and whatever might be new as of recently
 
 // The two test jobs will each consume the resources of one of our authoring keys.
-// The actual build job will NOT consume the resources of one of our authoring keys, but
+// The other jobs will NOT consume the resources of one of our authoring keys, but
 // that is okay since as we cycle through the list of authoring keys the next time through
 // the previously unused keys will get used and different authoring keys will go unused.
 
@@ -31,10 +38,13 @@ let authoringKeyIndex = Math.floor(buildNumber % authoringKeys.length)
 let luisAuthoringKey = authoringKeys[authoringKeyIndex]
 
 // Because of the math used in the algorithm above, the number of authoring keys should
-// not be divisible by 3, otherwise 1 out of every 3 keys will rarely get used.
+// be a prime number, otherwise there is a chance that some keys will get used more often
+// while others are not used very much. Also there should be enough keys so that at least
+// 3 full runs can complete before it begins reusing keys.
+//
 // There are other things can influence the next build number to be used, like if the
 // build fails, then the other two jobs won't run so only 1 build number
-// will be consumed.
+// will be consumed, but that is factored into the algorithm.
 
 console.log(`export LUIS_AUTHORING_KEY=${luisAuthoringKey}\n`)
 

@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -14,7 +14,7 @@ import * as helpers from '../../../support/Helpers'
 // This test suite is part 1 of 2. The second part is in ApiCreateMultipleExceptions.
 describe('API Verify Multiple Exceptions - ErrorHandling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
-  
+
   context('Setup', () => {
     it('Should import a model to test against and navigate to Train Dialogs view', () => {
       models.ImportModel('z-ApiMultExceptns', 'z-ApiMultExceptns.cl')
@@ -83,15 +83,15 @@ function VerifyAllBotChatMessages(endsWithEntityDetectionError, bug2151HasBeenTr
   chatPanel.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', NextBotIndex())
   chatPanel.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', NextBotIndex())
 
-  if(bug2151HasBeenTriggered) {
-    chatPanel.VerifyCardChatMessage('Exception hit in Bot’s API Callback:', "Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.", NextBotIndex())  
+  if (bug2151HasBeenTriggered) {
+    chatPanel.VerifyCardChatMessage('Exception hit in Bot’s API Callback:', "Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.", NextBotIndex())
   } else {
     chatPanel.VerifyTextChatMessage('This is a TEXT ACTION', NextBotIndex())
   }
   chatPanel.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Render Error', NextBotIndex())
   chatPanel.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Logic Error', NextBotIndex())
 
-  if(bug2151HasBeenTriggered) {
+  if (bug2151HasBeenTriggered) {
     chatPanel.VerifyCardChatMessage('Exception hit in Bot’s API Callback:', "Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.", NextBotIndex())
   } else {
     chatPanel.VerifyTextChatMessage('This is a TEXT ACTION', NextBotIndex())
@@ -100,7 +100,7 @@ function VerifyAllBotChatMessages(endsWithEntityDetectionError, bug2151HasBeenTr
   chatPanel.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Render Error', NextBotIndex())
   chatPanel.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', NextBotIndex())
 
-  if(endsWithEntityDetectionError) {
+  if (endsWithEntityDetectionError) {
     chatPanel.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', "Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.", NextBotIndex())
   } else {
     chatPanel.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', NextBotIndex())
@@ -108,9 +108,9 @@ function VerifyAllBotChatMessages(endsWithEntityDetectionError, bug2151HasBeenTr
 }
 
 function VerifyAllBotChatMessagesAreForEntityDetectionCallback() {
-  for(let i = 1; i <= 15; i += 2) {
+  for (let i = 1; i <= 15; i += 2) {
     if (i == 9 || i == 15) {
-      chatPanel.VerifyCardChatMessage('Exception hit in Bot’s API Callback:', "Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.", i)  
+      chatPanel.VerifyCardChatMessage('Exception hit in Bot’s API Callback:', "Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.", i)
     } else {
       chatPanel.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', "Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.", i)
     }

@@ -1,7 +1,7 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
- */
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
+*/
 
 export function ClickAddInitialValueButton(entityName) { cy.Get('[data-testid="teach-session-add-initial-value"]').contains(entityName).Click() }
 export function VerifyEntityValue(expectedValue) { cy.Get('[data-testid="teach-session-entity-name"]').contains(expectedValue) }

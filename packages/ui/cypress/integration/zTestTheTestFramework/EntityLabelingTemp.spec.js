@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../support/Models'
@@ -14,7 +14,7 @@ describe('Consistent Entity Labeling', () => {
   const textEntityPairs = [{ text: 'Tag', entity: 'multi' }, { text: 'Frog', entity: 'multi' }]
 
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
-  
+
   context('Setup', () => {
     it('Import a model, wait for training to complete and start a new Train Dialog', () => {
       models.ImportModel('z-temp', 'temp-cnstntEntLabel.cl')

@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -109,5 +109,5 @@ describe.skip('New Entity Label on Existing Phrase 2 - Entity Labeling', () => {
 
     // TODO: Still need to verify that the TD Grid has no warnings
     //       Also need to verify the warning count, since there should be 2 of them.
-   })
+  })
 })

@@ -1,6 +1,6 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
 */
 
 import * as models from '../../../support/Models'
@@ -12,7 +12,7 @@ import * as helpers from '../../../support/Helpers'
 
 describe('API Callbacks - ErrorHandling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
-  
+
   context('Setup', () => {
     it('Should import a model to test against and navigate to Train Dialogs view', () => {
       models.ImportModel('z-ApiCallbackErrs', 'z-ApiCallbacks.cl')
@@ -58,7 +58,7 @@ describe('API Callbacks - ErrorHandling', () => {
       chatPanel.VerifyCardChatMessage('Malformed API Callback: ‘BadCard’', 'Return value in Render function must be a string or BotBuilder Activity', 1)
       chatPanel.VerifyCardChatMessage('Malformed API Callback: ‘Malformed’', 'Logic portion of callback returns a value, but no Render portion defined', 3)
     })
-    
+
     it('Should abandon the edit', () => {
       train.AbandonDialog()
     })

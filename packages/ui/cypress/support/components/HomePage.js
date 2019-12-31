@@ -1,16 +1,16 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
- */
+* Copyright (c) Microsoft Corporation. All rights reserved.  
+* Licensed under the MIT License.
+*/
 
 import * as modelPage from '../components/ModelPage'
 import * as helpers from '../Helpers'
 
 export function Visit() { return cy.visit('http://localhost:3000'); VerifyPageTitle() }
 export function VerifyPageTitle() { return cy.Get('[data-testid="model-list-title"]').contains('Create and manage your Conversation Learner models').should('be.visible') }
-export function ClickNewModelButton() { return cy.Get('[data-testid="model-list-create-new-button"]', {timeout: 10000}).Click() }
-export function ClickImportModelButton() { return cy.Get('[data-testid="model-list-import-model-button"]', {timeout: 10000}).Click() }
-export function TypeModelName(name) { return cy.Get('[data-testid="model-creator-input-name"]', {timeout: 10000}).type(name) }
+export function ClickNewModelButton() { return cy.Get('[data-testid="model-list-create-new-button"]', { timeout: 10000 }).Click() }
+export function ClickImportModelButton() { return cy.Get('[data-testid="model-list-import-model-button"]', { timeout: 10000 }).Click() }
+export function TypeModelName(name) { return cy.Get('[data-testid="model-creator-input-name"]', { timeout: 10000 }).type(name) }
 export function ClickSubmitButton() { return cy.Get('[data-testid="model-creator-submit-button"]').Click() }
 
 export function UploadImportModelFile(name) { return cy.UploadFile(name, 'input[type="file"]') }
@@ -29,7 +29,7 @@ export function WaitForModelListToLoad() {
   //   }
   // })
 
-  cy.wrap(1, {timeout: 10000}).should(() => {
+  cy.wrap(1, { timeout: 10000 }).should(() => {
     // Subtract 1 because it includes the header row.
     const rowCount = +Cypress.$('[data-automationid="DetailsList"] > [role="grid"]').attr('aria-rowcount') - 1
     if (rowCount == 0) {
@@ -51,18 +51,18 @@ export function WaitForModelListToLoad() {
   })
 }
 
-export function VerifyModelNameInList(modelName) { 
+export function VerifyModelNameInList(modelName) {
   WaitForModelListToLoad()
-  cy.Get('[data-testid="model-list-model-name"]').ExactMatch(modelName) 
+  cy.Get('[data-testid="model-list-model-name"]').ExactMatch(modelName)
 }
 
-export function VerifyModelNameIsNotInList(modelName) { 
+export function VerifyModelNameIsNotInList(modelName) {
   WaitForModelListToLoad()
-  cy.DoesNotContain('[data-testid="model-list-model-name"]', modelName) 
+  cy.DoesNotContain('[data-testid="model-list-model-name"]', modelName)
 }
 
-export function LoadModel(modelName) { 
-  cy.Get('[data-testid="model-list-model-name"]', {timeout: 10000}).ExactMatch(modelName).Click()
+export function LoadModel(modelName) {
+  cy.Get('[data-testid="model-list-model-name"]', { timeout: 10000 }).ExactMatch(modelName).Click()
   modelPage.VerifyModelName(modelName)
 }
 
