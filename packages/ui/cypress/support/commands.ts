@@ -14,6 +14,8 @@ declare global {
       WaitForStableDOM: () => Chainable
       WaitForTrainingStatusCompleted: () => Chainable
       Enqueue: typeof enqueue
+      Timeout: () => Chainable
+      RetryLoop: typeof retryLoop
     }
   }
 }
@@ -86,7 +88,7 @@ Cypress.Commands.add('ExactMatch', { prevSubject: true }, (elements, expectedTex
 
 Cypress.Commands.add('ExactMatches', { prevSubject: 'element' }, (elements, expectedText) => { return helpers.ExactMatches(elements, expectedText) })
 
-Cypress.Commands.add("WaitForTrainingStatusCompleted", () => {
+Cypress.Commands.add('WaitForTrainingStatusCompleted', () => {
   cy.log('WaitForTrainingStatusCompleted')
   cy.Enqueue(() => {
     new trainingStatus.TrainingStatus().WaitForCompleted()
@@ -98,10 +100,33 @@ Cypress.Commands.add("Alert", message => { alert(message) })
 // Use this to enqueue regular JavaScript code into the Cypress process queue.
 // This causes your JavaScript code to execute in the same time frame as all of cy.*commands*
 const enqueue = (functionToRun: Function) => { return functionToRun() }
-Cypress.Commands.add("Enqueue", enqueue)
+Cypress.Commands.add('Enqueue', enqueue)
 
 // Useful for debugging other cy.commands to show what they returned.
 Cypress.Commands.add('RevealPreviousSubject', { prevSubject: true }, (elements) => {
   helpers.DumpElements('cy.RevealPreviousSubject', elements)
   return elements
 })
+
+// Timeout is intended to be passed as an optional subject to other commands like RetryLoop.
+Cypress.Commands.add('Timeout', (timeout) => { return timeout })
+
+const retryLoop = (timeout: number, functionToRun: Function) => {
+  helpers.ConLog('cy.RetryLoop', `timeout: ${timeout}`)
+  let options
+  if (timeout && typeof timeout == "number") {
+    options = { timeout: timeout }
+  }
+  let tryCount = 0
+  let startTime = new Date().getTime()
+  cy.wrap(1, options).should(() => {
+    tryCount++
+    const returnValue = functionToRun()
+    helpers.ConLog('cy.RetryLoop', `Success after attempting the function ${tryCount} times taking a total of ${new Date().getTime() - startTime} milliseconds`)
+    return returnValue
+  })
+}
+
+// To change the timeout on the RetryLoop call it this way:
+//    cy.Timeout(milliseconds).RetryLoop(someFunction)
+Cypress.Commands.add('RetryLoop', { prevSubject: 'optional' }, retryLoop)

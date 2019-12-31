@@ -23,7 +23,7 @@ export function VerifyMatchWarning(index = 0) { _VerifyFoundInEntityDetectionPan
 export function VerifyNoMatchWarning(index = 0) { _VerifyNotFoundInEntityDetectionPanel(index, '[data-testid="entity-extractor-match-warning"]') }
 
 function _VerifyFoundInEntityDetectionPanel(index, selector) {
-  cy.wrap(1).should(() => {
+  cy.RetryLoop(() => {
     if (_FindInEntityDetectionPanel(index, selector).length == 0) {
       throw new Error(`Expected Element not found in Entity Detection Panel at index ${index} - selector: '${selector}'`)
     }
@@ -31,7 +31,7 @@ function _VerifyFoundInEntityDetectionPanel(index, selector) {
 }
 
 function _VerifyNotFoundInEntityDetectionPanel(index, selector) {
-  cy.wrap(1).should(() => {
+  cy.RetryLoop(() => {
     if (_FindInEntityDetectionPanel(index, selector).length > 0) {
       throw new Error(`Expected Element should NOT be found in Entity Detection Panel at index ${index} - selector: '${selector}'`)
     }
@@ -193,7 +193,7 @@ export function RemoveEntityLabel(word, entity, index = 0) {
 
 
 export function VerifyWordNotLabeledAsEntity(word, entity, index = 0) {
-  cy.wrap(1).should(() => {
+  cy.RetryLoop(() => {
     if (_IsWordAtInputIndexLabeledAsEntity(word, entity, index)) {
       throw new Error(`The word '${word}' was found, but it should NOT be labeled as '${entity}'`)
     }

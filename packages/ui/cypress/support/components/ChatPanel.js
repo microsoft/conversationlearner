@@ -53,7 +53,7 @@ export function VerifySelectedChatTurn(expectedMessage) {
 
 export function VerifyChatMessageCount(expectedCount) {
   cy.WaitForStableDOM()
-  cy.wrap(1, { timeout: 10000 }).should(() => {
+  cy.Timeout(10000).RetryLoop(() => {
     let actualCount = GetAllChatMessageElements().length
     if (actualCount != expectedCount) {
       throw new Error(`Expecting the number of chat messages to be ${expectedCount} instead it is ${actualCount}.`)
@@ -65,7 +65,7 @@ export function VerifyChatMessageCount(expectedCount) {
 export function VerifyChatTurnHasError(index) {
   cy.WaitForStableDOM()
   cy.log(`VerifyChatTurnHasError(${index})`)
-  cy.wrap(1).should(() => {
+  cy.RetryLoop(() => {
     const chatElements = Cypress.$('div[data-testid="web-chat-utterances"]')
     if (index >= chatElements.length) {
       throw new Error(`Expecting there to be at least ${index + 1} chat turns, instead there are only ${chatElements.length}.`)
@@ -80,7 +80,7 @@ export function VerifyChatTurnHasError(index) {
 export function VerifyChatTurnHasNoError(index) {
   cy.WaitForStableDOM()
   cy.log(`VerifyChatTurnHasNoError(${index})`)
-  cy.wrap(1).should(() => {
+  cy.RetryLoop(() => {
     const chatElements = Cypress.$('div[data-testid="web-chat-utterances"]')
     if (index >= chatElements.length) {
       throw new Error(`Expecting there to be at least ${index + 1} chat turns, instead there are only ${chatElements.length}.`)
@@ -266,7 +266,7 @@ export function VerifyChatTurnIsAnExactMatchWithMarkup(expectedTurnText, expecte
 function VerifyChatTurnInternal(expectedTurnCount, turnIndex, verificationFunc, retainMarkup = false) {
   cy.WaitForStableDOM()
   let chatMessages
-  cy.wrap(1).should(() => {
+  cy.RetryLoop(() => {
     chatMessages = GetAllChatMessages(retainMarkup)
     if (chatMessages.length != expectedTurnCount) {
       throw new Error(`${chatMessages.length} chat turns were found, however we were expecting ${expectedTurnCount}`)
@@ -479,7 +479,7 @@ export function VerifyNoBotErrorAfterUserTurn(expectedUserTurnMessage) {
   const funcName = `VerifyNoBotErrorAfterUserTurn('${expectedUserTurnMessage}')`
   let failureMessage
   cy.WaitForStableDOM()
-  cy.wrap(1).should(() => {
+  cy.RetryLoop(() => {
     let elements = Cypress.$('div[data-testid="web-chat-utterances"]')
     if (elements.length == 0) {
       throw new Error('Retry - We are expecting at least one user turn in the chat panel')

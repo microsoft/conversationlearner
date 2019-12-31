@@ -29,7 +29,7 @@ export function WaitForModelListToLoad() {
   //   }
   // })
 
-  cy.wrap(1, { timeout: 10000 }).should(() => {
+  cy.Timeout(10000).RetryLoop(() => {
     // Subtract 1 because it includes the header row.
     const rowCount = +Cypress.$('[data-automationid="DetailsList"] > [role="grid"]').attr('aria-rowcount') - 1
     if (rowCount == 0) {

@@ -71,7 +71,7 @@ export class TdGrid {
     // We set the Cypress time out higher so that it never triggers. The intention is to run this code in a retry
     // loop that will not fail, and exit after 4 seconds if we don't achieve stability. This allows the calling
     // functions to log more information before throwing an error.
-    cy.wrap(1, { timeout: 5000 }).should(() => {
+    cy.Timeout(5000).RetryLoop(() => {
       try {
         const currentTime = new Date().getTime()
         if (!TdGrid.monitorIsActivated) {
@@ -300,7 +300,7 @@ export class TdGrid {
 
     helpers.ConLog(funcName, `Row #${iRow}`)
 
-    cy.wrap(1, { timeout: 8000 }).should(() => {
+    cy.Timeout(8000).RetryLoop(() => {
       const allChatMessageElements = chatPanel.GetAllChatMessageElements()
       if (allChatMessageElements.length > 0) {
         helpers.ConLog(funcName, `The expected Train Dialog from row #${iRow} has loaded`)

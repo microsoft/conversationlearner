@@ -42,8 +42,7 @@ export class TrainingStatus {
   _RetryWaitForRunning() {
     const startTime = new Date().getTime()
     cy.log('Training Status is NOT Running - Waiting for it to Start Running')
-    cy.wrap(1, { timeout: 5 * 60 * 1000 }).should(() => {
-
+    cy.Timeout(5 * 60 * 1000).RetryLoop(() => {
       if (this._EvaluateTrainingStatus()) {
         return // Because the status is now complete!
       }
@@ -66,7 +65,7 @@ export class TrainingStatus {
   _RetryWaitForCompleted() {
     const startTime = new Date().getTime()
     cy.log('Training Status is Running - Waiting for it to Complete')
-    cy.wrap(1, { timeout: 2 * 60 * 1000 }).should(() => {
+    cy.Timeout(2 * 60 * 1000).RetryLoop(() => {
       if (this._EvaluateTrainingStatus()) {
         return // Because the status is now complete!
       }

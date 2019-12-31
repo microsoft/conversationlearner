@@ -65,7 +65,7 @@ export function SelectEntityType(type) {
   const funcName = `SelectEntityType(${type})`
   let state = 'drop'
   cy.WaitForStableDOM()
-  cy.wrap(1).should(() => {
+  cy.RetryLoop(() => {
     if (state == 'drop') {
       // This part verifies that the Entity Type is set to the value we want, 
       // and if not it clicks on the element to cause the drop down to show up.

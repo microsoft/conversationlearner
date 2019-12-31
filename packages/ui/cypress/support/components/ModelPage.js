@@ -36,7 +36,8 @@ function VerifyIncidentIcon(errorIconExpected, colorClassSelector) {
   let funcName = `VerifyErrorIcon(${errorIconExpected})`
 
   cy.WaitForStableDOM()
-  cy.wrap({ countFound: -1, timesInARowAtThisCount: 0 }, { timeout: 10000 }).should(retryInfo => {
+  let retryInfo = { countFound: -1, timesInARowAtThisCount: 0 }
+  cy.Timeout(10000).RetryLoop(() => {
     const elements = Cypress.$(`i[data-icon-name="IncidentTriangle"].${colorClassSelector}`)
     if (elements.length === retryInfo.countFound) { retryInfo.timesInARowAtThisCount++ }
     else {
