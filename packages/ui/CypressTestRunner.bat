@@ -1,0 +1,3 @@
+@echo off
+echo Starting the Cypress Test Runner UI, please wait...
+node_modules\.bin\cypress.cmd open
