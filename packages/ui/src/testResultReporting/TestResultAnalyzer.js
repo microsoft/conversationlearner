@@ -3,14 +3,15 @@
 // 1) Go to https://circleci.com/account/api
 // 2) Create a new token, copy to the clipboard, and paste into an ".env" file in the root folder on a new line like this...
 //      circle-token=[paste-token-string-here]
-// 3) Run the tool from the root folder like this...
-//      npm run viewTestResults [build-number]
+//    NOTE: This is a private .env file that must NOT be saved to the repo because this is a secret token.
+// 3) Run the tool from the "packages\ui" folder like this...
+//      ViewTestResults [build-number]
 //    You will find the build number on the page https://circleci.com/gh/microsoft/conversationlearner.
 //    Be sure to select the build number that coresponds to either a "test-smoke" or "test-regression" run.
 //
 //    The expected result from using this tool is you will get a lot logging spew in the command window
 //    as the tool makes progress processing the test results artifacts. Once it completes, it will open
-//    the resulting report in your default browser window.
+//    the resulting report in your default browser window. (The logging spew is intended to help debug this tool.)
 //
 // The data used to triage each test failure is found in this folder "TriageData.js", it contains plenty
 // of examples that you can follow to expand it as necessary.
@@ -64,7 +65,7 @@ ttf.SetTriageData(triageData);
   // --- End of Main process - worker functions below -----------------
 
   function GetCircleCiToken() {
-    const envFileContents = fs.readFileSync('.env', { encoding: 'utf8' })
+    const envFileContents = fs.readFileSync('../../.env', { encoding: 'utf8' })
     const CIRCLECI_TOKEN = 'circle-token='
     const iStart = envFileContents.indexOf(CIRCLECI_TOKEN)
     //console.log(typeof envFileContents, '\n', envFileContents)
