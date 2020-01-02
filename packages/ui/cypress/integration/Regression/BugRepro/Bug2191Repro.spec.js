@@ -3,19 +3,19 @@
 * Licensed under the MIT License.
 */
 
-import * as models from '../../support/Models'
-import * as modelPage from '../../support/components/ModelPage'
-import * as chatPanel from '../../support/components/ChatPanel'
-import * as train from '../../support/Train'
-import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
-import * as helpers from '../../support/Helpers'
+import * as models from '../../../support/Models'
+import * as modelPage from '../../../support/components/ModelPage'
+import * as chatPanel from '../../../support/components/ChatPanel'
+import * as train from '../../../support/Train'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
+import * as helpers from '../../../support/Helpers'
 
-describe('Entity Action Missing User Turn', () => {
+describe('Bug 2191 Repro', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
     it('Imports a model to test against', () => {
-      models.ImportModel('z-eaMissUserTurn', 'z-eaMissUserTurn.cl')
+      models.ImportModel('z-bug2191Repro', 'z-bug2191Repro.cl')
       modelPage.NavigateToTrainDialogs()
       cy.WaitForTrainingStatusCompleted()
     })
