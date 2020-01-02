@@ -5,10 +5,9 @@
 
 import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
-import * as chatPanel from '../../../support/components/ChatPanel'
+import * as chatPanel from '../../support/components/ChatPanel'
 import * as train from '../../support/Train'
 import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
-import * as common from '../../support/Common'
 import * as helpers from '../../support/Helpers'
 
 describe('Entity Action Missing User Turn', () => {
