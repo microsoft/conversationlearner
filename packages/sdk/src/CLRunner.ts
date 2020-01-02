@@ -21,7 +21,6 @@ import { UIMode } from './Memory/BotState'
 import { EntityState } from './Memory/EntityState'
 import { ILogStorage } from './Memory/ILogStorage'
 import { CLOptions } from './CLOptions'
-import { FilledEntityMap } from '@conversationlearner/models'
 
 interface RunnerLookup {
     [appId: string]: CLRunner
@@ -855,9 +854,9 @@ export class CLRunner {
                 }
             }
 
-            const internalStubCallbacks = inputStubs.map<InternalCallbackNoStubs<T>>(sc => {
+            const internalStubCallbacks = inputStubs.map<InternalCallbackNoStubs<T>>(stubCallbackInput => {
                 const stubCallback: InternalCallbackNoStubs<T> = {
-                    name: sc.name,
+                    name: stubCallbackInput.name,
                     logic: defaultLogicCallback,
                     logicArguments: [],
                     isLogicFunctionProvided: false,
@@ -867,15 +866,15 @@ export class CLRunner {
                 }
 
                 // TODO: Look at validating arguments. Probably should not have greater number on stub than on callback.
-                if (callbackInput.logic) {
-                    stubCallback.logic = callbackInput.logic
-                    stubCallback.logicArguments = this.GetArguments(callbackInput.logic, 1)
+                if (stubCallbackInput.logic) {
+                    stubCallback.logic = stubCallbackInput.logic
+                    stubCallback.logicArguments = this.GetArguments(stubCallbackInput.logic, 1)
                     stubCallback.isLogicFunctionProvided = true
                 }
 
-                if (callbackInput.render) {
-                    stubCallback.render = callbackInput.render
-                    stubCallback.renderArguments = this.GetArguments(callbackInput.render, 2)
+                if (stubCallbackInput.render) {
+                    stubCallback.render = stubCallbackInput.render
+                    stubCallback.renderArguments = this.GetArguments(stubCallbackInput.render, 2)
                     stubCallback.isRenderFunctionProvided = true
                 }
 
@@ -1168,7 +1167,8 @@ export class CLRunner {
                         clRecognizeResult.clEntities,
                         inTeach,
                         {
-                            type: ActionInputType.LOGIC_AND_RENDER
+                            type: ActionInputType.LOGIC_AND_RENDER,
+                            stubName: uiTrainScorerStep?.trainScorerStep.stubName,
                         }
                     )
 
@@ -1583,7 +1583,14 @@ export class CLRunner {
         }
     }
 
-    public async TakeAPIAction(apiAction: CLM.ApiAction, filledEntityMap: CLM.FilledEntityMap, state: CLState, allEntities: CLM.EntityBase[], showAPICard: boolean, actionInput: IActionInput): Promise<IActionResult> {
+    public async TakeAPIAction(
+        apiAction: CLM.ApiAction,
+        filledEntityMap: CLM.FilledEntityMap,
+        state: CLState,
+        allEntities: CLM.EntityBase[],
+        showAPICard: boolean,
+        actionInput: IActionInput,
+    ): Promise<IActionResult> {
         // Extract API name and args
         const callback = this.callbacks[apiAction.name]
         if (!callback) {

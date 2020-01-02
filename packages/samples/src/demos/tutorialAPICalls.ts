@@ -204,6 +204,15 @@ cl.AddCallback({
     logic: async memory => {
         const randomNumber = Math.round(Math.random() * 100)
         memory.Set("myNumber", randomNumber)
+
+        if (randomNumber < 20) {
+            memory.Set('lowNumber', true)
+        }
+
+        if (randomNumber > 50) {
+            memory.Set('highNumber', true)
+        }
+
         return randomNumber
     },
     render: async n => {
@@ -213,7 +222,10 @@ cl.AddCallback({
         {
             name: 'Number is 3',
             async logic(memory) {
-                memory.Set("myNumber", 3)
+                const number = 3
+                memory.Set("myNumber", number)
+                memory.Set('lowNumber', true)
+                return number
             },
             async render(n) {
                 return `This is a stubbed render fn. Value is ${n}`
@@ -222,7 +234,10 @@ cl.AddCallback({
         {
             name: 'Number is 67',
             async logic(memory) {
-                memory.Set("myNumber", 67)
+                const number = 67
+                memory.Set("myNumber", number)
+                memory.Set('highNumber', true)
+                return number
             },
         },
     ],

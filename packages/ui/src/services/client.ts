@@ -615,7 +615,7 @@ export default class ClClient {
         return response.data
     }
 
-    // AT.RUN_SCORER_ASYNC
+    // Doesn't actually update the scorer step. Updates the session.
     async teachSessionUpdateScorerStep(appId: string, teachId: string, uiScoreInput: CLM.UIScoreInput): Promise<CLM.UIScoreResponse> {
         const response = await this.send<CLM.UIScoreResponse>({
             method: 'put',

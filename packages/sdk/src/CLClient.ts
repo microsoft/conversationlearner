@@ -416,11 +416,11 @@ export class CLClient {
     /**
      * Uploads a labeled scorer step instance
      * – ie "commits" a scorer label, appending it to the teach session's
-     * trainDialog, and advancing the dialog. This may yield produce a new package.
+     * trainDialog, and advancing the dialog. This may produce a new package.
      */
-    public TeachScoreFeedback(appId: string, teachId: string, scorerResponse: CLM.TrainScorerStep): Promise<CLM.TeachResponse> {
+    public TeachScoreFeedback(appId: string, teachId: string, trainScorerStep: CLM.TrainScorerStep): Promise<CLM.TeachResponse> {
         let apiPath = `app/${appId}/teach/${teachId}/scorer`
-        return this.send('POST', this.MakeURL(apiPath), scorerResponse)
+        return this.send('POST', this.MakeURL(apiPath), trainScorerStep)
     }
 
     /**

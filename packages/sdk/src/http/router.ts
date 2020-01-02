@@ -1014,7 +1014,7 @@ export const getRouter = (
             // There will be no extraction step if performing a 2nd scorer round after a non-terminal action
             if (uiScoreInput.trainExtractorStep) {
                 try {
-                    // Send teach feedback;
+                    // Send teach feedback
                     await client.TeachExtractFeedback(appId, teachId, uiScoreInput.trainExtractorStep)
                 }
                 catch (error) {
