@@ -483,7 +483,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         const hasNoScorerStep = curRound.scorerSteps.length === 0 || curRound.scorerSteps[0].labelAction === undefined
         let isScorerStepCallbackAction = false
-        let stubName = 'unknown'
+        let stubName = 'None'
         if (typeof clData.scoreIndex === 'number') {
             const scorerStep = curRound.scorerSteps[clData.scoreIndex]
             let action = (scorerStep.scoredAction as unknown) as CLM.ActionBase | undefined
