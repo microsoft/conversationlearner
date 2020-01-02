@@ -140,12 +140,14 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     const apiAction = new CLM.ApiAction(action)
                     if (!apiAction.isPlaceholder) {
                         const callback = component.props.botInfo.callbacks.find(c => c.name === apiAction.name)
+                        const stubFromActivity = callback?.stubs.find(s => s.name === component.props.selectedScorerStep?.stubName)
+
                         return <div className="cl-action-scorer-callback">
                             {actionResponseComponent}
                             <ActionStubDropdown
                                 action={apiAction}
                                 callback={callback}
-                                selectedStub={actionForRender.selectedStub}
+                                selectedStub={stubFromActivity ?? actionForRender.selectedStub}
                                 onChangeSelectedStub={selectedStub => component.onChangeSelectedStub(action, selectedStub)}
                             />
                         </div>
@@ -985,12 +987,13 @@ export interface ReceivedProps {
     importedAction?: ImportedAction
     onActionSelected: (trainScorerStep: CLM.TrainScorerStep) => void,
     onActionCreatorClosed: () => void
+    selectedScorerStep?: CLM.TrainScorerStep
 }
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createActionThunkAsync: actions.action.createActionThunkAsync,
-        toggleAutoTeach: actions.teach.toggleAutoTeach
+        toggleAutoTeach: actions.teach.toggleAutoTeach,
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {
