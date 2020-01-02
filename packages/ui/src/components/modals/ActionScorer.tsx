@@ -486,7 +486,16 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     @autobind
     async handleReselectAction(scoredBase: CLM.ScoredBase) {
         // If placeholder let user reselect memory values
-        if (CLM.ActionBase.isPlaceholderAPI(scoredBase)) {
+        const isPlaceholder = CLM.ActionBase.isPlaceholderAPI(scoredBase)
+        // Or stub in dropdown is different than stub from scorer step
+        let dropdownStubName = undefined
+        if (scoredBase.actionType === CLM.ActionTypes.API_LOCAL) {
+            const apiAction = new CLM.ApiAction(scoredBase as CLM.ActionBase)
+            dropdownStubName = actionIdStubInfoMap[apiAction.actionId]?.name
+        }
+
+        const isStubChanged = dropdownStubName !== this.props.selectedScorerStep?.stubName
+        if (isPlaceholder || isStubChanged) {
             await this.handleActionSelection(scoredBase)
         }
         // Otherwise tell them it has already been selected
@@ -535,7 +544,6 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             const callback = this.props.botInfo.callbacks.find(c => c.name === apiAction.name)
 
             if (callback?.stubs) {
-                console.log(`ActionId StubInfo Map: `, actionIdStubInfoMap)
                 stubName = actionIdStubInfoMap[apiAction.actionId]?.name
             }
         }
@@ -945,7 +953,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     data-testid="popup-already-selected"
                     open={this.state.isAlreadySelectedOpen}
                     onOk={this.onCloseAlreadySelectedPopUp}
-                    title={Util.formatMessageId(intl, FM.LOGDIALOGS_ALREADYSELECTED)}
+                    title={Util.formatMessageId(intl, FM.ACTIONSCORER_ALREADYSELECTED)}
                 />
                 <EditApiPlaceholder
                     isOpen={this.state.apiPlaceholderCreatorFilledEntityMap != null}
