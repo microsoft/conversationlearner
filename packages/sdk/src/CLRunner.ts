@@ -1962,26 +1962,24 @@ export class CLRunner {
      * Replay a TrainDialog, calling EntityDetection callback and API Logic,
      * recalculating FilledEntities along the way
      */
-    public async ReplayTrainDialogLogic(trainDialog: CLM.TrainDialog, state: CLState, cleanse: boolean): Promise<CLM.TrainDialog> {
+    public async ReplayTrainDialogLogic(trainDialog: CLM.TrainDialog, state: CLState, cleans: boolean): Promise<CLM.TrainDialog> {
 
         if (!trainDialog?.rounds) {
             return trainDialog
         }
 
         // Copy train dialog
-        let newTrainDialog: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog))
-
-        let entities: CLM.EntityBase[] = trainDialog.definitions ? trainDialog.definitions.entities : []
-        let actions: CLM.ActionBase[] = trainDialog.definitions ? trainDialog.definitions.actions : []
-        let entityList: CLM.EntityList = { entities }
+        const newTrainDialog: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog))
+        const entities: CLM.EntityBase[] = trainDialog.definitions?.entities ?? []
+        const actions: CLM.ActionBase[] = trainDialog.definitions?.actions ?? []
 
         await this.InitReplayMemory(state, newTrainDialog, entities)
 
-        for (let round of newTrainDialog.rounds) {
+        for (const round of newTrainDialog.rounds) {
 
             // Call entity detection callback with first text Variation
-            let textVariation = round.extractorStep.textVariations[0]
-            let predictedEntities = CLM.ModelUtils.ToPredictedEntities(textVariation.labelEntities)
+            const textVariation = round.extractorStep.textVariations[0]
+            const predictedEntities = CLM.ModelUtils.ToPredictedEntities(textVariation.labelEntities)
 
             // Call EntityDetectionCallback and populate filledEntities with the result
             let scoreInput: CLM.ScoreInput
@@ -2005,7 +2003,7 @@ export class CLRunner {
             }
 
             // Use scorer step to populate pre-built data (when)
-            if (round.scorerSteps && round.scorerSteps.length > 0) {
+            if (round.scorerSteps.length > 0) {
 
                 // Set filled entities
                 this.PopulatePrebuilts(predictedEntities, scoreInput.filledEntities)
@@ -2014,11 +2012,11 @@ export class CLRunner {
                 // Go through each scorer step
                 for (let [scoreIndex, scorerStep] of round.scorerSteps.entries()) {
 
-                    const curAction = actions.filter((a: CLM.ActionBase) => a.actionId === scorerStep.labelAction)[0]
+                    const curAction = actions.find(a => a.actionId === scorerStep.labelAction)
 
                     if (CLM.ActionBase.isPlaceholderAPI(curAction)) {
                         // Placeholder output is stored in LogicResult
-                        let placeholderFilledEntities = scorerStep.logicResult ? scorerStep.logicResult.changedFilledEntities : []
+                        const placeholderFilledEntities = scorerStep.logicResult?.changedFilledEntities ?? []
                         const filledEntityMap = CLM.FilledEntityMap.FromFilledEntities(placeholderFilledEntities, entities)
                         await state.EntityState.RestoreFromMapAsync(filledEntityMap)
                     }
@@ -2026,11 +2024,11 @@ export class CLRunner {
                         const filledEntityMap = await state.EntityState.FilledEntityMap()
 
                         // Provide empty FilledEntity for missing entities
-                        if (!cleanse && curAction) {
+                        if (!cleans && curAction) {
                             this.PopulateMissingFilledEntities(curAction, filledEntityMap, entities, false)
                         }
 
-                        round.scorerSteps[scoreIndex].input.filledEntities = filledEntityMap.FilledEntities()
+                        scorerStep.input.filledEntities = filledEntityMap.FilledEntities()
 
                         // CurAction may not exist if it's an imported action
                         if (curAction && scorerStep.labelAction !== CLM.CL_STUB_IMPORT_ACTION_ID) {
@@ -2038,19 +2036,20 @@ export class CLRunner {
                             if (curAction.actionType === CLM.ActionTypes.API_LOCAL) {
                                 const apiAction = new CLM.ApiAction(curAction)
                                 const actionInput: IActionInput = {
-                                    type: ActionInputType.LOGIC_ONLY
+                                    type: ActionInputType.LOGIC_ONLY,
+                                    stubName: scorerStep.stubName,
                                 }
                                 // Calculate and store new logic result
                                 const filledIdMap = filledEntityMap.EntityMapToIdMap()
-                                const actionResult = await this.TakeAPIAction(apiAction, filledIdMap, state, entityList.entities, true, actionInput)
-                                round.scorerSteps[scoreIndex].logicResult = actionResult.logicResult
+                                const actionResult = await this.TakeAPIAction(apiAction, filledIdMap, state, entities, true, actionInput)
+                                scorerStep.logicResult = actionResult.logicResult
                             } else if (curAction.actionType === CLM.ActionTypes.END_SESSION) {
                                 const sessionAction = new CLM.SessionAction(curAction)
                                 const filledIdMap = filledEntityMap.EntityMapToIdMap()
                                 await this.TakeSessionAction(sessionAction, filledIdMap, true, state, null, null)
                             } else if (curAction.actionType === CLM.ActionTypes.SET_ENTITY) {
                                 const setEntityAction = new CLM.SetEntityAction(curAction)
-                                await this.TakeSetEntityAction(setEntityAction, filledEntityMap, state, entityList.entities, true)
+                                await this.TakeSetEntityAction(setEntityAction, filledEntityMap, state, entities, true)
                             } else if (curAction.actionType === CLM.ActionTypes.CHANGE_MODEL) {
                                 const changeModelAction = new CLM.ChangeModelAction(curAction)
                                 await this.TakeChangeModelAction(changeModelAction, true, state, null, null)
@@ -2060,7 +2059,7 @@ export class CLRunner {
 
                     // If ran into API error inject into first scorer step so it gets displayed to the user
                     if (botAPIError && scoreIndex === 0) {
-                        round.scorerSteps[scoreIndex].logicResult = { logicValue: JSON.stringify(botAPIError), changedFilledEntities: [] }
+                        scorerStep.logicResult = { logicValue: JSON.stringify(botAPIError), changedFilledEntities: [] }
                     }
                 }
             }
@@ -2074,7 +2073,7 @@ export class CLRunner {
                     },
                     labelAction: undefined,
                     logicResult: undefined,
-                    scoredAction: undefined
+                    scoredAction: undefined,
                 }
                 if (!round.scorerSteps) {
                     round.scorerSteps = []
@@ -2083,9 +2082,9 @@ export class CLRunner {
             }
         }
 
-        // When editing, may need to run Scorer or Extrator on TrainDialog with invalid rounds
-        //This cleans up the TrainDialog removing bad data so the extractor can run
-        if (cleanse) {
+        // When editing, may need to run Scorer or Extractor on TrainDialog with invalid rounds
+        // This cleans up the TrainDialog removing bad data so the extractor can run
+        if (cleans) {
             // Remove rounds with two user inputs in a row (they'll have a dummy scorer round)
             newTrainDialog.rounds = newTrainDialog.rounds.filter(r => {
                 return !r.scorerSteps[0] || r.scorerSteps[0].labelAction != undefined
@@ -2102,7 +2101,8 @@ export class CLRunner {
         trainDialog: CLM.TrainDialog,
         allEntities: CLM.EntityBase[],
         filledEntities: CLM.FilledEntity[],
-        replayErrors: CLM.ReplayError[]): CLM.ReplayError | null {
+        replayErrors: CLM.ReplayError[],
+    ): CLM.ReplayError | null {
 
         let replayError: CLM.ReplayError | null = null
 

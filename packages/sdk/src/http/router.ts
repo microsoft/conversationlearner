@@ -1214,19 +1214,19 @@ export const getRouter = (
     // Replay
     //========================================================
 
-    router.post('/app/:appId/history', async (req, res, next) => {
+    router.post('/app/:appId/activities', async (req, res, next) => {
         try {
             const key = getMemoryKey(req)
             const appId = req.params.appId
-            const { username: userName, userid: userId, useMarkdown: useMarkdown } = getQuery(req)
-            const markdown = useMarkdown === "true"
+            const { username: userName, userid: userId, useMarkdown: useMarkdownString } = getQuery(req)
+            const useMarkdown = useMarkdownString === "true"
             const trainDialog: CLM.TrainDialog = req.body
 
             const state = stateFactory.get(key)
             const clRunner = CLRunner.GetRunnerForUI(appId)
             validateBot(req, clRunner.botChecksum())
 
-            const teachWithActivities = await clRunner.GetActivities(trainDialog, userName, userId, state, markdown)
+            const teachWithActivities = await clRunner.GetActivities(trainDialog, userName, userId, state, useMarkdown)
 
             // Clear bot memory generated with this
             await state.EntityState.ClearAsync()
