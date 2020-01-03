@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.501.15](https://github.com/Microsoft/ConversationLearner-UI/compare/v0.501.14...v0.501.15) (2020-01-03)
+
+**Note:** Version bump only for package @conversationlearner/ui
+
+
+
+
+
+## [0.501.14](https://github.com/Microsoft/ConversationLearner-UI/compare/v0.501.13...v0.501.14) (2020-01-01)
+
+**Note:** Version bump only for package @conversationlearner/ui
+
+
+
+
+
+## [0.501.13](https://github.com/Microsoft/ConversationLearner-UI/compare/v0.501.12...v0.501.13) (2019-12-31)
+
+**Note:** Version bump only for package @conversationlearner/ui
+
+
+
+
+
 ## [0.501.12](https://github.com/Microsoft/ConversationLearner-UI/compare/v0.501.11...v0.501.12) (2019-12-31)
 
 **Note:** Version bump only for package @conversationlearner/ui

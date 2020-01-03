@@ -109,6 +109,7 @@ exports.triageData = [
     testName: 'Regression-BugRepro-Bug2319Repro.spec.js',
     and: [`Expected to find 'X' in the text chat pane, instead we found 'ERROR: Missing ConversationReference' at index: 4`],
     bugs: [2319],
+    comment: 'This bug is NOT 100% reproducible thus this test case is coded to fail when the bug occurs (which is the opposite of the other "bug" tests when the bug has not been fixed).',
   },
   {
     testName: 'Regression-Log-Abandon.spec.js',

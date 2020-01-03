@@ -163,7 +163,7 @@ export function ClickEntityValueNameToggleButon(selector, expectedData) {
 }
 
 export function VerifyActionState(rowSelector, expectedData, buttonSelector, disabled) {
-  cy.wrap(1).should(() => {
+  cy.RetryLoop(() => {
     const rowElementsOrErrorMessage = FindActionRowElements(rowSelector, expectedData)
     if (typeof rowElementsOrErrorMessage == 'string') { throw new Error(rowElementsOrErrorMessage) }
 
