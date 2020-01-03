@@ -536,8 +536,6 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             throw new Error(`Scored action could not be found in list of available actions`)
         }
 
-        // TODO: Get stub name user selected from dropdown?
-        // Pick random stub for now
         let stubName = undefined
         if (scoredBase.actionType === CLM.ActionTypes.API_LOCAL) {
             const apiAction = new CLM.ApiAction(scoredBase as CLM.ActionBase)
@@ -847,9 +845,6 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         actionsForRender.forEach(actionForRender => {
             if (actionForRender.actionType === CLM.ActionTypes.API_LOCAL) {
-                // const action = actionForRender as CLM.ActionBase
-                // const apiAction = new CLM.ApiAction(action)
-                // const callback = this.props.botInfo.callbacks.find(t => t.name === apiAction.name)
                 actionForRender.selectedStub = actionIdStubInfoMap[actionForRender.actionId]
             }
         })
