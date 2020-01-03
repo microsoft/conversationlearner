@@ -48,20 +48,27 @@ export const convertInternalCallbackToCallback = <T>(c: InternalCallback<T>): CL
 
     const stubInfoObjects = stubs.map<CLM.StubInfo>(s => {
 
-        // TODO: Calculate changes to entities made within stub
+        // Calculate changes to entities made within stub
         // Call logic and render functions from stub to determine what entity values are after
 
         // const defaultSessionInfo = {
         //     userName: '',
         //     userId: '',
-        //     logDialogId: ''
+        //     logDialogId: '',
         // }
-        // const filledEntityMap = new FilledEntityMap()
+        // const filledEntityMap = new CLM.FilledEntityMap()
         // const memory = new ClientMemoryManager(filledEntityMap, filledEntityMap, [], defaultSessionInfo)
         // logic(memory)
-        // Object.values(memory.curMemories.map)
+        // const entityValues = Object.entries(memory.curMemories.map)
+        //     .reduce((ev, [entityName, filledEntity]) => {
+        //         ev[entityName] = filledEntity.values
+        //         return ev
+        //     }, {})
 
-        const entityValues = {}
+        const entityValues = {
+            "myNumber": "5",
+            "isLowNumber": "true",
+        }
 
         return {
             name: s.name,

@@ -1131,7 +1131,7 @@ export default {
 
         // Stub Creator Editor Modal
         [FM.STUB_DROPDOWN_LABEL]: 'Stubs',
-        [FM.STUB_MODAL_TITLE]: 'Stub Modal',
+        [FM.STUB_MODAL_TITLE]: 'View Stub',
         [FM.STUB_MODAL_ENTITY_VALUES]: 'Entity Values',
 
         // TagsInput

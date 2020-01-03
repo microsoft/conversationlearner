@@ -6,8 +6,8 @@ import * as Util from '../../Utils/util'
 import FormattedMessageId from '../FormattedMessageId'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-
 import HelpIcon from '../HelpIcon'
+import './StubViewerModal.css'
 
 type ReceivedProps = {
     isOpen: boolean
@@ -34,17 +34,32 @@ const Component: React.FC<Props> = (props) => {
                 <FormattedMessageId id={FM.STUB_MODAL_TITLE} />
             </span>
         </div>
-        <div>
-            <div className="cl-stub-modal__name">
-                <OF.TextField
-                    className={OF.FontClassNames.mediumPlus}
-                    readOnly={true}
-                    value={props.stubInfo.name}
-                />
+        <div className="cl-modal_body">
+            <div>
+                <div className="cl-stub-modal__name">
+                    <OF.TextField
+                        label={"Name"}
+                        className={OF.FontClassNames.mediumPlus}
+                        readOnly={true}
+                        value={props.stubInfo.name}
+                    />
+                </div>
+                <div className="cl-stub-modal__entity-values">
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <OF.Label className="ms-Label--tight cl-label">
+                            <FormattedMessageId id={FM.STUB_MODAL_ENTITY_VALUES} />
+                            <HelpIcon tipType={ToolTips.TipType.STUB_MODAL_ENTITY_VALUES} />
+                        </OF.Label>
+                    </div>
 
-                <div className={OF.FontClassNames.mediumPlus}>
-                    <FormattedMessageId id={FM.STUB_MODAL_ENTITY_VALUES} />
-                    <HelpIcon tipType={ToolTips.TipType.STUB_MODAL_ENTITY_VALUES} />
+                    {Object.entries(props.stubInfo.entityValues).map(([entityName, entityValue]) =>
+                        <OF.TextField
+                            label={entityName}
+                            className={OF.FontClassNames.mediumPlus}
+                            readOnly={true}
+                            value={entityValue}
+                        />
+                    )}
                 </div>
             </div>
         </div>

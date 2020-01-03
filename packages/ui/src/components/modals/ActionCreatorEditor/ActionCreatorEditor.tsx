@@ -35,6 +35,7 @@ import { FM } from '../../../react-intl-messages'
 import { autobind } from 'core-decorators'
 import { IConditionalTag, getEnumConditionName, convertConditionToConditionalTag, isConditionEqual, getUniqueConditions } from '../../../Utils/actionCondition'
 import './ActionCreatorEditor.css'
+import StubViewerModal from '../StubViewerModal'
 
 const TEXT_SLOT = '#TEXT_SLOT#'
 
@@ -281,6 +282,8 @@ interface ComponentState {
     isConfirmEditModalOpen: boolean
     isConfirmDuplicateActionModalOpen: boolean
     isRepromptActionSelectorModelOpen: boolean
+    isStubViewerOpen: boolean
+    selectedStubInfo: CLM.StubInfo | undefined
     validationWarnings: string[]
     isPayloadFocused: boolean
     isPayloadMissing: boolean
@@ -327,6 +330,8 @@ const initialState: Readonly<ComponentState> = {
     isConfirmEditModalOpen: false,
     isConfirmDuplicateActionModalOpen: false,
     isRepromptActionSelectorModelOpen: false,
+    isStubViewerOpen: false,
+    selectedStubInfo: undefined,
     validationWarnings: [],
     isPayloadFocused: false,
     isPayloadMissing: true,
@@ -1576,6 +1581,21 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return null
     }
 
+    @autobind
+    onClickViewStub(stubInfo: CLM.StubInfo): void {
+        this.setState({
+            isStubViewerOpen: true,
+            selectedStubInfo: stubInfo
+        })
+    }
+
+    @autobind
+    onClickCancelStubViewer(): void {
+        this.setState({
+            isStubViewerOpen: false,
+        })
+    }
+
     render() {
         const { intl } = this.props
 
@@ -1735,7 +1755,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                             />
                                                             <OF.IconButton
                                                                 className="ms-Button--primary"
-                                                                onClick={() => { console.log('preview stub', stubInfo) }}
+                                                                onClick={() => this.onClickViewStub(stubInfo)}
                                                                 ariaDescription="View Stub"
                                                                 iconProps={{ iconName: 'EntryView' }}
                                                             />
@@ -2147,6 +2167,15 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     onClickCreate={this.onClickCreateConditionCreator}
                     onClickCancel={this.onClickCancelConditionCreator}
                 />
+                {this.state.selectedStubInfo &&
+                    <StubViewerModal
+                        isOpen={this.state.isStubViewerOpen}
+                        onClickCancel={this.onClickCancelStubViewer}
+                        onClickSubmit={() => { }}
+                        stubInfo={this.state.selectedStubInfo}
+                    />
+                }
+
             </OF.Modal>
         )
     }
