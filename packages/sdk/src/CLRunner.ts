@@ -47,7 +47,6 @@ export const convertInternalCallbackToCallback = <T>(c: InternalCallback<T>): CL
     const { logic, render, stubs, ...callback } = c
 
     const stubInfoObjects = stubs.map<CLM.StubInfo>(s => {
-
         // Calculate changes to entities made within stub
         // Call logic and render functions from stub to determine what entity values are after
 
@@ -58,17 +57,14 @@ export const convertInternalCallbackToCallback = <T>(c: InternalCallback<T>): CL
         // }
         // const filledEntityMap = new CLM.FilledEntityMap()
         // const memory = new ClientMemoryManager(filledEntityMap, filledEntityMap, [], defaultSessionInfo)
-        // logic(memory)
+        // await logic(memory)
         // const entityValues = Object.entries(memory.curMemories.map)
         //     .reduce((ev, [entityName, filledEntity]) => {
         //         ev[entityName] = filledEntity.values
         //         return ev
         //     }, {})
 
-        const entityValues = {
-            "myNumber": "5",
-            "isLowNumber": "true",
-        }
+        const entityValues = {}
 
         return {
             name: s.name,
