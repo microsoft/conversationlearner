@@ -43,34 +43,31 @@ export interface InternalCallback<T> extends InternalCallbackNoStubs<T> {
     stubs: InternalCallbackNoStubs<T>[]
 }
 
-export const convertInternalCallbackToCallback = <T>(c: InternalCallback<T>): CLM.Callback => {
+export const convertInternalCallbackToCallback = async <T>(c: InternalCallback<T>): Promise<CLM.Callback> => {
     const { logic, render, stubs, ...callback } = c
 
-    const stubInfoObjects = stubs.map<CLM.StubInfo>(s => {
+    const stubInfoObjects = await Promise.all(stubs.map<Promise<CLM.StubInfo>>(async s => {
         // Calculate changes to entities made within stub
         // Call logic and render functions from stub to determine what entity values are after
-
-        // const defaultSessionInfo = {
-        //     userName: '',
-        //     userId: '',
-        //     logDialogId: '',
-        // }
-        // const filledEntityMap = new CLM.FilledEntityMap()
-        // const memory = new ClientMemoryManager(filledEntityMap, filledEntityMap, [], defaultSessionInfo)
-        // await logic(memory)
-        // const entityValues = Object.entries(memory.curMemories.map)
-        //     .reduce((ev, [entityName, filledEntity]) => {
-        //         ev[entityName] = filledEntity.values
-        //         return ev
-        //     }, {})
-
-        const entityValues = {}
+        const defaultSessionInfo = {
+            userName: '',
+            userId: '',
+            logDialogId: '',
+           await logic(memory)
+        const filledEntityMap = new CLM.FilledEntityMap()
+        const memory = new ClientMemoryManager(filledEntityMap, filledEntityMap, [], defaultSessionInfo)
+        await logic(memory)
+        const entityValues = Object.entries(memory.curMemories.map)
+            .reduce((ev, [entityName, filledEntity]) => {
+                ev[entityName] = filledEntity.values
+                return ev
+            }, {})
 
         return {
             name: s.name,
             entityValues,
         }
-    })
+    }))
 
     return {
         ...callback,
@@ -241,10 +238,10 @@ export class CLRunner {
         this.logStorage = logStorage
     }
 
-    public botChecksum(): string {
+    public async botChecksum(): Promise<string> {
         // Create bot checksum is doesn't already exist
         if (!this.checksum) {
-            const callbacks = Object.values(this.callbacks).map(convertInternalCallbackToCallback)
+            const callbacks = await Promise.all(Object.values(this.callbacks).map(convertInternalCallbackToCallback))
             const templates = TemplateProvider.GetTemplates()
             this.checksum = Utils.botChecksum(callbacks, templates)
         }

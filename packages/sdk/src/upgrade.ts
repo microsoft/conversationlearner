@@ -9,10 +9,10 @@ import { CallbackMap, convertInternalCallbackToCallback } from './CLRunner'
  * Given an app definition return an updated app definition.
  * If no updates are performed, return undefined.
  */
-export default function (appDefinition: models.AppDefinition, callbackMap: CallbackMap): models.AppDefinitionChange {
+export default async function (appDefinition: models.AppDefinition, callbackMap: CallbackMap): Promise<models.AppDefinitionChange> {
     let isChanged = false
     const appDefinitionChanges: models.AppDefinitionChanges = {
-        actions: appDefinition.actions.map<models.IChangeResult<models.ActionBase>>(a => getActionChangeResult(a, callbackMap)),
+        actions: await Promise.all(appDefinition.actions.map(a => getActionChangeResult(a, callbackMap))),
         entities: appDefinition.entities.map(getDefaultChangeResult),
         trainDialogs: appDefinition.trainDialogs.map(getDefaultChangeResult)
     }
@@ -45,7 +45,7 @@ export function getDefaultChangeResult<T>(value: T): models.IChangeResult<T> {
     }
 }
 
-export function getActionChangeResult(action: models.ActionBase, callbackMap: CallbackMap): models.IChangeResult<models.ActionBase> {
+export async function getActionChangeResult(action: models.ActionBase, callbackMap: CallbackMap): Promise<models.IChangeResult<models.ActionBase>> {
     // By default no update is performed
     const changeResult: models.IChangeResult<models.ActionBase> = {
         isChanged: false,
@@ -60,7 +60,7 @@ export function getActionChangeResult(action: models.ActionBase, callbackMap: Ca
             const callback = callbackMap[legacyActionPayload.payload]
 
             const actionPayload: models.ActionPayload = callback
-                ? getActionPayload(legacyActionPayload, convertInternalCallbackToCallback(callback))
+                ? getActionPayload(legacyActionPayload, await convertInternalCallbackToCallback(callback))
                 : {
                     payload: legacyActionPayload.payload,
                     logicArguments: legacyActionPayload.arguments,

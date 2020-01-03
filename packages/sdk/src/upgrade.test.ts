@@ -93,7 +93,7 @@ describe('upgrade', () => {
     })
 
     describe('getActionChangeResult', () => {
-        test('given a action without need to be changed, return it unmodified with no changes', () => {
+        test('given a action without need to be changed, return it unmodified with no changes', async () => {
             // Arrange
             const action: models.ActionBase = {
                 actionId: 'fakeActionId',
@@ -136,13 +136,13 @@ describe('upgrade', () => {
 
             // Act
             const defaultActionChangeResult = upgrade.getDefaultChangeResult(action)
-            const actionChangeResult = upgrade.getActionChangeResult(action, callbackMap)
+            const actionChangeResult = await upgrade.getActionChangeResult(action, callbackMap)
 
             // Assert
             expect(actionChangeResult).toEqual(defaultActionChangeResult)
         })
 
-        test('given an old action return it with list of change descriptions', () => {
+        test('given an old action return it with list of change descriptions', async () => {
             // Arrange
             const action: models.ActionBase = {
                 actionId: 'fakeActionId',
@@ -182,7 +182,7 @@ describe('upgrade', () => {
             const callbackMap: CallbackMap = {}
 
             // Act
-            const actionChangeResult = upgrade.getActionChangeResult(action, callbackMap)
+            const actionChangeResult = await upgrade.getActionChangeResult(action, callbackMap)
 
             // Assert
             expect(actionChangeResult.isChanged).toBe(true)
@@ -191,7 +191,7 @@ describe('upgrade', () => {
     })
 
     describe('getAppDefinitionChange', () => {
-        test('given app definition without changes return object as is without changes', () => {
+        test('given app definition without changes return object as is without changes', async () => {
             // Arrange
             const appDefinition: models.AppDefinition = {
                 actions: [],
@@ -200,14 +200,14 @@ describe('upgrade', () => {
             }
 
             // Act
-            const appChange = upgrade.default(appDefinition, {})
+            const appChange = await upgrade.default(appDefinition, {})
 
             // Assert
             expect(appChange.isChanged).toBe(false)
             expect(appChange.currentAppDefinition).toEqual(appDefinition)
         })
 
-        test('given app definition without changes return object as is without changes', () => {
+        test('given app definition without changes return object as is without changes', async () => {
             // Arrange
             const action: models.ActionBase = {
                 actionId: 'fakeActionId',
@@ -253,7 +253,7 @@ describe('upgrade', () => {
             }
 
             // Act
-            const appChange = upgrade.default(appDefinition, {})
+            const appChange = await upgrade.default(appDefinition, {})
 
             // Assert
             expect(appChange.isChanged).toBe(true)

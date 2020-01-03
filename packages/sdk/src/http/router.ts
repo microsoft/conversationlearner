@@ -212,7 +212,8 @@ export const getRouter = (
                 }
             }
 
-            const callbacks = Object.values(clRunner.callbacks).map(convertInternalCallbackToCallback)
+            const callbacks = await Promise.all(Object.values(clRunner.callbacks).map(convertInternalCallbackToCallback))
+            const checksum = await clRunner.botChecksum()
             const templates = TemplateProvider.GetTemplates()
 
             const botInfo: CLM.BotInfo = {
@@ -220,14 +221,15 @@ export const getRouter = (
                     // We keep track that the editing UI is running by putting this as the name of the user
                     // Can't check localhost as can be running localhost and not UI
                     name: Utils.CL_DEVELOPER,
-                    id: id
+                    id,
                 },
                 callbacks,
                 templates,
-                checksum: clRunner.botChecksum(),
-                validationError: validationError,
-                banner: banner
+                checksum,
+                validationError,
+                banner,
             }
+
             res.send(botInfo)
         } catch (error) {
             HandleError(res, error)
@@ -321,7 +323,7 @@ export const getRouter = (
             const appDetails = await client.GetApp(appId)
             const appDefinition = await client.GetAppSource(appId, packageId)
 
-            let appDefinitionChange = getAppDefinitionChange(appDefinition, clRunner.callbacks)
+            let appDefinitionChange = await getAppDefinitionChange(appDefinition, clRunner.callbacks)
             if (appDefinitionChange.isChanged) {
                 console.warn(`⚠ Local package upgraded to enable viewing.`)
                 if (packageId === appDetails.devPackageId) {
@@ -662,7 +664,8 @@ export const getRouter = (
             const sessionCreateParams: CLM.SessionCreateParams = req.body
 
             const clRunner = CLRunner.GetRunnerForUI(appId)
-            validateBot(req, clRunner.botChecksum())
+            const checksum = await clRunner.botChecksum()
+            validateBot(req, checksum)
 
             const state = stateFactory.get(key)
 
@@ -744,8 +747,8 @@ export const getRouter = (
             const initialFilledEntities = req.body as CLM.FilledEntity[] ?? []
 
             const clRunner = CLRunner.GetRunnerForUI(appId)
-
-            validateBot(req, clRunner.botChecksum())
+            const checksum = await clRunner.botChecksum()
+            validateBot(req, checksum)
 
             const state = stateFactory.get(key)
 
@@ -798,8 +801,8 @@ export const getRouter = (
             const state = stateFactory.get(key)
 
             const clRunner = CLRunner.GetRunnerForUI(appId)
-
-            validateBot(req, clRunner.botChecksum())
+            const checksum = await clRunner.botChecksum()
+            validateBot(req, checksum)
 
             // Replay the TrainDialog logic (API calls and EntityDetectionCallback)
             let cleanTrainDialog = await clRunner.ReplayTrainDialogLogic(trainDialog, state, true)
@@ -954,7 +957,8 @@ export const getRouter = (
             const trainDialog: CLM.TrainDialog = req.body
             const state = stateFactory.get(key)
             const clRunner = CLRunner.GetRunnerForUI(appId)
-            validateBot(req, clRunner.botChecksum())
+            const checksum = await clRunner.botChecksum()
+            validateBot(req, checksum)
 
             // Replay the TrainDialog logic (API calls and EntityDetectionCallback)
             // and set storage entities for the train dialog
@@ -1034,7 +1038,8 @@ export const getRouter = (
             // Call LUIS callback to get scoreInput
             const extractResponse = uiScoreInput.extractResponse
             const clRunner = CLRunner.GetRunnerForUI(appId)
-            validateBot(req, clRunner.botChecksum())
+            const checksum = await clRunner.botChecksum()
+            validateBot(req, checksum)
 
             let scoreInput: CLM.ScoreInput
             let botAPIError: CLM.LogicAPIError | null = null
@@ -1224,7 +1229,8 @@ export const getRouter = (
 
             const state = stateFactory.get(key)
             const clRunner = CLRunner.GetRunnerForUI(appId)
-            validateBot(req, clRunner.botChecksum())
+            const checksum = await clRunner.botChecksum()
+            validateBot(req, checksum)
 
             const teachWithActivities = await clRunner.GetActivities(trainDialog, userName, userId, state, useMarkdown)
 
