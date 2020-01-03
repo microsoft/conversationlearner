@@ -24,6 +24,7 @@ const Component: React.FC<Props> = (props) => {
     }
     const onClickCancel = props.onClickCancel
     const isSaveDisabled = false
+    const stubEntityValueEntries = Object.entries(props.stubInfo.entityValues)
 
     return <OF.Modal
         isOpen={props.isOpen}
@@ -52,14 +53,16 @@ const Component: React.FC<Props> = (props) => {
                         </OF.Label>
                     </div>
 
-                    {Object.entries(props.stubInfo.entityValues).map(([entityName, entityValue]) =>
-                        <OF.TextField
-                            label={entityName}
-                            className={OF.FontClassNames.mediumPlus}
-                            readOnly={true}
-                            value={entityValue}
-                        />
-                    )}
+                    {stubEntityValueEntries.length === 0
+                        ? <p>No Entity Values Set</p>
+                        : stubEntityValueEntries.map(([entityName, entityValue]) =>
+                            <OF.TextField
+                                label={entityName}
+                                className={OF.FontClassNames.mediumPlus}
+                                readOnly={true}
+                                value={entityValue}
+                            />
+                        )}
                 </div>
             </div>
         </div>
