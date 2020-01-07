@@ -4,5 +4,15 @@
 
 .cl-callback-result-modal__entity-values {
     display: grid;
+    grid-gap: 1rem;
+    grid-template-columns: max-content 1fr;
+}
+
+.cl-callback-result-modal__entity-values__entity-removed {
+    padding: 5px 0;
+}
+
+.cl-callback-result-modal__entity-values__list {
+    display: grid;
     grid-gap: 0.5rem;
 }

@@ -55,35 +55,47 @@ const Component: React.FC<Props> = (props) => {
 
                     {callbackResultEntityValueEntries.length === 0
                         ? <p>No Entity Values Set</p>
-                        : callbackResultEntityValueEntries.map(([entityName, entityValue]) => {
-                            const [firstValue, ...rest] = Array.isArray(entityValue) ? entityValue : [entityValue]
-                                // TODO: Show null or undefined by string
-                                .filter(Util.notNullOrUndefined)
-                                .map(v => typeof v === 'object'
-                                    ? JSON.stringify(v, null, '  ')
-                                    : v.toString())
-                                .map(v => {
-                                    const isMultiline = v.includes('/n')
-                                    return {
-                                        value: v,
-                                        isMultiline,
-                                    }
-                                })
+                        : <div className="cl-callback-result-modal__entity-values">
+                            {callbackResultEntityValueEntries.map(([entityName, entityValue]) => {
+                                const name = <OF.Label>{entityName}</OF.Label>
 
-                            return <div className="cl-callback-result-modal__entity-values">
-                                <OF.TextField
-                                    label={entityName}
-                                    readOnly={true}
-                                    value={`${firstValue}`}
-                                />
-                                {rest.map(value => {
-                                    return <OF.TextField
-                                        readOnly={true}
-                                        value={`${value}`}
-                                    />
-                                })}
-                            </div>
-                        })}
+                                let values
+                                if (entityValue === null) {
+                                    values = <div className="cl-callback-result-modal__entity-values__entity-removed">Cleared <OF.Icon iconName="Clear"></OF.Icon></div>
+                                }
+                                else {
+                                    // Entity might be single value or multi value, convert all to array for consistent processing
+                                    const entityValuesArray = Array.isArray(entityValue) ? entityValue : [entityValue]
+                                    const entityValuesForDisplay = entityValuesArray
+                                        .map(value => JSON.stringify(value, null, '  '))
+                                        // Enable multiline if the value is multiline
+                                        // Likely used to represent readable JSON objects, but could be multiline strings
+                                        .map(value => {
+                                            const isMultiline = value.includes('\n')
+
+                                            return {
+                                                value,
+                                                isMultiline,
+                                            }
+                                        })
+
+                                    values = entityValuesForDisplay.map((valueObject, i) =>
+                                        <OF.TextField
+                                            key={`${entityName}-${i}`}
+                                            readOnly={true}
+                                            multiline={valueObject.isMultiline}
+                                            value={`${valueObject.value}`}
+                                        />
+                                    )
+                                }
+
+                                return <>
+                                    <div>{name}</div>
+                                    <div className="cl-callback-result-modal__entity-values__list">{values}</div>
+                                </>
+                            })}
+                        </div>
+                    }
                 </div>
             </div>
         </div>
