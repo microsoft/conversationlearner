@@ -292,9 +292,16 @@ cl.AddCallback({
         {
             name: 'Clear Values',
             entityValues: {
-                myNumber: undefined,
+                myNumber: null,
+                myNumbers: null,
+                myString: undefined,
+                myStrings: undefined,
+                myBoolean: undefined,
+                myBooleans: undefined,
+                myObject: undefined,
+                myObjects: undefined,
             },
-            returnValue: 1
+            returnValue: 1,
         },
     ],
 })
