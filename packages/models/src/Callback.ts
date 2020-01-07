@@ -13,10 +13,13 @@ export interface Callback {
   isLogicFunctionProvided: boolean
   renderArguments: string[]
   isRenderFunctionProvided: boolean
-  stubs: StubInfo[]
+  results: CallbackResult[]
 }
 
-export interface StubInfo {
+export type EntityValue = string | number | boolean | object
+
+export interface CallbackResult {
   name: string
-  entityValues: Record<string, string>
+  entityValues: Record<string, EntityValue | EntityValue[] | null | undefined>
+  returnValue: unknown
 }

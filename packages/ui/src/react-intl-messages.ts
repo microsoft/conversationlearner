@@ -459,10 +459,10 @@ export enum FM {
     SETTINGS_MODEL_VERSIONS_TITLE = 'Settings.modelVersionsTitle',
     SETTINGS_MODEL_VERSIONS_DESCRIPTION = 'Settings.modelVersionsDescription',
 
-    // Stub Creator Editor Modal
-    STUB_DROPDOWN_LABEL = 'StubDropdown.label',
-    STUB_MODAL_TITLE = 'StubModal.title',
-    STUB_MODAL_ENTITY_VALUES = 'StubModal.entityValues',
+    // Callback Result Creator Editor Modal
+    CALLBACK_RESULT_DROPDOWN_LABEL = 'CallbackResult.dropdown.label',
+    CALLBACK_RESULT_MODAL_TITLE = 'CallbackResult.title',
+    CALLBACK_RESULT_MODAL_ENTITY_VALUES = 'CallbackResult.entityValues',
 
     // Tags and Description
     TAGSINPUT_ADD = 'TagsInput.add',
@@ -1130,9 +1130,9 @@ export default {
         [FM.SETTINGS_MODEL_VERSIONS_DESCRIPTION]: 'Creating a new version will save a snapshot of the currently active model. You can promote this version to "live" for use in deployed bots while you continue to edit the latest version.  You can also recall these snapshots at any point in time.',
 
         // Stub Creator Editor Modal
-        [FM.STUB_DROPDOWN_LABEL]: 'Stubs',
-        [FM.STUB_MODAL_TITLE]: 'View Stub',
-        [FM.STUB_MODAL_ENTITY_VALUES]: 'Entity Values',
+        [FM.CALLBACK_RESULT_DROPDOWN_LABEL]: 'Callback Result',
+        [FM.CALLBACK_RESULT_MODAL_TITLE]: 'View Result',
+        [FM.CALLBACK_RESULT_MODAL_ENTITY_VALUES]: 'Entity Values',
 
         // TagsInput
         [FM.TAGSINPUT_ADD]: 'Add Tag',

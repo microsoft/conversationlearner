@@ -24,7 +24,7 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import './ActionScorer.css'
 import { autobind } from 'core-decorators'
-import ActionStubDropdown from './ActionStubDropdown'
+import ActionCallbackResultDropdown from './ActionCallbackResultDropdown'
 
 const MISSING_ACTION = 'missing_action'
 
@@ -33,7 +33,7 @@ interface ActionForRender extends CLM.ScoredBase {
     score?: number
     reason?: CLM.ScoreReason | null
     repromptActionId?: string | undefined
-    selectedStub?: CLM.StubInfo
+    selectedCallbackResult?: CLM.CallbackResult
 }
 
 interface IRenderableColumn extends OF.IColumn {
@@ -140,15 +140,15 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     const apiAction = new CLM.ApiAction(action)
                     if (!apiAction.isPlaceholder) {
                         const callback = component.props.botInfo.callbacks.find(c => c.name === apiAction.name)
-                        const stubFromActivity = callback?.stubs.find(s => s.name === component.props.selectedScorerStep?.stubName)
+                        const callbackResultFromActivity = callback?.results.find(result => result.name === component.props.selectedScorerStep?.stubName)
 
                         return <div className="cl-action-scorer-callback">
                             {actionResponseComponent}
-                            <ActionStubDropdown
+                            <ActionCallbackResultDropdown
                                 action={apiAction}
                                 callback={callback}
-                                selectedStub={stubFromActivity ?? actionForRender.selectedStub}
-                                onChangeSelectedStub={selectedStub => component.onChangeSelectedStub(action, selectedStub)}
+                                selectedCallbackResult={callbackResultFromActivity ?? actionForRender.selectedCallbackResult}
+                                onChangeSelectedCallbackResult={selectedStub => component.onChangeSelectedStub(action, selectedStub)}
                             />
                         </div>
                     }
@@ -262,7 +262,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     ]
 }
 
-const actionIdStubInfoMap: { [actionId: string]: CLM.StubInfo | undefined } = {}
+const actionIdCallbackResultMap: { [actionId: string]: CLM.CallbackResult | undefined } = {}
 
 interface ComponentState {
     isActionCreatorModalOpen: boolean
@@ -369,8 +369,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onChangeSelectedStub(action: CLM.ActionBase, stubInfo: CLM.StubInfo) {
-        actionIdStubInfoMap[action.actionId] = stubInfo
+    onChangeSelectedStub(action: CLM.ActionBase, callbackResult: CLM.CallbackResult) {
+        actionIdCallbackResultMap[action.actionId] = callbackResult
     }
 
     //-------------------
@@ -491,7 +491,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         let dropdownStubName = undefined
         if (scoredBase.actionType === CLM.ActionTypes.API_LOCAL) {
             const apiAction = new CLM.ApiAction(scoredBase as CLM.ActionBase)
-            dropdownStubName = actionIdStubInfoMap[apiAction.actionId]?.name
+            dropdownStubName = actionIdCallbackResultMap[apiAction.actionId]?.name
         }
 
         const isStubChanged = dropdownStubName !== this.props.selectedScorerStep?.stubName
@@ -536,13 +536,13 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             throw new Error(`Scored action could not be found in list of available actions`)
         }
 
-        let stubName = undefined
+        let callbackResultName = undefined
         if (scoredBase.actionType === CLM.ActionTypes.API_LOCAL) {
             const apiAction = new CLM.ApiAction(scoredBase as CLM.ActionBase)
             const callback = this.props.botInfo.callbacks.find(c => c.name === apiAction.name)
 
-            if (callback?.stubs) {
-                stubName = actionIdStubInfoMap[apiAction.actionId]?.name
+            if (callback?.results) {
+                callbackResultName = actionIdCallbackResultMap[apiAction.actionId]?.name
             }
         }
 
@@ -551,7 +551,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             labelAction: scoredAction.actionId,
             logicResult: undefined,
             scoredAction,
-            stubName,
+            stubName: callbackResultName,
         }
 
         this.setState({ haveEdited: true })
@@ -845,7 +845,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         actionsForRender.forEach(actionForRender => {
             if (actionForRender.actionType === CLM.ActionTypes.API_LOCAL) {
-                actionForRender.selectedStub = actionIdStubInfoMap[actionForRender.actionId]
+                actionForRender.selectedCallbackResult = actionIdCallbackResultMap[actionForRender.actionId]
             }
         })
 

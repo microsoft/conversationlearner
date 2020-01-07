@@ -35,7 +35,7 @@ import { FM } from '../../../react-intl-messages'
 import { autobind } from 'core-decorators'
 import { IConditionalTag, getEnumConditionName, convertConditionToConditionalTag, isConditionEqual, getUniqueConditions } from '../../../Utils/actionCondition'
 import './ActionCreatorEditor.css'
-import StubViewerModal from '../StubViewerModal'
+import CallbackResultViewerModal from '../CallbackResultViewerModal'
 
 const TEXT_SLOT = '#TEXT_SLOT#'
 
@@ -282,8 +282,8 @@ interface ComponentState {
     isConfirmEditModalOpen: boolean
     isConfirmDuplicateActionModalOpen: boolean
     isRepromptActionSelectorModelOpen: boolean
-    isStubViewerOpen: boolean
-    selectedStubInfo: CLM.StubInfo | undefined
+    isCallbackResultViewerOpen: boolean
+    selectedCallbackResult: CLM.CallbackResult | undefined
     validationWarnings: string[]
     isPayloadFocused: boolean
     isPayloadMissing: boolean
@@ -330,8 +330,8 @@ const initialState: Readonly<ComponentState> = {
     isConfirmEditModalOpen: false,
     isConfirmDuplicateActionModalOpen: false,
     isRepromptActionSelectorModelOpen: false,
-    isStubViewerOpen: false,
-    selectedStubInfo: undefined,
+    isCallbackResultViewerOpen: false,
+    selectedCallbackResult: undefined,
     validationWarnings: [],
     isPayloadFocused: false,
     isPayloadMissing: true,
@@ -1582,19 +1582,22 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onClickViewStub(stubInfo: CLM.StubInfo): void {
+    onClickViewCallbackResult(callbackResult: CLM.CallbackResult): void {
         this.setState({
-            isStubViewerOpen: true,
-            selectedStubInfo: stubInfo
+            isCallbackResultViewerOpen: true,
+            selectedCallbackResult: callbackResult,
         })
     }
 
     @autobind
-    onClickCancelStubViewer(): void {
+    onClickCancelCallbackResultViewer(): void {
         this.setState({
-            isStubViewerOpen: false,
+            isCallbackResultViewerOpen: false,
         })
     }
+
+    // Clicking ok OK currently does same thing as Cancel because there is no editing of results defined in Code
+    onClickOkStubViewer = this.onClickCancelCallbackResultViewer
 
     render() {
         const { intl } = this.props
@@ -1680,7 +1683,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 <div className="cl-action-creator-input-with-button">
                                     <TC.Dropdown
                                         data-testid="dropdown-api-option"
-                                        label="API"
+                                        label="Callback Name"
                                         options={this.state.apiOptions}
                                         onChange={this.onChangeApiOption}
                                         selectedKey={this.state.selectedApiOptionKey}
@@ -1741,27 +1744,27 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                         })}
                                                 </div>}
 
-                                            <OF.Label>Stubs <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS} /></OF.Label>
+                                            <OF.Label>Callback Results <HelpIcon tipType={ToolTip.TipType.CALLBACK_RESULT} /></OF.Label>
 
-                                            {/* In future include stubs defined in UI */}
+                                            {/* In future include results defined in UI */}
                                             <div className="cl-action-creator-section">
-                                                {callback.stubs.length > 0
-                                                    ? callback.stubs.map(stubInfo => {
+                                                {callback.results.length > 0
+                                                    ? callback.results.map(logicEffect => {
                                                         return <div className="cl-action-creator-input-with-button">
                                                             <OF.TextField
-                                                                data-testid="action-creator-editor-stub-name"
-                                                                value={stubInfo.name}
+                                                                data-testid="action-creator-editor-callback-result-name"
+                                                                value={logicEffect.name}
                                                                 disabled={true}
                                                             />
                                                             <OF.IconButton
                                                                 className="ms-Button--primary"
-                                                                onClick={() => this.onClickViewStub(stubInfo)}
-                                                                ariaDescription="View Stub"
+                                                                onClick={() => this.onClickViewCallbackResult(logicEffect)}
+                                                                ariaDescription="View Result"
                                                                 iconProps={{ iconName: 'EntryView' }}
                                                             />
                                                         </div>
                                                     })
-                                                    : <div>No Stubs Defined</div>}
+                                                    : <div>No Results Defined</div>}
                                             </div>
                                         </div>
                                         : <div className="cl-errorpanel" data-testid="action-creator-editor-error-callback">
@@ -2167,12 +2170,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     onClickCreate={this.onClickCreateConditionCreator}
                     onClickCancel={this.onClickCancelConditionCreator}
                 />
-                {this.state.selectedStubInfo &&
-                    <StubViewerModal
-                        isOpen={this.state.isStubViewerOpen}
-                        onClickCancel={this.onClickCancelStubViewer}
-                        onClickSubmit={() => { }}
-                        stubInfo={this.state.selectedStubInfo}
+                {this.state.selectedCallbackResult &&
+                    <CallbackResultViewerModal
+                        isOpen={this.state.isCallbackResultViewerOpen}
+                        onClickCancel={this.onClickCancelCallbackResultViewer}
+                        onClickSubmit={this.onClickOkStubViewer}
+                        callbackResult={this.state.selectedCallbackResult}
                     />
                 }
 

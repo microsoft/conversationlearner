@@ -87,8 +87,9 @@ export enum TipType {
     REPLAYERROR_DESC_ACTION_STUB = "REPLAYERROR_DESC_ACTION_STUB",
 
     PLACEHOLDER_API = 'PLACEHOLDER_API',
-    STUB_DROPDOWN = 'STUB_DROPDOWN',
-    STUB_MODAL_ENTITY_VALUES = 'STUB_MODAL_ENTITY_VALUES',
+
+    CALLBACK_RESULT = 'CALLBACK_RESULT',
+
     TRANSCRIPT_IMPORTER = 'transcriptImporter',
 }
 
@@ -966,19 +967,20 @@ export function getTip(tipType: string) {
                 </div>
             )
 
-        case TipType.STUB_DROPDOWN:
+        case TipType.CALLBACK_RESULT:
             return (
                 <div>
-                    <h2>Using Stubs</h2>
-                    <p>Not implemented</p>
-                </div>
-            )
+                    <h2>Callback Results</h2>
+                    <p>If the callback of your action is unstable, meaning it would not reliably set entities in the same way given the same inputs, you can provide fixed callback results to represent all the different types of outcomes. You can think of these like mock responses to train with.</p>
+                    <p>During training you should choose one of these outcomes before selecting the action to simulate that outcome. This will force the bot behavior to be stable and enable consistent replay of the dialog.</p>
+                    <p>An example of an unstable callback might be querying for weather data, querying for product inventory, or other such tasks that can change.</p>
+                    <p>It's important to note that it's only changes in entities that can effect for the flow of the dialog. If the presentation is different but it doesn't affect the bot behavior then although it might look different on replay you do not need callback results.</p>
 
-        case TipType.STUB_MODAL_ENTITY_VALUES:
-            return (
-                <div>
-                    <h2>Using Stubs</h2>
-                    <p>Not implemented</p>
+                    <h3>Defining Results</h3>
+                    <p>Note: that your callback has a logic function that can set entities and return a value to be passed to the render function. These effects are represented in the callback result by the two fields <code>entityValues</code> and <code>returnValue</code> as shown below.</p>
+
+                    <h3>Example Callback Definition with Results</h3>
+                    <img src="https://blisstorage.blob.core.windows.net/uiimages/temperatureCallback.png" alt="Unstable Temperature Callback" />
                 </div>
             )
 

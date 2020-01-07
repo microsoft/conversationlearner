@@ -218,27 +218,83 @@ cl.AddCallback({
     render: async n => {
         return `My random number is ${n}`
     },
-    stubs: [
+    results: [
         {
             name: 'Number is 3',
-            async logic(memory) {
-                const number = 3
-                memory.Set("myNumber", number)
-                memory.Set('lowNumber', true)
-                return number
+            entityValues: {
+                myNumber: 3,
+                lowNumber: true,
             },
-            async render(n) {
-                return `This is a stubbed render fn. Value is ${n}`
-            },
+            returnValue: 3,
         },
         {
             name: 'Number is 67',
-            async logic(memory) {
-                const number = 67
-                memory.Set("myNumber", number)
-                memory.Set('highNumber', true)
-                return number
+            entityValues: {
+                myNumber: 67,
+                lowNumber: true,
             },
+            returnValue: 67,
+        },
+    ],
+})
+
+
+cl.AddCallback({
+    name: 'Callback Results Types',
+    logic: async memory => {
+        const randomNumber = () => Math.round(Math.random() * 100)
+        memory.Set("myNumber", randomNumber())
+        memory.Set("myNumbers", [randomNumber(), randomNumber()])
+
+        memory.Set('myString', 'string')
+        memory.Set('myStrings', [`string${randomNumber()}`, `string${randomNumber()}`, `string${randomNumber()}`])
+
+        const getBoolean = () => randomNumber() > 50
+            ? true
+            : false
+        memory.Set("myBoolean", getBoolean())
+        memory.Set("myBooleans", [getBoolean(), getBoolean()])
+
+        const getObject = () => ({ value: randomNumber() })
+
+        memory.Set("myObject", getObject())
+        memory.Set("myObjects", [getObject(), getObject()])
+
+        return randomNumber()
+    },
+    render: async n => {
+        return `My random number is ${n}`
+    },
+    results: [
+        {
+            name: 'Set values 1',
+            entityValues: {
+                myNumber: 3,
+                myNumbers: [1, 2, 3, 4],
+                myString: 'string',
+                myStrings: ['string1', 'string2', 'string3'],
+                myBoolean: false,
+                myBooleans: [false, true, false],
+                myObject: {
+                    value: 1,
+                },
+                myObjects: [
+                    {
+                        value: 2,
+                    },
+                    {
+                        value: 3,
+                    },
+                ],
+            },
+            returnValue: 3,
+        },
+        {
+            name: 'Clear Values',
+            entityValues: {
+                myNumber: undefined,
+            },
+            returnValue: 1
         },
     ],
 })

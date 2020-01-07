@@ -483,7 +483,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         const hasNoScorerStep = curRound.scorerSteps.length === 0 || curRound.scorerSteps[0].labelAction === undefined
         let isScorerStepCallbackAction = false
-        let stubName = 'None'
+        let callbackResultName = 'None'
         if (typeof clData.scoreIndex === 'number') {
             const scorerStep = curRound.scorerSteps[clData.scoreIndex]
             let action = (scorerStep.scoredAction as unknown) as CLM.ActionBase | undefined
@@ -498,7 +498,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             if (action) {
                 isScorerStepCallbackAction = action.actionType === CLM.ActionTypes.API_LOCAL
                 if (scorerStep.stubName) {
-                    stubName = scorerStep.stubName
+                    callbackResultName = scorerStep.stubName
                 }
             }
         }
@@ -522,8 +522,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return (
             <div className="cl-wc-buttonbar">
                 {isScorerStepCallbackAction &&
-                    <div className="cl-wc-buttonbar__stub-name">
-                        Stub: {stubName}
+                    <div className="cl-wc-buttonbar__callback-result-name">
+                        Result: {callbackResultName}
                     </div>
                 }
                 {!isEndSession &&

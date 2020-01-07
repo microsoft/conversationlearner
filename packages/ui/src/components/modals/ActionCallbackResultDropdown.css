@@ -1,5 +1,5 @@
 
-.cl-stub-selector {
+.cl-callback-result-selector {
     display: grid;
     grid-auto-flow: column;
     grid-gap: 1em;
@@ -7,7 +7,7 @@
     align-items: end;
 }
 
-.cl-stub-selector__preview-button {
+.cl-callback-result-selector__preview-button {
     width: 30px !important;
     min-width: 30px !important;
 }

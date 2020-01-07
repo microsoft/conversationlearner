@@ -38,43 +38,15 @@ export enum SessionStartFlags {
     IN_TEST = 1 << 2
 }
 
-export interface InternalCallbackNoStubs<T> extends Omit<CLM.Callback, "stubs">, ICallback<T> { }
-export interface InternalCallback<T> extends InternalCallbackNoStubs<T> {
-    stubs: InternalCallbackNoStubs<T>[]
+export interface InternalCallback<T> extends CLM.Callback, ICallback<T> {
 }
 
 export const convertInternalCallbackToCallback = <T>(c: InternalCallback<T>): CLM.Callback => {
-    const { logic, render, stubs, ...callback } = c
-
-    const stubInfoObjects = stubs.map<CLM.StubInfo>(s => {
-        // Calculate changes to entities made within stub
-        // Call logic and render functions from stub to determine what entity values are after
-
-        // const defaultSessionInfo = {
-        //     userName: '',
-        //     userId: '',
-        //     logDialogId: '',
-        // }
-        // const filledEntityMap = new CLM.FilledEntityMap()
-        // const memory = new ClientMemoryManager(filledEntityMap, filledEntityMap, [], defaultSessionInfo)
-        // await logic(memory)
-        // const entityValues = Object.entries(memory.curMemories.map)
-        //     .reduce((ev, [entityName, filledEntity]) => {
-        //         ev[entityName] = filledEntity.values
-        //         return ev
-        //     }, {})
-
-        const entityValues = {}
-
-        return {
-            name: s.name,
-            entityValues,
-        }
-    })
+    const { logic, render, results, ...callback } = c
 
     return {
         ...callback,
-        stubs: stubInfoObjects,
+        results,
     }
 }
 
@@ -110,14 +82,11 @@ export const defaultLogicCallback = async () => { }
  */
 export type RenderCallback<T> = (logicResult: T, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => Promise<Partial<BB.Activity> | string>
 
-export interface ICallbackInputNoStubs<T> {
+export interface ICallbackInput<T> {
     name: string
     logic?: LogicCallback<T>
     render?: RenderCallback<T>
-}
-
-export interface ICallbackInput<T> extends ICallbackInputNoStubs<T> {
-    stubs?: ICallbackInput<T>[]
+    results?: CLM.CallbackResult[]
 }
 
 interface ICallback<T> {
@@ -133,7 +102,7 @@ enum ActionInputType {
 }
 
 interface IActionInputBase {
-    stubName?: string
+    resultName?: string
 }
 
 interface IActionInputRenderOnly extends IActionInputBase {
@@ -818,7 +787,7 @@ export class CLRunner {
             render: undefined,
             renderArguments: [],
             isRenderFunctionProvided: false,
-            stubs: [],
+            results: [],
         }
 
         if (callbackInput.logic) {
@@ -833,58 +802,27 @@ export class CLRunner {
             callback.isRenderFunctionProvided = true
         }
 
-        const inputStubs = callbackInput.stubs
-        if (inputStubs) {
-            // Validate stub names
+        const callbackInputResults = callbackInput.results
+        if (callbackInputResults) {
+            // Validate result names
             // Must not equal root/parent condition with actual functions
-            // Must be unique within set of stubs
-            const stubNames: string[] = []
-            for (const stubCallback of inputStubs) {
-                const stubHasNoName = (typeof stubCallback.name !== "string" || stubCallback.name.trim().length === 0)
-                if (stubHasNoName) {
-                    throw new Error(`You attempted to add stub on callback ${callbackInput.name} but did not provide a valid name. Name must be non-empty string.`)
+            // Must be unique within set of other results
+            const existingResultNames: string[] = []
+            for (const callbackResult of callbackInputResults) {
+                const resultHasNoName = (typeof callbackResult.name !== "string" || callbackResult.name.trim().length === 0)
+                if (resultHasNoName) {
+                    throw new Error(`You attempted to add result on callback ${callbackInput.name} but did not provide a valid name. Name must be non-empty string.`)
                 }
 
-                const stubNameIsNotUnique = stubCallback.name === callbackInput.name
-                    || stubNames.includes(stubCallback.name)
+                const resultNameIsNotUnique = callbackResult.name === callbackInput.name
+                    || existingResultNames.includes(callbackResult.name)
 
-                if (stubNameIsNotUnique) {
-                    throw new Error(`You attempted to add a stub with the same name, ${callbackInput.name}, as the callback or one of the other stubs. The stubs names must be unique.`)
-                }
-
-                if (!stubCallback.logic && !stubCallback.render) {
-                    throw new Error(`You attempted to add stub ${stubCallback.name} to callback ${callbackInput.name} but did not provide a logic or render function. You must provide at least one of them.`)
+                if (resultNameIsNotUnique) {
+                    throw new Error(`You attempted to add a result with the same name, ${callbackInput.name}, as the callback or one of the other results. The results names must be unique.`)
                 }
             }
 
-            const internalStubCallbacks = inputStubs.map<InternalCallbackNoStubs<T>>(stubCallbackInput => {
-                const stubCallback: InternalCallbackNoStubs<T> = {
-                    name: stubCallbackInput.name,
-                    logic: defaultLogicCallback,
-                    logicArguments: [],
-                    isLogicFunctionProvided: false,
-                    render: undefined,
-                    renderArguments: [],
-                    isRenderFunctionProvided: false,
-                }
-
-                // TODO: Look at validating arguments. Probably should not have greater number on stub than on callback.
-                if (stubCallbackInput.logic) {
-                    stubCallback.logic = stubCallbackInput.logic
-                    stubCallback.logicArguments = this.GetArguments(stubCallbackInput.logic, 1)
-                    stubCallback.isLogicFunctionProvided = true
-                }
-
-                if (stubCallbackInput.render) {
-                    stubCallback.render = stubCallbackInput.render
-                    stubCallback.renderArguments = this.GetArguments(stubCallbackInput.render, 2)
-                    stubCallback.isRenderFunctionProvided = true
-                }
-
-                return stubCallback
-            })
-
-            callback.stubs = internalStubCallbacks
+            callback.results = callbackInputResults
         }
 
         this.callbacks[callbackInput.name] = callback
@@ -1162,7 +1100,6 @@ export class CLRunner {
                 }
                 case CLM.ActionTypes.API_LOCAL: {
                     const apiAction = new CLM.ApiAction(clRecognizeResult.scoredAction as any)
-                    // TODO: Send stub selected from uiTrainScorerStep
                     actionResult = await this.TakeAPIAction(
                         apiAction,
                         filledEntityMap,
@@ -1171,7 +1108,7 @@ export class CLRunner {
                         inTeach,
                         {
                             type: ActionInputType.LOGIC_AND_RENDER,
-                            stubName: uiTrainScorerStep?.trainScorerStep.stubName,
+                            resultName: uiTrainScorerStep?.trainScorerStep.stubName,
                         }
                     )
 
@@ -1627,21 +1564,33 @@ export class CLRunner {
                     // and this causes issues when calculating changedFilledEntities.
                     const entityMapBeforeCall = new CLM.FilledEntityMap(await state.EntityState.FilledEntityMap())
 
-                    // Determine appropriate logic function to execute, default to real if stub doesn't define one.
-                    let logicFn = callback.logic
-                    if (actionInput.stubName) {
-                        const stubCallback = callback.stubs.find(c => c.name === actionInput.stubName)
-                        if (!stubCallback) {
-                            throw new Error(`A stub name ${actionInput.stubName} was provided but no stub by that name was found`)
+                    // If callback result is set use it
+                    // Otherwise use logic function
+                    let logicReturnValue: unknown
+                    if (actionInput.resultName) {
+                        const callbackResult = callback.results.find(result => result.name === actionInput.resultName)
+                        if (!callbackResult) {
+                            throw new Error(`A callback result name ${actionInput.resultName} was provided but no result by that name was found`)
                         }
 
-                        if (stubCallback.isLogicFunctionProvided) {
-                            logicFn = stubCallback.logic
-                        }
+                        // Simulate calling set on memory manager to create changes in filled entities / bot state
+                        Object.entries(callbackResult.entityValues)
+                            .forEach(([entityName, entityValue]) => {
+                                if (entityValue === null || entityValue === undefined) {
+                                    memoryManager.Delete(entityName)
+                                }
+                                else {
+                                    memoryManager.Set(entityName, entityValue)
+                                }
+                            })
+
+                        logicReturnValue = callbackResult.returnValue
+                    }
+                    else {
+                        logicReturnValue = await callback.logic(memoryManager, ...renderedLogicArgumentValues)
                     }
 
-                    const logicObject = await logicFn(memoryManager, ...renderedLogicArgumentValues)
-                    logicResult.logicValue = JSON.stringify(logicObject)
+                    logicResult.logicValue = JSON.stringify(logicReturnValue)
                     // Update memory with changes from logic callback
                     await state.EntityState.RestoreFromMemoryManagerAsync(memoryManager)
                     // Store changes to filled entities
@@ -1683,22 +1632,8 @@ export class CLRunner {
                     const readOnlyMemoryManager = await this.CreateReadOnlyMemoryManagerAsync(state, allEntities)
                     const logicObject = logicResult.logicValue ? JSON.parse(logicResult.logicValue) : undefined
 
-                    // TODO: Find way to not do this in two places
-                    // Determine appropriate render function to execute, default to real if stub doesn't define one.
-                    let renderFn = callback.render
-                    if (actionInput.stubName) {
-                        const stubCallback = callback.stubs.find(c => c.name === actionInput.stubName)
-                        if (!stubCallback) {
-                            throw new Error(`A stub name ${actionInput.stubName} was provided but no stub by that name was found`)
-                        }
-
-                        if (stubCallback.isRenderFunctionProvided) {
-                            renderFn = stubCallback.render
-                        }
-                    }
-
-                    if (renderFn) {
-                        response = await renderFn(logicObject, readOnlyMemoryManager, ...renderedRenderArgumentValues)
+                    if (callback.render) {
+                        response = await callback.render(logicObject, readOnlyMemoryManager, ...renderedRenderArgumentValues)
                     }
 
                     if (response && !Utils.IsCardValid(response)) {
@@ -2040,7 +1975,7 @@ export class CLRunner {
                                 const apiAction = new CLM.ApiAction(curAction)
                                 const actionInput: IActionInput = {
                                     type: ActionInputType.LOGIC_ONLY,
-                                    stubName: scorerStep.stubName,
+                                    resultName: scorerStep.stubName,
                                 }
                                 // Calculate and store new logic result
                                 const filledIdMap = filledEntityMap.EntityMapToIdMap()

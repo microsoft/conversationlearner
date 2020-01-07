@@ -368,12 +368,12 @@ i[data-icon-name="Edit"]:hover {
 }
 
 /* TODO: Remove absolute positioning */
-.cl-wc-buttonbar__stub-name {
+.cl-wc-buttonbar__callback-result-name {
   font-size: 90%;
   position: absolute !important;
   bottom: 0;
   z-index: 1000;
-  left: 80px;
+  left: 50px;
 }
 
 .cl-wc-deleteturn {
