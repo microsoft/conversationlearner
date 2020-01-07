@@ -1618,15 +1618,12 @@ export class CLRunner {
                 return `ERROR: Missing Entity value(s) for ${missingEntities.map(me => me.parameter).join(', ')}`
             }
 
-            const form = await TemplateProvider.RenderTemplate(cardAction.templateName, renderedArguments)
+            const activity = await TemplateProvider.RenderTemplate(cardAction.templateName, renderedArguments, entityDisplayValues)
 
-            if (form == null) {
-                return CLDebug.Error(`Missing Template: ${cardAction.templateName}`)
+            if (activity == null) {
+                return CLDebug.Error("Missing template")
             }
-            const attachment = BB.CardFactory.adaptiveCard(form)
-            const message = BB.MessageFactory.attachment(attachment)
-            message.text = undefined
-            return message
+            return activity
         } catch (error) {
             let msg = CLDebug.Error(error, 'Card Template or arguments are invalid. Unable to render template')
             return msg
