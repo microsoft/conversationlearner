@@ -44,9 +44,28 @@ export interface InternalCallback<T> extends CLM.Callback, ICallback<T> {
 export const convertInternalCallbackToCallback = <T>(c: InternalCallback<T>): CLM.Callback => {
     const { logic, render, results, ...callback } = c
 
+    const resultsWithoutUndefinedValues = results.map(r => {
+        const entityValues = Object.entries(r.entityValues)
+            .map<[string, CLM.EntityValue | CLM.EntityValue[] | null]>(([entityName, entityValue]) => {
+                const value = entityValue === undefined
+                    ? null
+                    : entityValue
+                return [entityName, value]
+            })
+            .reduce<Record<string, CLM.EntityValue | CLM.EntityValue[] | null>>((o, [entityName, entityValue]) => {
+                o[entityName] = entityValue
+                return o
+            }, {})
+
+        return {
+            ...r,
+            entityValues,
+        }
+    })
+
     return {
         ...callback,
-        results,
+        results: resultsWithoutUndefinedValues,
     }
 }
 
