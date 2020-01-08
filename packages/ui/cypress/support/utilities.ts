@@ -45,11 +45,15 @@ export function importModel(modelName: string, modelFile: string): void {
         .should('not.exist')
 }
 
-export function selectAction(actionScorerSelector: string, actionResponseText: string) {
+export function selectAction(actionScorerSelector: string, actionResponseText: string, reselect: boolean = false) {
+    const buttonSelector = reselect
+        ? s.trainDialog.actionScorer.buttonSelected
+        : s.trainDialog.buttonSelectAction
+
     cy.get(actionScorerSelector)
         .contains(actionResponseText)
         .parents(s.trainDialog.actionScorer.rowField)
-        .find(s.trainDialog.buttonSelectAction)
+        .find(buttonSelector)
         .click()
 
     cy.get(s.common.spinner, { timeout: constants.spinner.timeout })

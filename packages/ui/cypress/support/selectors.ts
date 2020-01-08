@@ -4,6 +4,9 @@ const selectors = {
         dropDownOptions: 'button.ms-Dropdown-item',
         gridRow: '[data-automationid="DetailsRowFields"]',
     },
+    helpPanel: {
+        buttonClose: '[data-testid="helppanel-close-button"]',
+    },
     homePage: {
         link: '#uiLink',
     },
@@ -60,9 +63,13 @@ const selectors = {
         buttonNewAction: '[data-testid="actions-button-create"]',
         setEntityResponseText: '[data-testid="actions-list-set-entity"]',
         textResponse: '[data-testid="action-scorer-text-response"]',
+        callbackName: '[data-testid="action-scorer-api-name"]',
         requiredConditions: '[data-testid="action-details-required-entities"]',
     },
     action: {
+        callbackResultName: '[data-testid="action-callback-result-name"]',
+        callbackResultRow: '[data-testid="action-callback-result-row"]',
+        callbackResultButton: '[data-testid="action-callback-result-view-button"]',
         dropDownType: '[data-testid="dropdown-action-type"]',
         dropDownEntity: '[data-testid="action-set-entity"]',
         dropDownEnum: '[data-testid="action-set-enum"]',
@@ -73,6 +80,7 @@ const selectors = {
         buttonCancel: '[data-testid="action-creator-cancel-button"]',
         buttonDelete: '[data-testid="action-creator-delete-button"]',
         buttonAddCondition: '[data-testid="action-creator-modal-button-add-condition"]',
+        helpIconCallbackResult: '[data-testid="action-help-panel-callback-result"]',
         inputResponse: '[data-testid="action-text-response"] [contenteditable="true"]',
         inputRequiredConditions: '[data-testid="action-required-entities"] input',
         inputDisqualifiedConditions: '[data-testid="action-disqualifying-entities"] input',
@@ -81,6 +89,7 @@ const selectors = {
         tagPickerExpected: '[data-testid="action-expected-entity"]',
         tagPickerDisqualified: '[data-testid="action-disqualifying-entities"]',
         tag: '[data-testid="tag-item"]',
+        title: '[data-testid="create-an-action-title"]',
         setEntityWarning: '[data-testid="action-set-entity-warning"]',
         nonRemovableTags: '[data-testid="picker-tag-nonRemovable"]',
         checkBoxWaitForResponse: '[data-testid="action-creator-wait-checkbox"] .ms-Checkbox',
@@ -109,6 +118,11 @@ const selectors = {
         existingCondition: '[data-testid="condition-creator-modal-existing-condition"]',
         existingConditionMatch: '[data-testid="condition-creator-modal-existing-condition-match"]',
     },
+    callbackResultModal: {
+        title: '[data-testid="callback-result-viewer-title"]',
+        buttonOk: '[data-testid="callback-result-viewer-button-ok"]',
+        buttonCancel: '[data-testid="callback-result-viewer-button-cancel"]',
+    },
     confirmCancelModal: {
         buttonCancel: '[data-testid="confirm-cancel-modal-cancel"]',
         buttonConfirm: '[data-testid="confirm-cancel-modal-accept"]',
@@ -121,6 +135,10 @@ const selectors = {
         buttonNew: '[data-testid="button-new-train-dialog"]',
     },
     trainDialog: {
+        memory: {
+            entityName: '[data-testid="entity-memory-name"]',
+            entityValue: '[data-automation-key="entityValues"]',
+        },
         inputWebChat: 'input[placeholder="Type your message..."]',
         buttonScoreActions: '[data-testid="score-actions-button"]',
         buttonAbandon: '[data-testid="edit-dialog-modal-abandon-delete-button"]',
@@ -131,6 +149,9 @@ const selectors = {
         actionScorerSetEntityActions: '[data-testid="action-scorer-action-set-entity"]',
         actionScorerTextActions: '[data-testid="action-scorer-text-response"]',
         actionScorer: {
+            callbackResultSelectorDropdown: '[data-testid="action-callback-result-selector-dropdown"]',
+            callbackResultSelectorButton: '[data-testid="action-callback-result-selector-button"]',
+            callbackName: '[data-testid="action-scorer-api-name"]',
             enumActions: '[data-testid="action-scorer-action-set-entity"]',
             rowField: '[data-automationid="DetailsRowFields"]',
             buttonCreate: '[data-testid="action-scorer-add-action-button"]',
@@ -209,6 +230,7 @@ const selectors = {
         options: '.custom-toolbar .custom-toolbar__results .custom-toolbar__result',
     },
     webChat: {
+        callbackResultName: '[data-testid="webchat-action-callback-result-name"]',
         messageFromBot: '.wc-message-from-bot',
         messageFromBotException: '.wc-border-error-from-bot',
         messageFromMe: '.wc-message-from-me',

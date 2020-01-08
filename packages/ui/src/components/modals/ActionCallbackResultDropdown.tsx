@@ -76,6 +76,7 @@ const Component: React.FC<Props> = (props) => {
     return <>
         <div className="cl-callback-result-selector">
             <TC.Dropdown
+                data-testid="action-callback-result-selector-dropdown"
                 ariaLabel={Util.formatMessageId(props.intl, FM.CALLBACK_RESULT_DROPDOWN_LABEL)}
                 label={Util.formatMessageId(props.intl, FM.CALLBACK_RESULT_DROPDOWN_LABEL)}
                 options={callbackResultOptions}
@@ -85,6 +86,7 @@ const Component: React.FC<Props> = (props) => {
             />
 
             <OF.IconButton
+                data-testid="action-callback-result-selector-button"
                 className="ms-Button--primary cl-callback-result-selector__preview-button"
                 onClick={onClickViewCallbackResult}
                 ariaDescription="View Result"

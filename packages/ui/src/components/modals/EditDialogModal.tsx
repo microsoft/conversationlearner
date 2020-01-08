@@ -522,7 +522,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return (
             <div className="cl-wc-buttonbar">
                 {isScorerStepCallbackAction &&
-                    <div className="cl-wc-buttonbar__callback-result-name">
+                    <div className="cl-wc-buttonbar__callback-result-name"
+                        data-testid="webchat-action-callback-result-name">
                         Result: {callbackResultName}
                     </div>
                 }

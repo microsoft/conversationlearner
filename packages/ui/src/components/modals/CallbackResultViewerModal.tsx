@@ -30,7 +30,7 @@ const Component: React.FC<Props> = (props) => {
         isOpen={props.isOpen}
         containerClassName="cl-modal cl-modal--medium"
     >
-        <div className="cl-modal_header">
+        <div className="cl-modal_header" data-testid="callback-result-viewer-title">
             <span className={OF.FontClassNames.xxLarge}>
                 <FormattedMessageId id={FM.CALLBACK_RESULT_MODAL_TITLE} />
             </span>
@@ -104,7 +104,7 @@ const Component: React.FC<Props> = (props) => {
             </div>
             <div className="cl-modal-buttons_primary">
                 <OF.PrimaryButton
-                    data-testid="teach-session-ok-button"
+                    data-testid="callback-result-viewer-button-ok"
                     onClick={onClickSubmit}
                     disabled={isSaveDisabled}
                     ariaDescription={Util.formatMessageId(props.intl, FM.BUTTON_OK)}
@@ -112,7 +112,7 @@ const Component: React.FC<Props> = (props) => {
                     iconProps={{ iconName: 'Accept' }}
                 />
                 <OF.DefaultButton
-                    data-testid="teach-session-cancel-button"
+                    data-testid="callback-result-viewer-button-cancel"
                     onClick={onClickCancel}
                     ariaDescription={Util.formatMessageId(props.intl, FM.BUTTON_CANCEL)}
                     text={Util.formatMessageId(props.intl, FM.BUTTON_CANCEL)}

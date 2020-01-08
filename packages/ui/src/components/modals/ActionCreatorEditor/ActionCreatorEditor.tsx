@@ -1744,20 +1744,22 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                         })}
                                                 </div>}
 
-                                            <OF.Label>Callback Results <HelpIcon tipType={ToolTip.TipType.CALLBACK_RESULT} /></OF.Label>
+                                            <OF.Label>Callback Results <HelpIcon data-testid="action-help-panel-callback-result" tipType={ToolTip.TipType.CALLBACK_RESULT} /></OF.Label>
 
                                             {/* In future include results defined in UI */}
                                             <div className="cl-action-creator-section">
                                                 {callback.results.length === 0
                                                     ? <div>No Results Defined</div>
                                                     : callback.results.map(logicEffect => {
-                                                        return <div className="cl-action-creator-input-with-button">
+                                                        return <div className="cl-action-creator-input-with-button"
+                                                            data-testid="action-callback-result-row">
                                                             <OF.TextField
-                                                                data-testid="action-creator-editor-callback-result-name"
+                                                                data-testid="action-callback-result-name"
                                                                 value={logicEffect.name}
                                                                 disabled={true}
                                                             />
                                                             <OF.IconButton
+                                                                data-testid="action-callback-result-view-button"
                                                                 className="ms-Button--primary"
                                                                 onClick={() => this.onClickViewCallbackResult(logicEffect)}
                                                                 ariaDescription="View Result"
