@@ -1748,8 +1748,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                                             {/* In future include results defined in UI */}
                                             <div className="cl-action-creator-section">
-                                                {callback.results.length > 0
-                                                    ? callback.results.map(logicEffect => {
+                                                {callback.results.length === 0
+                                                    ? <div>No Results Defined</div>
+                                                    : callback.results.map(logicEffect => {
                                                         return <div className="cl-action-creator-input-with-button">
                                                             <OF.TextField
                                                                 data-testid="action-creator-editor-callback-result-name"
@@ -1763,8 +1764,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                                 iconProps={{ iconName: 'EntryView' }}
                                                             />
                                                         </div>
-                                                    })
-                                                    : <div>No Results Defined</div>}
+                                                    })}
                                             </div>
                                         </div>
                                         : <div className="cl-errorpanel" data-testid="action-creator-editor-error-callback">

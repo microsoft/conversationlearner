@@ -61,7 +61,7 @@ const Component: React.FC<Props> = (props) => {
 
                                 let values
                                 if (entityValue === null) {
-                                    values = <div className="cl-callback-result-modal__entity-values__entity-removed">Cleared <OF.Icon iconName="Clear"></OF.Icon></div>
+                                    values = <div className="cl-callback-result-modal__entity-values__entity-removed">Deleted</div>
                                 }
                                 else {
                                     // Entity might be single value or multi value, convert all to array for consistent processing
