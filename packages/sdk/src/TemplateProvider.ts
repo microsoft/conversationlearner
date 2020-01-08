@@ -6,51 +6,91 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { Template, TemplateVariable, RenderedActionArgument } from '@conversationlearner/models'
 import { CLDebug } from './CLDebug'
+import { TemplateEngine, ActivityFactory } from 'botbuilder-lg'
 
 /**
- * Provider for rendering templates
+ * Provider for rendering LG templates.
  */
 export class TemplateProvider {
+
     private static hasSubmitError = false
+
+    public static LGTemplateDirectory(): string | null {
+        const cwd = process.cwd()
+        const lgDirectoryName = "lg"
+        // TODO - make this configurable.
+        let templateDirectory = path.join(cwd, `./${lgDirectoryName}`)
+        if (fs.existsSync(templateDirectory)) {
+            return templateDirectory
+        }
+        // Try up a directory or two as could be in /lib or /dist folder depending on deployment
+        templateDirectory = path.join(cwd, `../${lgDirectoryName}`)
+        if (fs.existsSync(templateDirectory)) {
+            return templateDirectory
+        }
+        templateDirectory = path.join(cwd, `../../${lgDirectoryName}`)
+        if (fs.existsSync(templateDirectory)) {
+            return templateDirectory
+        }
+        return null
+    }
 
     // TODO: Decouple template renderer from types from Action classes
     // E.g. use generic key,value object instead of RenderedActionArgument
-    public static async RenderTemplate(templateName: string, templateArguments: RenderedActionArgument[]): Promise<any | null> {
-        let template = this.GetTemplate(templateName)
-        if (template === null) {
+    public static async RenderTemplate(templateName: string, templateArguments: RenderedActionArgument[], entityDisplayValues: Map<string, string>): Promise<any | null> {
+        const templateDirectory = this.LGTemplateDirectory()
+        if (templateDirectory === null) {
             return null
         }
 
-        let templateString = JSON.stringify(template)
-        let argumentNames = this.GetArgumentNames(templateString)
-
-        // Substitute argument values
-        for (let argumentName of argumentNames) {
-            let renderedActionArgument = templateArguments.find(a => a.parameter == argumentName)
-            if (renderedActionArgument) {
-                templateString = templateString.replace(new RegExp(`{{${argumentName}}}`, 'g'), renderedActionArgument.value ?? '')
-            }
+        const renderingParameters = {}
+        // Copy parameters defined in the action to our rendering parameters.
+        for (const templateArgument of templateArguments) {
+            renderingParameters[templateArgument.parameter] = templateArgument.value
         }
-        templateString = this.RemoveEmptyArguments(templateString)
-        return JSON.parse(templateString)
+        // Copy entities in memory to our rendering parameters.
+        entityDisplayValues.forEach((value: string, key: string) => { renderingParameters[key] = value })
+
+        // Load the template.  Currently, we assume that each lg file only has one template.
+        const lgFilename = templateDirectory + "//" + templateName + ".lg"
+        const engine = new TemplateEngine().addFile(lgFilename)
+        const output = engine.evaluateTemplate(engine.templates[0].name, renderingParameters)
+        return ActivityFactory.createActivity(output)
     }
 
     public static GetTemplates(): Template[] {
-        let templates: Template[] = []
-        let files = this.GetTemplatesNames()
-        for (let file of files) {
-            let fileContent = this.GetTemplate(file)
+        const files = this.GetTemplatesNames()
+        if (files.length === 0) {
+            return []
+        }
+        const templateDirectory = this.LGTemplateDirectory()
+        if (templateDirectory === null) {
+            throw new Error("Could not find valid template directory")
+        }
+        const templates: Template[] = []
+        for (const file of files) {
+            const fileName = path.join(templateDirectory, `${file}.lg`)
+            const engine = new TemplateEngine().addFile(fileName)
+            let templateBody = ''
+            if (file.includes('AdaptiveCard')) {
+                templateBody = engine.templates[1].body
+                templateBody = templateBody.replace("- ```\r\n", "").replace("```", "")
+                for (let symbol of engine.templates[1].parameters) {
+                    let sourceText = '@{' + symbol + '}'
+                    let replaceText = '{{' + symbol + '}}'
+                    templateBody = templateBody.replace(sourceText, replaceText)
+                }
+            }
 
-            // Clear submit check (will the set by extracting template variables)
-            this.hasSubmitError = false
-            let tvs = this.UniqueTemplateVariables(fileContent)
-
-            // Make sure template has submit item
-            let validationError = this.hasSubmitError
+            const validationError = this.hasSubmitError
                 ? `Template "${file}" has an "Action.Submit" item but no data.  Submit item must be of the form: "type": "Action.Submit", "data": string` : null
 
-            let templateBody = JSON.stringify(fileContent)
-            let template: Template = {
+            const tvs: TemplateVariable[] = []
+            for (let par of engine.templates[0].parameters) {
+                tvs.push({ key: par, type: 'lg' })
+            }
+
+            const template: Template = {
                 name: file,
                 variables: tvs,
                 body: templateBody,
@@ -62,132 +102,18 @@ export class TemplateProvider {
         return templates
     }
 
-    private static UniqueTemplateVariables(template: any): TemplateVariable[] {
-        // Get all template variables
-        let templateVariables = this.GetTemplateVariables(template)
-
-        // Make entries unique, and use verion with existing type
-        let unique = []
-        for (let tv of templateVariables) {
-            let existing = unique.find(i => i.key == tv.key)
-            if (existing) {
-                if (existing.type != null && tv.type != null && existing.type != tv.type) {
-                    CLDebug.Error(
-                        `Template variable "${tv.key}" used for two diffent types - "${tv.type}" and "${existing.type}".  Ignoring.`
-                    )
-                } else {
-                    existing.type = existing.type || tv.type
-                }
-            } else {
-                unique.push(tv)
-            }
-        }
-        return unique
-    }
-
-    public static RemoveEmptyArguments(formString: string) {
-        return formString.replace(/{{\s*[\w\.]+\s*}}/g, '')
-    }
-
-    public static GetArgumentNames(formString: string) {
-        // Get set of unique entities
-        let mustaches = formString.match(/{{\s*[\w\.]+\s*}}/g)
-        if (mustaches) {
-            let entities = [...new Set(mustaches.map(x => x.match(/[\w\.]+/)![0]))]
-            return entities
-        }
-        return []
-    }
-
-    public static TemplateDirectory(): string {
-        //TODO - make this configurable
-        let templateDirectory = path.join(process.cwd(), './cards')
-
-        // Try up a directory or two as could be in /lib or /dist folder depending on deployment
-        if (!fs.existsSync(templateDirectory)) {
-            templateDirectory = path.join(process.cwd(), '../cards')
-        }
-        if (!fs.existsSync(templateDirectory)) {
-            templateDirectory = path.join(process.cwd(), '../../cards')
-        }
-        return templateDirectory
-    }
-
-    public static GetTemplate(templateName: string): any {
-
-        const filename = path.join(this.TemplateDirectory(), `${templateName}.json`)
-
-        try {
-            const templateString = fs.readFileSync(filename, 'utf-8')
-
-            try {
-                const template = JSON.parse(templateString)
-                return template
-            } catch {
-                CLDebug.Error(`Invalid JSON: Failed to Parse template named "${templateName}"`)
-                return null
-            }
-
-        } catch {
-            CLDebug.Error(`Can't find template named: "${filename}"`)
-        }
-    }
-
     public static GetTemplatesNames(): string[] {
-        try {
-            let fileNames: string[] = fs.readdirSync(this.TemplateDirectory())
-            fileNames = fileNames.filter(fn => fn.endsWith('.json'))
-            let templates = fileNames.map(f => f.slice(0, f.lastIndexOf('.')))
-            return templates
-        } catch {
-            CLDebug.Log("No Card directory found")
+        const templateDirectory = this.LGTemplateDirectory()
+        if (templateDirectory === null) {
             return []
         }
-    }
-
-    private static GetVarNames(template: any): string[] {
-        let mustaches: string[] = []
-        for (let i in template) {
-            if (typeof template[i] != 'object') {
-                let searchStr = JSON.stringify(template[i])
-                let results = searchStr.match(/{{\s*[\w\.]+\s*}}/g)
-                if (results) {
-                    mustaches = mustaches.concat(results.map(x => x.match(/[\w\.]+/)![0]))
-                }
-            }
+        try {
+            let fileNames: string[] = fs.readdirSync(templateDirectory)
+            fileNames = fileNames.filter(fn => fn.endsWith('.lg'))
+            return fileNames.map(f => f.slice(0, f.lastIndexOf('.')))
+        } catch (e) {
+            CLDebug.Log("No valid LG directory found")
+            return []
         }
-        return mustaches
-    }
-
-    private static GetTemplateVariables(template: any): TemplateVariable[] {
-        let tvs: TemplateVariable[] = []
-        if (template?.type === "Action.Submit" && (typeof template.data !== 'string')) {
-            this.hasSubmitError = true
-        }
-
-        // Get variable names
-        let vars = this.GetVarNames(template)
-        if (vars.length > 0) {
-            for (let key of vars) {
-                let tv: TemplateVariable = { key: key, type: template['type'] }
-                tvs.push(tv)
-            }
-        }
-
-        // Iterate through keys
-        for (let i in template) {
-            if (!template.hasOwnProperty(i)) {
-                continue
-            }
-            if (template[i] instanceof Array) {
-                for (let item of template[i]) {
-                    tvs = tvs.concat(this.GetTemplateVariables(item))
-                }
-            } else if (typeof template[i] == 'object') {
-                tvs = tvs.concat(this.GetTemplateVariables(template[i]))
-            }
-        }
-
-        return tvs
     }
 }
