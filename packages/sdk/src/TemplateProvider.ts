@@ -52,16 +52,13 @@ export class TemplateProvider {
         }
         const lgFilename = templateDirectory + "//" + templateName + ".lg"
         //Currently, we assume that each lg file only has one template    
-        let engine = new TemplateEngine().addFile(lgFilename)
-        let tempString = engine.evaluateTemplate(engine.templates[0].name, entities)
-
-        return ActivityFactory.createActivity(tempString)
+        const engine = new TemplateEngine().addFile(lgFilename)
+        const output = engine.evaluateTemplate(engine.templates[0].name, entities)
+        return ActivityFactory.createActivity(output)
     }
 
     public static GetTemplates(): Template[] {
-
-        let templates: Template[] = []
-        let files = this.GetTemplatesNames()
+        const files = this.GetTemplatesNames()
         if (files.length === 0) {
             return []
         }
@@ -69,9 +66,10 @@ export class TemplateProvider {
         if (templateDirectory === null) {
             throw new Error("Could not find valid template directory")
         }
-        for (let file of files) {
+        const templates: Template[] = []
+        for (const file of files) {
             const fileName = path.join(templateDirectory, `${file}.lg`)
-            let engine = new TemplateEngine().addFile(fileName)
+            const engine = new TemplateEngine().addFile(fileName)
             let templateBody = ''
             if (file.includes('AdaptiveCard')) {
                 templateBody = engine.templates[1].body
@@ -83,17 +81,15 @@ export class TemplateProvider {
                 }
             }
 
-            let validationError = this.hasSubmitError
+            const validationError = this.hasSubmitError
                 ? `Template "${file}" has an "Action.Submit" item but no data.  Submit item must be of the form: "type": "Action.Submit", "data": string` : null
 
-            let tvs: TemplateVariable[] = []
+            const tvs: TemplateVariable[] = []
             for (let par of engine.templates[0].parameters) {
-                //Here type could be changed
-                let tv: TemplateVariable = { key: par, type: 'lg' }
-                tvs.push(tv)
+                tvs.push({ key: par, type: 'lg' })
             }
 
-            let template: Template = {
+            const template: Template = {
                 name: file,
                 variables: tvs,
                 body: templateBody,
@@ -113,8 +109,7 @@ export class TemplateProvider {
         try {
             let fileNames: string[] = fs.readdirSync(templateDirectory)
             fileNames = fileNames.filter(fn => fn.endsWith('.lg'))
-            let templates = fileNames.map(f => f.slice(0, f.lastIndexOf('.')))
-            return templates
+            return fileNames.map(f => f.slice(0, f.lastIndexOf('.')))
         } catch (e) {
             CLDebug.Log("No valid LG directory found")
             return []
