@@ -38,22 +38,23 @@ export class TemplateProvider {
     // TODO: Decouple template renderer from types from Action classes
     // E.g. use generic key,value object instead of RenderedActionArgument
     public static async RenderTemplate(templateName: string, templateArguments: RenderedActionArgument[], entityDisplayValues: Map<string, string>): Promise<any | null> {
-
-        let entities = {}
-
-        for (let templateArgument of templateArguments) {
-            entities[templateArgument.parameter] = templateArgument.value
-        }
-        entityDisplayValues.forEach((value: string, key: string) => { entities[key] = value })
-
         const templateDirectory = this.LGTemplateDirectory()
         if (templateDirectory === null) {
             return null
         }
+
+        const renderingParameters = {}
+        // Copy parameters defined in the action to our rendering parameters.
+        for (const templateArgument of templateArguments) {
+            renderingParameters[templateArgument.parameter] = templateArgument.value
+        }
+        // Copy entities in memory to our rendering parameters.
+        entityDisplayValues.forEach((value: string, key: string) => { renderingParameters[key] = value })
+
+        // Load the template.  Currently, we assume that each lg file only has one template.
         const lgFilename = templateDirectory + "//" + templateName + ".lg"
-        //Currently, we assume that each lg file only has one template    
         const engine = new TemplateEngine().addFile(lgFilename)
-        const output = engine.evaluateTemplate(engine.templates[0].name, entities)
+        const output = engine.evaluateTemplate(engine.templates[0].name, renderingParameters)
         return ActivityFactory.createActivity(output)
     }
 
