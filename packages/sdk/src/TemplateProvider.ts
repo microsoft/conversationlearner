@@ -15,17 +15,24 @@ export class TemplateProvider {
 
     private static hasSubmitError = false
 
-    public static LGTemplateDirectory(): string {
-        //TODO - make this configurable
-        let templateDirectory = path.join(process.cwd(), './lgs')
+    public static LGTemplateDirectory(): string | null {
+        const cwd = process.cwd()
+        const lgDirectoryName = "lg"
+        // TODO - make this configurable.
+        let templateDirectory = path.join(cwd, `./${lgDirectoryName}`)
+        if (fs.existsSync(templateDirectory)) {
+            return templateDirectory
+        }
         // Try up a directory or two as could be in /lib or /dist folder depending on deployment
-        if (!fs.existsSync(templateDirectory)) {
-            templateDirectory = path.join(process.cwd(), '../lgs')
+        templateDirectory = path.join(cwd, `../${lgDirectoryName}`)
+        if (fs.existsSync(templateDirectory)) {
+            return templateDirectory
         }
-        if (!fs.existsSync(templateDirectory)) {
-            templateDirectory = path.join(process.cwd(), '../../lgs')
+        templateDirectory = path.join(cwd, `../../${lgDirectoryName}`)
+        if (fs.existsSync(templateDirectory)) {
+            return templateDirectory
         }
-        return templateDirectory
+        return null
     }
 
     // TODO: Decouple template renderer from types from Action classes
@@ -37,12 +44,15 @@ export class TemplateProvider {
         for (let templateArgument of templateArguments) {
             entities[templateArgument.parameter] = templateArgument.value
         }
-        entityDisplayValues.forEach((value: string, key: string) => { entities[key] = value });
+        entityDisplayValues.forEach((value: string, key: string) => { entities[key] = value })
 
-        let templateDirectory = this.LGTemplateDirectory()
-        let lgFilename = templateDirectory + "//" + templateName + ".lg";
+        const templateDirectory = this.LGTemplateDirectory()
+        if (templateDirectory === null) {
+            return null
+        }
+        const lgFilename = templateDirectory + "//" + templateName + ".lg"
         //Currently, we assume that each lg file only has one template    
-        let engine = new TemplateEngine().addFile(lgFilename);
+        let engine = new TemplateEngine().addFile(lgFilename)
         let tempString = engine.evaluateTemplate(engine.templates[0].name, entities)
 
         return ActivityFactory.createActivity(tempString)
@@ -52,10 +62,16 @@ export class TemplateProvider {
 
         let templates: Template[] = []
         let files = this.GetTemplatesNames()
-
+        if (files.length === 0) {
+            return []
+        }
+        const templateDirectory = this.LGTemplateDirectory()
+        if (templateDirectory === null) {
+            throw new Error("Could not find valid template directory")
+        }
         for (let file of files) {
-            const fileName = path.join(this.LGTemplateDirectory(), `${file}.lg`)
-            let engine = new TemplateEngine().addFile(fileName);
+            const fileName = path.join(templateDirectory, `${file}.lg`)
+            let engine = new TemplateEngine().addFile(fileName)
             let templateBody = ''
             if (file.includes('AdaptiveCard')) {
                 templateBody = engine.templates[1].body
@@ -90,13 +106,17 @@ export class TemplateProvider {
     }
 
     public static GetTemplatesNames(): string[] {
+        const templateDirectory = this.LGTemplateDirectory()
+        if (templateDirectory === null) {
+            return []
+        }
         try {
-            let fileNames: string[] = fs.readdirSync(this.LGTemplateDirectory())
+            let fileNames: string[] = fs.readdirSync(templateDirectory)
             fileNames = fileNames.filter(fn => fn.endsWith('.lg'))
             let templates = fileNames.map(f => f.slice(0, f.lastIndexOf('.')))
             return templates
-        } catch {
-            CLDebug.Log("No LG directory found")
+        } catch (e) {
+            CLDebug.Log("No valid LG directory found")
             return []
         }
     }
