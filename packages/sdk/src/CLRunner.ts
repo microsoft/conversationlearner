@@ -1621,7 +1621,7 @@ export class CLRunner {
             const activity = await TemplateProvider.RenderTemplate(cardAction.templateName, renderedArguments, entityDisplayValues)
 
             if (activity == null) {
-                return CLDebug.Error("Missing template")
+                return CLDebug.Error(`Missing Template: ${cardAction.templateName}`)
             }
             return activity
         } catch (error) {
