@@ -1598,6 +1598,11 @@ export class CLRunner {
                                 if (entityValue === null || entityValue === undefined) {
                                     memoryManager.Delete(entityName)
                                 }
+                                // Force callback results to overwrite values
+                                else if (Array.isArray(entityValue)) {
+                                    memoryManager.Delete(entityName)
+                                    memoryManager.Set(entityName, entityValue)
+                                }
                                 else {
                                     memoryManager.Set(entityName, entityValue)
                                 }
