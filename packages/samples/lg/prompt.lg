@@ -1,0 +1,5 @@
+# prompt
+[HeroCard
+    text = @{question}
+    buttons = @{button1} | @{button2}
+]
