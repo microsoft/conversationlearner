@@ -52,12 +52,6 @@ const Component: React.FC<Props> = (props) => {
     }
 
     const [selectedCallbackResultOptionKey, setSelectedCallbackResultOptionKey] = React.useState(props.selectedCallbackResult?.name ?? noneOptionKey)
-    // React.useEffect(() => {
-    //     const name = props.selectedCallbackResult?.name
-    //     if (name) {
-    //         setSelectedCallbackResultOptionKey(name)
-    //     }
-    // }, [props.selectedCallbackResult?.name])
     const onChangeSelectedCallbackResult = (event: React.FormEvent<HTMLDivElement>, option?: OF.IDropdownOption | undefined, index?: number | undefined) => {
         if (!option) {
             return
@@ -67,8 +61,6 @@ const Component: React.FC<Props> = (props) => {
         setSelectedCallbackResultOptionKey(option.key as string)
         props.onChangeSelectedCallbackResult(option.data)
     }
-
-
 
     const isCallbackResultViewDisabled = selectedCallbackResultOptionKey === noneOptionKey
     const selectedCallbackResult = callback?.results.find(callbackResult => callbackResult.name === selectedCallbackResultOptionKey)
