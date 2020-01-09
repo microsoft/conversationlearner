@@ -5,7 +5,7 @@
             "actionId": "b1129785-2dc0-4868-a724-392e624843e8",
             "createdDateTime": "2020-01-06T16:31:10.1733535-08:00",
             "actionType": "API_LOCAL",
-            "payload": "{\"payload\":\"Callback Results Types\",\"logicArguments\":[],\"renderArguments\":[]}",
+            "payload": "{\"payload\":\"Callback Results All Types\",\"logicArguments\":[],\"renderArguments\":[]}",
             "isTerminal": true,
             "isEntryNode": false,
             "requiredEntitiesFromPayload": [],
