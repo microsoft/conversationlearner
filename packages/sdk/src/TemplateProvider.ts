@@ -52,7 +52,7 @@ export class TemplateProvider {
         entityDisplayValues.forEach((value: string, key: string) => { renderingParameters[key] = value })
 
         // Load the template.  Currently, we assume that each lg file only has one template.
-        const lgFilename = templateDirectory + "//" + templateName + ".lg"
+        const lgFilename = path.join(templateDirectory, templateName + ".lg")
         const engine = new TemplateEngine().addFile(lgFilename)
         const output = engine.evaluateTemplate(engine.templates[0].name, renderingParameters)
         return ActivityFactory.createActivity(output)
@@ -75,9 +75,9 @@ export class TemplateProvider {
             if (file.includes('AdaptiveCard')) {
                 templateBody = engine.templates[1].body
                 templateBody = templateBody.replace("- ```\r\n", "").replace("```", "")
-                for (let symbol of engine.templates[1].parameters) {
-                    let sourceText = '@{' + symbol + '}'
-                    let replaceText = '{{' + symbol + '}}'
+                for (const symbol of engine.templates[1].parameters) {
+                    const sourceText = '@{' + symbol + '}'
+                    const replaceText = '{{' + symbol + '}}'
                     templateBody = templateBody.replace(sourceText, replaceText)
                 }
             }
