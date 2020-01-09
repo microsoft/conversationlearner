@@ -42,9 +42,9 @@ export interface InternalCallback<T> extends CLM.Callback, ICallback<T> {
 }
 
 export const convertInternalCallbackToCallback = <T>(c: InternalCallback<T>): CLM.Callback => {
-    const { logic, render, results, ...callback } = c
+    const { logic, render, mockResults, ...callback } = c
 
-    const resultsWithoutUndefinedValues = results.map(r => {
+    const resultsWithoutUndefinedValues = mockResults.map(r => {
         const entityValues = Object.entries(r.entityValues)
             .map<[string, CLM.EntityValue | CLM.EntityValue[] | null]>(([entityName, entityValue]) => {
                 const value = entityValue === undefined
@@ -65,7 +65,7 @@ export const convertInternalCallbackToCallback = <T>(c: InternalCallback<T>): CL
 
     return {
         ...callback,
-        results: resultsWithoutUndefinedValues,
+        mockResults: resultsWithoutUndefinedValues,
     }
 }
 
@@ -105,7 +105,7 @@ export interface ICallbackInput<T> {
     name: string
     logic?: LogicCallback<T>
     render?: RenderCallback<T>
-    results?: CLM.CallbackResult[]
+    mockResults?: CLM.CallbackResult[]
 }
 
 interface ICallback<T> {
@@ -806,7 +806,7 @@ export class CLRunner {
             render: undefined,
             renderArguments: [],
             isRenderFunctionProvided: false,
-            results: [],
+            mockResults: [],
         }
 
         if (callbackInput.logic) {
@@ -821,7 +821,7 @@ export class CLRunner {
             callback.isRenderFunctionProvided = true
         }
 
-        const callbackInputResults = callbackInput.results
+        const callbackInputResults = callbackInput.mockResults
         if (callbackInputResults) {
             // Validate result names
             // Must not equal root/parent condition with actual functions
@@ -841,7 +841,7 @@ export class CLRunner {
                 }
             }
 
-            callback.results = callbackInputResults
+            callback.mockResults = callbackInputResults
         }
 
         this.callbacks[callbackInput.name] = callback
@@ -1587,7 +1587,7 @@ export class CLRunner {
                     // Otherwise use logic function
                     let logicReturnValue: unknown
                     if (actionInput.resultName) {
-                        const callbackResult = callback.results.find(result => result.name === actionInput.resultName)
+                        const callbackResult = callback.mockResults.find(result => result.name === actionInput.resultName)
                         if (!callbackResult) {
                             throw new Error(`A callback result name ${actionInput.resultName} was provided but no result by that name was found`)
                         }

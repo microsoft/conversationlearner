@@ -290,7 +290,7 @@ cl.AddCallback({
     render: async n => {
         return `My random number is ${n}`
     },
-    results: [
+    mockResults: [
         {
             name: 'Number is 3',
             entityValues: {
@@ -337,7 +337,7 @@ cl.AddCallback({
     render: async n => {
         return `My random number is ${n}`
     },
-    results: [
+    mockResults: [
         {
             name: 'Set values 1',
             entityValues: {

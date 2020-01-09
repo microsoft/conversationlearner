@@ -8,7 +8,7 @@ describe('Action Callback Results', () => {
         modelFile: 'actionCallbackResults.cl',
         callback: {
             name: 'Callback Results Types',
-            results: {
+            mockResults: {
                 none: 'None',
                 setValues: 'Set values 1',
                 clearValues: 'Clear Values',
@@ -102,7 +102,7 @@ describe('Action Callback Results', () => {
                 util.inputText(`Chose 'Set Values' Result`)
                 util.clickScoreActionButton()
 
-                chooseCallbackResult(testData.callback.name, testData.callback.results.setValues)
+                chooseCallbackResult(testData.callback.name, testData.callback.mockResults.setValues)
                 util.selectAction(s.trainDialog.actionScorer.callbackName, testData.callback.name)
 
                 cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
@@ -120,13 +120,13 @@ describe('Action Callback Results', () => {
             it('select action with Callback Results which REMOVES entities should effect memory', () => {
                 util.inputText(`Chose 'Clear Values' Results`)
                 util.clickScoreActionButton()
-                chooseCallbackResult(testData.callback.name, testData.callback.results.clearValues)
+                chooseCallbackResult(testData.callback.name, testData.callback.mockResults.clearValues)
                 util.selectAction(s.trainDialog.actionScorer.callbackName, testData.callback.name)
 
                 // Have to enter another round to verify clearing effects
                 util.inputText('Verify Memory Empty')
                 util.clickScoreActionButton()
-                chooseCallbackResult(testData.callback.name, testData.callback.results.clearValues)
+                chooseCallbackResult(testData.callback.name, testData.callback.mockResults.clearValues)
                 util.selectAction(s.trainDialog.actionScorer.callbackName, testData.callback.name)
 
                 cy.get(s.trainDialog.memory.entityName)
@@ -157,7 +157,7 @@ describe('Action Callback Results', () => {
                     .click()
 
                 cy.get(s.webChat.callbackResultName)
-                    .contains(testData.callback.results.none)
+                    .contains(testData.callback.mockResults.none)
             })
 
             it('selecting activity where Callback Result was chosen should show name of Result', () => {
@@ -166,7 +166,7 @@ describe('Action Callback Results', () => {
                     .click()
 
                 cy.get(s.webChat.callbackResultName)
-                    .contains(testData.callback.results.setValues)
+                    .contains(testData.callback.mockResults.setValues)
 
                 cy.get(s.trainDialog.memory.entityName)
                     .should($entitiesNames => {
@@ -187,7 +187,7 @@ describe('Action Callback Results', () => {
                     .contains(testData.callback.name)
                     .scrollIntoView()
 
-                chooseCallbackResult(testData.callback.name, testData.callback.results.clearValues)
+                chooseCallbackResult(testData.callback.name, testData.callback.mockResults.clearValues)
                 util.selectAction(s.trainDialog.actionScorer.callbackName, testData.callback.name, true)
 
                 cy.get(s.webChat.messageFromBot)

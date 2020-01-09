@@ -13,7 +13,7 @@ export interface Callback {
   isLogicFunctionProvided: boolean
   renderArguments: string[]
   isRenderFunctionProvided: boolean
-  results: CallbackResult[]
+  mockResults: CallbackResult[]
 }
 
 export type EntityValue = string | number | boolean | object
