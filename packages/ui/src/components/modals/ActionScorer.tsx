@@ -140,7 +140,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     const apiAction = new CLM.ApiAction(action)
                     if (!apiAction.isPlaceholder) {
                         const callback = component.props.botInfo.callbacks.find(c => c.name === apiAction.name)
-                        const callbackResultFromActivity = callback?.results.find(result => result.name === component.props.selectedScorerStep?.stubName)
+                        const callbackResultFromActivity = callback?.mockResults.find(result => result.name === component.props.selectedScorerStep?.stubName)
 
                         return <div className="cl-action-scorer-callback">
                             {actionResponseComponent}
@@ -541,7 +541,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             const apiAction = new CLM.ApiAction(scoredBase as CLM.ActionBase)
             const callback = this.props.botInfo.callbacks.find(c => c.name === apiAction.name)
 
-            if (callback?.results) {
+            if (callback?.mockResults) {
                 callbackResultName = actionIdCallbackResultMap[apiAction.actionId]?.name
             }
         }

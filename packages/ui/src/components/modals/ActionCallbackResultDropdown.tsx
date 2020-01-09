@@ -41,8 +41,8 @@ const Component: React.FC<Props> = (props) => {
 
     // TODO: Add options from stubs defined on model
     const callback = props.callback
-    if (callback?.results) {
-        const callbackResultOptionsFromBot = callback.results.map<OF.IDropdownOption>(callbackResult => ({
+    if (callback?.mockResults) {
+        const callbackResultOptionsFromBot = callback.mockResults.map<OF.IDropdownOption>(callbackResult => ({
             key: callbackResult.name,
             text: callbackResult.name,
             data: callbackResult,
@@ -63,7 +63,7 @@ const Component: React.FC<Props> = (props) => {
     }
 
     const isCallbackResultViewDisabled = selectedCallbackResultOptionKey === noneOptionKey
-    const selectedCallbackResult = callback?.results.find(callbackResult => callbackResult.name === selectedCallbackResultOptionKey)
+    const selectedCallbackResult = callback?.mockResults.find(mockResult => mockResult.name === selectedCallbackResultOptionKey)
 
     return <>
         <div className="cl-callback-result-selector">
