@@ -1,0 +1,8 @@
+# prompt
+[ThumbnailCard
+    title = @{title}
+    subtitle = @{line1}
+    text = @{line2} | @{line3}
+    images = @{image}
+    buttons = @{button1} | @{button2}
+]
