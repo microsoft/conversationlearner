@@ -1688,7 +1688,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         onChange={this.onChangeApiOption}
                                         selectedKey={this.state.selectedApiOptionKey}
                                         disabled={this.state.apiOptions.length === 0}
-                                        placeholder={this.state.apiOptions.length === 0 ? 'NONE DEFINED' : 'API name...'}
+                                        placeholder={this.state.apiOptions.length === 0 ? 'NONE DEFINED' : 'Callback name...'}
                                         tipType={ToolTip.TipType.ACTION_API1}
                                     />
                                     <OF.IconButton
