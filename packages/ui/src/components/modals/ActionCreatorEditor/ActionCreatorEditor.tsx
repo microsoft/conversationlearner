@@ -1751,7 +1751,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                     ? <div>No Results Defined</div>
                                                     : callback.mockResults.map(mockResult => {
                                                         return <div className="cl-action-creator-input-with-button"
-                                                            data-testid="action-callback-result-row">
+                                                            data-testid="action-callback-result-row"
+                                                            key={mockResult.name}>
                                                             <OF.TextField
                                                                 data-testid="action-callback-result-name"
                                                                 value={mockResult.name}
