@@ -1744,7 +1744,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                         })}
                                                 </div>}
 
-                                            <OF.Label>Mock Results <HelpIcon data-testid="action-help-panel-callback-result" tipType={ToolTip.TipType.CALLBACK_RESULT} /></OF.Label>
+                                            <OF.Label>Mock Results <HelpIcon data-testid="action-help-panel-callback-result" tipType={ToolTip.TipType.MOCK_RESULT} /></OF.Label>
                                             {/* In future include results defined in UI */}
                                             <div className="cl-action-creator-section">
                                                 {callback.mockResults.length === 0

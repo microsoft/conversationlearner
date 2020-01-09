@@ -1589,7 +1589,7 @@ export class CLRunner {
                     if (actionInput.resultName) {
                         const callbackResult = callback.mockResults.find(result => result.name === actionInput.resultName)
                         if (!callbackResult) {
-                            throw new Error(`A callback result name ${actionInput.resultName} was provided but no result by that name was found`)
+                            throw new Error(`A mock result name ${actionInput.resultName} was provided but no result by that name was found`)
                         }
 
                         // Simulate calling set on memory manager to create changes in filled entities / bot state
@@ -1598,7 +1598,7 @@ export class CLRunner {
                                 if (entityValue === null || entityValue === undefined) {
                                     memoryManager.Delete(entityName)
                                 }
-                                // Force callback results to overwrite values
+                                // Force mocks results to overwrite values
                                 else if (Array.isArray(entityValue)) {
                                     memoryManager.Delete(entityName)
                                     memoryManager.Set(entityName, entityValue)

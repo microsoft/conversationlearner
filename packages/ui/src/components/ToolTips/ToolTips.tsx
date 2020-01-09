@@ -88,7 +88,7 @@ export enum TipType {
 
     PLACEHOLDER_API = 'PLACEHOLDER_API',
 
-    CALLBACK_RESULT = 'CALLBACK_RESULT',
+    MOCK_RESULT = 'CALLBACK_RESULT',
 
     TRANSCRIPT_IMPORTER = 'transcriptImporter',
 }
@@ -967,11 +967,11 @@ export function getTip(tipType: string) {
                 </div>
             )
 
-        case TipType.CALLBACK_RESULT:
+        case TipType.MOCK_RESULT:
             return (
                 <div>
-                    <h2>Callback Results</h2>
-                    <p>If the callback of your action is unstable, meaning it would not reliably set entities in the same way given the same inputs, you can provide fixed callback results to represent all the different types of outcomes. You can think of these like mock responses to train with.</p>
+                    <h2>Mock Results</h2>
+                    <p>If the callback of your action is unstable, meaning it would not reliably set entities in the same way given the same inputs, you can provide mock results to represent all the different types of outcomes. These mocks represent the effects of the callback's logic function, the new entity values and possible return value to the render function.</p>
                     <p>During training you should choose one of these outcomes before selecting the action to simulate that outcome. This will force the bot behavior to be stable and enable consistent replay of the dialog.</p>
                     <p>An example of an unstable callback might be querying for weather data, querying for product inventory, or other such tasks that can change.</p>
                     <p>It's important to note that it's only changes in entities that can effect for the flow of the dialog. If the presentation is different but it doesn't affect the bot behavior then although it might look different on replay you do not need callback results.</p>

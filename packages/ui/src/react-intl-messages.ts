@@ -1130,7 +1130,7 @@ export default {
         [FM.SETTINGS_MODEL_VERSIONS_DESCRIPTION]: 'Creating a new version will save a snapshot of the currently active model. You can promote this version to "live" for use in deployed bots while you continue to edit the latest version.  You can also recall these snapshots at any point in time.',
 
         // Stub Creator Editor Modal
-        [FM.CALLBACK_RESULT_DROPDOWN_LABEL]: 'Callback Result',
+        [FM.CALLBACK_RESULT_DROPDOWN_LABEL]: 'Mock Result',
         [FM.CALLBACK_RESULT_MODAL_TITLE]: 'View Result',
         [FM.CALLBACK_RESULT_MODAL_ENTITY_VALUES]: 'Entity Values',
 

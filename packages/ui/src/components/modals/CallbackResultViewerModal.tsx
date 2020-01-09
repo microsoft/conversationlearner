@@ -49,7 +49,7 @@ const Component: React.FC<Props> = (props) => {
                     <div className={OF.FontClassNames.mediumPlus}>
                         <OF.Label className="ms-Label--tight cl-label">
                             <FormattedMessageId id={FM.CALLBACK_RESULT_MODAL_ENTITY_VALUES} />
-                            <HelpIcon tipType={ToolTips.TipType.CALLBACK_RESULT} />
+                            <HelpIcon tipType={ToolTips.TipType.MOCK_RESULT} />
                         </OF.Label>
                     </div>
 

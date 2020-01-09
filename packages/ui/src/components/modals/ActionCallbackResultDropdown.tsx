@@ -74,7 +74,7 @@ const Component: React.FC<Props> = (props) => {
                 options={callbackResultOptions}
                 selectedKey={selectedCallbackResultOptionKey}
                 onChange={onChangeSelectedCallbackResult}
-                tipType={ToolTips.TipType.CALLBACK_RESULT}
+                tipType={ToolTips.TipType.MOCK_RESULT}
             />
 
             <OF.IconButton
