@@ -54,8 +54,8 @@ describe('Date Time Resolver - Train', () => {
 
     it('Should verify that we have the expected entities in memory after clicking Score Actions Button', () => {
       train.ClickScoreActionsButton()
-      memoryTableComponent.VerifyEntityValues('departure', ['tomorrow'])
-      memoryTableComponent.VerifyEntityValues('return', ['Sunday next week'])
+      memoryTableComponent.VerifyNewEntityNameAndValues('departure', ['tomorrow'])
+      memoryTableComponent.VerifyNewEntityNameAndValues('return', ['Sunday next week'])
     })
 
     // We caught "bug 1816 - Need to pass Timezone into LUIS when doing Entity Extraction" with this validation.
