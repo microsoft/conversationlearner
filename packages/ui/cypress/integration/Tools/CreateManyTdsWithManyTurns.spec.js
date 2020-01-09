@@ -5,11 +5,8 @@
 
 import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
-import * as memoryTableComponent from '../../support/components/MemoryTableComponent'
-import * as scorerModal from '../../support/components/ScorerModal'
 import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 import * as train from '../../support/Train'
-import * as common from '../../support/Common'
 import * as helpers from '../../support/Helpers'
 
 class UserTurns {

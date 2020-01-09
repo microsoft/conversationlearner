@@ -68,7 +68,7 @@ describe('Disqualifying Entities - Train', () => {
       })
 
       it('Should verify the labeled Entity still appears in the Memory pane', () => {
-        memoryTableComponent.VerifyNewEntityNameAndValues('name', ['Sam'])
+        memoryTableComponent.VerifyExistingEntityValues('name', ['Sam'])
       })
 
       generatedScoreActionsData.VerifyScoreActionsList()
@@ -85,7 +85,7 @@ describe('Disqualifying Entities - Train', () => {
       })
 
       it('Should verify the 1st labeled Entity still appears in the Memory pane', () => {
-        memoryTableComponent.VerifyNewEntityNameAndValues('name', ['Sam'])
+        memoryTableComponent.VerifyExistingEntityValues('name', ['Sam'])
       })
 
       it('Should verify that a 2nd labeled Entity also appears in the Memory pane', () => {
