@@ -272,7 +272,7 @@ cl.AddCallback({
 
 
 cl.AddCallback({
-    name: 'Callback With Results',
+    name: 'Callback With Mock Results',
     logic: async memory => {
         const randomNumber = Math.round(Math.random() * 100)
         memory.Set("myNumber", randomNumber)
@@ -318,7 +318,7 @@ cl.AddCallback({
         memory.Set("myNumber", randomNumber())
         memory.Set("myNumbers", [randomNumber(), randomNumber()])
 
-        memory.Set('myString', 'string')
+        memory.Set('myString', `string${randomNumber()}`)
         memory.Set('myStrings', [`string${randomNumber()}`, `string${randomNumber()}`, `string${randomNumber()}`])
 
         const getBoolean = () => randomNumber() > 50
@@ -328,7 +328,6 @@ cl.AddCallback({
         memory.Set("myBooleans", [getBoolean(), getBoolean()])
 
         const getObject = () => ({ value: randomNumber() })
-
         memory.Set("myObject", getObject())
         memory.Set("myObjects", [getObject(), getObject()])
 

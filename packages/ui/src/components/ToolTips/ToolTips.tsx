@@ -974,10 +974,10 @@ export function getTip(tipType: string) {
                     <p>If the callback of your action is unstable, meaning it would not reliably set entities in the same way given the same inputs, you can provide mock results to represent all the different types of outcomes. These mocks represent the effects of the callback's logic function, the new entity values and possible return value to the render function.</p>
                     <p>During training you should choose one of these outcomes before selecting the action to simulate that outcome. This will force the bot behavior to be stable and enable consistent replay of the dialog.</p>
                     <p>An example of an unstable callback might be querying for weather data, querying for product inventory, or other such tasks that can change.</p>
-                    <p>It's important to note that it's only changes in entities that can effect for the flow of the dialog. If the presentation is different but it doesn't affect the bot behavior then although it might look different on replay you do not need callback results.</p>
+                    <p>It's important to note that it's only changes in entities that can effect for the flow of the dialog. If the presentation is different but it doesn't affect the bot behavior then although it might look different on replay you do not need mock results.</p>
 
                     <h3>Defining Results</h3>
-                    <p>Note: that your callback has a logic function that can set entities and return a value to be passed to the render function. These effects are represented in the callback result by the two fields <code>entityValues</code> and <code>returnValue</code> as shown below.</p>
+                    <p>Note: that your callback has a logic function that can set entities and return a value to be passed to the render function. These effects are represented in the mock result by the two fields <code>entityValues</code> and <code>returnValue</code> as shown below.</p>
 
                     <h3>Example Callback Definition with Results</h3>
                     <img src="https://blisstorage.blob.core.windows.net/uiimages/temperatureCallback.png" alt="Unstable Temperature Callback" />

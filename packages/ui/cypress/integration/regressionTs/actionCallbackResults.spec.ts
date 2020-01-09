@@ -7,7 +7,7 @@ describe('Action Callback Results', () => {
         modelName: 'CallbackResults',
         modelFile: 'actionCallbackResults.cl',
         callback: {
-            name: 'Callback Results Types',
+            name: 'Callback Results All Types',
             mockResults: {
                 none: 'None',
                 setValues: 'Set values 1',
