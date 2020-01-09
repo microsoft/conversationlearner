@@ -40,7 +40,7 @@ describe('Learned Entity Labeling', () => {
 
     it('Should find labeled Entity in memory', () => {
       train.ClickScoreActionsButton()
-      memoryTableComponent.VerifyEntityValues('name', ['David'])
+      memoryTableComponent.VerifyNewEntityNameAndValues('name', ['David'])
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()
@@ -57,8 +57,8 @@ describe('Learned Entity Labeling', () => {
 
     it('Should find labeled Entity in memory', () => {
       train.ClickScoreActionsButton()
-      memoryTableComponent.VerifyEntityValues('name', ['Susan'])
-      memoryTableComponent.VerifyDisplacedEntityValues('name', ['David'])
+      memoryTableComponent.VerifyNewEntityValues('name', ['Susan'])
+      memoryTableComponent.VerifyDeletedEntityValues('name', ['David'])
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()
@@ -82,7 +82,7 @@ describe('Learned Entity Labeling', () => {
 
     it('Should find labeled Entity in memory', () => {
       train.ClickScoreActionsButton()
-      memoryTableComponent.VerifyEntityValues('name', ['Gabriella'])
+      memoryTableComponent.VerifyNewEntityNameAndValues('name', ['Gabriella'])
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()
