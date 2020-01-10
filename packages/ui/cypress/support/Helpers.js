@@ -54,6 +54,22 @@ export function RemoveDuplicates(inputArray) {
   return uniqueOutputArray
 }
 
+// This will return an array of the Inner Text (with New Lines removed) of an array of elements.
+// Pass in either an array of elements or the selector to get the array of elements with.
+export function ArrayOfTextContentWithoutNewlines(elementsOrSelector) {
+  if (elementsOrSelector === undefined || elementsOrSelector.length == 0) { return undefined }
+
+  let elements
+  if (typeof elementsOrSelector == 'string') { elements = Cypress.$(elementsOrSelector) }
+  else { elements = elementsOrSelector }
+
+  let arrayOfTextContent = []
+  for (let i = 0; i < elements.length; i++) {
+    arrayOfTextContent.push(TextContentWithoutNewlines(elements[i]))
+  }
+  return arrayOfTextContent
+}
+
 export function StringArrayFromElementText(selector, retainMarkup = false) {
   let funcName = `StringArrayFromElementText(${selector})`
   let elements = Cypress.$(selector)
@@ -111,22 +127,6 @@ export function TextContentWithoutNewlines(element) {
     .replace(/([^◾️…\x20-\x7E])/gm, '')
   ConLog('TextContentWithoutNewlines', `"${returnValue}"`)
   return returnValue
-}
-
-// This will return an array of the Inner Text (with New Lines removed) of an array of elements.
-// Pass in either an array of elements or the selector to get the array of elements with.
-export function ArrayOfTextContentWithoutNewlines(elementsOrSelector) {
-  if (elementsOrSelector === undefined || elementsOrSelector.length == 0) { return undefined }
-
-  let elements
-  if (typeof elementsOrSelector == 'string') { elements = Cypress.$(elementsOrSelector) }
-  else { elements = elementsOrSelector }
-
-  let arrayOfTextContent = []
-  for (let i = 0; i < elements.length; i++) {
-    arrayOfTextContent.push(TextContentWithoutNewlines(elements[i]))
-  }
-  return arrayOfTextContent
 }
 
 // Model names have a suffix which will end with a single character representing the 

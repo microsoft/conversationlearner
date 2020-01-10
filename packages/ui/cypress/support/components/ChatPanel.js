@@ -519,12 +519,25 @@ export function VerifyNoBotErrorAfterUserTurn(expectedUserTurnMessage) {
 // This function was introduced late in the game (01/09/2020), and as such there are probably other functions that can
 // benefit from not having to verify that the chat messages are ready to be verified.
 export function WaitForChatMessageUpdate(functionThatWillCauseUpdate) {
-  const countChatMessages = GetAllChatMessageElements().length
+  function AreEqual(strings1, strings2) {
+    if (strings1.length != strings2.length) {
+      return false
+    }
+    for (let i = 0; i < strings1.length; i++) {
+      if (strings1[i] != strings2[i]) {
+        return false
+      }
+    }
+    return true
+  }
+
+  const messagesBeforeUpdate = helpers.StringArrayFromElementText('div[data-testid="web-chat-utterances"]')
   functionThatWillCauseUpdate()
   cy.WaitForStableDOM()
   cy.RetryLoop(() => {
-    if (GetAllChatMessageElements().length == countChatMessages) {
-      throw new Error(`Retry - Waiting for the chat messages to update...when that happens the count of chat messages will not be ${countChatMessages}`)
+    const messagesAfterUpdate = helpers.StringArrayFromElementText('div[data-testid="web-chat-utterances"]')
+    if (AreEqual(messagesAfterUpdate, messagesBeforeUpdate)) {
+      throw new Error(`Retry - Waiting for the chat messages to update`)
     }
   })
 }
