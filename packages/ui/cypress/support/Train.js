@@ -29,7 +29,7 @@ export function VerifyNoErrorMessage() { cy.DoesNotContain('div.cl-editdialog-er
 export function VerifyErrorPopup(expectedMessage) { cy.Get('p.ms-Dialog-title').ExactMatch(expectedMessage) }
 
 export function ClickPopupConfirmCancelOkButton() { cy.Get('[data-testid="confirm-cancel-modal-ok"]').Click() }
-export function ClickDeleteChatTurn() { cy.Get('[data-testid="chat-edit-delete-turn-button"]').Click() }
+export function ClickDeleteChatTurn() { chatPanel.WaitForChatMessageUpdate(() => chatPanel.ClickDeleteChatTurn()) }
 
 //export function TypeYourMessage(message) { cy.Get(TypeYourMessageSelector).type(`${message}{enter}`) }
 export function VerifyTypeYourMessageIsPresent() { cy.Get(TypeYourMessageSelector) }
@@ -99,27 +99,27 @@ export function AddTags(tags) {
 }
 
 export function SelectTextAction(expectedResponse) {
-  scorerModal.ClickTextAction(expectedResponse)
+  chatPanel.WaitForChatMessageUpdate(() => scorerModal.ClickTextAction(expectedResponse))
   chatPanel.VerifyTextChatMessage(expectedResponse)
 }
 
 export function SelectApiCardAction(apiName, expectedCardTitle, expectedCardText) {
-  scorerModal.ClickApiAction(apiName)
+  chatPanel.WaitForChatMessageUpdate(() => scorerModal.ClickApiAction(apiName))
   chatPanel.VerifyCardChatMessage(expectedCardTitle, expectedCardText)
 }
 
 export function SelectApiPhotoCardAction(apiName, expectedCardTitle, expectedCardText, expectedCardImage) {
-  scorerModal.ClickApiAction(apiName)
+  chatPanel.WaitForChatMessageUpdate(() => scorerModal.ClickApiAction(apiName))
   chatPanel.VerifyPhotoCardChatMessage(expectedCardTitle, expectedCardText, expectedCardImage)
 }
 
 export function SelectApiTextAction(apiName, expectedResponse) {
-  scorerModal.ClickApiAction(apiName)
+  chatPanel.WaitForChatMessageUpdate(() => scorerModal.ClickApiAction(apiName))
   chatPanel.VerifyTextChatMessage(expectedResponse)
 }
 
 export function SelectEndSessionAction(expectedData) {
-  scorerModal.ClickEndSessionAction(expectedData);
+  chatPanel.WaitForChatMessageUpdate(() => scorerModal.ClickEndSessionAction(expectedData))
   chatPanel.VerifyEndSessionChatMessage(expectedData)
 }
 
@@ -216,7 +216,7 @@ export function VerifyCloseIsTheOnlyEnabledButton() {
 }
 
 export function TypeYourMessage(message, expectedTextEntityPairs = undefined, ignoreBotErrorMessages = false) {
-  cy.Get(TypeYourMessageSelector).type(`${message}{enter}`)
+  chatPanel.WaitForChatMessageUpdate(() => cy.Get(TypeYourMessageSelector).type(`${message}{enter}`))
   entityDetectionPanel.VerifyEntityDetectionPhrase(message)
   if (!ignoreBotErrorMessages) {
     chatPanel.VerifyNoBotErrorAfterUserTurn(message)

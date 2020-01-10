@@ -9,6 +9,7 @@ import * as helpers from '../Helpers'
 
 export function VerifyChatPanelIsDisabled() { cy.Get('div.cl-chatmodal_webchat').find('div.cl-overlay') }
 export function VerifyChatPanelIsEnabled() { cy.Get('div.cl-chatmodal_webchat').DoesNotContain('div.cl-overlay') }
+export function ClickDeleteChatTurn() { cy.Get('[data-testid="chat-edit-delete-turn-button"]').Click() }
 
 export function GetAllChatMessageElements() {
   const elements = Cypress.$('div[data-testid="web-chat-utterances"] > div.wc-message-content > div')
@@ -500,6 +501,23 @@ export function VerifyNoBotErrorAfterUserTurn(expectedUserTurnMessage) {
   }).then(() => {
     if (failureMessage) {
       throw new Error(failureMessage)
+    }
+  })
+}
+
+// Use this function anytime you need to perform some other function that will add to or remove chat messages from
+// the chat panel. This wraps your function call in logic that first gets the current count of chat messages, then
+// performs your function, then it goes into a retry loop waiting for the message count to change.
+//
+// This function was introduced late in the game (01/09/2020), and as such there are probably other functions that can
+// benefit from not having to verify that the chat messages are ready to be verified.
+export function WaitForChatMessageUpdate(functionThatWillCauseUpdate) {
+  const countChatMessages = GetAllChatMessageElements().length
+  functionThatWillCauseUpdate()
+  cy.WaitForStableDOM()
+  cy.RetryLoop(() => {
+    if (GetAllChatMessageElements().length == countChatMessages) {
+      throw new Error(`Retry - Waiting for the chat messages to update...when that happens the count of chat messages will not be ${countChatMessages}`)
     }
   })
 }
