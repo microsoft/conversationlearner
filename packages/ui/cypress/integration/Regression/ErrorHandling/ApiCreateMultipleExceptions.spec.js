@@ -14,7 +14,7 @@ import * as helpers from '../../../support/Helpers'
 // SKIPPING this test due to Bug 2389: Entity Detection stutters as it repeats the user's utterance many times
 
 // This test suite is part 1 of 2. The second part is in ApiVerifyMultipleExceptions.
-describe.skip('API Create Multiple Exceptions - ErrorHandling', () => {
+describe('API Create Multiple Exceptions - ErrorHandling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
@@ -119,7 +119,7 @@ describe.skip('API Create Multiple Exceptions - ErrorHandling', () => {
     })
 
     it('Should add a user turn with an Entiy error, verify popup, confirm popup, and verify user turn is removed', () => {
-      train.TypeYourMessage('This entityError will cause the user turn to be discarded.', true)
+      train.TypeYourMessage('This entityError will cause the user turn to be discarded.', undefined, true)
       entityDetectionPanel.LabelTextAsEntity('entityError', 'entityError')
       train.ClickScoreActionsButton()
       train.VerifyErrorPopup("Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.")

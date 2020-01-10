@@ -9,6 +9,7 @@ import * as helpers from '../Helpers'
 
 export function VerifyChatPanelIsDisabled() { cy.Get('div.cl-chatmodal_webchat').find('div.cl-overlay') }
 export function VerifyChatPanelIsEnabled() { cy.Get('div.cl-chatmodal_webchat').DoesNotContain('div.cl-overlay') }
+export function ClickDeleteChatTurn() { cy.Get('[data-testid="chat-edit-delete-turn-button"]').Click() }
 
 export function GetAllChatMessageElements() {
   const elements = Cypress.$('div[data-testid="web-chat-utterances"] > div.wc-message-content > div')
@@ -375,7 +376,7 @@ export function VerifyEachBotChatTurn(verificationFunction) {
 export function VerifyTextChatMessage(expectedMessage, expectedIndexOfMessage) {
   cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
     if (!expectedIndexOfMessage) expectedIndexOfMessage = allChatElements.length - 1
-    const elements = Cypress.$(allChatElements[expectedIndexOfMessage]).find('div.format-markdown > p')
+    const elements = Cypress.$(allChatElements[expectedIndexOfMessage]).find('div.format-markdown > p, span.format-plain > span')
     if (elements.length == 0) {
       throw new Error(`Did not find expected Text Chat Message '${expectedMessage}' at index: ${expectedIndexOfMessage}`)
     }
@@ -394,7 +395,14 @@ export function VerifyTextChatMessage(expectedMessage, expectedIndexOfMessage) {
 // output from the screen or log to paste into your code.
 export function VerifyCardChatMessage(expectedCardTitle, expectedCardText, expectedIndexOfMessage) {
   cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
-    if (!expectedIndexOfMessage) expectedIndexOfMessage = allChatElements.length - 1
+    if (!expectedIndexOfMessage) {
+      expectedIndexOfMessage = allChatElements.length - 1
+      if (Cypress.$(allChatElements[expectedIndexOfMessage]).attr('class').includes('wc-message-color-exception')) {
+        // Sometimes exception messages come after the user turn, this accounts for that fact by setting the index back one more turn.
+        expectedIndexOfMessage--
+      }
+    }
+
     let elements = Cypress.$(allChatElements[expectedIndexOfMessage]).find(`div.format-markdown > p:contains('${expectedCardTitle}')`).parent()
     if (elements.length == 0) {
       throw new Error(`Did not find expected '${expectedCardTitle}' card with '${expectedCardText}' at index: ${expectedIndexOfMessage}`)
@@ -500,6 +508,36 @@ export function VerifyNoBotErrorAfterUserTurn(expectedUserTurnMessage) {
   }).then(() => {
     if (failureMessage) {
       throw new Error(failureMessage)
+    }
+  })
+}
+
+// Use this function anytime you need to perform some other function that will add to or remove chat messages from
+// the chat panel. This wraps your function call in logic that first gets the current count of chat messages, then
+// performs your function, then it goes into a retry loop waiting for the message count to change.
+//
+// This function was introduced late in the game (01/09/2020), and as such there are probably other functions that can
+// benefit from not having to verify that the chat messages are ready to be verified.
+export function WaitForChatMessageUpdate(functionThatWillCauseUpdate) {
+  function AreEqual(strings1, strings2) {
+    if (strings1.length != strings2.length) {
+      return false
+    }
+    for (let i = 0; i < strings1.length; i++) {
+      if (strings1[i] != strings2[i]) {
+        return false
+      }
+    }
+    return true
+  }
+
+  const messagesBeforeUpdate = helpers.StringArrayFromElementText('div[data-testid="web-chat-utterances"]')
+  functionThatWillCauseUpdate()
+  cy.WaitForStableDOM()
+  cy.RetryLoop(() => {
+    const messagesAfterUpdate = helpers.StringArrayFromElementText('div[data-testid="web-chat-utterances"]')
+    if (AreEqual(messagesAfterUpdate, messagesBeforeUpdate)) {
+      throw new Error(`Retry - Waiting for the chat messages to update`)
     }
   })
 }
