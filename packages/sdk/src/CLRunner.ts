@@ -1924,7 +1924,7 @@ export class CLRunner {
      * Replay a TrainDialog, calling EntityDetection callback and API Logic,
      * recalculating FilledEntities along the way
      */
-    public async ReplayTrainDialogLogic(trainDialog: CLM.TrainDialog, state: CLState, cleans: boolean): Promise<CLM.TrainDialog> {
+    public async ReplayTrainDialogLogic(trainDialog: CLM.TrainDialog, state: CLState, cleanse: boolean): Promise<CLM.TrainDialog> {
 
         if (!trainDialog?.rounds) {
             return trainDialog
@@ -1986,7 +1986,7 @@ export class CLRunner {
                         const filledEntityMap = await state.EntityState.FilledEntityMap()
 
                         // Provide empty FilledEntity for missing entities
-                        if (!cleans && curAction) {
+                        if (!cleanse && curAction) {
                             this.PopulateMissingFilledEntities(curAction, filledEntityMap, entities, false)
                         }
 
@@ -2046,7 +2046,7 @@ export class CLRunner {
 
         // When editing, may need to run Scorer or Extractor on TrainDialog with invalid rounds
         // This cleans up the TrainDialog removing bad data so the extractor can run
-        if (cleans) {
+        if (cleanse) {
             // Remove rounds with two user inputs in a row (they'll have a dummy scorer round)
             newTrainDialog.rounds = newTrainDialog.rounds.filter(r => {
                 return !r.scorerSteps[0] || r.scorerSteps[0].labelAction != undefined
