@@ -376,7 +376,7 @@ export function VerifyEachBotChatTurn(verificationFunction) {
 export function VerifyTextChatMessage(expectedMessage, expectedIndexOfMessage) {
   cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
     if (!expectedIndexOfMessage) expectedIndexOfMessage = allChatElements.length - 1
-    const elements = Cypress.$(allChatElements[expectedIndexOfMessage]).find('div.format-markdown > p')
+    const elements = Cypress.$(allChatElements[expectedIndexOfMessage]).find('div.format-markdown > p, span.format-plain > span')
     if (elements.length == 0) {
       throw new Error(`Did not find expected Text Chat Message '${expectedMessage}' at index: ${expectedIndexOfMessage}`)
     }
@@ -395,7 +395,14 @@ export function VerifyTextChatMessage(expectedMessage, expectedIndexOfMessage) {
 // output from the screen or log to paste into your code.
 export function VerifyCardChatMessage(expectedCardTitle, expectedCardText, expectedIndexOfMessage) {
   cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
-    if (!expectedIndexOfMessage) expectedIndexOfMessage = allChatElements.length - 1
+    if (!expectedIndexOfMessage) {
+      expectedIndexOfMessage = allChatElements.length - 1
+      if (Cypress.$(allChatElements[expectedIndexOfMessage]).attr('class').includes('wc-message-color-exception')) {
+        // Sometimes exception messages come after the user turn, this accounts for that fact by setting the index back one more turn.
+        expectedIndexOfMessage--
+      }
+    }
+
     let elements = Cypress.$(allChatElements[expectedIndexOfMessage]).find(`div.format-markdown > p:contains('${expectedCardTitle}')`).parent()
     if (elements.length == 0) {
       throw new Error(`Did not find expected '${expectedCardTitle}' card with '${expectedCardText}' at index: ${expectedIndexOfMessage}`)

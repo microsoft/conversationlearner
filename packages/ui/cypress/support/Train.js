@@ -217,6 +217,7 @@ export function VerifyCloseIsTheOnlyEnabledButton() {
 
 export function TypeYourMessage(message, expectedTextEntityPairs = undefined, ignoreBotErrorMessages = false) {
   chatPanel.WaitForChatMessageUpdate(() => cy.Get(TypeYourMessageSelector).type(`${message}{enter}`))
+  chatPanel.VerifyTextChatMessage(message)
   entityDetectionPanel.VerifyEntityDetectionPhrase(message)
   if (!ignoreBotErrorMessages) {
     chatPanel.VerifyNoBotErrorAfterUserTurn(message)
