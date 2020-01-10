@@ -121,7 +121,7 @@ enum ActionInputType {
 }
 
 interface IActionInputBase {
-    resultName?: string
+    mockResultName?: string
 }
 
 interface IActionInputRenderOnly extends IActionInputBase {
@@ -1127,7 +1127,7 @@ export class CLRunner {
                         inTeach,
                         {
                             type: ActionInputType.LOGIC_AND_RENDER,
-                            resultName: uiTrainScorerStep?.trainScorerStep.stubName,
+                            mockResultName: uiTrainScorerStep?.trainScorerStep.stubName,
                         }
                     )
 
@@ -1586,10 +1586,10 @@ export class CLRunner {
                     // If callback result is set use it
                     // Otherwise use logic function
                     let logicReturnValue: unknown
-                    if (actionInput.resultName) {
-                        const callbackResult = callback.mockResults.find(result => result.name === actionInput.resultName)
+                    if (actionInput.mockResultName) {
+                        const callbackResult = callback.mockResults.find(result => result.name === actionInput.mockResultName)
                         if (!callbackResult) {
-                            throw new Error(`A mock result name ${actionInput.resultName} was provided but no result by that name was found`)
+                            throw new Error(`A mock result name ${actionInput.mockResultName} was provided but no result by that name was found`)
                         }
 
                         // Simulate calling set on memory manager to create changes in filled entities / bot state
@@ -1999,7 +1999,7 @@ export class CLRunner {
                                 const apiAction = new CLM.ApiAction(curAction)
                                 const actionInput: IActionInput = {
                                     type: ActionInputType.LOGIC_ONLY,
-                                    resultName: scorerStep.stubName,
+                                    mockResultName: scorerStep.stubName,
                                 }
                                 // Calculate and store new logic result
                                 const filledIdMap = filledEntityMap.EntityMapToIdMap()
