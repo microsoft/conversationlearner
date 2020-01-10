@@ -1911,7 +1911,7 @@ export class CLRunner {
         // Reset the memory
         await state.EntityState.ClearAsync()
 
-        // Call start sesssion for initial entities
+        // Call start session for initial entities
         await this.CheckSessionStartCallback(state, allEntities)
         let startSessionEntities = await state.EntityState.FilledEntitiesAsync()
         startSessionEntities = [...trainDialog.initialFilledEntities ?? [], ...startSessionEntities]
@@ -1965,7 +1965,7 @@ export class CLRunner {
             }
 
             // Use scorer step to populate pre-built data (when)
-            if (round.scorerSteps.length > 0) {
+            if (round.scorerSteps && round.scorerSteps.length > 0) {
 
                 // Set filled entities
                 this.PopulatePrebuilts(predictedEntities, scoreInput.filledEntities)
@@ -2038,6 +2038,7 @@ export class CLRunner {
                     scoredAction: undefined,
                 }
                 if (!round.scorerSteps) {
+                    console.error(`round.scorerSteps was not an array. This should not be possible. Likely bug in the code or types.`)
                     round.scorerSteps = []
                 }
                 round.scorerSteps.push(scorerStep)
