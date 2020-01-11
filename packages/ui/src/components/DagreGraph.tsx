@@ -38,7 +38,9 @@ const Component: React.FC<Props> = ({ graph, width = 380, isZoomEnabled }) => {
 
         // Set up edges, no special attributes.
         for (const [index, [sourceId, targetId]] of graph.edges.entries()) {
-            g.setEdge(sourceId, targetId, { label: `${sourceId.substring(0, 4)}-${targetId.substring(0, 4)}-${index}` })
+            const edgeLabel = `${sourceId.substring(0, 4)}-${targetId.substring(0, 4)}-${index}`
+            console.debug(edgeLabel)
+            g.setEdge(sourceId, targetId, { label: '' })
         }
 
         // Set up an SVG group so that we can translate the final graph.
@@ -54,9 +56,9 @@ const Component: React.FC<Props> = ({ graph, width = 380, isZoomEnabled }) => {
             svg.call(zoom as any)
         }
 
-        console.log(`BEFORE LAYOUT json.write(g): `, JSON.stringify(dagreD3.graphlib.json.write(g), null, '  '))
-        console.log(`Layout: `, dagre.layout(g))
-        console.log(`AFTER  LAYOUT json.write(g): `, JSON.stringify(dagreD3.graphlib.json.write(g), null, '  '))
+        console.debug(`BEFORE LAYOUT json.write(g): `, JSON.stringify(dagreD3.graphlib.json.write(g), null, '  '))
+        console.debug(`Layout: `, dagre.layout(g))
+        console.debug(`AFTER  LAYOUT json.write(g): `, JSON.stringify(dagreD3.graphlib.json.write(g), null, '  '))
 
         // Create the renderer
         const render = new dagreD3.render()
