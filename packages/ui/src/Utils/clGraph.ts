@@ -85,7 +85,10 @@ export const mergeNodeData = (n1: graph.Node<CLM.TrainRound>, n2: graph.Node<CLM
     // Add text variations from n2 to n1
     console.log(`Merge: `, n2, ` into `, n1)
 
-    n1.data.extractorStep.textVariations.push(...n2.data.extractorStep.textVariations)
+    // TODO: Fix issue with duplicate text variations added.
+    // Think it is due to node being added multiple times during computation as graph is recomputed
+
+    // n1.data.extractorStep.textVariations.push(...n2.data.extractorStep.textVariations)
 
     return n1
 }

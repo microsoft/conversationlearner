@@ -1696,7 +1696,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 />
                 {this.state.isGraphViewOpen
                     && <div>
-                        <DialogGraph graph={dagreDialogsGraph.graph} width={1700} />
+                        <DialogGraph graph={dagreDialogsGraph.graph} width={1000} />
                     </div>}
                 {isNoDialogs &&
                     <div className="cl-page-placeholder">
