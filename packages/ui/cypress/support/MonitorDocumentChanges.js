@@ -147,6 +147,16 @@ import * as helpers from './Helpers.js'
         })
     })
 
+    // This odd command is intended to be used with an element and the jQuery .click command.
+    // TODO: Consider removing this as I suspect it is no longer needed (1/11/2020)
+    // Cypress.Commands.add('RunAndExpectDomChange', (functionToRun) => {
+    //   helpers.ConLog(`cy.RunAndExpectDomChange()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
+    //   lastChangeTime = new Date().getTime()
+    //   functionToRun()
+    //   helpers.ConLog(`cy.RunAndExpectDomChange()`, `done - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
+    //   lastChangeTime = new Date().getTime()
+    // })
+
     // This will force any of our code that waits for stable DOM to wait until 'changeCount' number of changes
     // are detected, and then another 700 milliseconds of no changes (resuming normal operation) before the 
     // DOM is considered stable.
@@ -158,14 +168,6 @@ import * as helpers from './Helpers.js'
     Cypress.Commands.add('WaitTillNChangesOccur', { prevSubject: 'optional' }, (elements, changeCount) => {
       helpers.ConLog(`cy.WaitTillNChangesOccur(${changeCount})`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
       waitTillNChangesOccur = changeCount
-    })
-
-    Cypress.Commands.add('RunAndExpectDomChange', (func) => {
-      helpers.ConLog(`cy.RunAndExpectDomChange()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
-      lastChangeTime = new Date().getTime()
-      func()
-      helpers.ConLog(`cy.RunAndExpectDomChange()`, `done - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
-      lastChangeTime = new Date().getTime()
     })
 
     Cypress.Commands.add('DumpHtmlOnDomChange', (boolValue) => { dumpHtml = boolValue })
