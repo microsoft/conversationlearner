@@ -107,8 +107,8 @@ export function GetAllRows() {
     let type = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-action-type"]')[0])
     let response = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find(actionTypeSelector.GetSelector(type))[0])
 
-    let requiredEntities = helpers.ArrayOfTextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-required-entities"]'))
-    let disqualifyingEntities = helpers.ArrayOfTextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-disqualifying-entities"]'))
+    let requiredEntities = helpers.StringArrayFromElementText(Cypress.$(allRowElements[i]).find('[data-testid="action-details-required-entities"]'))
+    let disqualifyingEntities = helpers.StringArrayFromElementText(Cypress.$(allRowElements[i]).find('[data-testid="action-details-disqualifying-entities"]'))
     let expectedEntity = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-expected-entity"]')[0])
     let wait = Cypress.$(allRowElements[i]).find('[data-icon-name="CheckMark"][data-testid="action-details-wait"]').length == 1
 

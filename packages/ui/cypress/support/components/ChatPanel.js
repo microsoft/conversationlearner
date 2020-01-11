@@ -513,8 +513,8 @@ export function VerifyNoBotErrorAfterUserTurn(expectedUserTurnMessage) {
 }
 
 // Use this function anytime you need to perform some other function that will add to or remove chat messages from
-// the chat panel. This wraps your function call in logic that first gets the current count of chat messages, then
-// performs your function, then it goes into a retry loop waiting for the message count to change.
+// the chat panel. This wraps your function call in logic that first gets the current chat messages, then
+// performs your function, then it goes into a retry loop waiting for the messages to change.
 //
 // This function was introduced late in the game (01/09/2020), and as such there are probably other functions that can
 // benefit from not having to verify that the chat messages are ready to be verified.

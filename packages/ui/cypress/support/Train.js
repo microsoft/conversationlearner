@@ -67,7 +67,7 @@ export function GetDescription() { return Cypress.$('[data-testid="train-dialog-
 export function VerifyDescription(expectedDescription) { cy.Get(`[data-testid="train-dialog-description"][value="${expectedDescription}"]`) }
 export function TypeDescription(description) { cy.Get('[data-testid="train-dialog-description"]').clear().type(`${description}{enter}`) }
 
-export function GetAllTags() { return helpers.ArrayOfTextContentWithoutNewlines('[data-testid="train-dialog-tags"] > div.cl-tags__tag > span') }
+export function GetAllTags() { return helpers.StringArrayFromElementText('[data-testid="train-dialog-tags"] > div.cl-tags__tag > span') }
 export function ClickAddTagButton() { cy.Get('[data-testid="tags-input-add-tag-button"]').Click() }
 export function VerifyNoTags() { cy.Get('[data-testid="train-dialog-tags"] > div.cl-tags__tag > button > i [data-icon-name="Clear"]').should('have.length', 0) }
 
