@@ -30,11 +30,11 @@ const Component: React.FC<Props> = ({ graph, width = 380, isZoomEnabled }) => {
             g.setNode(node.id, node.label)
         }
 
-        g.nodes().forEach((v) => {
-            const node = g.node(v)
-            // Round the corners of the nodes
-            // node.rx = node.ry = 5
-        })
+        // g.nodes().forEach((v) => {
+        //     const node = g.node(v)
+        //     // Round the corners of the nodes
+        //     // node.rx = node.ry = 5
+        // })
 
         // Set up edges, no special attributes.
         for (const [index, [sourceId, targetId]] of graph.edges.entries()) {

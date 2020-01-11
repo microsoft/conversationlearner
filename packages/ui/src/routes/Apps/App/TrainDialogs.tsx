@@ -35,6 +35,9 @@ import { TeachSessionState } from '../../../types/StateTypes'
 import { autobind } from 'core-decorators'
 import { DispatcherAlgorithmType } from '../../../components/modals/DispatcherCreator'
 import './TrainDialogs.css'
+import * as graph from '../../../Utils/graph'
+import * as clGraph from '../../../Utils/clGraph'
+import DialogGraph, { Props as GraphProps } from '../../../components/DagreGraph'
 
 export interface EditHandlerArgs {
     userInput?: string,
@@ -170,6 +173,7 @@ interface ComponentState {
     isTranscriptImportOpen: boolean
     isImportWaitModalOpen: boolean
     transcriptImport: TranscriptImportData | undefined
+    isGraphViewOpen: boolean
     isTreeViewModalOpen: boolean
     replayDialogs: CLM.TrainDialog[]
     replayDialogIndex: number
@@ -227,6 +231,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isTranscriptImportOpen: false,
             isImportWaitModalOpen: false,
             transcriptImport: undefined,
+            isGraphViewOpen: false,
             isTreeViewModalOpen: false,
             isReplaySelectedActive: false,
             isRegenActive: false,
@@ -1539,6 +1544,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         return trainDialogs
     }
 
+    @autobind
+    onClickGraphView() {
+        this.setState(prevState => ({
+            isGraphViewOpen: !prevState.isGraphViewOpen,
+        }))
+    }
+
     render() {
         const { intl } = this.props
         const computedTrainDialogs = this.getFilteredAndSortedDialogs()
@@ -1558,6 +1570,35 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         // Assume if app has DISPATCH actions, it must be dispatcher model
         const isDispatchModel = this.props.actions.some(a => a.actionType === CLM.ActionTypes.DISPATCH)
+        const isGraphFeatureEnabled = Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.GRAPH)
+
+        const createDagreGraphFromGenericGraph = (g: graph.Graph, getLabel: (n: graph.Node) => string): GraphProps => {
+            // Convert nodes to dagre nodes
+            const nodes = g.nodes.map(n => (
+                {
+                    id: n.id,
+                    label: {
+                        label: getLabel(n),
+                        class: 'myclass anotherclass'
+                    },
+                }
+            ))
+
+            // Convert edges from object references to ids
+            const edges: [string, string][] = g.edges.map(e => [e.vertexA.id, e.vertexB.id])
+
+            return {
+                graph: {
+                    nodes,
+                    edges,
+                }
+            }
+        }
+
+        const getLabelFromNode = clGraph.getLabelFromNode({ entities: this.props.entities, actions: this.props.actions })
+        const allDialogsGraph = graph.createDagFromNodes(this.props.trainDialogs, clGraph.getNodes, clGraph.mergeNodeData)
+        const dagreDialogsGraph = createDagreGraphFromGenericGraph(allDialogsGraph, getLabelFromNode)
+
 
         return (
             <div className="cl-page">
@@ -1630,7 +1671,17 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                             text={Util.formatMessageId(intl, FM.BUTTON_REGENERATE, { selectionCount: this.state.selectionCount })}
                         />
                     }
+
+                    {isGraphFeatureEnabled
+                        && <OF.DefaultButton
+                            iconProps={{ iconName: 'VisioDiagram' }}
+                            onClick={this.onClickGraphView}
+                            ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_GRAPH_BUTTON)}
+                            text={Util.formatMessageId(intl, FM.TRAINDIALOGS_GRAPH_BUTTON)}
+                        />}
                 </div>
+
+
                 <TreeView
                     open={this.state.isTreeViewModalOpen}
                     app={this.props.app}
@@ -1643,7 +1694,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onCancel={this.onCloseTreeView}
                     openTrainDialog={this.selectTrainDialog}
                 />
-
+                {this.state.isGraphViewOpen
+                    && <div>
+                        <DialogGraph graph={dagreDialogsGraph.graph} width={1700} />
+                    </div>}
                 {isNoDialogs &&
                     <div className="cl-page-placeholder">
                         <div className="cl-page-placeholder__content">
@@ -1660,7 +1714,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 }
-                {!this.state.isTreeViewModalOpen && !isNoDialogs &&
+                {!this.state.isGraphViewOpen && !this.state.isTreeViewModalOpen && !isNoDialogs &&
                     <React.Fragment>
                         <div>
                             <OF.Label htmlFor="train-dialogs-input-search" className={OF.FontClassNames.medium}>

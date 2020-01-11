@@ -620,6 +620,7 @@ export enum FM {
     TRAINDIALOGS_FILTERING_RESET = 'TrainDialogs.Filters.reset',
     TRAINDIALOGS_LISTVIEW_BUTTON = 'TrainDialogs.ListView.Button',
     TRAINDIALOGS_TREEVIEW_BUTTON = 'TrainDialogs.TreeView.Button',
+    TRAINDIALOGS_GRAPH_BUTTON = 'TrainDialogs.Graph.Button',
     TRAINDIALOGS_IMPORT_WARNING = 'TrainDialogs.ImportWarning',
 
     // TrainscriptComparisions
@@ -1287,6 +1288,7 @@ export default {
         [FM.TRAINDIALOGS_FILTERING_RESET]: 'Clear',
         [FM.TRAINDIALOGS_LISTVIEW_BUTTON]: 'List View',
         [FM.TRAINDIALOGS_TREEVIEW_BUTTON]: 'Tree View',
+        [FM.TRAINDIALOGS_GRAPH_BUTTON]: 'Graph View',
         [FM.TRAINDIALOGS_IMPORT_WARNING]: 'Import Warnings',
 
         // TrainscriptComparisions
