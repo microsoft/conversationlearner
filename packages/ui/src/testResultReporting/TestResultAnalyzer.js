@@ -320,12 +320,18 @@ ttf.SetTriageData(triageData);
               Log File
             </a><br>
         `
-
+        // bugs string will look like this: '2136: API Errors not behaving like other errors'
         if (knownTestFailure.bugs) {
-          knownTestFailure.bugs.forEach(bugNumber => {
-            htmlContent += `
-              <a href='https://dialearn.visualstudio.com/BLIS/_workitems/edit/${bugNumber}' target='_blank'>Bug ${bugNumber}</a> TODO: Bug Title to go here.<br>
-            `
+          knownTestFailure.bugs.forEach(bug => {
+            const i = bug.indexOf(':')
+            if (i == -1) {
+              htmlContent += `<b>ERROR in TriageData.js "bug" not formatted correctly, the value is: '${bug}'`
+            } else {
+              const bugNumber = +bug.substring(0, i)
+              htmlContent += `
+                <a href='https://dialearn.visualstudio.com/BLIS/_workitems/edit/${bugNumber}' target='_blank'>Bug ${bug}</a><br>
+              `
+            }
           })
         }
         htmlContent += `</div>`
