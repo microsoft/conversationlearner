@@ -38,38 +38,53 @@ export const getLabelFromNode = (model: Model) => (n: graph.Node<CLM.TrainRound>
     const defaultEntityMap = new Map<string, string>()
 
     const firstFilledEntities = round.scorerSteps[0].input.filledEntities
-        ; (model.entities as CLM.EntityBase[]).forEach(e => {
+    model.entities.forEach(e => {
 
-            const filledEntity = firstFilledEntities
-                .find(fe => fe.entityId === e.entityId)
+        const filledEntity = firstFilledEntities
+            .find(fe => fe.entityId === e.entityId)
 
-            const filledEntityValues = filledEntity
-                ? `[${filledEntity.values.map(v => v.displayText).join(', ')}]`
-                : `$${e.entityName}`
+        const filledEntityValues = filledEntity
+            ? `[${filledEntity.values.map(v => v.displayText).join(', ')}]`
+            : `$${e.entityName}`
 
-            defaultEntityMap.set(e.entityId, filledEntityValues)
-        })
+        defaultEntityMap.set(e.entityId, filledEntityValues)
+    })
+
     const scorerStepsText = round.scorerSteps
-        .map(ss => (model.actions as CLM.ActionBase[]).find(a => a.actionId === ss.labelAction)!)
-        .map(a => CLM.ActionBase.GetPayload(a, defaultEntityMap))
+        .map(ss => model.actions.find(a => a.actionId === ss.labelAction)!)
+        .map(a => {
+            const payload = CLM.ActionBase.GetPayload(a, defaultEntityMap)
 
-    const hashData = getHashDataFromTrainRound(round)
+            return a.actionType === CLM.ActionTypes.API_LOCAL
+                ? `Callback: ${payload}`
+                : payload
+        })
+
+    // const hashData = getHashDataFromTrainRound(round)
 
     const text = `
-Node ID: ${n.id.substr(0, 13)}
- 
-${extractorText.map(t => `User: ${t}`).join('\n')}
-${scorerStepsText.map(t => `Bot: ${t}`).join("\n")}
- 
-Hash: ${n.hash.substr(0, 10)}
-Hash Data: ${JSON.stringify(hashData, null, '  ')}
+User Inputs:
+${extractorText.map(t => `- ${t}`).join('\n')}
+
+Bot Responses:
+${scorerStepsText.map(t => `- ${t}`).join("\n")}
 `
+    //     const debugText = `
+    // Node ID: ${n.id.substr(0, 13)}
+
+    // ${text}
+
+    // Hash: ${n.hash.substr(0, 10)}
+    // Hash Data: ${JSON.stringify(hashData, null, '  ')}
+    // `
 
     return text
 }
 
 export const mergeNodeData = (n1: graph.Node<CLM.TrainRound>, n2: graph.Node<CLM.TrainRound>): graph.Node<CLM.TrainRound> => {
     // Add text variations from n2 to n1
+    console.log(`Merge: `, n2, ` into `, n1)
+
     n1.data.extractorStep.textVariations.push(...n2.data.extractorStep.textVariations)
 
     return n1
