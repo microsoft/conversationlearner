@@ -125,8 +125,9 @@ export function VerifyChatTurnHasNoError(index) {
 // -----------------------------------------------------------------------------
 // Selects FROM ALL chat messages, from both Bot and User.
 // Once clicked, more UI elements will become visible & enabled.
-// OPTIONAL index parameter lets you select other than the 1st instance of a message.
-// RETURNS: The index of the selected turn.
+// OPTIONAL index parameter lets you select other than the 1st instance of a message 
+//          (this is NOT the index into the full list of chat messages)
+// RETURNS: The index of the selected turn (this IS the index into the full list)
 
 export function SelectChatTurnExactMatch(message, index = 0) {
   return _SelectChatTurn(message, index, (elementText, transformedMessage) => elementText === transformedMessage)
@@ -199,8 +200,8 @@ export function InsertUserInputAfter(existingMessage, newMessage) {
 }
 
 // OPTIONAL newMessage parameter if provided will replace the autoselected Bot response
-// OPTIONAL index parameter lets you select other than the 1st 
-// instance of a message as the point of insertion.
+// OPTIONAL index parameter lets you select other than the 1st instance of a message as 
+//          the point of insertion.
 export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
   cy.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `Start`)
   WaitForChatMessageUpdate(() => {
@@ -235,7 +236,7 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
 }
 
 export function VerifyChatTurnIsNotAnExactMatch(turnTextThatShouldNotMatch, expectedTurnCount, turnIndex) {
-  VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
+  _VerifyChatTurn(expectedTurnCount, turnIndex, chatMessageFound => {
     if (chatMessageFound === turnTextThatShouldNotMatch) {
       throw new Error(`Chat turn ${turnIndex} should NOT be an exact match to: ${turnTextThatShouldNotMatch}, but it is`)
     }
@@ -243,28 +244,30 @@ export function VerifyChatTurnIsNotAnExactMatch(turnTextThatShouldNotMatch, expe
 }
 
 export function VerifyChatTurnIsAnExactMatch(expectedTurnText, expectedTurnCount, turnIndex) {
-  VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
+  _VerifyChatTurn(expectedTurnCount, turnIndex, chatMessageFound => {
     if (chatMessageFound !== expectedTurnText) {
-      if (chatMessageFound !== expectedTurnText) {
-        throw new Error(`Chat turn ${turnIndex} should be an exact match to: ${expectedTurnText}, however, we found ${chatMessageFound} instead`)
-      }
+      throw new Error(`Chat turn ${turnIndex} should be an exact match to: ${expectedTurnText}, however, we found ${chatMessageFound} instead`)
     }
   })
 }
 
 export function VerifyChatTurnIsAnExactMatchWithMarkup(expectedTurnText, expectedTurnCount, turnIndex) {
-  VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
+  _VerifyChatTurn(expectedTurnCount, turnIndex, chatMessageFound => {
     if (chatMessageFound !== expectedTurnText) {
-      if (chatMessageFound !== expectedTurnText) {
-        throw new Error(`Chat turn ${turnIndex} should be an exact match to: '${expectedTurnText}', however, we found '${chatMessageFound}' instead`)
-      }
+      throw new Error(`Chat turn ${turnIndex} should be an exact match to: '${expectedTurnText}', however, we found '${chatMessageFound}' instead`)
     }
   }, true)
 }
 
 // This function does the hard work of retrying until the chat message count is what we expect
 // before it verifies a specific chat turn with a custom verification.
-function VerifyChatTurnInternal(expectedTurnCount, turnIndex, verificationFunc, retainMarkup = false) {
+//
+// This extra chat count validation may no longer be needed since adding WaitForChatMessageUpdate on 1/9/2020,
+// but I did not want to remove this code for fear it might not work on rare occassions and then many tests
+// that have been passing for many many months will start failing randomly from time to time. It doesn't hurt
+// to leave this in, since it should always make it through the retry loop the 1st time. Its just the complexity
+// that may make you want to remove this.
+function _VerifyChatTurn(expectedTurnCount, turnIndex, verificationFunc, retainMarkup = false) {
   cy.WaitForStableDOM()
   let chatMessages
   cy.RetryLoop(() => {
@@ -274,7 +277,7 @@ function VerifyChatTurnInternal(expectedTurnCount, turnIndex, verificationFunc, 
     }
   }).then(() => {
     if (chatMessages.length < turnIndex) {
-      throw new Error(`VerifyChatTurnInternal(${expectedTurnCount}, ${turnIndex}): ${chatMessages.length} is not enough chat turns to find the requested turnIndex`)
+      throw new Error(`_VerifyChatTurn(${expectedTurnCount}, ${turnIndex}): ${chatMessages.length} is not enough chat turns to find the requested turnIndex`)
     }
 
     verificationFunc(chatMessages[turnIndex])
@@ -331,8 +334,11 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0) {
       }
     })
 
-    cy.Get('@branchButton').Click()
-    cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
+    // This is where the actual branching occurs.
+    WaitForChatMessageUpdate(() => {
+      cy.Get('@branchButton').Click()
+      cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
+    })
 
     cy.WaitForStableDOM().then(() => {
       trainDialogsGrid.TdGrid.BranchTrainDialog()

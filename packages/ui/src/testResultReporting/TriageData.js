@@ -8,7 +8,7 @@ exports.triageData = [
   {
     searchBy: ERROR_PANEL,
     and: [`LUIS Programmatic APIs v2.0 have exceeded rate limit of your current LUIS API`],
-    comment: 'Not much we can do about this except review our algorithm in .circleci\\SetLuisAuthoringKey.js to make sure there is enough keys to cycle through...or just pay for a LUIS license.',
+    comment: `We can probably solve this problem by using our team's Azure account to acquire LUIS licenses.`,
   },
   {
     searchBy: ERROR_PANEL,
