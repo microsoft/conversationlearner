@@ -367,6 +367,8 @@ function _SelectAndVerifyEachChatTurn(verificationFunction, index = 0, increment
   })
 }
 
+// Verifies that the chat element contains the expected buttons based on whether it is a user or Bot turn
+// and its position in the list of chat turns.
 export function _VerifyChatTurnControlButtons(element, index) {
   let turnIsUserTurn
   if (element.classList.contains('wc-message-from-me')) turnIsUserTurn = true
@@ -414,7 +416,7 @@ export function VerifyEachBotChatTurn(verificationFunction) {
   })
 }
 
-// To verify the last chat utterance leave expectedIndexOfMessage undefined.
+// To verify the last chat utterance leave 'expectedIndexOfMessage' undefined.
 export function VerifyTextChatMessage(expectedMessage, expectedIndexOfMessage) {
   cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
     if (!expectedIndexOfMessage) expectedIndexOfMessage = allChatElements.length - 1
@@ -432,7 +434,7 @@ export function VerifyTextChatMessage(expectedMessage, expectedIndexOfMessage) {
   })
 }
 
-// To verify the last chat utterance leave expectedIndexOfMessage undefined.
+// To verify the last chat utterance leave 'expectedIndexOfMessage' undefined.
 // Leave expectedMessage temporarily undefined so that you can copy the text
 // output from the screen or log to paste into your code.
 export function VerifyCardChatMessage(expectedCardTitle, expectedCardText, expectedIndexOfMessage) {
@@ -464,7 +466,7 @@ export function VerifyCardChatMessage(expectedCardTitle, expectedCardText, expec
   })
 }
 
-// To verify the last chat utterance leave expectedIndexOfMessage undefined.
+// To verify the last chat utterance leave 'expectedIndexOfMessage' undefined.
 export function VerifyPhotoCardChatMessage(expectedCardTitle, expectedCardText, expectedCardImage, expectedIndexOfMessage) {
   const funcName = `VerifyPhotoCardChatMessage("${expectedCardTitle}", "${expectedCardText}", "${expectedCardImage}", ${expectedIndexOfMessage})`
   cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
@@ -490,6 +492,7 @@ export function VerifyPhotoCardChatMessage(expectedCardTitle, expectedCardText, 
   })
 }
 
+// To verify the last chat utterance leave 'expectedIndexOfMessage' undefined.
 export function VerifyEndSessionChatMessage(expectedData, expectedIndexOfMessage) {
   const expectedUtterance = 'EndSession: ' + expectedData
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
@@ -499,6 +502,9 @@ export function VerifyEndSessionChatMessage(expectedData, expectedIndexOfMessage
   })
 }
 
+// Before saving a Train Dialog, we capture the data used to verify that it was persisted to the grid
+// along with the original data that was in the grid prior to working on the current Train Dialog that
+// is about to be saved.
 export function PreSaveDataUsedToVerifyTdGrid(description, tagList) {
   let funcName = `PreSaveDataUsedToVerifyTdGrid("${description}", "${tagList}")`
   helpers.ConLog(funcName, 'start')
