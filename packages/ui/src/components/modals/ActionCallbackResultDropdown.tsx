@@ -18,6 +18,10 @@ type ReceivedProps = {
 
 type Props = ReceivedProps & InjectedIntlProps
 
+/**
+ * Renders dropdown for mock result names of callback actions with preview modal.
+ * This helps select which mock result should be used when the action is taken during training.
+ */
 const Component: React.FC<Props> = (props) => {
     const [isCallbackResultViewerOpen, setIsCallbackResultViewerOpen] = React.useState(false)
     const onClickViewCallbackResult = () => {
