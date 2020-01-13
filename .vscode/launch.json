@@ -152,9 +152,10 @@
             "type": "node",
             "request": "launch",
             "name": "Test API Callbacks",
-            "program": "${workspaceFolder}/lib/test/testApiCallbacks.js",
+            "cwd": "${workspaceFolder}/packages/samples",
+            "program": "${workspaceFolder}/packages/samples/lib/test/testApiCallbacks.js",
             "outFiles": [
-                "${workspaceFolder}/**/*.js"
+                "${workspaceFolder}/packages/samples/**/*.js"
             ],
             "runtimeArgs": [
                 "--preserve-symlinks"

@@ -459,10 +459,10 @@ export default class ClClient {
         return response.data.appList.apps
     }
 
-    async history(appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean): Promise<CLM.TeachWithActivities> {
+    async trainDialogActivities(appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean): Promise<CLM.TeachWithActivities> {
         const response = await this.send<CLM.TeachWithActivities>({
             method: 'post',
-            url: `/app/${appId}/history?username=${userName}&userid=${userId}&useMarkdown=${useMarkdown}`,
+            url: `/app/${appId}/activities?username=${userName}&userid=${userId}&useMarkdown=${useMarkdown}`,
             data: trainDialog
         })
         return response.data
@@ -616,6 +616,7 @@ export default class ClClient {
     }
 
     // AT.RUN_SCORER_ASYNC
+    // Does not update the scorer step. Updates the session.
     async teachSessionUpdateScorerStep(appId: string, teachId: string, uiScoreInput: CLM.UIScoreInput): Promise<CLM.UIScoreResponse> {
         const response = await this.send<CLM.UIScoreResponse>({
             method: 'put',

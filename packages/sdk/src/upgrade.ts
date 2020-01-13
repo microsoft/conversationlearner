@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as models from '@conversationlearner/models'
-import { CallbackMap } from './CLRunner'
+import { CallbackMap, convertInternalCallbackToCallback } from './CLRunner'
 
 /**
  * Given an app definition return an updated app definition.
@@ -60,7 +60,7 @@ export function getActionChangeResult(action: models.ActionBase, callbackMap: Ca
             const callback = callbackMap[legacyActionPayload.payload]
 
             const actionPayload: models.ActionPayload = callback
-                ? getActionPayload(legacyActionPayload, callback)
+                ? getActionPayload(legacyActionPayload, convertInternalCallbackToCallback(callback))
                 : {
                     payload: legacyActionPayload.payload,
                     logicArguments: legacyActionPayload.arguments,

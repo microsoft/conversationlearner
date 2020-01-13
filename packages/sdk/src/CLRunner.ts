@@ -41,6 +41,34 @@ export enum SessionStartFlags {
 export interface InternalCallback<T> extends CLM.Callback, ICallback<T> {
 }
 
+export const convertInternalCallbackToCallback = <T>(c: InternalCallback<T>): CLM.Callback => {
+    const { logic, render, mockResults, ...callback } = c
+
+    const resultsWithUndefinedAsNull = mockResults.map(r => {
+        const entityValues = Object.entries(r.entityValues)
+            .map<[string, CLM.EntityValue | CLM.EntityValue[] | null]>(([entityName, entityValue]) => {
+                const value = entityValue === undefined
+                    ? null
+                    : entityValue
+                return [entityName, value]
+            })
+            .reduce<Record<string, CLM.EntityValue | CLM.EntityValue[] | null>>((o, [entityName, entityValue]) => {
+                o[entityName] = entityValue
+                return o
+            }, {})
+
+        return {
+            ...r,
+            entityValues,
+        }
+    })
+
+    return {
+        ...callback,
+        mockResults: resultsWithUndefinedAsNull,
+    }
+}
+
 /**
  * Processes messages received from the user. Called by the dialog system.
  */
@@ -77,6 +105,7 @@ export interface ICallbackInput<T> {
     name: string
     logic?: LogicCallback<T>
     render?: RenderCallback<T>
+    mockResults?: CLM.CallbackResult[]
 }
 
 interface ICallback<T> {
@@ -91,11 +120,16 @@ enum ActionInputType {
     LOGIC_AND_RENDER = "LOGIC_AND_RENDER"
 }
 
-interface IActionInputLogic {
+interface IActionInputBase {
+    mockResultName?: string
+}
+
+interface IActionInputRenderOnly extends IActionInputBase {
     type: ActionInputType.RENDER_ONLY
     logicResult: CLM.LogicResult | undefined
 }
-interface IActionInputRenderOnly {
+
+interface IActionInputLogic extends IActionInputBase {
     type: Exclude<ActionInputType, ActionInputType.RENDER_ONLY>
 }
 
@@ -110,7 +144,7 @@ export interface IActionResult {
 export type CallbackMap = { [name: string]: InternalCallback<any> }
 
 /**
- * Runs Conversation Learnern for a given CL Model
+ * Runs Conversation Learner for a given CL Model
  */
 export class CLRunner {
 
@@ -198,16 +232,11 @@ export class CLRunner {
     public botChecksum(): string {
         // Create bot checksum is doesn't already exist
         if (!this.checksum) {
-            const callbacks = Object.values(this.callbacks).map(this.convertInternalCallbackToCallback)
+            const callbacks = Object.values(this.callbacks).map(convertInternalCallbackToCallback)
             const templates = TemplateProvider.GetTemplates()
             this.checksum = Utils.botChecksum(callbacks, templates)
         }
         return this.checksum
-    }
-
-    public convertInternalCallbackToCallback = <T>(c: InternalCallback<T>): CLM.Callback => {
-        const { logic, render, ...callback } = c
-        return callback
     }
 
     public async onTurn(turnContext: BB.TurnContext, next: (result: CLRecognizerResult | null) => Promise<void>): Promise<void> {
@@ -776,7 +805,8 @@ export class CLRunner {
             isLogicFunctionProvided: false,
             render: undefined,
             renderArguments: [],
-            isRenderFunctionProvided: false
+            isRenderFunctionProvided: false,
+            mockResults: [],
         }
 
         if (callbackInput.logic) {
@@ -789,6 +819,29 @@ export class CLRunner {
             callback.render = callbackInput.render
             callback.renderArguments = this.GetArguments(callbackInput.render, 2)
             callback.isRenderFunctionProvided = true
+        }
+
+        const callbackInputResults = callbackInput.mockResults
+        if (callbackInputResults) {
+            // Validate result names
+            // Must not equal root/parent condition with actual functions
+            // Must be unique within set of other results
+            const existingResultNames: string[] = []
+            for (const callbackResult of callbackInputResults) {
+                const resultHasNoName = (typeof callbackResult.name !== "string" || callbackResult.name.trim().length === 0)
+                if (resultHasNoName) {
+                    throw new Error(`You attempted to add mock result on callback ${callbackInput.name} but did not provide a valid name. Name must be non-empty string.`)
+                }
+
+                const resultNameIsNotUnique = callbackResult.name === callbackInput.name
+                    || existingResultNames.includes(callbackResult.name)
+
+                if (resultNameIsNotUnique) {
+                    throw new Error(`You attempted to add a mock result with the same name, ${callbackInput.name}, as the callback or one of the other mock results. The mock results names must be unique.`)
+                }
+            }
+
+            callback.mockResults = callbackInputResults
         }
 
         this.callbacks[callbackInput.name] = callback
@@ -1073,7 +1126,8 @@ export class CLRunner {
                         clRecognizeResult.clEntities,
                         inTeach,
                         {
-                            type: ActionInputType.LOGIC_AND_RENDER
+                            type: ActionInputType.LOGIC_AND_RENDER,
+                            mockResultName: uiTrainScorerStep?.trainScorerStep.stubName,
                         }
                     )
 
@@ -1488,7 +1542,14 @@ export class CLRunner {
         }
     }
 
-    public async TakeAPIAction(apiAction: CLM.ApiAction, filledEntityMap: CLM.FilledEntityMap, state: CLState, allEntities: CLM.EntityBase[], showAPICard: boolean, actionInput: IActionInput): Promise<IActionResult> {
+    public async TakeAPIAction(
+        apiAction: CLM.ApiAction,
+        filledEntityMap: CLM.FilledEntityMap,
+        state: CLState,
+        allEntities: CLM.EntityBase[],
+        showAPICard: boolean,
+        actionInput: IActionInput,
+    ): Promise<IActionResult> {
         // Extract API name and args
         const callback = this.callbacks[apiAction.name]
         if (!callback) {
@@ -1499,7 +1560,6 @@ export class CLRunner {
         }
 
         try {
-            // Invoke Logic part of callback
             const renderedLogicArgumentValues = this.GetRenderedArguments(callback.logicArguments, apiAction.logicArguments, filledEntityMap)
             const memoryManager = await this.CreateMemoryManagerAsync(state, allEntities)
             let replayError: CLM.ReplayError | null = null
@@ -1522,9 +1582,39 @@ export class CLRunner {
                     // the copy of map is created because the passed infilledEntityMap contains "filledEntities by Id" too
                     // and this causes issues when calculating changedFilledEntities.
                     const entityMapBeforeCall = new CLM.FilledEntityMap(await state.EntityState.FilledEntityMap())
-                    // Store logic callback value
-                    const logicObject = await callback.logic(memoryManager, ...renderedLogicArgumentValues)
-                    logicResult.logicValue = JSON.stringify(logicObject)
+
+                    // If callback result is set use it
+                    // Otherwise use logic function
+                    let logicReturnValue: unknown
+                    if (actionInput.mockResultName) {
+                        const callbackResult = callback.mockResults.find(result => result.name === actionInput.mockResultName)
+                        if (!callbackResult) {
+                            throw new Error(`A mock result name ${actionInput.mockResultName} was provided but no result by that name was found`)
+                        }
+
+                        // Simulate calling set on memory manager to create changes in filled entities / bot state
+                        Object.entries(callbackResult.entityValues)
+                            .forEach(([entityName, entityValue]) => {
+                                if (entityValue === null || entityValue === undefined) {
+                                    memoryManager.Delete(entityName)
+                                }
+                                // Force mocks results to overwrite values
+                                else if (Array.isArray(entityValue)) {
+                                    memoryManager.Delete(entityName)
+                                    memoryManager.Set(entityName, entityValue)
+                                }
+                                else {
+                                    memoryManager.Set(entityName, entityValue)
+                                }
+                            })
+
+                        logicReturnValue = callbackResult.returnValue
+                    }
+                    else {
+                        logicReturnValue = await callback.logic(memoryManager, ...renderedLogicArgumentValues)
+                    }
+
+                    logicResult.logicValue = JSON.stringify(logicReturnValue)
                     // Update memory with changes from logic callback
                     await state.EntityState.RestoreFromMemoryManagerAsync(memoryManager)
                     // Store changes to filled entities
@@ -1563,10 +1653,9 @@ export class CLRunner {
                 else {
                     // Invoke Render part of callback
                     const renderedRenderArgumentValues = this.GetRenderedArguments(callback.renderArguments, apiAction.renderArguments, filledEntityMap)
-
                     const readOnlyMemoryManager = await this.CreateReadOnlyMemoryManagerAsync(state, allEntities)
+                    const logicObject = logicResult.logicValue ? JSON.parse(logicResult.logicValue) : undefined
 
-                    let logicObject = logicResult.logicValue ? JSON.parse(logicResult.logicValue) : undefined
                     if (callback.render) {
                         response = await callback.render(logicObject, readOnlyMemoryManager, ...renderedRenderArgumentValues)
                     }
@@ -1822,7 +1911,7 @@ export class CLRunner {
         // Reset the memory
         await state.EntityState.ClearAsync()
 
-        // Call start sesssion for initial entities
+        // Call start session for initial entities
         await this.CheckSessionStartCallback(state, allEntities)
         let startSessionEntities = await state.EntityState.FilledEntitiesAsync()
         startSessionEntities = [...trainDialog.initialFilledEntities ?? [], ...startSessionEntities]
@@ -1842,19 +1931,17 @@ export class CLRunner {
         }
 
         // Copy train dialog
-        let newTrainDialog: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog))
-
-        let entities: CLM.EntityBase[] = trainDialog.definitions ? trainDialog.definitions.entities : []
-        let actions: CLM.ActionBase[] = trainDialog.definitions ? trainDialog.definitions.actions : []
-        let entityList: CLM.EntityList = { entities }
+        const newTrainDialog: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog))
+        const entities: CLM.EntityBase[] = trainDialog.definitions?.entities ?? []
+        const actions: CLM.ActionBase[] = trainDialog.definitions?.actions ?? []
 
         await this.InitReplayMemory(state, newTrainDialog, entities)
 
-        for (let round of newTrainDialog.rounds) {
+        for (const round of newTrainDialog.rounds) {
 
             // Call entity detection callback with first text Variation
-            let textVariation = round.extractorStep.textVariations[0]
-            let predictedEntities = CLM.ModelUtils.ToPredictedEntities(textVariation.labelEntities)
+            const textVariation = round.extractorStep.textVariations[0]
+            const predictedEntities = CLM.ModelUtils.ToPredictedEntities(textVariation.labelEntities)
 
             // Call EntityDetectionCallback and populate filledEntities with the result
             let scoreInput: CLM.ScoreInput
@@ -1887,11 +1974,11 @@ export class CLRunner {
                 // Go through each scorer step
                 for (let [scoreIndex, scorerStep] of round.scorerSteps.entries()) {
 
-                    const curAction = actions.filter((a: CLM.ActionBase) => a.actionId === scorerStep.labelAction)[0]
+                    const curAction = actions.find(a => a.actionId === scorerStep.labelAction)
 
                     if (CLM.ActionBase.isPlaceholderAPI(curAction)) {
                         // Placeholder output is stored in LogicResult
-                        let placeholderFilledEntities = scorerStep.logicResult ? scorerStep.logicResult.changedFilledEntities : []
+                        const placeholderFilledEntities = scorerStep.logicResult?.changedFilledEntities ?? []
                         const filledEntityMap = CLM.FilledEntityMap.FromFilledEntities(placeholderFilledEntities, entities)
                         await state.EntityState.RestoreFromMapAsync(filledEntityMap)
                     }
@@ -1903,7 +1990,7 @@ export class CLRunner {
                             this.PopulateMissingFilledEntities(curAction, filledEntityMap, entities, false)
                         }
 
-                        round.scorerSteps[scoreIndex].input.filledEntities = filledEntityMap.FilledEntities()
+                        scorerStep.input.filledEntities = filledEntityMap.FilledEntities()
 
                         // CurAction may not exist if it's an imported action
                         if (curAction && scorerStep.labelAction !== CLM.CL_STUB_IMPORT_ACTION_ID) {
@@ -1911,19 +1998,20 @@ export class CLRunner {
                             if (curAction.actionType === CLM.ActionTypes.API_LOCAL) {
                                 const apiAction = new CLM.ApiAction(curAction)
                                 const actionInput: IActionInput = {
-                                    type: ActionInputType.LOGIC_ONLY
+                                    type: ActionInputType.LOGIC_ONLY,
+                                    mockResultName: scorerStep.stubName,
                                 }
                                 // Calculate and store new logic result
                                 const filledIdMap = filledEntityMap.EntityMapToIdMap()
-                                const actionResult = await this.TakeAPIAction(apiAction, filledIdMap, state, entityList.entities, true, actionInput)
-                                round.scorerSteps[scoreIndex].logicResult = actionResult.logicResult
+                                const actionResult = await this.TakeAPIAction(apiAction, filledIdMap, state, entities, true, actionInput)
+                                scorerStep.logicResult = actionResult.logicResult
                             } else if (curAction.actionType === CLM.ActionTypes.END_SESSION) {
                                 const sessionAction = new CLM.SessionAction(curAction)
                                 const filledIdMap = filledEntityMap.EntityMapToIdMap()
                                 await this.TakeSessionAction(sessionAction, filledIdMap, true, state, null, null)
                             } else if (curAction.actionType === CLM.ActionTypes.SET_ENTITY) {
                                 const setEntityAction = new CLM.SetEntityAction(curAction)
-                                await this.TakeSetEntityAction(setEntityAction, filledEntityMap, state, entityList.entities, true)
+                                await this.TakeSetEntityAction(setEntityAction, filledEntityMap, state, entities, true)
                             } else if (curAction.actionType === CLM.ActionTypes.CHANGE_MODEL) {
                                 const changeModelAction = new CLM.ChangeModelAction(curAction)
                                 await this.TakeChangeModelAction(changeModelAction, true, state, null, null)
@@ -1933,7 +2021,7 @@ export class CLRunner {
 
                     // If ran into API error inject into first scorer step so it gets displayed to the user
                     if (botAPIError && scoreIndex === 0) {
-                        round.scorerSteps[scoreIndex].logicResult = { logicValue: JSON.stringify(botAPIError), changedFilledEntities: [] }
+                        scorerStep.logicResult = { logicValue: JSON.stringify(botAPIError), changedFilledEntities: [] }
                     }
                 }
             }
@@ -1947,17 +2035,18 @@ export class CLRunner {
                     },
                     labelAction: undefined,
                     logicResult: undefined,
-                    scoredAction: undefined
+                    scoredAction: undefined,
                 }
                 if (!round.scorerSteps) {
+                    console.error(`round.scorerSteps was not an array. This should not be possible. Likely bug in the code or types.`)
                     round.scorerSteps = []
                 }
                 round.scorerSteps.push(scorerStep)
             }
         }
 
-        // When editing, may need to run Scorer or Extrator on TrainDialog with invalid rounds
-        //This cleans up the TrainDialog removing bad data so the extractor can run
+        // When editing, may need to run Scorer or Extractor on TrainDialog with invalid rounds
+        // This cleans up the TrainDialog removing bad data so the extractor can run
         if (cleanse) {
             // Remove rounds with two user inputs in a row (they'll have a dummy scorer round)
             newTrainDialog.rounds = newTrainDialog.rounds.filter(r => {
@@ -1975,7 +2064,8 @@ export class CLRunner {
         trainDialog: CLM.TrainDialog,
         allEntities: CLM.EntityBase[],
         filledEntities: CLM.FilledEntity[],
-        replayErrors: CLM.ReplayError[]): CLM.ReplayError | null {
+        replayErrors: CLM.ReplayError[],
+    ): CLM.ReplayError | null {
 
         let replayError: CLM.ReplayError | null = null
 
@@ -2231,7 +2321,7 @@ export class CLRunner {
                                 const apiAction = new CLM.ApiAction(curAction)
                                 const actionInput: IActionInput = {
                                     type: ActionInputType.RENDER_ONLY,
-                                    logicResult: scorerStep.logicResult
+                                    logicResult: scorerStep.logicResult,
                                 }
 
                                 botResponse = await this.TakeAPIAction(apiAction, filledEntityMap, state, entityList.entities, true, actionInput)
@@ -2439,7 +2529,7 @@ export class CLRunner {
     }
 
     // Generate a card to show for an API action w/o output
-    private RenderAPICard(callback: CLM.Callback, args: string[]): Partial<BB.Activity> {
+    private RenderAPICard(callback: InternalCallback<any>, args: string[]): Partial<BB.Activity> {
         return this.renderPlaceholderCard("API Call:", `${callback.name}(${args.join(', ')})`)
     }
 

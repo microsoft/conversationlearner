@@ -486,7 +486,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     @autobind
     renderSelectedActivity(activity: BB.Activity): (JSX.Element | null) {
-
         if (this.state.selectedActivityIndex === null) {
             return null
         }

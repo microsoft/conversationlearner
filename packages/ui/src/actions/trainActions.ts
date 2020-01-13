@@ -621,16 +621,23 @@ const fetchActivitiesFulfilled = (teachWithActivities: CLM.TeachWithActivities):
  * @param trainDialog Train dialog for which Activities will be returned
  * @param userName Name of the active user
  * @param userId Id of the active user
- * @param useMarkdown If true will add markdown to highlight entites in user utterance
+ * @param useMarkdown If true will add markdown to highlight entities in user utterance
  * @param noSpinnerDisplay If true will not display a spinner when awaiting
  */
-export const fetchActivitiesThunkAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean = true, noSpinnerDisplay: boolean = false) => {
+export const fetchActivitiesThunkAsync = (
+    appId: string,
+    trainDialog: CLM.TrainDialog,
+    userName: string,
+    userId: string,
+    useMarkdown: boolean = true,
+    noSpinnerDisplay: boolean = false,
+) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_ACTIVITIES_ASYNC)
         dispatch(fetchActivitiesAsync(noSpinnerDisplay))
 
         try {
-            const teachWithActivities = await clClient.history(appId, trainDialog, userName, userId, useMarkdown)
+            const teachWithActivities = await clClient.trainDialogActivities(appId, trainDialog, userName, userId, useMarkdown)
             dispatch(fetchActivitiesFulfilled(teachWithActivities))
             return teachWithActivities
         } catch (e) {

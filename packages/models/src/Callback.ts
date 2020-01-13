@@ -13,4 +13,14 @@ export interface Callback {
   isLogicFunctionProvided: boolean
   renderArguments: string[]
   isRenderFunctionProvided: boolean
+  // List of mock objects containing the entity values and return value from logic function
+  mockResults: CallbackResult[]
+}
+
+export type EntityValue = string | number | boolean | object
+
+export interface CallbackResult {
+  name: string
+  entityValues: Record<string, EntityValue | EntityValue[] | null | undefined>
+  returnValue: unknown
 }

@@ -18,7 +18,7 @@ import * as cors from 'cors'
 import getAppDefinitionChange from '../upgrade'
 import { CLDebug } from '../CLDebug'
 import { CLClient, ICLClientOptions } from '../CLClient'
-import { CLRunner, SessionStartFlags } from '../CLRunner'
+import { CLRunner, SessionStartFlags, convertInternalCallbackToCallback } from '../CLRunner'
 import { CLStateFactory } from '../Memory/CLStateFactory'
 import { CLRecognizerResult } from '../CLRecognizeResult'
 import { TemplateProvider } from '../TemplateProvider'
@@ -212,7 +212,7 @@ export const getRouter = (
                 }
             }
 
-            const callbacks = Object.values(clRunner.callbacks).map(clRunner.convertInternalCallbackToCallback)
+            const callbacks = Object.values(clRunner.callbacks).map(convertInternalCallbackToCallback)
             const templates = TemplateProvider.GetTemplates()
 
             const botInfo: CLM.BotInfo = {
@@ -1014,7 +1014,7 @@ export const getRouter = (
             // There will be no extraction step if performing a 2nd scorer round after a non-terminal action
             if (uiScoreInput.trainExtractorStep) {
                 try {
-                    // Send teach feedback;
+                    // Send teach feedback
                     await client.TeachExtractFeedback(appId, teachId, uiScoreInput.trainExtractorStep)
                 }
                 catch (error) {
@@ -1214,19 +1214,19 @@ export const getRouter = (
     // Replay
     //========================================================
 
-    router.post('/app/:appId/history', async (req, res, next) => {
+    router.post('/app/:appId/activities', async (req, res, next) => {
         try {
             const key = getMemoryKey(req)
             const appId = req.params.appId
-            const { username: userName, userid: userId, useMarkdown: useMarkdown } = getQuery(req)
-            const markdown = useMarkdown === "true"
+            const { username: userName, userid: userId, useMarkdown: useMarkdownString } = getQuery(req)
+            const useMarkdown = useMarkdownString === "true"
             const trainDialog: CLM.TrainDialog = req.body
 
             const state = stateFactory.get(key)
             const clRunner = CLRunner.GetRunnerForUI(appId)
             validateBot(req, clRunner.botChecksum())
 
-            const teachWithActivities = await clRunner.GetActivities(trainDialog, userName, userId, state, markdown)
+            const teachWithActivities = await clRunner.GetActivities(trainDialog, userName, userId, state, useMarkdown)
 
             // Clear bot memory generated with this
             await state.EntityState.ClearAsync()

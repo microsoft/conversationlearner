@@ -199,6 +199,10 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
         const editTypeClass = this.props.editType === EditDialogType.IMPORT ? "import" : isLogDialog ? 'log' : 'train'
         const hasEndSession = DialogUtils.hasEndSession(this.props.trainDialog, this.props.actions)
         const renderData = DialogUtils.getDialogRenderData(this.props.trainDialog, this.props.entities, this.props.actions, this.state.roundIndex, this.state.scoreIndex, this.state.senderType)
+        const selectedScorerStep = (this.state.roundIndex !== null && this.state.scoreIndex !== null)
+            ? this.props.trainDialog.rounds[this.state.roundIndex].scorerSteps[this.state.scoreIndex]
+            : undefined
+
         return (
             <div className={`cl-dialog-admin`}>
                 <div className="cl-dialog-admin__header">
@@ -338,6 +342,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                 memories={renderData.memories}
                                 onActionSelected={this.props.onChangeAction}
                                 onActionCreatorClosed={this.props.onActionCreatorClosed}
+                                selectedScorerStep={selectedScorerStep}
                             />
                         </div>
                     </div>

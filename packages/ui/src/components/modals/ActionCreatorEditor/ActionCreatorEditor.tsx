@@ -35,6 +35,7 @@ import { FM } from '../../../react-intl-messages'
 import { autobind } from 'core-decorators'
 import { IConditionalTag, getEnumConditionName, convertConditionToConditionalTag, isConditionEqual, getUniqueConditions } from '../../../Utils/actionCondition'
 import './ActionCreatorEditor.css'
+import CallbackResultViewerModal from '../CallbackResultViewerModal'
 
 const TEXT_SLOT = '#TEXT_SLOT#'
 
@@ -281,6 +282,8 @@ interface ComponentState {
     isConfirmEditModalOpen: boolean
     isConfirmDuplicateActionModalOpen: boolean
     isRepromptActionSelectorModelOpen: boolean
+    isCallbackResultViewerOpen: boolean
+    selectedCallbackResult: CLM.CallbackResult | undefined
     validationWarnings: string[]
     isPayloadFocused: boolean
     isPayloadMissing: boolean
@@ -327,6 +330,8 @@ const initialState: Readonly<ComponentState> = {
     isConfirmEditModalOpen: false,
     isConfirmDuplicateActionModalOpen: false,
     isRepromptActionSelectorModelOpen: false,
+    isCallbackResultViewerOpen: false,
+    selectedCallbackResult: undefined,
     validationWarnings: [],
     isPayloadFocused: false,
     isPayloadMissing: true,
@@ -1576,6 +1581,24 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return null
     }
 
+    @autobind
+    onClickViewCallbackResult(callbackResult: CLM.CallbackResult): void {
+        this.setState({
+            isCallbackResultViewerOpen: true,
+            selectedCallbackResult: callbackResult,
+        })
+    }
+
+    @autobind
+    onClickCancelCallbackResultViewer(): void {
+        this.setState({
+            isCallbackResultViewerOpen: false,
+        })
+    }
+
+    // Clicking ok OK currently does same thing as Cancel because there is no editing of results defined in Code
+    onClickOkStubViewer = this.onClickCancelCallbackResultViewer
+
     render() {
         const { intl } = this.props
 
@@ -1657,19 +1680,19 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                         {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.API_LOCAL
                             && <div>
-                                <div className="cl-inputWithButton-input">
+                                <div className="cl-action-creator-input-with-button">
                                     <TC.Dropdown
                                         data-testid="dropdown-api-option"
-                                        label="API"
+                                        label="Callback Name"
                                         options={this.state.apiOptions}
                                         onChange={this.onChangeApiOption}
                                         selectedKey={this.state.selectedApiOptionKey}
                                         disabled={this.state.apiOptions.length === 0}
-                                        placeholder={this.state.apiOptions.length === 0 ? 'NONE DEFINED' : 'API name...'}
+                                        placeholder={this.state.apiOptions.length === 0 ? 'NONE DEFINED' : 'Callback name...'}
                                         tipType={ToolTip.TipType.ACTION_API1}
                                     />
                                     <OF.IconButton
-                                        className="ms-Button--primary cl-inputWithButton-button"
+                                        className="ms-Button--primary"
                                         onClick={() => this.onClickSyncBotInfo()}
                                         ariaDescription="Refresh"
                                         iconProps={{ iconName: 'Sync' }}
@@ -1720,6 +1743,31 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                             )
                                                         })}
                                                 </div>}
+
+                                            <OF.Label>Mock Results <HelpIcon data-testid="action-help-panel-callback-result" tipType={ToolTip.TipType.MOCK_RESULT} /></OF.Label>
+                                            {/* In future include results defined in UI */}
+                                            <div className="cl-action-creator-section">
+                                                {callback.mockResults.length === 0
+                                                    ? <div>No Results Defined</div>
+                                                    : callback.mockResults.map(mockResult => {
+                                                        return <div className="cl-action-creator-input-with-button"
+                                                            data-testid="action-callback-result-row"
+                                                            key={mockResult.name}>
+                                                            <OF.TextField
+                                                                data-testid="action-callback-result-name"
+                                                                value={mockResult.name}
+                                                                disabled={true}
+                                                            />
+                                                            <OF.IconButton
+                                                                data-testid="action-callback-result-view-button"
+                                                                className="ms-Button--primary"
+                                                                onClick={() => this.onClickViewCallbackResult(mockResult)}
+                                                                ariaDescription="View Result"
+                                                                iconProps={{ iconName: 'EntryView' }}
+                                                            />
+                                                        </div>
+                                                    })}
+                                            </div>
                                         </div>
                                         : <div className="cl-errorpanel" data-testid="action-creator-editor-error-callback">
                                             <div>
@@ -1734,7 +1782,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                         {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CARD
                             && <div>
-                                <div className="cl-inputWithButton-input">
+                                <div className="cl-action-creator-input-with-button">
                                     <TC.Dropdown
                                         data-testid="action-card-template"
                                         label="Template"
@@ -1748,7 +1796,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     <OF.IconButton
                                         className="ms-Button--primary cl-inputWithButton-button"
                                         onClick={() => this.onClickViewCard()}
-                                        ariaDescription="Refresh"
+                                        ariaDescription="View Card"
                                         iconProps={{ iconName: 'RedEye' }}
                                         disabled={this.state.cardOptions.length === 0}
                                     />
@@ -2124,6 +2172,15 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     onClickCreate={this.onClickCreateConditionCreator}
                     onClickCancel={this.onClickCancelConditionCreator}
                 />
+                {this.state.selectedCallbackResult &&
+                    <CallbackResultViewerModal
+                        isOpen={this.state.isCallbackResultViewerOpen}
+                        onClickCancel={this.onClickCancelCallbackResultViewer}
+                        onClickSubmit={this.onClickOkStubViewer}
+                        callbackResult={this.state.selectedCallbackResult}
+                    />
+                }
+
             </OF.Modal>
         )
     }
