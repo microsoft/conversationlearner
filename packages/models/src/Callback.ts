@@ -13,6 +13,7 @@ export interface Callback {
   isLogicFunctionProvided: boolean
   renderArguments: string[]
   isRenderFunctionProvided: boolean
+  // List of mock objects containing the entity values and return value from logic function
   mockResults: CallbackResult[]
 }
 
