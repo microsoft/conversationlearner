@@ -25,6 +25,8 @@ const Component: React.FC<Props> = (props) => {
     const onClickCancel = props.onClickCancel
     const isSaveDisabled = false
     const callbackResultEntityValueEntries = Object.entries(props.callbackResult.entityValues)
+    const returnValueString = JSON.stringify(props.callbackResult.returnValue, null, '  ')
+    const isReturnValueMultiline = returnValueString.includes('\n')
 
     return <OF.Modal
         isOpen={props.isOpen}
@@ -56,9 +58,7 @@ const Component: React.FC<Props> = (props) => {
                     {callbackResultEntityValueEntries.length === 0
                         ? <p>No Entity Values Set</p>
                         : <div className="cl-callback-result-modal__entity-values">
-                            {callbackResultEntityValueEntries.map(([entityName, entityValue]) => {
-                                const name = <OF.Label>{entityName}</OF.Label>
-
+                            {callbackResultEntityValueEntries.map(([entityName, entityValue], entityValueEntryIndex) => {
                                 let values
                                 if (entityValue === null) {
                                     values = <div className="cl-callback-result-modal__entity-values__entity-removed">Deleted</div>
@@ -84,18 +84,28 @@ const Component: React.FC<Props> = (props) => {
                                             key={`${entityName}-${i}`}
                                             readOnly={true}
                                             multiline={valueObject.isMultiline}
-                                            value={`${valueObject.value}`}
+                                            value={valueObject.value}
                                         />
                                     )
                                 }
 
-                                return <>
-                                    <div>{name}</div>
+                                return <React.Fragment key={entityValueEntryIndex}>
+                                    <div><OF.Label>{entityName}</OF.Label></div>
                                     <div className="cl-callback-result-modal__entity-values__list">{values}</div>
-                                </>
+                                </React.Fragment>
                             })}
                         </div>
                     }
+
+                    {returnValueString &&
+                        <div className="cl-callback-result-modal__return-value">
+                            <OF.Label>Return Value</OF.Label>
+                            <OF.TextField
+                                readOnly={true}
+                                multiline={isReturnValueMultiline}
+                                value={returnValueString}
+                            />
+                        </div>}
                 </div>
             </div>
         </div>
