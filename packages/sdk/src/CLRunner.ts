@@ -830,14 +830,14 @@ export class CLRunner {
             for (const callbackResult of callbackInputResults) {
                 const resultHasNoName = (typeof callbackResult.name !== "string" || callbackResult.name.trim().length === 0)
                 if (resultHasNoName) {
-                    throw new Error(`You attempted to add result on callback ${callbackInput.name} but did not provide a valid name. Name must be non-empty string.`)
+                    throw new Error(`You attempted to add mock result on callback ${callbackInput.name} but did not provide a valid name. Name must be non-empty string.`)
                 }
 
                 const resultNameIsNotUnique = callbackResult.name === callbackInput.name
                     || existingResultNames.includes(callbackResult.name)
 
                 if (resultNameIsNotUnique) {
-                    throw new Error(`You attempted to add a result with the same name, ${callbackInput.name}, as the callback or one of the other results. The results names must be unique.`)
+                    throw new Error(`You attempted to add a mock result with the same name, ${callbackInput.name}, as the callback or one of the other mock results. The mock results names must be unique.`)
                 }
             }
 
