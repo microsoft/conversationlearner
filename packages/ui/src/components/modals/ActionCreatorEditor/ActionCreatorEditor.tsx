@@ -1708,7 +1708,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                         .map(apiArgument => {
                                                             return (
                                                                 <React.Fragment key={apiArgument}>
-                                                                    <OF.Label className="ms-Label--tight cl-label">{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS} /></OF.Label>
+                                                                    <OF.Label className="cl-label">{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS} /></OF.Label>
                                                                     <ActionPayloadEditor.Editor
                                                                         options={optionsAvailableForPayload}
                                                                         value={this.state.slateValuesMap[apiArgument]}
@@ -1767,6 +1767,16 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                             />
                                                         </div>
                                                     })}
+
+                                                <div>
+                                                    <OF.DefaultButton
+                                                        onClick={() => { }}
+                                                        iconProps={{ iconName: 'Add' }}
+                                                        ariaDescription={`New Mock Result`}
+                                                        text={`New Mock Result`}
+                                                        data-testid="action-creator-button-mock-result"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
                                         : <div className="cl-errorpanel" data-testid="action-creator-editor-error-callback">
