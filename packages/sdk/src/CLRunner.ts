@@ -44,7 +44,7 @@ export interface InternalCallback<T> extends CLM.Callback, ICallback<T> {
 export const convertInternalCallbackToCallback = <T>(c: InternalCallback<T>): CLM.Callback => {
     const { logic, render, mockResults, ...callback } = c
 
-    const resultsWithoutUndefinedValues = mockResults.map(r => {
+    const resultsWithUndefinedAsNull = mockResults.map(r => {
         const entityValues = Object.entries(r.entityValues)
             .map<[string, CLM.EntityValue | CLM.EntityValue[] | null]>(([entityName, entityValue]) => {
                 const value = entityValue === undefined
@@ -65,7 +65,7 @@ export const convertInternalCallbackToCallback = <T>(c: InternalCallback<T>): CL
 
     return {
         ...callback,
-        mockResults: resultsWithoutUndefinedValues,
+        mockResults: resultsWithUndefinedAsNull,
     }
 }
 
