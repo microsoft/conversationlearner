@@ -22,6 +22,14 @@ export function SkipRemainingTestsOfSuiteIfFailed() {
   }
 }
 
+// The returned string will be of the minimumLength passed in or longer. If the number
+// does not have enough digits the string will be pre-padded with leading zeros.
+export function NumberToStringWithLeadingZeros(number, minimumLength) {
+  let string = String(number)
+  if (string.length < minimumLength) { string = '0'.repeat(minimumLength - string.length) + string }
+  return string
+}
+
 // NOTE: the '-+-' is a signature for filtering console output
 export function ConLog(funcName, message) { console.log(`-+- ${Cypress.moment().format("HH:mm:ss..SSS")} - ${funcName} - ${message}`) }
 
@@ -29,12 +37,6 @@ export function DumpObject(funcName, object) {
   let propertyList = ''
   for (let property in object) propertyList += `${(propertyList.length == 0 ? '' : ', ')}${property}: ${object[property]}`
   ConLog(funcName, propertyList)
-}
-
-export function NumberToStringWithLeadingZeros(number, length) {
-  let string = String(number)
-  if (string.length < length) { string = '0'.repeat(length - string.length) + string }
-  return string
 }
 
 export function DumpElements(funcName, elements) {

@@ -13,7 +13,7 @@ import * as helpers from '../support/Helpers'
 // text and it also automatically populates the Disqualtifying Entities field with the expected 
 // entities, so the caller only needs to specify the ones the UI does not auto populate.
 // However, there are cases where the caller may want to explicitly specify these autopopulated 
-// values anyway, and this code does allow for that.
+// values anyway, and this code DOES allow you to do that.
 
 export function CreateNewAction({
   responseNameData, // TEXT-response, API-name, CARD-full-details, END_SESSION-data - Used by create operation
@@ -33,7 +33,8 @@ export function CreateNewAction({
   type = 'TEXT'
 }) {
   // We do this first since we had a bug (1910) where it is not reset by the UI when
-  // type END_SESSION is selected.
+  // type END_SESSION is selected...thus doing it this way ensures the bug fix does
+  // not regress.
   if (uncheckWaitForResponse) actionModal.UncheckWaitForResponse()
 
   actionModal.SelectType(type)
