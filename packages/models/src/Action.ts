@@ -4,6 +4,7 @@
  */
 import EntityIdSerializer, { IOptions } from './slateSerializer'
 import { ScoredBase, ScoredAction } from './Score'
+import { CallbackResult } from './Callback'
 
 export enum ActionTypes {
   TEXT = 'TEXT',
@@ -36,6 +37,7 @@ export interface ActionClientData {
   // Used to match import utterances
   actionHashes?: string[]
   lgName?: string
+  mockResults: CallbackResult[]
 }
 
 // Need dummy actionId for stub action

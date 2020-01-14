@@ -10,23 +10,129 @@ import HelpIcon from '../HelpIcon'
 import './CallbackResultViewerModal.css'
 
 type ReceivedProps = {
+    entities: CLM.EntityBase[]
     isOpen: boolean
-    callbackResult: CLM.CallbackResult
+    isEditing: boolean
+    callbackResult: CLM.CallbackResult | undefined
     onClickSubmit: (callbackResult: CLM.CallbackResult) => void
     onClickCancel: () => void
 }
 
 type Props = ReceivedProps & InjectedIntlProps
 
+// TODO: Clicking clear after setting strings would clear strings. Undesirable to lose but confusing to save.
+type EntityValue = {
+    value: string
+    isMultiline: boolean
+}
+
+type EntityValues = {
+    values: EntityValue[]
+    clear: boolean
+}
+
+type State = {
+    name: string
+    entitiesValues: [string, EntityValues][]
+    returnValue: string | undefined
+    isReturnValueMultiline: boolean
+    isSaveDisabled: boolean
+}
+
+enum ActionTypes {
+    AddEntity,
+    AddEntityValue,
+    ChangeName,
+    OpenModal,
+}
+
+type Action = {
+    type: ActionTypes.ChangeName
+    name: string
+} | {
+    type: ActionTypes.AddEntity
+} | {
+    type: ActionTypes.AddEntityValue
+} | {
+    type: ActionTypes.OpenModal,
+    mockResult: CLM.CallbackResult | undefined
+}
+
+const reducer: React.Reducer<State, Action> = (state, action) => {
+    switch (action.type) {
+        case ActionTypes.OpenModal: {
+            state = initializeState(action.mockResult)
+            break
+        }
+    }
+
+    return state
+}
+
+const initializeState = (callbackResult: CLM.CallbackResult | undefined): State => {
+    const name = callbackResult?.name ?? ''
+    const entitiesValues = Object.entries(callbackResult?.entityValues ?? [])
+        .map<[string, EntityValues]>(([entityName, entityValue]) => {
+            // Entity might be single value or multi value, convert all to array for consistent processing
+            const entityValuesArray = Array.isArray(entityValue) ? entityValue : [entityValue]
+            const entityValuesForDisplay = entityValuesArray
+                .map(value => JSON.stringify(value, null, '  '))
+                // Enable multiline if the value is multiline
+                // Likely used to represent readable JSON objects, but could be multiline strings
+                .map<EntityValue>(value => {
+                    const isMultiline = value.includes('\n')
+
+                    return {
+                        value,
+                        isMultiline,
+                    }
+                })
+
+            return [entityName, { values: entityValuesForDisplay, clear: false }]
+        })
+
+    const returnValueString = callbackResult
+        ? JSON.stringify(callbackResult.returnValue, null, '  ')
+        : undefined
+    const isReturnValueMultiline = returnValueString?.includes('\n') ?? false
+
+    return {
+        name,
+        entitiesValues,
+        returnValue: returnValueString,
+        isReturnValueMultiline,
+        isSaveDisabled: false,
+    }
+}
+
 const Component: React.FC<Props> = (props) => {
-    const onClickSubmit = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement | HTMLDivElement | OF.BaseButton | OF.Button | HTMLSpanElement, MouseEvent>) => {
-        props.onClickSubmit(props.callbackResult)
+    const [state, dispatch] = React.useReducer(reducer, props.callbackResult, initializeState)
+    React.useEffect(() => {
+        if (props.isOpen) {
+            console.debug(`Modal opened`)
+            dispatch({
+                type: ActionTypes.OpenModal,
+                mockResult: props.callbackResult,
+            })
+        }
+    }, [props.isOpen])
+    const onClickSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
+        if (props.callbackResult) {
+            props.onClickSubmit(props.callbackResult)
+        }
     }
     const onClickCancel = props.onClickCancel
-    const isSaveDisabled = false
-    const callbackResultEntityValueEntries = Object.entries(props.callbackResult.entityValues)
-    const returnValueString = JSON.stringify(props.callbackResult.returnValue, null, '  ')
-    const isReturnValueMultiline = returnValueString.includes('\n')
+
+    const onChangeName = (event: React.FormEvent<HTMLInputElement>, newValue?: string | undefined): void => {
+        if (!newValue) {
+            return
+        }
+
+        dispatch({
+            type: ActionTypes.ChangeName,
+            name: newValue,
+        })
+    }
 
     return <OF.Modal
         isOpen={props.isOpen}
@@ -43,8 +149,9 @@ const Component: React.FC<Props> = (props) => {
                     <OF.TextField
                         label={"Name"}
                         className={OF.FontClassNames.mediumPlus}
-                        readOnly={true}
-                        value={props.callbackResult.name}
+                        readOnly={props.isEditing === false}
+                        value={state.name}
+                        onChange={onChangeName}
                     />
                 </div>
                 <div>
@@ -55,34 +162,19 @@ const Component: React.FC<Props> = (props) => {
                         </OF.Label>
                     </div>
 
-                    {callbackResultEntityValueEntries.length === 0
+                    {state.entitiesValues.length === 0
                         ? <p>No Entity Values Set</p>
                         : <div className="cl-callback-result-modal__entity-values">
-                            {callbackResultEntityValueEntries.map(([entityName, entityValue], entityValueEntryIndex) => {
+                            {state.entitiesValues.map(([entityName, entityValues], entityValueEntryIndex) => {
                                 let values
-                                if (entityValue === null) {
+                                if (entityValues === null) {
                                     values = <div className="cl-callback-result-modal__entity-values__entity-removed">Deleted</div>
                                 }
                                 else {
-                                    // Entity might be single value or multi value, convert all to array for consistent processing
-                                    const entityValuesArray = Array.isArray(entityValue) ? entityValue : [entityValue]
-                                    const entityValuesForDisplay = entityValuesArray
-                                        .map(value => JSON.stringify(value, null, '  '))
-                                        // Enable multiline if the value is multiline
-                                        // Likely used to represent readable JSON objects, but could be multiline strings
-                                        .map(value => {
-                                            const isMultiline = value.includes('\n')
-
-                                            return {
-                                                value,
-                                                isMultiline,
-                                            }
-                                        })
-
-                                    values = entityValuesForDisplay.map((valueObject, i) =>
+                                    values = entityValues.values.map((valueObject, i) =>
                                         <OF.TextField
                                             key={`${entityName}-${i}`}
-                                            readOnly={true}
+                                            readOnly={props.isEditing === false}
                                             multiline={valueObject.isMultiline}
                                             value={valueObject.value}
                                         />
@@ -97,13 +189,13 @@ const Component: React.FC<Props> = (props) => {
                         </div>
                     }
 
-                    {returnValueString &&
+                    {state.returnValue &&
                         <div className="cl-callback-result-modal__return-value">
                             <OF.Label>Return Value</OF.Label>
                             <OF.TextField
-                                readOnly={true}
-                                multiline={isReturnValueMultiline}
-                                value={returnValueString}
+                                readOnly={props.isEditing === false}
+                                multiline={state.isReturnValueMultiline}
+                                value={state.returnValue}
                             />
                         </div>}
                 </div>
@@ -116,7 +208,7 @@ const Component: React.FC<Props> = (props) => {
                 <OF.PrimaryButton
                     data-testid="callback-result-viewer-button-ok"
                     onClick={onClickSubmit}
-                    disabled={isSaveDisabled}
+                    disabled={state.isSaveDisabled}
                     ariaDescription={Util.formatMessageId(props.intl, FM.BUTTON_OK)}
                     text={Util.formatMessageId(props.intl, FM.BUTTON_OK)}
                     iconProps={{ iconName: 'Accept' }}

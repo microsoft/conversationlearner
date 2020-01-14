@@ -93,7 +93,9 @@ const Component: React.FC<Props> = (props) => {
 
         {selectedCallbackResult
             && <CallbackResultViewerModal
+                entities={[]}
                 isOpen={isCallbackResultViewerOpen}
+                isEditing={false}
                 onClickCancel={onClickCancelStubViewer}
                 onClickSubmit={() => { }}
                 callbackResult={selectedCallbackResult}

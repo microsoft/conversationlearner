@@ -34,6 +34,16 @@ export interface ActivityHeight {
     padding: number | undefined
 }
 
+export enum MockResultSource {
+    CODE,
+    MODEL,
+}
+
+export type MockResultWithSource = {
+    mockResult: CLM.CallbackResult,
+    source: MockResultSource,
+}
+
 // Used to add id for running UI tests
 export interface ChoiceGroupOptionWithTestId extends OF.IChoiceGroupOption {
     'data-testid': string

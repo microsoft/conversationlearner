@@ -21,7 +21,7 @@ import ActionSelector from '../ActionSelector'
 import AdaptiveCardViewer from '../AdaptiveCardViewer/AdaptiveCardViewer'
 import CLTagPicker from '../../CLTagPicker'
 import HelpIcon from '../../HelpIcon'
-import { ImportedAction } from '../../../types/models'
+import { ImportedAction, MockResultSource, MockResultWithSource } from '../../../types/models'
 import { Value } from 'slate'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -282,8 +282,8 @@ interface ComponentState {
     isConfirmEditModalOpen: boolean
     isConfirmDuplicateActionModalOpen: boolean
     isRepromptActionSelectorModelOpen: boolean
-    isCallbackResultViewerOpen: boolean
-    selectedCallbackResult: CLM.CallbackResult | undefined
+    isCallbackResultModalOpen: boolean
+    selectedCallbackResult: MockResultWithSource | undefined
     validationWarnings: string[]
     isPayloadFocused: boolean
     isPayloadMissing: boolean
@@ -330,7 +330,7 @@ const initialState: Readonly<ComponentState> = {
     isConfirmEditModalOpen: false,
     isConfirmDuplicateActionModalOpen: false,
     isRepromptActionSelectorModelOpen: false,
-    isCallbackResultViewerOpen: false,
+    isCallbackResultModalOpen: false,
     selectedCallbackResult: undefined,
     validationWarnings: [],
     isPayloadFocused: false,
@@ -1049,7 +1049,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             enumValueId: this.state.selectedEnumValueOptionKey,
             clientData: this.props.action
                 ? this.props.action.clientData
-                : { actionHashes: [] }
+                : {
+                    actionHashes: [],
+                    mockResults: [],
+                }
         })
 
         if (this.state.isEditing && this.props.action) {
@@ -1582,9 +1585,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onClickViewCallbackResult(callbackResult: CLM.CallbackResult): void {
+    onClickViewCallbackResult(callbackResult: MockResultWithSource): void {
         this.setState({
-            isCallbackResultViewerOpen: true,
+            isCallbackResultModalOpen: true,
             selectedCallbackResult: callbackResult,
         })
     }
@@ -1592,12 +1595,18 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     @autobind
     onClickCancelCallbackResultViewer(): void {
         this.setState({
-            isCallbackResultViewerOpen: false,
+            isCallbackResultModalOpen: false,
         })
     }
 
     // Clicking ok OK currently does same thing as Cancel because there is no editing of results defined in Code
     onClickOkStubViewer = this.onClickCancelCallbackResultViewer
+
+    onClickNewMockResult(): void {
+        this.setState({
+            isCallbackResultModalOpen: true,
+        })
+    }
 
     render() {
         const { intl } = this.props
@@ -1635,6 +1644,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             && this.state.selectedApiOptionKey
             ? this.props.botInfo.callbacks.find(t => t.name === this.state.selectedApiOptionKey)
             : undefined
+
+        const mockResultsFromCode = (callback?.mockResults ?? []).map<MockResultWithSource>(mockResult => ({ mockResult, source: MockResultSource.CODE }))
+        const mockResultsFromModel = (this.props.action?.clientData?.mockResults ?? []).map<MockResultWithSource>(mockResult => ({ mockResult, source: MockResultSource.MODEL }))
+        const mockResultsWithSource = [
+            ...mockResultsFromCode,
+            ...mockResultsFromModel,
+        ]
 
         const uniqueConditions = getUniqueConditions(this.props.actions)
 
@@ -1747,21 +1763,21 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                             <OF.Label>Mock Results <HelpIcon data-testid="action-help-panel-callback-result" tipType={ToolTip.TipType.MOCK_RESULT} /></OF.Label>
                                             {/* In future include results defined in UI */}
                                             <div className="cl-action-creator-section">
-                                                {callback.mockResults.length === 0
+                                                {mockResultsWithSource.length === 0
                                                     ? <div>No Results Defined</div>
-                                                    : callback.mockResults.map(mockResult => {
+                                                    : mockResultsWithSource.map(mockResultWithSource => {
                                                         return <div className="cl-action-creator-input-with-button"
                                                             data-testid="action-callback-result-row"
-                                                            key={mockResult.name}>
+                                                            key={mockResultWithSource.mockResult.name}>
                                                             <OF.TextField
                                                                 data-testid="action-callback-result-name"
-                                                                value={mockResult.name}
+                                                                value={mockResultWithSource.mockResult.name}
                                                                 disabled={true}
                                                             />
                                                             <OF.IconButton
                                                                 data-testid="action-callback-result-view-button"
                                                                 className="ms-Button--primary"
-                                                                onClick={() => this.onClickViewCallbackResult(mockResult)}
+                                                                onClick={() => this.onClickViewCallbackResult(mockResultWithSource)}
                                                                 ariaDescription="View Result"
                                                                 iconProps={{ iconName: 'EntryView' }}
                                                             />
@@ -1770,7 +1786,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                                                 <div>
                                                     <OF.DefaultButton
-                                                        onClick={() => { }}
+                                                        onClick={this.onClickNewMockResult}
                                                         iconProps={{ iconName: 'Add' }}
                                                         ariaDescription={`New Mock Result`}
                                                         text={`New Mock Result`}
@@ -2182,14 +2198,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     onClickCreate={this.onClickCreateConditionCreator}
                     onClickCancel={this.onClickCancelConditionCreator}
                 />
-                {this.state.selectedCallbackResult &&
-                    <CallbackResultViewerModal
-                        isOpen={this.state.isCallbackResultViewerOpen}
-                        onClickCancel={this.onClickCancelCallbackResultViewer}
-                        onClickSubmit={this.onClickOkStubViewer}
-                        callbackResult={this.state.selectedCallbackResult}
-                    />
-                }
+                <CallbackResultViewerModal
+                    entities={this.props.entities}
+                    isOpen={this.state.isCallbackResultModalOpen}
+                    isEditing={this.state.selectedCallbackResult?.source === MockResultSource.MODEL}
+                    onClickCancel={this.onClickCancelCallbackResultViewer}
+                    onClickSubmit={this.onClickOkStubViewer}
+                    callbackResult={this.state.selectedCallbackResult?.mockResult}
+                />
 
             </OF.Modal>
         )

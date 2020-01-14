@@ -252,7 +252,7 @@ export async function onChangeAction(
                 const newAction = Util.deepCopy(action)
 
                 if (!newAction.clientData?.actionHashes) {
-                    newAction.clientData = { actionHashes: [] }
+                    newAction.clientData = { actionHashes: [], mockResults: [] }
                 }
                 // Look for lgItem by checking hash
                 if (oldTrainScorerStep.importText && lgItems) {
@@ -510,7 +510,7 @@ export async function getOrCreatePlaceholderAPIAction(
         const newPlaceholder = CLM.ActionBase.createPlaceholderAPIAction(placeholderName, isTerminal)
 
         // If placeholder was created by import, add hash for future matching
-        newPlaceholder.clientData = { actionHashes: [apiHash] }
+        newPlaceholder.clientData = { actionHashes: [apiHash], mockResults: [] }
 
         const newAction = await createActionThunkAsync(appId, newPlaceholder)
         if (!newAction) {
