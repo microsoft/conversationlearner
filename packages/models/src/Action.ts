@@ -13,7 +13,7 @@ export enum ActionTypes {
   SET_ENTITY = 'SET_ENTITY',
   DISPATCH = 'DISPATCH',
   CHANGE_MODEL = 'CHANGE_MODEL',
-  REMOTE_WORKFLOW = 'REMOTE_WORKFLOW',
+  API_REMOTE = 'API_REMOTE',
 }
 
 export enum ConditionType {
@@ -135,6 +135,10 @@ export class ActionBase {
         const actionPayload = JSON.parse(action.payload) as ModelPayload
         return `${ActionTypes.CHANGE_MODEL}: ${actionPayload.modelName}`
       }
+      case ActionTypes.API_REMOTE: {
+        let remoteApiActionPayload = JSON.parse(action.payload) as RemoteAPIActionPayloadr
+        return remoteApiActionPayload.name
+      }
       default:
         return action.payload
     }
@@ -207,6 +211,13 @@ export interface ActionPayload {
   logicArguments: IActionArgument[]
   renderArguments: IActionArgument[]
   isPlaceholder?: boolean
+}
+
+export interface RemoteAPIActionPayload {
+  name: string
+  url: string
+  inputEntityNames: string[]
+  outputEntityNames: string[]
 }
 
 export interface ActionPayloadSingleArguments {
