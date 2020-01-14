@@ -5,7 +5,7 @@
 .cl-callback-result-modal__entity-values {
     display: grid;
     grid-gap: 1rem;
-    grid-template-columns: max-content 1fr;
+    grid-template-columns: max-content 1fr max-content;
 }
 
 .cl-callback-result-modal__entity-values__entity-removed {

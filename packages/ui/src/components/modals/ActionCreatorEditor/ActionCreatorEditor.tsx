@@ -1602,6 +1602,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     // Clicking ok OK currently does same thing as Cancel because there is no editing of results defined in Code
     onClickOkStubViewer = this.onClickCancelCallbackResultViewer
 
+    @autobind
     onClickNewMockResult(): void {
         this.setState({
             isCallbackResultModalOpen: true,

@@ -43,7 +43,9 @@ enum ActionTypes {
     AddEntity,
     AddEntityValue,
     ChangeName,
+    ChangeEntity,
     OpenModal,
+    ToggleClear,
 }
 
 type Action = {
@@ -53,13 +55,33 @@ type Action = {
     type: ActionTypes.AddEntity
 } | {
     type: ActionTypes.AddEntityValue
+    entityName: string
 } | {
-    type: ActionTypes.OpenModal,
+    type: ActionTypes.OpenModal
     mockResult: CLM.CallbackResult | undefined
+} | {
+    type: ActionTypes.ToggleClear
+    cleared: boolean
+} | {
+    type: ActionTypes.ChangeEntity
+    entityName: string
 }
 
 const reducer: React.Reducer<State, Action> = (state, action) => {
     switch (action.type) {
+        case ActionTypes.AddEntityValue: {
+            const entityValues = state.entitiesValues.find(([entityName]) => entityName === action.entityName)
+            if (!entityValues) {
+                throw new Error(`Could not find entity values entry for entity named: ${action.entityName}`)
+            }
+
+            const newValue: EntityValue = {
+                value: '',
+                isMultiline: false,
+            }
+            entityValues[1].values.push(newValue)
+            break
+        }
         case ActionTypes.OpenModal: {
             state = initializeState(action.mockResult)
             break
@@ -105,8 +127,30 @@ const initializeState = (callbackResult: CLM.CallbackResult | undefined): State 
     }
 }
 
+const noneOption: OF.IDropdownOption = {
+    key: 'none',
+    text: 'None',
+}
+
 const Component: React.FC<Props> = (props) => {
+    const entityDropdownOptions = React.useMemo(() => {
+        const entityOptions = props.entities
+            .map<OF.IDropdownOption>(e => {
+                return {
+                    key: e.entityId,
+                    text: e.entityName,
+                    data: e,
+                }
+            })
+
+        return [
+            noneOption,
+            ...entityOptions,
+        ]
+    }, [props.entities.length])
+
     const [state, dispatch] = React.useReducer(reducer, props.callbackResult, initializeState)
+    // Every time the modal opens, reset the state
     React.useEffect(() => {
         if (props.isOpen) {
             console.debug(`Modal opened`)
@@ -116,6 +160,7 @@ const Component: React.FC<Props> = (props) => {
             })
         }
     }, [props.isOpen])
+
     const onClickSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
         if (props.callbackResult) {
             props.onClickSubmit(props.callbackResult)
@@ -131,6 +176,39 @@ const Component: React.FC<Props> = (props) => {
         dispatch({
             type: ActionTypes.ChangeName,
             name: newValue,
+        })
+    }
+
+    const onChangeClear = (ev?: React.FormEvent<HTMLElement | HTMLInputElement> | undefined, checked?: boolean | undefined): void => {
+        if (checked === undefined) {
+            return
+        }
+
+        dispatch({
+            type: ActionTypes.ToggleClear,
+            cleared: checked,
+        })
+    }
+
+    const acceptText = props.isEditing
+        ? Util.formatMessageId(props.intl, FM.BUTTON_SAVE)
+        : Util.formatMessageId(props.intl, FM.BUTTON_OK)
+
+    const onClickNewEntityValue = (entityName: string) => {
+        dispatch({
+            type: ActionTypes.AddEntityValue,
+            entityName,
+        })
+    }
+
+    const onChangeEntity = (event: React.FormEvent<HTMLDivElement>, option?: OF.IDropdownOption | undefined, index?: number | undefined): void => {
+        if (!option) {
+            return
+        }
+
+        dispatch({
+            type: ActionTypes.ChangeEntity,
+            entityName: option.data.entityName,
         })
     }
 
@@ -165,10 +243,15 @@ const Component: React.FC<Props> = (props) => {
                     {state.entitiesValues.length === 0
                         ? <p>No Entity Values Set</p>
                         : <div className="cl-callback-result-modal__entity-values">
-                            {state.entitiesValues.map(([entityName, entityValues], entityValueEntryIndex) => {
+                            {state.entitiesValues.map(([entityName, entityValues], entityIndex) => {
+                                const previousEntityValuesNames = state.entitiesValues.slice(0, entityIndex).map(entry => entry[0])
+                                const availableEntityDropdownOptions = entityDropdownOptions.filter(e => previousEntityValuesNames.includes(e.text) === false)
+                                const entityDropdownOption = entityDropdownOptions.find(e => e.data?.entityName === entityName)
+                                const selectedEntityOption = entityDropdownOption ?? noneOption
+
                                 let values
                                 if (entityValues === null) {
-                                    values = <div className="cl-callback-result-modal__entity-values__entity-removed">Deleted</div>
+                                    values = [<div className="cl-callback-result-modal__entity-values__entity-removed">Deleted</div>]
                                 }
                                 else {
                                     values = entityValues.values.map((valueObject, i) =>
@@ -181,9 +264,28 @@ const Component: React.FC<Props> = (props) => {
                                     )
                                 }
 
-                                return <React.Fragment key={entityValueEntryIndex}>
-                                    <div><OF.Label>{entityName}</OF.Label></div>
+                                const newValueButton = <OF.DefaultButton
+                                    onClick={() => onClickNewEntityValue(entityName)}
+                                    text={"New Value"}
+                                    iconProps={{ iconName: 'Add' }}
+                                    data-testid="callback-result-modal-button-new-value"
+                                />
+
+                                values.push(newValueButton)
+
+                                return <React.Fragment key={entityName}>
+                                    <OF.Dropdown
+                                        data-testid="condition-creator-modal-dropdown-entity"
+                                        selectedKey={selectedEntityOption.key}
+                                        options={availableEntityDropdownOptions}
+                                        onChange={onChangeEntity}
+                                    />
                                     <div className="cl-callback-result-modal__entity-values__list">{values}</div>
+                                    <OF.Checkbox
+                                        label={"Clear"}
+                                        checked={entityValues.clear}
+                                        onChange={onChangeClear}
+                                    />
                                 </React.Fragment>
                             })}
                         </div>
@@ -209,8 +311,8 @@ const Component: React.FC<Props> = (props) => {
                     data-testid="callback-result-viewer-button-ok"
                     onClick={onClickSubmit}
                     disabled={state.isSaveDisabled}
-                    ariaDescription={Util.formatMessageId(props.intl, FM.BUTTON_OK)}
-                    text={Util.formatMessageId(props.intl, FM.BUTTON_OK)}
+                    ariaDescription={acceptText}
+                    text={acceptText}
                     iconProps={{ iconName: 'Accept' }}
                 />
                 <OF.DefaultButton
