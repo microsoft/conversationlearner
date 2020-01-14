@@ -441,6 +441,9 @@ export function VerifyCardChatMessage(expectedCardTitle, expectedCardText, expec
   cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
     if (!expectedIndexOfMessage) {
       expectedIndexOfMessage = allChatElements.length - 1
+
+      // Bug 2441: Exceptions are causing Double Chat Bot Messages
+      // This block of code was introduced to account for bug 2241 once it is fixed we should be able comment it out or remove it.
       if (Cypress.$(allChatElements[expectedIndexOfMessage]).attr('class').includes('wc-message-color-exception')) {
         // Sometimes exception messages come after the user turn, this accounts for that fact by setting the index back one more turn.
         expectedIndexOfMessage--
