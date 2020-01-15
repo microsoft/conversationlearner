@@ -227,7 +227,10 @@ export const isConditionTrue = (
     filledEntities: CLM.FilledEntity[],
     entities: CLM.EntityBase[]
 ): boolean => {
-    if (condition.valueId) {
+    if (condition.stringValue){
+        return isStringConditionTrue(condition, filledEntities)
+    }
+    else if (condition.valueId) {
         return isEnumConditionTrue(condition, filledEntities)
     }
     else if (condition.value) {
@@ -239,6 +242,21 @@ export const isConditionTrue = (
     }
 }
 
+const isStringConditionTrue = (
+    condition: CLM.Condition,
+    filledEntities: CLM.FilledEntity[]
+): boolean => {
+    if (condition.stringValue) {
+        const filledEntity = filledEntities.find(e => e.entityId === condition.entityId)
+        const stringValue = filledEntity && filledEntity.values.length > 0 && filledEntity.values[0].displayText
+        if (stringValue === condition.stringValue) {
+            return true
+        }
+    }
+
+    return false
+}
+    
 const isEnumConditionTrue = (
     condition: CLM.Condition,
     filledEntities: CLM.FilledEntity[]
