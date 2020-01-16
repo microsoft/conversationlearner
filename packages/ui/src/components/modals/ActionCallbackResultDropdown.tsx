@@ -6,7 +6,7 @@ import * as ToolTips from '../ToolTips/ToolTips'
 import * as Util from '../../Utils/util'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import CallbackResultViewerModal from './CallbackResultViewerModal'
+import CallbackResultModal from './CallbackResultViewerModal'
 import './ActionCallbackResultDropdown.css'
 
 type ReceivedProps = {
@@ -18,44 +18,46 @@ type ReceivedProps = {
 
 type Props = ReceivedProps & InjectedIntlProps
 
+const convertCallbackResultToDropdownOption = (callbackResult: CLM.CallbackResult): OF.IDropdownOption =>
+    ({
+        key: callbackResult.name,
+        text: callbackResult.name,
+        data: callbackResult,
+    })
+
 /**
  * Renders dropdown for mock result names of callback actions with preview modal.
  * This helps select which mock result should be used when the action is taken during training.
  */
 const Component: React.FC<Props> = (props) => {
-    const [isCallbackResultViewerOpen, setIsCallbackResultViewerOpen] = React.useState(false)
+    const [isCallbackResultModalOpen, setIsCallbackResultModalOpen] = React.useState(false)
     const onClickViewCallbackResult = () => {
-        setIsCallbackResultViewerOpen(s => !s)
+        setIsCallbackResultModalOpen(s => !s)
     }
 
     const onClickCancelStubViewer = () => {
-        setIsCallbackResultViewerOpen(false)
+        setIsCallbackResultModalOpen(false)
     }
 
     // Compute list of results from callbacks
     // If no results defined, show None and Disable preview.
     // If results defined list stub names and none selected.
     const noneOptionKey = 'none'
-    const callbackResultOptions: OF.IDropdownOption[] = [
-        {
-            key: noneOptionKey,
-            text: 'None',
-        },
-    ]
-
-    // TODO: Add options from stubs defined on model
-    const callback = props.callback
-    if (callback?.mockResults) {
-        const callbackResultOptionsFromBot = callback.mockResults.map<OF.IDropdownOption>(callbackResult => ({
-            key: callbackResult.name,
-            text: callbackResult.name,
-            data: callbackResult,
-        }))
-
-        callbackResultOptions.push(...callbackResultOptionsFromBot)
+    const noneOption: OF.IDropdownOption = {
+        key: noneOptionKey,
+        text: 'None',
     }
 
-    const [selectedCallbackResultOptionKey, setSelectedCallbackResultOptionKey] = React.useState(props.selectedCallbackResult?.name ?? noneOptionKey)
+    const callbackResultOptionsFromBot = (props.callback?.mockResults ?? []).map(convertCallbackResultToDropdownOption)
+    const callbackResultOptionsFromModel = (props.action.clientData?.mockResults ?? []).map(convertCallbackResultToDropdownOption)
+
+    const callbackResultOptions = [
+        noneOption,
+        ...callbackResultOptionsFromBot,
+        ...callbackResultOptionsFromModel,
+    ]
+
+    const [selectedCallbackResultOptionKey, setSelectedCallbackResultOptionKey] = React.useState<string>(props.selectedCallbackResult?.name ?? noneOptionKey)
     const onChangeSelectedCallbackResult = (event: React.FormEvent<HTMLDivElement>, option?: OF.IDropdownOption | undefined, index?: number | undefined) => {
         if (!option) {
             return
@@ -67,7 +69,7 @@ const Component: React.FC<Props> = (props) => {
     }
 
     const isCallbackResultViewDisabled = selectedCallbackResultOptionKey === noneOptionKey
-    const selectedCallbackResult = callback?.mockResults.find(mockResult => mockResult.name === selectedCallbackResultOptionKey)
+    const selectedCallbackResult = props.callback?.mockResults.find(mockResult => mockResult.name === selectedCallbackResultOptionKey)
 
     return <>
         <div className="cl-callback-result-selector">
@@ -91,15 +93,14 @@ const Component: React.FC<Props> = (props) => {
             />
         </div>
 
-        {selectedCallbackResult
-            && <CallbackResultViewerModal
-                entities={[]}
-                isOpen={isCallbackResultViewerOpen}
-                isEditing={false}
-                onClickCancel={onClickCancelStubViewer}
-                onClickSubmit={() => { }}
-                callbackResult={selectedCallbackResult}
-            />}
+        <CallbackResultModal
+            entities={[]}
+            isOpen={isCallbackResultModalOpen}
+            isEditing={false}
+            onClickCancel={onClickCancelStubViewer}
+            onClickSubmit={() => { }}
+            callbackResult={selectedCallbackResult}
+        />
     </>
 }
 

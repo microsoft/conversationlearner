@@ -35,7 +35,7 @@ import { FM } from '../../../react-intl-messages'
 import { autobind } from 'core-decorators'
 import { IConditionalTag, getEnumConditionName, convertConditionToConditionalTag, isConditionEqual, getUniqueConditions } from '../../../Utils/actionCondition'
 import './ActionCreatorEditor.css'
-import CallbackResultViewerModal from '../CallbackResultViewerModal'
+import CallbackResultModal from '../CallbackResultViewerModal'
 
 const TEXT_SLOT = '#TEXT_SLOT#'
 
@@ -1593,19 +1593,20 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onClickCancelCallbackResultViewer(): void {
+    onClickCancelCallbackResultModal(): void {
         this.setState({
             isCallbackResultModalOpen: false,
         })
     }
 
     // Clicking ok OK currently does same thing as Cancel because there is no editing of results defined in Code
-    onClickOkStubViewer = this.onClickCancelCallbackResultViewer
+    onClickSubmitCallbackResultModal = this.onClickCancelCallbackResultModal
 
     @autobind
     onClickNewMockResult(): void {
         this.setState({
             isCallbackResultModalOpen: true,
+            selectedCallbackResult: undefined,
         })
     }
 
@@ -2199,15 +2200,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     onClickCreate={this.onClickCreateConditionCreator}
                     onClickCancel={this.onClickCancelConditionCreator}
                 />
-                <CallbackResultViewerModal
+                <CallbackResultModal
                     entities={this.props.entities}
                     isOpen={this.state.isCallbackResultModalOpen}
-                    isEditing={this.state.selectedCallbackResult?.source === MockResultSource.MODEL}
-                    onClickCancel={this.onClickCancelCallbackResultViewer}
-                    onClickSubmit={this.onClickOkStubViewer}
-                    callbackResult={this.state.selectedCallbackResult?.mockResult}
+                    onClickCancel={this.onClickCancelCallbackResultModal}
+                    onClickSubmit={this.onClickSubmitCallbackResultModal}
+                    callbackResult={this.state.selectedCallbackResult}
                 />
-
             </OF.Modal>
         )
     }

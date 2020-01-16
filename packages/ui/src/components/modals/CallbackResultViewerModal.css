@@ -8,6 +8,12 @@
     grid-template-columns: max-content 1fr max-content;
 }
 
+.cl-callback-result-modal__entity-value {
+    display: grid;
+    grid-gap: 1rem;
+    grid-template-columns: 1fr min-content;
+}
+
 .cl-callback-result-modal__entity-values__entity-removed {
     padding: 5px 0;
 }

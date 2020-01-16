@@ -8,12 +8,12 @@ import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import HelpIcon from '../HelpIcon'
 import './CallbackResultViewerModal.css'
+import { MockResultWithSource, MockResultSource } from 'src/types'
 
 type ReceivedProps = {
     entities: CLM.EntityBase[]
     isOpen: boolean
-    isEditing: boolean
-    callbackResult: CLM.CallbackResult | undefined
+    callbackResult: MockResultWithSource | undefined
     onClickSubmit: (callbackResult: CLM.CallbackResult) => void
     onClickCancel: () => void
 }
@@ -82,9 +82,16 @@ const reducer: React.Reducer<State, Action> = (state, action) => {
             entityValues[1].values.push(newValue)
             break
         }
+        case ActionTypes.ChangeName: {
+            state.name = action.name
+            break
+        }
         case ActionTypes.OpenModal: {
             state = initializeState(action.mockResult)
             break
+        }
+        default: {
+            console.warn(`You dispatched an action of type: ${action.type} which was not handled. This is likely an error.`)
         }
     }
 
@@ -133,6 +140,8 @@ const noneOption: OF.IDropdownOption = {
 }
 
 const Component: React.FC<Props> = (props) => {
+    // If mock result is sourced from model, allow editing
+    const isEditing = props.callbackResult?.source === MockResultSource.MODEL
     const entityDropdownOptions = React.useMemo(() => {
         const entityOptions = props.entities
             .map<OF.IDropdownOption>(e => {
@@ -149,21 +158,21 @@ const Component: React.FC<Props> = (props) => {
         ]
     }, [props.entities.length])
 
-    const [state, dispatch] = React.useReducer(reducer, props.callbackResult, initializeState)
+    const [state, dispatch] = React.useReducer(reducer, props.callbackResult?.mockResult, initializeState)
     // Every time the modal opens, reset the state
     React.useEffect(() => {
         if (props.isOpen) {
             console.debug(`Modal opened`)
             dispatch({
                 type: ActionTypes.OpenModal,
-                mockResult: props.callbackResult,
+                mockResult: props.callbackResult?.mockResult,
             })
         }
     }, [props.isOpen])
 
     const onClickSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
         if (props.callbackResult) {
-            props.onClickSubmit(props.callbackResult)
+            props.onClickSubmit(props.callbackResult.mockResult)
         }
     }
     const onClickCancel = props.onClickCancel
@@ -190,7 +199,7 @@ const Component: React.FC<Props> = (props) => {
         })
     }
 
-    const acceptText = props.isEditing
+    const acceptText = isEditing
         ? Util.formatMessageId(props.intl, FM.BUTTON_SAVE)
         : Util.formatMessageId(props.intl, FM.BUTTON_OK)
 
@@ -212,6 +221,10 @@ const Component: React.FC<Props> = (props) => {
         })
     }
 
+    const onClickDeleteEntityValue = (entityValueIndex: number): void => {
+        console.log(`Delete Value`, entityValueIndex)
+    }
+
     return <OF.Modal
         isOpen={props.isOpen}
         containerClassName="cl-modal cl-modal--medium"
@@ -227,7 +240,7 @@ const Component: React.FC<Props> = (props) => {
                     <OF.TextField
                         label={"Name"}
                         className={OF.FontClassNames.mediumPlus}
-                        readOnly={props.isEditing === false}
+                        readOnly={isEditing === false}
                         value={state.name}
                         onChange={onChangeName}
                     />
@@ -248,30 +261,42 @@ const Component: React.FC<Props> = (props) => {
                                 const availableEntityDropdownOptions = entityDropdownOptions.filter(e => previousEntityValuesNames.includes(e.text) === false)
                                 const entityDropdownOption = entityDropdownOptions.find(e => e.data?.entityName === entityName)
                                 const selectedEntityOption = entityDropdownOption ?? noneOption
+                                const isMultiValue = selectedEntityOption.data?.isMultivalue === true
 
                                 let values
                                 if (entityValues === null) {
                                     values = [<div className="cl-callback-result-modal__entity-values__entity-removed">Deleted</div>]
                                 }
                                 else {
-                                    values = entityValues.values.map((valueObject, i) =>
-                                        <OF.TextField
-                                            key={`${entityName}-${i}`}
-                                            readOnly={props.isEditing === false}
-                                            multiline={valueObject.isMultiline}
-                                            value={valueObject.value}
-                                        />
+                                    values = entityValues.values.map((valueObject, valueIndex) =>
+                                        <div className="cl-callback-result-modal__entity-value">
+                                            <OF.TextField
+                                                key={`${entityName}-${valueIndex}`}
+                                                readOnly={isEditing === false}
+                                                multiline={valueObject.isMultiline}
+                                                value={valueObject.value}
+                                            />
+                                            <OF.IconButton
+                                                data-testid="entity-enum-value-button-delete"
+                                                className={`cl-inputWithButton-button`}
+                                                iconProps={{ iconName: 'Delete' }}
+                                                onClick={() => onClickDeleteEntityValue(valueIndex)}
+                                                ariaDescription="Delete Entity Value"
+                                            />
+                                        </div>
                                     )
                                 }
 
-                                const newValueButton = <OF.DefaultButton
-                                    onClick={() => onClickNewEntityValue(entityName)}
-                                    text={"New Value"}
-                                    iconProps={{ iconName: 'Add' }}
-                                    data-testid="callback-result-modal-button-new-value"
-                                />
+                                if (isMultiValue) {
+                                    const newValueButton = <OF.DefaultButton
+                                        onClick={() => onClickNewEntityValue(entityName)}
+                                        text={"New Value"}
+                                        iconProps={{ iconName: 'Add' }}
+                                        data-testid="callback-result-modal-button-new-value"
+                                    />
 
-                                values.push(newValueButton)
+                                    values.push(newValueButton)
+                                }
 
                                 return <React.Fragment key={entityName}>
                                     <OF.Dropdown
@@ -291,11 +316,11 @@ const Component: React.FC<Props> = (props) => {
                         </div>
                     }
 
-                    {state.returnValue &&
+                    {typeof state.returnValue === 'string' &&
                         <div className="cl-callback-result-modal__return-value">
                             <OF.Label>Return Value</OF.Label>
                             <OF.TextField
-                                readOnly={props.isEditing === false}
+                                readOnly={isEditing === false}
                                 multiline={state.isReturnValueMultiline}
                                 value={state.returnValue}
                             />

@@ -377,6 +377,34 @@ cl.AddCallback({
     ],
 })
 
+
+cl.AddCallback({
+    name: "Color",
+    render: async (_, memory) => {
+        const name = memory.Get('name')
+        const color = memory.Get('color')
+
+        return `Hi ${name}, your favorite color is ${color}`
+    }
+})
+
+cl.AddCallback<any>({
+    name: "Color2",
+    logic: async (memory) => {
+        const name = memory.Get('name')
+        const color = memory.Get('color')
+
+        return {
+            name,
+            color,
+        }
+    },
+    render: async ({ name, color }) => {
+        return `Hi ${name}, your favorite color is ${color}`
+    }
+})
+
+
 //===================================================================================================
 // Most of the time this should be commented out, we leave it here so that it can be used to create
 // a model that depends on it and then remove it by commenting it out in order to test error handling
