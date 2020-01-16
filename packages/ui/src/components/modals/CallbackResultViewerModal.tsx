@@ -8,12 +8,13 @@ import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import HelpIcon from '../HelpIcon'
 import './CallbackResultViewerModal.css'
-import { MockResultWithSource, MockResultSource } from 'src/types'
+import produce from 'immer'
 
 type ReceivedProps = {
     entities: CLM.EntityBase[]
     isOpen: boolean
-    callbackResult: MockResultWithSource | undefined
+    isEditing: boolean
+    callbackResult: CLM.CallbackResult | undefined
     onClickSubmit: (callbackResult: CLM.CallbackResult) => void
     onClickCancel: () => void
 }
@@ -67,8 +68,15 @@ type Action = {
     entityName: string
 }
 
-const reducer: React.Reducer<State, Action> = (state, action) => {
+const reducer: React.Reducer<State, Action> = produce((state: State, action: Action) => {
     switch (action.type) {
+        case ActionTypes.AddEntity: {
+            // Add new empty value the user can fill in. Currently editable values are strings
+            const newValue: EntityValue = { value: '', isMultiline: false }
+            const newEntity: [string, EntityValues] = ['', { values: [newValue], clear: false }]
+            state.entitiesValues.push(newEntity)
+            break
+        }
         case ActionTypes.AddEntityValue: {
             const entityValues = state.entitiesValues.find(([entityName]) => entityName === action.entityName)
             if (!entityValues) {
@@ -96,7 +104,7 @@ const reducer: React.Reducer<State, Action> = (state, action) => {
     }
 
     return state
-}
+})
 
 const initializeState = (callbackResult: CLM.CallbackResult | undefined): State => {
     const name = callbackResult?.name ?? ''
@@ -141,7 +149,6 @@ const noneOption: OF.IDropdownOption = {
 
 const Component: React.FC<Props> = (props) => {
     // If mock result is sourced from model, allow editing
-    const isEditing = props.callbackResult?.source === MockResultSource.MODEL
     const entityDropdownOptions = React.useMemo(() => {
         const entityOptions = props.entities
             .map<OF.IDropdownOption>(e => {
@@ -158,21 +165,21 @@ const Component: React.FC<Props> = (props) => {
         ]
     }, [props.entities.length])
 
-    const [state, dispatch] = React.useReducer(reducer, props.callbackResult?.mockResult, initializeState)
+    const [state, dispatch] = React.useReducer(reducer, props.callbackResult, initializeState)
     // Every time the modal opens, reset the state
     React.useEffect(() => {
         if (props.isOpen) {
             console.debug(`Modal opened`)
             dispatch({
                 type: ActionTypes.OpenModal,
-                mockResult: props.callbackResult?.mockResult,
+                mockResult: props.callbackResult,
             })
         }
     }, [props.isOpen])
 
     const onClickSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
         if (props.callbackResult) {
-            props.onClickSubmit(props.callbackResult.mockResult)
+            props.onClickSubmit(props.callbackResult)
         }
     }
     const onClickCancel = props.onClickCancel
@@ -199,7 +206,7 @@ const Component: React.FC<Props> = (props) => {
         })
     }
 
-    const acceptText = isEditing
+    const acceptText = props.isEditing
         ? Util.formatMessageId(props.intl, FM.BUTTON_SAVE)
         : Util.formatMessageId(props.intl, FM.BUTTON_OK)
 
@@ -221,6 +228,12 @@ const Component: React.FC<Props> = (props) => {
         })
     }
 
+    const onClickNewEntity = () => {
+        dispatch({
+            type: ActionTypes.AddEntity,
+        })
+    }
+
     const onClickDeleteEntityValue = (entityValueIndex: number): void => {
         console.log(`Delete Value`, entityValueIndex)
     }
@@ -231,7 +244,9 @@ const Component: React.FC<Props> = (props) => {
     >
         <div className="cl-modal_header" data-testid="callback-result-viewer-title">
             <span className={OF.FontClassNames.xxLarge}>
-                <FormattedMessageId id={FM.CALLBACK_RESULT_MODAL_TITLE} />
+                {props.isEditing
+                    ? 'Edit'
+                    : 'View'} Mocked Callback Result
             </span>
         </div>
         <div className="cl-modal_body">
@@ -240,7 +255,7 @@ const Component: React.FC<Props> = (props) => {
                     <OF.TextField
                         label={"Name"}
                         className={OF.FontClassNames.mediumPlus}
-                        readOnly={isEditing === false}
+                        readOnly={props.isEditing === false}
                         value={state.name}
                         onChange={onChangeName}
                     />
@@ -272,7 +287,7 @@ const Component: React.FC<Props> = (props) => {
                                         <div className="cl-callback-result-modal__entity-value">
                                             <OF.TextField
                                                 key={`${entityName}-${valueIndex}`}
-                                                readOnly={isEditing === false}
+                                                readOnly={props.isEditing === false}
                                                 multiline={valueObject.isMultiline}
                                                 value={valueObject.value}
                                             />
@@ -288,12 +303,14 @@ const Component: React.FC<Props> = (props) => {
                                 }
 
                                 if (isMultiValue) {
-                                    const newValueButton = <OF.DefaultButton
-                                        onClick={() => onClickNewEntityValue(entityName)}
-                                        text={"New Value"}
-                                        iconProps={{ iconName: 'Add' }}
-                                        data-testid="callback-result-modal-button-new-value"
-                                    />
+                                    const newValueButton = <div>
+                                        <OF.DefaultButton
+                                            onClick={() => onClickNewEntityValue(entityName)}
+                                            text={"New Value"}
+                                            iconProps={{ iconName: 'Add' }}
+                                            data-testid="callback-result-modal-button-new-value"
+                                        />
+                                    </div>
 
                                     values.push(newValueButton)
                                 }
@@ -315,16 +332,23 @@ const Component: React.FC<Props> = (props) => {
                             })}
                         </div>
                     }
+                    {props.isEditing && <div>
+                        <OF.DefaultButton
+                            onClick={onClickNewEntity}
+                            text={"New Entity"}
+                            iconProps={{ iconName: 'Add' }}
+                            data-testid="callback-result-modal-button-new-entity"
+                        />
+                    </div>}
 
-                    {typeof state.returnValue === 'string' &&
-                        <div className="cl-callback-result-modal__return-value">
-                            <OF.Label>Return Value</OF.Label>
-                            <OF.TextField
-                                readOnly={isEditing === false}
-                                multiline={state.isReturnValueMultiline}
-                                value={state.returnValue}
-                            />
-                        </div>}
+                    <div className="cl-callback-result-modal__return-value">
+                        <OF.Label>Return Value</OF.Label>
+                        <OF.TextField
+                            readOnly={props.isEditing === false}
+                            multiline={state.isReturnValueMultiline}
+                            value={state.returnValue}
+                        />
+                    </div>
                 </div>
             </div>
         </div>

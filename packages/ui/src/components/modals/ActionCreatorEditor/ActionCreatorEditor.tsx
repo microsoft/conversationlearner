@@ -2203,9 +2203,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 <CallbackResultModal
                     entities={this.props.entities}
                     isOpen={this.state.isCallbackResultModalOpen}
+                    isEditing={this.state.selectedCallbackResult?.source === MockResultSource.MODEL}
                     onClickCancel={this.onClickCancelCallbackResultModal}
                     onClickSubmit={this.onClickSubmitCallbackResultModal}
-                    callbackResult={this.state.selectedCallbackResult}
+                    callbackResult={this.state.selectedCallbackResult?.mockResult}
                 />
             </OF.Modal>
         )
