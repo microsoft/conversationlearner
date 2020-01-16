@@ -56,7 +56,7 @@ function _GetEditorContainerForEntityDetectionPanel(index) {
   return elements
 }
 
-// These works whether text is a word or a phrase.
+// These work whether text is a word or a phrase.
 // Currently this only works for the primary user input and NOT the alternative inputs, however,
 // it could easily be expanded. Search for "Test_SelectWord" in this code file to see an example
 // of how that could be done.
@@ -108,7 +108,7 @@ function _IsWordLabeledAsEntity(word, entity, elements) {
 
 // Verify that a specific word of a user utterance has been labeled as an entity.
 //  word = a word within the utterance that should already be labeled
-//  entity = name of entity the word should be labeled with
+//  entity = name of Entity the word should be labeled with
 //  elements = optional array of elements of the input row to search
 // *** This does NOT work for phrases. ***
 export function VerifyTextIsLabeledAsEntity(word, entity, elements = undefined) {
@@ -272,6 +272,11 @@ export function VerifyEntityDetectionPhrase(expectedPhrase) {
 }
 
 // Due to: Bug 2396: Entity Labeling is automatically and correctly happening without being trained
+//
+// Pass in an array of the 'expectedTextEntityPairs' that LUIS may have detected. It is valid for there to 
+// be extra values in the array, but it is NOT valid for there to be words labeled in the UI as an Entity 
+// that is not in the 'expectedTextEntityPairs' array that was passed in.
+//
 // This function is intended to automatically verify that there are no words/phrases labeled as entities
 // that we are not expecting. At one point LUIS was automatically and randomly labeling entities, but the
 // affect of it was not noticed until some later point in the test where it would result in some random
@@ -282,12 +287,13 @@ export function VerifyEntityDetectionPhrase(expectedPhrase) {
 // that here.
 //
 // Also the current implementation supports passing in text/Entity pairs that might not be labeled
-// for those cases where sometimes LUIS labels a word or phrase and sometimes does not.
+// but sometimes are, for those cases where sometimes LUIS labels a word or phrase and sometimes does not.
 export function VerifyEntityDetectionLabeling(expectedTextEntityPairs = undefined) {
   if (expectedTextEntityPairs != undefined && !Array.isArray(expectedTextEntityPairs)) {
     throw new Error(`VerifyEntityDetectionLabeling expects an Array or undefined`)
   }
 
+  // Gets the list that LUIS returned and our UI rendered.
   function ListOfDetectedEntitiesAndLabeledText() {
     const entityElements = Cypress.$('[data-testid="custom-entity-name-button"]')
     let labeledText = []

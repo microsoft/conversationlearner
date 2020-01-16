@@ -13,9 +13,6 @@ export function VerifyNewLogDialogButtonIsEnabled() { cy.Get('[data-testid="log-
 export function ClickRefreshButton() { cy.Get('[data-testid="logdialogs-button-refresh"]').Click() }
 export function Edit(userInputs) { cy.Get('[data-testid="log-dialogs-description"]').ExactMatch(userInputs).Click() }
 
-export function GetUserInputs() { return helpers.StringArrayFromElementText('[data-testid="log-dialogs-description"]') }
-export function GetTurnCounts() { return helpers.StringArrayFromElementText('[data-testid="log-dialogs-turns"]') }
-
 export function WaitForLogDialoGridUpdateToComplete(expectedLogDialogCount) {
   const funcName = 'WaitForLogDialoGridUpdateToComplete'
   cy.log(funcName, expectedLogDialogCount)
@@ -44,6 +41,10 @@ export function WaitForLogDialoGridUpdateToComplete(expectedLogDialogCount) {
     })
 }
 
+// Get data from the Log Dialog Grid.
+function _GetUserInputs() { return helpers.StringArrayFromElementText('[data-testid="log-dialogs-description"]') }
+function _GetTurnCounts() { return helpers.StringArrayFromElementText('[data-testid="log-dialogs-turns"]') }
+
 export function VerifyListOfLogDialogs(expectedLogDialogs) {
   WaitForLogDialoGridUpdateToComplete(expectedLogDialogs.length)
 
@@ -51,8 +52,8 @@ export function VerifyListOfLogDialogs(expectedLogDialogs) {
   cy.log(funcName, expectedLogDialogs)
   cy.Enqueue(() => {
     // This data comes from the grid.
-    const userInputs = GetUserInputs()
-    const turnCounts = GetTurnCounts()
+    const userInputs = _GetUserInputs()
+    const turnCounts = _GetTurnCounts()
 
     let errors = false
     expectedLogDialogs.forEach(logDialog => {

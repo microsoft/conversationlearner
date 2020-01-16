@@ -10,6 +10,8 @@ export function VerifyPageTitle() { cy.Get('[data-testid="actions-title"]').cont
 export function ClickNewAction() { cy.Get('[data-testid="actions-button-create"]').Click() }
 export function VerifyTextActionNotInGrid(actionName) { cy.DoesNotContainExact('[data-testid="action-scorer-text-response"]', actionName) }
 
+// Because each Action type is formatted differenly in the grid we need a different function to locate each
+// individual one to edit.
 export function EditTextAction(actionName) { new Row('TEXT', actionName).EditAction() }
 export function EditCardAction(cardText) { new Row('CARD', cardText).EditAction() }
 export function EditEndSessionAction(endSessionData) { new Row('END_SESSION', endSessionData).EditAction() }

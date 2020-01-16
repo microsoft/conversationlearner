@@ -137,7 +137,7 @@ function ExtractEntities(response) {
 
     let entityName = response.substring(iStart, iEnd)
 
-    if (!IsAlphaNumeric(entityName)) iCurrent = iStart
+    if (!_IsAlphaNumeric(entityName)) iCurrent = iStart
     else {
       entitiesToReturn.push(entityName)
       let length = "{enter}".length
@@ -148,7 +148,7 @@ function ExtractEntities(response) {
   return entitiesToReturn
 }
 
-function IsAlphaNumeric(string) {
+function _IsAlphaNumeric(string) {
   for (let i = 0; i < string.length; i++) {
     const charCode = string.charCodeAt(i)
     if (!(charCode > 47 && charCode < 58) &&  // numeric (0-9)
