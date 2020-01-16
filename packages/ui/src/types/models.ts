@@ -34,6 +34,11 @@ export interface ActivityHeight {
     padding: number | undefined
 }
 
+export type MockResultsWithSource = {
+    mockResults: CLM.CallbackResult[]
+    source: MockResultSource
+}
+
 export enum MockResultSource {
     CODE,
     MODEL,

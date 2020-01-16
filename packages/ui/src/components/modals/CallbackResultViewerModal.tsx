@@ -9,12 +9,13 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 import HelpIcon from '../HelpIcon'
 import './CallbackResultViewerModal.css'
 import produce from 'immer'
+import { MockResultWithSource, MockResultSource } from 'src/types'
 
 type ReceivedProps = {
     entities: CLM.EntityBase[]
     isOpen: boolean
     isEditing: boolean
-    callbackResult: CLM.CallbackResult | undefined
+    callbackResult: MockResultWithSource | undefined
     onClickSubmit: (callbackResult: CLM.CallbackResult) => void
     onClickCancel: () => void
 }
@@ -43,8 +44,10 @@ type State = {
 enum ActionTypes {
     AddEntity,
     AddEntityValue,
+    RemoveEntityValue,
     ChangeName,
     ChangeEntity,
+    ChangeReturnValue,
     OpenModal,
     ToggleClear,
 }
@@ -58,14 +61,21 @@ type Action = {
     type: ActionTypes.AddEntityValue
     entityName: string
 } | {
+    type: ActionTypes.RemoveEntityValue
+    valueIndex: number
+} | {
     type: ActionTypes.OpenModal
     mockResult: CLM.CallbackResult | undefined
 } | {
     type: ActionTypes.ToggleClear
+    entityName: string
     cleared: boolean
 } | {
     type: ActionTypes.ChangeEntity
     entityName: string
+} | {
+    type: ActionTypes.ChangeReturnValue
+    returnValue: string
 }
 
 const reducer: React.Reducer<State, Action> = produce((state: State, action: Action) => {
@@ -90,6 +100,19 @@ const reducer: React.Reducer<State, Action> = produce((state: State, action: Act
             entityValues[1].values.push(newValue)
             break
         }
+        case ActionTypes.RemoveEntityValue: {
+            state.entitiesValues = state.entitiesValues.splice(action.valueIndex, 1)
+            break
+        }
+        case ActionTypes.ToggleClear: {
+            const entityState = state.entitiesValues.find(([entityName]) => entityName === action.entityName)
+            if (!entityState) {
+                throw new Error(`Entity state not found for entity named: ${action.entityName} on callback results: ${state.name}`)
+            }
+
+            entityState[1].clear = action.cleared
+            break
+        }
         case ActionTypes.ChangeName: {
             state.name = action.name
             break
@@ -99,7 +122,7 @@ const reducer: React.Reducer<State, Action> = produce((state: State, action: Act
             break
         }
         default: {
-            console.warn(`You dispatched an action of type: ${action.type} which was not handled. This is likely an error.`)
+            console.warn(`You dispatched an action of type: ${action.type.toString()} which was not handled. This is likely an error.`)
         }
     }
 
@@ -147,7 +170,7 @@ const noneOption: OF.IDropdownOption = {
     text: 'None',
 }
 
-const Component: React.FC<Props> = (props) => {
+const CallbackResultModal: React.FC<Props> = (props) => {
     // If mock result is sourced from model, allow editing
     const entityDropdownOptions = React.useMemo(() => {
         const entityOptions = props.entities
@@ -165,27 +188,26 @@ const Component: React.FC<Props> = (props) => {
         ]
     }, [props.entities.length])
 
-    const [state, dispatch] = React.useReducer(reducer, props.callbackResult, initializeState)
+    const [state, dispatch] = React.useReducer(reducer, props.callbackResult?.mockResult, initializeState)
     // Every time the modal opens, reset the state
     React.useEffect(() => {
         if (props.isOpen) {
-            console.debug(`Modal opened`)
             dispatch({
                 type: ActionTypes.OpenModal,
-                mockResult: props.callbackResult,
+                mockResult: props.callbackResult?.mockResult,
             })
         }
     }, [props.isOpen])
 
     const onClickSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
         if (props.callbackResult) {
-            props.onClickSubmit(props.callbackResult)
+            props.onClickSubmit(props.callbackResult?.mockResult)
         }
     }
     const onClickCancel = props.onClickCancel
 
     const onChangeName = (event: React.FormEvent<HTMLInputElement>, newValue?: string | undefined): void => {
-        if (!newValue) {
+        if (typeof newValue !== 'string') {
             return
         }
 
@@ -195,14 +217,11 @@ const Component: React.FC<Props> = (props) => {
         })
     }
 
-    const onChangeClear = (ev?: React.FormEvent<HTMLElement | HTMLInputElement> | undefined, checked?: boolean | undefined): void => {
-        if (checked === undefined) {
-            return
-        }
-
+    const onChangeClear = (entityName: string, cleared: boolean): void => {
         dispatch({
             type: ActionTypes.ToggleClear,
-            cleared: checked,
+            entityName,
+            cleared,
         })
     }
 
@@ -222,9 +241,10 @@ const Component: React.FC<Props> = (props) => {
             return
         }
 
+        const entity: CLM.EntityBase = option.data
         dispatch({
             type: ActionTypes.ChangeEntity,
-            entityName: option.data.entityName,
+            entityName: entity.entityName,
         })
     }
 
@@ -234,8 +254,23 @@ const Component: React.FC<Props> = (props) => {
         })
     }
 
-    const onClickDeleteEntityValue = (entityValueIndex: number): void => {
-        console.log(`Delete Value`, entityValueIndex)
+    const onClickDeleteEntityValue = (valueIndex: number): void => {
+        dispatch({
+            type: ActionTypes.RemoveEntityValue,
+            valueIndex,
+        })
+    }
+
+    const onChangeReturnValue = (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, returnValue?: string | undefined): void => {
+        if (returnValue === undefined) {
+            return
+        }
+
+        dispatch({
+            type: ActionTypes.ChangeReturnValue,
+            returnValue,
+        })
+
     }
 
     return <OF.Modal
@@ -258,6 +293,7 @@ const Component: React.FC<Props> = (props) => {
                         readOnly={props.isEditing === false}
                         value={state.name}
                         onChange={onChangeName}
+                        autoComplete={"false"}
                     />
                 </div>
                 <div>
@@ -290,10 +326,12 @@ const Component: React.FC<Props> = (props) => {
                                                 readOnly={props.isEditing === false}
                                                 multiline={valueObject.isMultiline}
                                                 value={valueObject.value}
+                                                autoComplete={"false"}
                                             />
                                             <OF.IconButton
                                                 data-testid="entity-enum-value-button-delete"
-                                                className={`cl-inputWithButton-button`}
+                                                disabled={props.isEditing === false}
+                                                className={`cl-button-delete`}
                                                 iconProps={{ iconName: 'Delete' }}
                                                 onClick={() => onClickDeleteEntityValue(valueIndex)}
                                                 ariaDescription="Delete Entity Value"
@@ -306,6 +344,7 @@ const Component: React.FC<Props> = (props) => {
                                     const newValueButton = <div>
                                         <OF.DefaultButton
                                             onClick={() => onClickNewEntityValue(entityName)}
+                                            disabled={props.isEditing === false}
                                             text={"New Value"}
                                             iconProps={{ iconName: 'Add' }}
                                             data-testid="callback-result-modal-button-new-value"
@@ -315,18 +354,21 @@ const Component: React.FC<Props> = (props) => {
                                     values.push(newValueButton)
                                 }
 
-                                return <React.Fragment key={entityName}>
-                                    <OF.Dropdown
-                                        data-testid="condition-creator-modal-dropdown-entity"
-                                        selectedKey={selectedEntityOption.key}
-                                        options={availableEntityDropdownOptions}
-                                        onChange={onChangeEntity}
-                                    />
+                                return <React.Fragment key={`${entityName}-${entityIndex}`}>
+                                    {props.callbackResult?.source === MockResultSource.CODE
+                                        ? <div className="cl-callback-result-modal__entity-name">{state.name}</div>
+                                        : <OF.Dropdown
+                                            data-testid="condition-creator-modal-dropdown-entity"
+                                            selectedKey={selectedEntityOption.key}
+                                            options={availableEntityDropdownOptions}
+                                            onChange={onChangeEntity}
+                                        />}
                                     <div className="cl-callback-result-modal__entity-values__list">{values}</div>
                                     <OF.Checkbox
                                         label={"Clear"}
+                                        disabled={props.isEditing === false}
                                         checked={entityValues.clear}
-                                        onChange={onChangeClear}
+                                        onChange={(e, cleared) => cleared !== undefined && onChangeClear(entityName, cleared)}
                                     />
                                 </React.Fragment>
                             })}
@@ -337,6 +379,7 @@ const Component: React.FC<Props> = (props) => {
                             onClick={onClickNewEntity}
                             text={"New Entity"}
                             iconProps={{ iconName: 'Add' }}
+                            className="cl-callback-result-modal__new-entity-button"
                             data-testid="callback-result-modal-button-new-entity"
                         />
                     </div>}
@@ -347,6 +390,8 @@ const Component: React.FC<Props> = (props) => {
                             readOnly={props.isEditing === false}
                             multiline={state.isReturnValueMultiline}
                             value={state.returnValue}
+                            onChange={onChangeReturnValue}
+                            autoComplete={"false"}
                         />
                     </div>
                 </div>
@@ -376,4 +421,4 @@ const Component: React.FC<Props> = (props) => {
     </OF.Modal>
 }
 
-export default injectIntl(Component)
+export default injectIntl(CallbackResultModal)

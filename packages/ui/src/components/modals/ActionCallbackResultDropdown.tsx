@@ -8,22 +8,18 @@ import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import CallbackResultModal from './CallbackResultViewerModal'
 import './ActionCallbackResultDropdown.css'
+import { MockResultWithSource, MockResultSource } from 'src/types'
+import { assignSourcesToMockResults, convertCallbackResultToDropdownOption } from 'src/Utils/mockResults'
 
 type ReceivedProps = {
+    entities: CLM.EntityBase[]
     action: CLM.ApiAction,
     callback: CLM.Callback | undefined,
-    selectedCallbackResult?: CLM.CallbackResult,
-    onChangeSelectedCallbackResult: (callbackResult: CLM.CallbackResult) => void,
+    selectedCallbackResult?: MockResultWithSource,
+    onChangeSelectedCallbackResult: (callbackResult: MockResultWithSource) => void,
 }
 
 type Props = ReceivedProps & InjectedIntlProps
-
-const convertCallbackResultToDropdownOption = (callbackResult: CLM.CallbackResult): OF.IDropdownOption =>
-    ({
-        key: callbackResult.name,
-        text: callbackResult.name,
-        data: callbackResult,
-    })
 
 /**
  * Renders dropdown for mock result names of callback actions with preview modal.
@@ -39,7 +35,16 @@ const Component: React.FC<Props> = (props) => {
         setIsCallbackResultModalOpen(false)
     }
 
-    // Compute list of results from callbacks
+    // Compute combined list of results
+    const callbackResultsFromBot = (props.callback?.mockResults ?? [])
+    const callbackResultsFromModel = (props.action.clientData?.mockResults ?? [])
+    const callbackResults = assignSourcesToMockResults(
+        { mockResults: callbackResultsFromBot, source: MockResultSource.CODE },
+        { mockResults: callbackResultsFromModel, source: MockResultSource.MODEL },
+    )
+
+    const definedCallbackResultOptions = callbackResults.map(convertCallbackResultToDropdownOption)
+
     // If no results defined, show None and Disable preview.
     // If results defined list stub names and none selected.
     const noneOptionKey = 'none'
@@ -48,16 +53,12 @@ const Component: React.FC<Props> = (props) => {
         text: 'None',
     }
 
-    const callbackResultOptionsFromBot = (props.callback?.mockResults ?? []).map(convertCallbackResultToDropdownOption)
-    const callbackResultOptionsFromModel = (props.action.clientData?.mockResults ?? []).map(convertCallbackResultToDropdownOption)
-
     const callbackResultOptions = [
         noneOption,
-        ...callbackResultOptionsFromBot,
-        ...callbackResultOptionsFromModel,
+        ...definedCallbackResultOptions,
     ]
 
-    const [selectedCallbackResultOptionKey, setSelectedCallbackResultOptionKey] = React.useState<string>(props.selectedCallbackResult?.name ?? noneOptionKey)
+    const [selectedCallbackResultOptionKey, setSelectedCallbackResultOptionKey] = React.useState<string>(props.selectedCallbackResult?.mockResult.name ?? noneOptionKey)
     const onChangeSelectedCallbackResult = (event: React.FormEvent<HTMLDivElement>, option?: OF.IDropdownOption | undefined, index?: number | undefined) => {
         if (!option) {
             return
@@ -69,7 +70,7 @@ const Component: React.FC<Props> = (props) => {
     }
 
     const isCallbackResultViewDisabled = selectedCallbackResultOptionKey === noneOptionKey
-    const selectedCallbackResult = props.callback?.mockResults.find(mockResult => mockResult.name === selectedCallbackResultOptionKey)
+    const selectedCallbackResult = callbackResults.find(mockResultWithSource => mockResultWithSource.mockResult.name === selectedCallbackResultOptionKey)
 
     return <>
         <div className="cl-callback-result-selector">
@@ -94,7 +95,7 @@ const Component: React.FC<Props> = (props) => {
         </div>
 
         <CallbackResultModal
-            entities={[]}
+            entities={props.entities}
             isOpen={isCallbackResultModalOpen}
             isEditing={false}
             onClickCancel={onClickCancelStubViewer}
