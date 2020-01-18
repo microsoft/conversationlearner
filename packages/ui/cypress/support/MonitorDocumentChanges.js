@@ -6,10 +6,10 @@
 *
 * This code eliminiates most of the need for adding cy.wait() commands to your code and also
 * cy.route() commands used only for waiting. It does this by constantly monitoring the
-* DOM for changes and tracking the Milliseconds Since the Last Change and also resetting
-* those Milliseconds to zero when we see the spinner is displayed. Certain cy.commands(),
-* such as cy.Get(), are then modified to prevent execution until this Millisecond count
-* reaches at least 700.
+* DOM for the spinner and for changes. It tracks the Milliseconds Since the Last Change and 
+* resets those Milliseconds to zero when we see the spinner is displayed. Certain cy.commands(),
+* such as cy.get(), are then modified and renamed (cy.Get()) to prevent execution until this 
+* Millisecond count reaches at least 700.
 * 
 * The basic premis this works on is that when the application under test is making API
 * calls, the spinner is displayed, therefore further test steps should be paused. Also when 
@@ -135,16 +135,6 @@ import * as helpers from './Helpers.js'
           lastChangeTime = new Date().getTime()
         })
     })
-
-    // This odd command is intended to be used with an element and the jQuery .click command.
-    // TODO: Consider removing this as I suspect it is no longer needed (1/11/2020)
-    // Cypress.Commands.add('RunAndExpectDomChange', (functionToRun) => {
-    //   helpers.ConLog(`cy.RunAndExpectDomChange()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
-    //   lastChangeTime = new Date().getTime()
-    //   functionToRun()
-    //   helpers.ConLog(`cy.RunAndExpectDomChange()`, `done - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
-    //   lastChangeTime = new Date().getTime()
-    // })
 
     Cypress.Commands.add('DumpHtmlOnDomChange', (boolValue) => { dumpHtml = boolValue })
 

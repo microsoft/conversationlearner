@@ -188,13 +188,7 @@ export function VerifyCyDoesNotContainMethodWorksWithSpecialChatSelector(userMes
 export function InsertUserInputAfter(existingMessage, newMessage) {
   WaitForChatMessageUpdate(() => {
     SelectChatTurnExactMatch(existingMessage)
-
     cy.Get('[data-testid="chat-edit-add-user-input-button"]').Click()
-    // TODO: If the ABOVE command works, then remove the comments BELOW. (1/11/2020)
-    // This ODD way of clicking is to avoid the "Illegal Invocation" error that
-    // happens with this specific UI element.
-    // cy.RunAndExpectDomChange(() => { Cypress.$('[data-testid="chat-edit-add-user-input-button"]')[0].click() })
-
     cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
   })
 }
@@ -209,11 +203,6 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
       helpers.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `indexOfSelectedChatTurn: ${indexOfSelectedChatTurn}`)
 
       cy.Get('[data-testid="chat-edit-add-bot-response-button"]').Click()
-      // TODO: If the ABOVE command works, then remove the comments BELOW. (1/11/2020)
-      // This ODD way of clicking is to avoid the "Illegal Invocation" error that
-      // happens with this specific UI element.
-      // cy.RunAndExpectDomChange(() => { Cypress.$('[data-testid="chat-edit-add-bot-response-button"]')[0].click() })
-
       if (newMessage) {
         cy.WaitForStableDOM()
 

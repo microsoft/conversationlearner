@@ -1,9 +1,11 @@
 // USAGE NOTES:
 //
 // 1) Go to https://circleci.com/account/api
+//
 // 2) Create a new token, copy to the clipboard, and paste into an ".env" file in the root folder on a new line like this...
 //      circle-token=[paste-token-string-here]
 //    NOTE: This is a private .env file that must NOT be saved to the repo because this is a secret token.
+//
 // 3) Run the tool from the "packages\ui" folder like this...
 //      ViewTestResults [build-number]
 //    You will find the build number on the page https://circleci.com/gh/microsoft/conversationlearner.
@@ -13,7 +15,9 @@
 //    as the tool makes progress processing the test results artifacts. Once it completes, it will open
 //    the resulting report in your default browser window. (The logging spew is intended to help debug this tool.)
 //
-// The data used to triage each test failure is found in this folder "TriageData.js", it contains plenty
+// 4) More details about the API set used here: https://circleci.com/docs/api
+//
+// The data used to triage each test failure is found in this file "TriageData.js", it contains plenty
 // of examples that you can follow to expand it as necessary.
 
 const ttf = require('./TriageTestFailure')
