@@ -13,7 +13,7 @@ import * as helpers from '../support/Helpers'
 // text and it also automatically populates the Disqualtifying Entities field with the expected 
 // entities, so the caller only needs to specify the ones the UI does not auto populate.
 // However, there are cases where the caller may want to explicitly specify these autopopulated 
-// values anyway, and this code does allow for that.
+// values anyway, and this code DOES allow you to do that.
 
 export function CreateNewAction({
   responseNameData, // TEXT-response, API-name, CARD-full-details, END_SESSION-data - Used by create operation
@@ -33,7 +33,8 @@ export function CreateNewAction({
   type = 'TEXT'
 }) {
   // We do this first since we had a bug (1910) where it is not reset by the UI when
-  // type END_SESSION is selected.
+  // type END_SESSION is selected...thus doing it this way ensures the bug fix does
+  // not regress.
   if (uncheckWaitForResponse) actionModal.UncheckWaitForResponse()
 
   actionModal.SelectType(type)
@@ -136,7 +137,7 @@ function ExtractEntities(response) {
 
     let entityName = response.substring(iStart, iEnd)
 
-    if (!IsAlphaNumeric(entityName)) iCurrent = iStart
+    if (!_IsAlphaNumeric(entityName)) iCurrent = iStart
     else {
       entitiesToReturn.push(entityName)
       let length = "{enter}".length
@@ -147,7 +148,7 @@ function ExtractEntities(response) {
   return entitiesToReturn
 }
 
-function IsAlphaNumeric(string) {
+function _IsAlphaNumeric(string) {
   for (let i = 0; i < string.length; i++) {
     const charCode = string.charCodeAt(i)
     if (!(charCode > 47 && charCode < 58) &&  // numeric (0-9)

@@ -11,19 +11,40 @@ export function VerifyChatPanelIsDisabled() { cy.Get('div.cl-chatmodal_webchat')
 export function VerifyChatPanelIsEnabled() { cy.Get('div.cl-chatmodal_webchat').DoesNotContain('div.cl-overlay') }
 export function ClickDeleteChatTurn() { cy.Get('[data-testid="chat-edit-delete-turn-button"]').Click() }
 
+// Use this function anytime you need to perform some other function that will add to or remove chat messages from
+// the chat panel. This wraps your function call in logic that first gets the current chat messages, then
+// performs your function, then it goes into a retry loop waiting for the messages to change.
+//
+// This function was introduced late in the game (01/09/2020), and as such there are probably other functions that can
+// benefit from not having to verify that the chat messages are ready to be verified.
+export function WaitForChatMessageUpdate(functionThatWillCauseUpdate) {
+  function AreEqual(strings1, strings2) {
+    if (strings1.length != strings2.length) {
+      return false
+    }
+    for (let i = 0; i < strings1.length; i++) {
+      if (strings1[i] != strings2[i]) {
+        return false
+      }
+    }
+    return true
+  }
+
+  const messagesBeforeUpdate = helpers.StringArrayFromElementText('div[data-testid="web-chat-utterances"]')
+  functionThatWillCauseUpdate()
+  cy.WaitForStableDOM()
+  cy.RetryLoop(() => {
+    const messagesAfterUpdate = helpers.StringArrayFromElementText('div[data-testid="web-chat-utterances"]')
+    if (AreEqual(messagesAfterUpdate, messagesBeforeUpdate)) {
+      throw new Error(`Retry - Waiting for the chat messages to update`)
+    }
+  })
+}
+
 export function GetAllChatMessageElements() {
   const elements = Cypress.$('div[data-testid="web-chat-utterances"] > div.wc-message-content > div')
   helpers.DumpElements('GetAllChatMessageElements', elements)
   return elements
-}
-
-function GetChatTurnText(element, retainMarkup = false) {
-  let pElements = Cypress.$(element).find('p, span.format-plain > span')
-  let text = ''
-  for (let ip = 0; ip < pElements.length; ip++) {
-    text += retainMarkup ? pElements[ip].innerHTML : helpers.TextContentWithoutNewlines(pElements[ip])
-  }
-  return text
 }
 
 export function GetAllChatMessages(retainMarkup = false) {
@@ -33,7 +54,7 @@ export function GetAllChatMessages(retainMarkup = false) {
   helpers.ConLog(funcName, `Number of Chat Elements Found: ${elements.length}`)
   let returnValues = []
   for (let i = 0; i < elements.length; i++) {
-    let text = GetChatTurnText(elements[i], retainMarkup)
+    let text = _GetChatTurnText(elements[i], retainMarkup)
     returnValues.push(text)
     helpers.ConLog(funcName, text)
   }
@@ -47,22 +68,29 @@ export function VerifySelectedChatTurn(expectedMessage) {
     .parents('div.wc-message-wrapper')
     .find('div[data-testid="web-chat-utterances"] > div.wc-message-content > div')
     .then(elements => {
-      let text = GetChatTurnText(elements[0])
+      let text = _GetChatTurnText(elements[0])
       if (text !== expectedMessage) { throw new Error(`Expecting selected chat turn to be '${expectedMessage}', instead '${text}' was selected.`) }
     })
 }
 
-export function VerifyChatMessageCount(expectedCount) {
-  cy.WaitForStableDOM()
-  cy.Timeout(10000).RetryLoop(() => {
-    let actualCount = GetAllChatMessageElements().length
-    if (actualCount != expectedCount) {
-      throw new Error(`Expecting the number of chat messages to be ${expectedCount} instead it is ${actualCount}.`)
-    }
-  })
+function _GetChatTurnText(element, retainMarkup = false) {
+  let pElements = Cypress.$(element).find('p, span.format-plain > span')
+  let text = ''
+  for (let ip = 0; ip < pElements.length; ip++) {
+    text += retainMarkup ? pElements[ip].innerHTML : helpers.TextContentWithoutNewlines(pElements[ip])
+  }
+  return text
 }
 
-// index is for the chat turn to verify has an error
+export function VerifyChatMessageCount(expectedCount) {
+  cy.WaitForStableDOM()
+  let actualCount = GetAllChatMessageElements().length
+  if (actualCount != expectedCount) {
+    throw new Error(`Expecting the number of chat messages to be ${expectedCount} instead it is ${actualCount}.`)
+  }
+}
+
+// Provide the 'index' of the chat turn to verify has an error.
 export function VerifyChatTurnHasError(index) {
   cy.WaitForStableDOM()
   cy.log(`VerifyChatTurnHasError(${index})`)
@@ -78,6 +106,7 @@ export function VerifyChatTurnHasError(index) {
   })
 }
 
+// Provide the 'index' of the chat turn to verify has no error.
 export function VerifyChatTurnHasNoError(index) {
   cy.WaitForStableDOM()
   cy.log(`VerifyChatTurnHasNoError(${index})`)
@@ -96,9 +125,17 @@ export function VerifyChatTurnHasNoError(index) {
 // -----------------------------------------------------------------------------
 // Selects FROM ALL chat messages, from both Bot and User.
 // Once clicked, more UI elements will become visible & enabled.
-// OPTIONAL index parameter lets you select other than the 1st 
-// instance of a message.
-// RETURNS: The index of the selected turn.
+// OPTIONAL index parameter lets you select other than the 1st instance of a message 
+//          (this is NOT the index into the full list of chat messages)
+// RETURNS: The index of the selected turn (this IS the index into the full list)
+
+export function SelectChatTurnExactMatch(message, index = 0) {
+  return _SelectChatTurn(message, index, (elementText, transformedMessage) => elementText === transformedMessage)
+}
+
+export function SelectChatTurnStartsWith(message, index = 0) {
+  return _SelectChatTurn(message, index, (elementText, transformedMessage) => elementText.startsWith(transformedMessage))
+}
 
 export function SelectLastChatTurn() {
   cy.WaitForStableDOM().then(() => {
@@ -107,15 +144,7 @@ export function SelectLastChatTurn() {
   })
 }
 
-export function SelectChatTurnExactMatch(message, index = 0) {
-  return SelectChatTurnInternal(message, index, (elementText, transformedMessage) => elementText === transformedMessage)
-}
-
-export function SelectChatTurnStartsWith(message, index = 0) {
-  return SelectChatTurnInternal(message, index, (elementText, transformedMessage) => elementText.startsWith(transformedMessage))
-}
-
-function SelectChatTurnInternal(message, index, matchPredicate) {
+function _SelectChatTurn(message, index, matchPredicate) {
   const funcName = `SelectChatTurnInternal('${message}', ${index})`
   cy.ConLog(funcName, `Start`)
 
@@ -146,44 +175,8 @@ function SelectChatTurnInternal(message, index, matchPredicate) {
   })
 }
 
-export function VerifyChatTurnControlButtons(element, index) {
-  let turnIsUserTurn
-  if (element.classList.contains('wc-message-from-me')) turnIsUserTurn = true
-  else if (element.classList.contains('wc-message-from-bot')) turnIsUserTurn = false
-  else {
-    helpers.ConLog(`VerifyChatTurnControlButtons()`, element.outerHTML)
-    throw new Error('Expecting element to contain class with either "wc-message-from-me" or "wc-message-from-bot" (see console output for element dump)')
-  }
-
-  if (index > 0) cy.Contains('[data-testid="chat-edit-delete-turn-button"]', 'Delete Turn')
-  else cy.DoesNotContain('[data-testid="chat-edit-delete-turn-button"]')
-
-  cy.Contains('[data-testid="chat-edit-add-bot-response-button"]', '+')
-
-  if (turnIsUserTurn) cy.Get('[data-testid="edit-dialog-modal-branch-button"]').Contains('Branch').ConLog(`VerifyChatTurnControlButtons()`, 'Branch Found')
-  else cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
-
-  cy.Contains('[data-testid="chat-edit-add-user-input-button"]', '+')
-}
-
-// Verify that there are NO Chat Edit Controls at all on this page.
-export function VerifyThereAreNoChatEditControls() {
-  cy.DoesNotContain('[data-testid="chat-edit-delete-turn-button"]')
-  cy.DoesNotContain('[data-testid="chat-edit-add-bot-response-button"]', '+')
-  cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
-  cy.DoesNotContain('[data-testid="chat-edit-add-user-input-button"]', '+')
-}
-
-export function VerifyEndSessionChatTurnControls() {
-  cy.Contains('[data-testid="chat-edit-delete-turn-button"]', 'Delete Turn')
-  cy.DoesNotContain('[data-testid="chat-edit-add-bot-response-button"]')
-  cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
-  cy.DoesNotContain('[data-testid="chat-edit-add-user-input-button"]')
-}
-
-
 // This is an odd verification function in that it is validating test code that we
-// had wrong at one point. We need to do this because if the cy.DoesNotContain fails
+// had wrong at one point. We need this because if the cy.DoesNotContain fails
 // to find the selector, it could mean that cy.DoesNotContain method has a bug in it.
 export function VerifyCyDoesNotContainMethodWorksWithSpecialChatSelector(userMessage, botMessage) {
   cy.log('EXPECTED FAILURE Comming Next')
@@ -193,49 +186,46 @@ export function VerifyCyDoesNotContainMethodWorksWithSpecialChatSelector(userMes
 }
 
 export function InsertUserInputAfter(existingMessage, newMessage) {
-  SelectChatTurnExactMatch(existingMessage)
-
-  // This ODD way of clicking is to avoid the "Illegal Invocation" error that
-  // happens with this specific UI element.
-  cy.RunAndExpectDomChange(() => { Cypress.$('[data-testid="chat-edit-add-user-input-button"]')[0].click() })
-
-  cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
+  WaitForChatMessageUpdate(() => {
+    SelectChatTurnExactMatch(existingMessage)
+    cy.Get('[data-testid="chat-edit-add-user-input-button"]').Click()
+    cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
+  })
 }
 
 // OPTIONAL newMessage parameter if provided will replace the autoselected Bot response
-// OPTIONAL index parameter lets you select other than the 1st 
-// instance of a message as the point of insertion.
+// OPTIONAL index parameter lets you select other than the 1st instance of a message as 
+//          the point of insertion.
 export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
   cy.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `Start`)
-  cy.Enqueue(() => { return SelectChatTurnExactMatch(existingMessage, index) }).then(indexOfSelectedChatTurn => {
-    helpers.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `indexOfSelectedChatTurn: ${indexOfSelectedChatTurn}`)
+  WaitForChatMessageUpdate(() => {
+    cy.Enqueue(() => { return SelectChatTurnExactMatch(existingMessage, index) }).then(indexOfSelectedChatTurn => {
+      helpers.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `indexOfSelectedChatTurn: ${indexOfSelectedChatTurn}`)
 
-    // This ODD way of clicking is to avoid the "Illegal Invocation" error that
-    // happens with this specific UI element.
-    cy.RunAndExpectDomChange(() => { Cypress.$('[data-testid="chat-edit-add-bot-response-button"]')[0].click() })
+      cy.Get('[data-testid="chat-edit-add-bot-response-button"]').Click()
+      if (newMessage) {
+        cy.WaitForStableDOM()
 
-    if (newMessage) {
-      cy.WaitForStableDOM()
+        cy.Enqueue(() => {
+          // Sometimes the UI has already automaticly selected the Bot response we want
+          // so we need to confirm that we actually need to click on the action, 
+          // otherwise an unnecessary message box pops up that we don't want to deal with.
 
-      cy.Enqueue(() => {
-        // Sometimes the UI has already automaticly selected the Bot response we want
-        // so we need to confirm that we actually need to click on the action, 
-        // otherwise an unnecessary message box pops up that we don't want to deal with.
-
-        const chatMessages = GetAllChatMessages()
-        const indexOfInsertedBotResponse = indexOfSelectedChatTurn + 1
-        if (chatMessages[indexOfInsertedBotResponse] != newMessage) {
-          scorerModal.ClickTextAction(newMessage)
-          VerifyTextChatMessage(newMessage, indexOfInsertedBotResponse)
-        }
-      })
-    }
+          const chatMessages = GetAllChatMessages()
+          const indexOfInsertedBotResponse = indexOfSelectedChatTurn + 1
+          if (chatMessages[indexOfInsertedBotResponse] != newMessage) {
+            scorerModal.ClickTextAction(newMessage)
+            VerifyTextChatMessage(newMessage, indexOfInsertedBotResponse)
+          }
+        })
+      }
+    })
     cy.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `End`)
   })
 }
 
 export function VerifyChatTurnIsNotAnExactMatch(turnTextThatShouldNotMatch, expectedTurnCount, turnIndex) {
-  VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
+  _VerifyChatTurn(expectedTurnCount, turnIndex, chatMessageFound => {
     if (chatMessageFound === turnTextThatShouldNotMatch) {
       throw new Error(`Chat turn ${turnIndex} should NOT be an exact match to: ${turnTextThatShouldNotMatch}, but it is`)
     }
@@ -243,28 +233,30 @@ export function VerifyChatTurnIsNotAnExactMatch(turnTextThatShouldNotMatch, expe
 }
 
 export function VerifyChatTurnIsAnExactMatch(expectedTurnText, expectedTurnCount, turnIndex) {
-  VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
+  _VerifyChatTurn(expectedTurnCount, turnIndex, chatMessageFound => {
     if (chatMessageFound !== expectedTurnText) {
-      if (chatMessageFound !== expectedTurnText) {
-        throw new Error(`Chat turn ${turnIndex} should be an exact match to: ${expectedTurnText}, however, we found ${chatMessageFound} instead`)
-      }
+      throw new Error(`Chat turn ${turnIndex} should be an exact match to: ${expectedTurnText}, however, we found ${chatMessageFound} instead`)
     }
   })
 }
 
 export function VerifyChatTurnIsAnExactMatchWithMarkup(expectedTurnText, expectedTurnCount, turnIndex) {
-  VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
+  _VerifyChatTurn(expectedTurnCount, turnIndex, chatMessageFound => {
     if (chatMessageFound !== expectedTurnText) {
-      if (chatMessageFound !== expectedTurnText) {
-        throw new Error(`Chat turn ${turnIndex} should be an exact match to: '${expectedTurnText}', however, we found '${chatMessageFound}' instead`)
-      }
+      throw new Error(`Chat turn ${turnIndex} should be an exact match to: '${expectedTurnText}', however, we found '${chatMessageFound}' instead`)
     }
   }, true)
 }
 
 // This function does the hard work of retrying until the chat message count is what we expect
 // before it verifies a specific chat turn with a custom verification.
-function VerifyChatTurnInternal(expectedTurnCount, turnIndex, verificationFunc, retainMarkup = false) {
+//
+// This extra chat count validation may no longer be needed since adding WaitForChatMessageUpdate on 1/9/2020,
+// but I did not want to remove this code for fear it might not work on rare occassions and then many tests
+// that have been passing for many many months will start failing randomly from time to time. It doesn't hurt
+// to leave this in, since it should always make it through the retry loop the 1st time. Its just the complexity
+// that may make you want to remove this.
+function _VerifyChatTurn(expectedTurnCount, turnIndex, verificationFunc, retainMarkup = false) {
   cy.WaitForStableDOM()
   let chatMessages
   cy.RetryLoop(() => {
@@ -274,7 +266,7 @@ function VerifyChatTurnInternal(expectedTurnCount, turnIndex, verificationFunc, 
     }
   }).then(() => {
     if (chatMessages.length < turnIndex) {
-      throw new Error(`VerifyChatTurnInternal(${expectedTurnCount}, ${turnIndex}): ${chatMessages.length} is not enough chat turns to find the requested turnIndex`)
+      throw new Error(`_VerifyChatTurn(${expectedTurnCount}, ${turnIndex}): ${chatMessages.length} is not enough chat turns to find the requested turnIndex`)
     }
 
     verificationFunc(chatMessages[turnIndex])
@@ -331,8 +323,11 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0) {
       }
     })
 
-    cy.Get('@branchButton').Click()
-    cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
+    // This is where the actual branching occurs.
+    WaitForChatMessageUpdate(() => {
+      cy.Get('@branchButton').Click()
+      cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
+    })
 
     cy.WaitForStableDOM().then(() => {
       trainDialogsGrid.TdGrid.BranchTrainDialog()
@@ -341,11 +336,11 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0) {
   })
 }
 
-export function SelectAndVerifyEachChatTurnHasExpectedButtons() { SelectAndVerifyEachChatTurn(VerifyChatTurnControlButtons) }
-export function SelectAndVerifyEachChatTurnHasNoButtons() { SelectAndVerifyEachChatTurn(VerifyThereAreNoChatEditControls) }
-export function SelectAndVerifyEachBotChatTurnHasNoSelectActionButtons() { SelectAndVerifyEachChatTurn(scorerModal.VerifyNoEnabledSelectActionButtons, 1, 2) }
+export function SelectAndVerifyEachChatTurnHasExpectedButtons() { _SelectAndVerifyEachChatTurn(_VerifyChatTurnControlButtons) }
+export function SelectAndVerifyEachChatTurnHasNoButtons() { _SelectAndVerifyEachChatTurn(VerifyThereAreNoChatEditControls) }
+export function SelectAndVerifyEachBotChatTurnHasNoSelectActionButtons() { _SelectAndVerifyEachChatTurn(scorerModal.VerifyNoEnabledSelectActionButtons, 1, 2) }
 
-function SelectAndVerifyEachChatTurn(verificationFunction, index = 0, increment = 1, initialized = false) {
+function _SelectAndVerifyEachChatTurn(verificationFunction, index = 0, increment = 1, initialized = false) {
   if (!initialized) {
     // Create an alias for all chat turns
     cy.Get('[data-testid="web-chat-utterances"]').as('allChatTurns')
@@ -355,11 +350,49 @@ function SelectAndVerifyEachChatTurn(verificationFunction, index = 0, increment 
     if (index < elements.length) {
       cy.wrap(elements[index]).Click().then(() => {
         verificationFunction(elements[index], index)
-        SelectAndVerifyEachChatTurn(verificationFunction, index + increment, increment, true)
+        _SelectAndVerifyEachChatTurn(verificationFunction, index + increment, increment, true)
       })
     }
   })
 }
+
+// Verifies that the chat element contains the expected buttons based on whether it is a user or Bot turn
+// and its position in the list of chat turns.
+export function _VerifyChatTurnControlButtons(element, index) {
+  let turnIsUserTurn
+  if (element.classList.contains('wc-message-from-me')) turnIsUserTurn = true
+  else if (element.classList.contains('wc-message-from-bot')) turnIsUserTurn = false
+  else {
+    helpers.ConLog(`_VerifyChatTurnControlButtons()`, element.outerHTML)
+    throw new Error('Expecting element to contain class with either "wc-message-from-me" or "wc-message-from-bot" (see console output for element dump)')
+  }
+
+  if (index > 0) cy.Contains('[data-testid="chat-edit-delete-turn-button"]', 'Delete Turn')
+  else cy.DoesNotContain('[data-testid="chat-edit-delete-turn-button"]')
+
+  cy.Contains('[data-testid="chat-edit-add-bot-response-button"]', '+')
+
+  if (turnIsUserTurn) cy.Get('[data-testid="edit-dialog-modal-branch-button"]').Contains('Branch').ConLog(`_VerifyChatTurnControlButtons()`, 'Branch Found')
+  else cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
+
+  cy.Contains('[data-testid="chat-edit-add-user-input-button"]', '+')
+}
+
+// Verify that there are NO Chat Edit Controls at all on this page.
+export function VerifyThereAreNoChatEditControls() {
+  cy.DoesNotContain('[data-testid="chat-edit-delete-turn-button"]')
+  cy.DoesNotContain('[data-testid="chat-edit-add-bot-response-button"]', '+')
+  cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
+  cy.DoesNotContain('[data-testid="chat-edit-add-user-input-button"]', '+')
+}
+
+export function VerifyEndSessionChatTurnControls() {
+  cy.Contains('[data-testid="chat-edit-delete-turn-button"]', 'Delete Turn')
+  cy.DoesNotContain('[data-testid="chat-edit-add-bot-response-button"]')
+  cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
+  cy.DoesNotContain('[data-testid="chat-edit-add-user-input-button"]')
+}
+
 
 export function VerifyEachBotChatTurn(verificationFunction) {
   cy.Get('div.wc-message-from-bot[data-testid="web-chat-utterances"]').then(botChatElements => {
@@ -372,7 +405,7 @@ export function VerifyEachBotChatTurn(verificationFunction) {
   })
 }
 
-// To verify the last chat utterance leave expectedIndexOfMessage undefined.
+// To verify the last chat utterance leave 'expectedIndexOfMessage' undefined.
 export function VerifyTextChatMessage(expectedMessage, expectedIndexOfMessage) {
   cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
     if (!expectedIndexOfMessage) expectedIndexOfMessage = allChatElements.length - 1
@@ -390,13 +423,16 @@ export function VerifyTextChatMessage(expectedMessage, expectedIndexOfMessage) {
   })
 }
 
-// To verify the last chat utterance leave expectedIndexOfMessage undefined.
+// To verify the last chat utterance leave 'expectedIndexOfMessage' undefined.
 // Leave expectedMessage temporarily undefined so that you can copy the text
 // output from the screen or log to paste into your code.
 export function VerifyCardChatMessage(expectedCardTitle, expectedCardText, expectedIndexOfMessage) {
   cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
     if (!expectedIndexOfMessage) {
       expectedIndexOfMessage = allChatElements.length - 1
+
+      // Bug 2441: Exceptions are causing Double Chat Bot Messages
+      // This block of code was introduced to account for bug 2241 once it is fixed we should be able comment it out or remove it.
       if (Cypress.$(allChatElements[expectedIndexOfMessage]).attr('class').includes('wc-message-color-exception')) {
         // Sometimes exception messages come after the user turn, this accounts for that fact by setting the index back one more turn.
         expectedIndexOfMessage--
@@ -422,7 +458,7 @@ export function VerifyCardChatMessage(expectedCardTitle, expectedCardText, expec
   })
 }
 
-// To verify the last chat utterance leave expectedIndexOfMessage undefined.
+// To verify the last chat utterance leave 'expectedIndexOfMessage' undefined.
 export function VerifyPhotoCardChatMessage(expectedCardTitle, expectedCardText, expectedCardImage, expectedIndexOfMessage) {
   const funcName = `VerifyPhotoCardChatMessage("${expectedCardTitle}", "${expectedCardText}", "${expectedCardImage}", ${expectedIndexOfMessage})`
   cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
@@ -448,6 +484,7 @@ export function VerifyPhotoCardChatMessage(expectedCardTitle, expectedCardText, 
   })
 }
 
+// To verify the last chat utterance leave 'expectedIndexOfMessage' undefined.
 export function VerifyEndSessionChatMessage(expectedData, expectedIndexOfMessage) {
   const expectedUtterance = 'EndSession: ' + expectedData
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
@@ -457,6 +494,9 @@ export function VerifyEndSessionChatMessage(expectedData, expectedIndexOfMessage
   })
 }
 
+// Before saving a Train Dialog, we capture the data used to verify that it was persisted to the grid
+// along with the original data that was in the grid prior to working on the current Train Dialog that
+// is about to be saved.
 export function PreSaveDataUsedToVerifyTdGrid(description, tagList) {
   let funcName = `PreSaveDataUsedToVerifyTdGrid("${description}", "${tagList}")`
   helpers.ConLog(funcName, 'start')
@@ -476,8 +516,8 @@ export function PreSaveDataUsedToVerifyTdGrid(description, tagList) {
 
     // If there is no second user turn, then the first and last user turn are the same.
     elements = Cypress.$('div.wc-message-from-me[data-testid="web-chat-utterances"] > div.wc-message-content > div')
-    const firstInput = GetChatTurnText(elements[0])
-    const lastInput = GetChatTurnText(elements[elements.length - 1])
+    const firstInput = _GetChatTurnText(elements[0])
+    const lastInput = _GetChatTurnText(elements[elements.length - 1])
 
     cy.Enqueue(() => { trainDialogsGrid.TdGrid.SaveTrainDialog(firstInput, lastInput, lastResponse, description, tagList) })
   })
@@ -494,8 +534,8 @@ export function VerifyNoBotErrorAfterUserTurn(expectedUserTurnMessage) {
     }
 
     if (Cypress.$(elements[elements.length - 1]).attr('class').includes('wc-border-error-from-bot')) {
-      const botErrorMessage = GetChatTurnText(elements[elements.length - 1])
-      const actualUserTurnMessage = GetChatTurnText(elements[elements.length - 2])
+      const botErrorMessage = _GetChatTurnText(elements[elements.length - 1])
+      const actualUserTurnMessage = _GetChatTurnText(elements[elements.length - 2])
       failureMessage = `Bot returned an unexpected error: >>>${botErrorMessage}<<<`
       helpers.ConLog(funcName, failureMessage)
       helpers.ConLog(funcName, `Actual user turn message: >>>${actualUserTurnMessage}<<<`)
@@ -508,36 +548,6 @@ export function VerifyNoBotErrorAfterUserTurn(expectedUserTurnMessage) {
   }).then(() => {
     if (failureMessage) {
       throw new Error(failureMessage)
-    }
-  })
-}
-
-// Use this function anytime you need to perform some other function that will add to or remove chat messages from
-// the chat panel. This wraps your function call in logic that first gets the current count of chat messages, then
-// performs your function, then it goes into a retry loop waiting for the message count to change.
-//
-// This function was introduced late in the game (01/09/2020), and as such there are probably other functions that can
-// benefit from not having to verify that the chat messages are ready to be verified.
-export function WaitForChatMessageUpdate(functionThatWillCauseUpdate) {
-  function AreEqual(strings1, strings2) {
-    if (strings1.length != strings2.length) {
-      return false
-    }
-    for (let i = 0; i < strings1.length; i++) {
-      if (strings1[i] != strings2[i]) {
-        return false
-      }
-    }
-    return true
-  }
-
-  const messagesBeforeUpdate = helpers.StringArrayFromElementText('div[data-testid="web-chat-utterances"]')
-  functionThatWillCauseUpdate()
-  cy.WaitForStableDOM()
-  cy.RetryLoop(() => {
-    const messagesAfterUpdate = helpers.StringArrayFromElementText('div[data-testid="web-chat-utterances"]')
-    if (AreEqual(messagesAfterUpdate, messagesBeforeUpdate)) {
-      throw new Error(`Retry - Waiting for the chat messages to update`)
     }
   })
 }
