@@ -100,6 +100,7 @@ const Component: React.FC<Props> = (props) => {
             isEditing={false}
             onClickCancel={onClickCancelStubViewer}
             onClickSubmit={() => { }}
+            existingCallbackResults={[]}
             callbackResult={selectedCallbackResult}
         />
     </>

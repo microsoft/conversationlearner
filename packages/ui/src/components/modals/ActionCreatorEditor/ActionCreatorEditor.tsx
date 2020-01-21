@@ -36,6 +36,7 @@ import { autobind } from 'core-decorators'
 import { IConditionalTag, getEnumConditionName, convertConditionToConditionalTag, isConditionEqual, getUniqueConditions } from '../../../Utils/actionCondition'
 import './ActionCreatorEditor.css'
 import CallbackResultModal from '../CallbackResultViewerModal'
+import { assignSourcesToMockResults } from 'src/Utils/mockResults'
 
 const TEXT_SLOT = '#TEXT_SLOT#'
 
@@ -284,6 +285,7 @@ interface ComponentState {
     isRepromptActionSelectorModelOpen: boolean
     isCallbackResultModalOpen: boolean
     selectedCallbackResult: MockResultWithSource | undefined
+    callbackResults: MockResultWithSource[]
     validationWarnings: string[]
     isPayloadFocused: boolean
     isPayloadMissing: boolean
@@ -332,6 +334,7 @@ const initialState: Readonly<ComponentState> = {
     isRepromptActionSelectorModelOpen: false,
     isCallbackResultModalOpen: false,
     selectedCallbackResult: undefined,
+    callbackResults: [],
     validationWarnings: [],
     isPayloadFocused: false,
     isPayloadMissing: true,
@@ -555,7 +558,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     shouldReprompt: action.repromptActionId !== undefined,
                     repromptActionId: action.repromptActionId,
                     isEntryNode: action.isEntryNode,
-                    isEditing: true
+                    isEditing: true,
+                    callbackResults: assignSourcesToMockResults({ mockResults: (action.clientData?.mockResults ?? []), source: MockResultSource.MODEL })
                 }
 
                 newState.initialEditState = newState as ComponentState
@@ -1593,6 +1597,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     @autobind
+    onClickDeleteCallbackResult(mockResultIndex: number): void {
+        this.setState(prevState => ({
+            callbackResults: prevState.callbackResults.filter((_, i) => i !== mockResultIndex)
+        }))
+    }
+
+    @autobind
     onClickCancelCallbackResultModal(): void {
         this.setState({
             isCallbackResultModalOpen: false,
@@ -1600,7 +1611,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     // Clicking ok OK currently does same thing as Cancel because there is no editing of results defined in Code
-    onClickSubmitCallbackResultModal = this.onClickCancelCallbackResultModal
+    @autobind
+    onClickSubmitCallbackResultModal(callbackResult: CLM.CallbackResult): void {
+        console.log({ callbackResult })
+        this.setState(prevState => ({
+            callbackResults: [...prevState.callbackResults, { mockResult: callbackResult, source: MockResultSource.MODEL }],
+        }))
+    }
 
     @autobind
     onClickNewMockResult(): void {
@@ -1648,7 +1665,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             : undefined
 
         const mockResultsFromCode = (callback?.mockResults ?? []).map<MockResultWithSource>(mockResult => ({ mockResult, source: MockResultSource.CODE }))
-        const mockResultsFromModel = (this.props.action?.clientData?.mockResults ?? []).map<MockResultWithSource>(mockResult => ({ mockResult, source: MockResultSource.MODEL }))
+        const mockResultsFromModel = this.state.callbackResults
         const mockResultsWithSource = [
             ...mockResultsFromCode,
             ...mockResultsFromModel,
@@ -1767,21 +1784,31 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                             <div className="cl-action-creator-section">
                                                 {mockResultsWithSource.length === 0
                                                     ? <div>No Results Defined</div>
-                                                    : mockResultsWithSource.map(mockResultWithSource => {
+                                                    : mockResultsWithSource.map((mockResultWithSource, mockResultIndex) => {
                                                         return <div className="cl-action-creator-input-with-button"
                                                             data-testid="action-callback-result-row"
                                                             key={mockResultWithSource.mockResult.name}>
                                                             <OF.TextField
                                                                 data-testid="action-callback-result-name"
                                                                 value={mockResultWithSource.mockResult.name}
-                                                                disabled={true}
+                                                                readOnly={true}
                                                             />
+
                                                             <OF.IconButton
-                                                                data-testid="action-callback-result-view-button"
+                                                                data-testid="action-callback-result-button-view"
                                                                 className="ms-Button--primary"
                                                                 onClick={() => this.onClickViewCallbackResult(mockResultWithSource)}
                                                                 ariaDescription="View Result"
                                                                 iconProps={{ iconName: 'EntryView' }}
+                                                            />
+
+                                                            <OF.IconButton
+                                                                data-testid="action-callback-result-button-delete"
+                                                                disabled={mockResultWithSource.source === MockResultSource.CODE}
+                                                                className={`cl-button-delete`}
+                                                                iconProps={{ iconName: 'Delete' }}
+                                                                onClick={() => this.onClickDeleteCallbackResult(mockResultIndex)}
+                                                                ariaDescription="Delete Callback Result"
                                                             />
                                                         </div>
                                                     })}
@@ -2206,6 +2233,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     isEditing={this.state.selectedCallbackResult?.source !== MockResultSource.CODE}
                     onClickCancel={this.onClickCancelCallbackResultModal}
                     onClickSubmit={this.onClickSubmitCallbackResultModal}
+                    existingCallbackResults={mockResultsWithSource.filter(m => m.mockResult.name !== this.state.selectedCallbackResult?.mockResult.name)}
                     callbackResult={this.state.selectedCallbackResult}
                 />
             </OF.Modal>
