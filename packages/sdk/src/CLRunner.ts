@@ -5,8 +5,9 @@
 import * as util from 'util'
 import * as BB from 'botbuilder'
 import * as CLM from '@conversationlearner/models'
-import * as Utils from './Utils'
+import * as Request from 'request'
 import * as ModelOptions from './CLModelOptions'
+import * as Utils from './Utils'
 import { CLState } from './Memory/CLState'
 import { CLStateFactory } from './Memory/CLStateFactory'
 import { CLDebug, DebugType } from './CLDebug'
@@ -1209,6 +1210,19 @@ export class CLRunner {
                     }
                     break
                 }
+                case CLM.ActionTypes.API_REMOTE: {
+                    const remoteApiAction = new CLM.RemoteApiAction(clRecognizeResult.scoredAction as any)
+                    actionResult = await this.TakeRemoteAPIAction(
+                        remoteApiAction,
+                        filledEntityMap,
+                        clRecognizeResult.state,
+                        clRecognizeResult.clEntities,
+                    )
+
+                    this.SaveLogicResult(clRecognizeResult, actionResult, remoteApiAction.actionId, conversationReference)
+
+                    break
+                }
                 default:
                     throw new Error(`Could not find matching renderer for action type: ${clRecognizeResult.scoredAction.actionType}`)
             }
@@ -1690,6 +1704,75 @@ export class CLRunner {
                 response: message,
                 replayError
             }
+        }
+    }
+
+    public async TakeRemoteAPIAction(
+        remoteApiAction: CLM.RemoteApiAction,
+        filledEntityMap: CLM.FilledEntityMap,
+        state: CLState,
+        allEntities: CLM.EntityBase[],
+    ): Promise<IActionResult> {
+        let jsonBodyObject: { [key: string]: any } = {}
+        remoteApiAction.inputEntityNames.forEach(k => {
+            // Todo: define behavior for multiple mapped values for a single entity
+            jsonBodyObject[k] = filledEntityMap.map[k].values[0].userText
+        })
+
+        const requestData = {
+            url: remoteApiAction.url,
+            json: true,
+            body: JSON.stringify(jsonBodyObject)
+        }
+
+        CLDebug.LogRequest('POST', remoteApiAction.url, requestData)
+
+        let logicResult: CLM.LogicResult = { logicValue: undefined, changedFilledEntities: [] }
+        let response: Partial<BB.Activity> | string | null = null
+        let replayError: CLM.ReplayError | null = null
+
+        let logicValue: string | undefined
+
+        Request.post(requestData, (error, httpResponse, body) => {
+            if (error || (httpResponse.statusCode && httpResponse.statusCode >= 300)) {
+                const title = `${CLStrings.EXCEPTION_API_CALLBACK}'${remoteApiAction.name}'`
+                response = this.RenderErrorCard(title, error.stack || error.message || "")
+                replayError = new CLM.ReplayErrorAPIException()
+            }
+            else {
+                logicValue = body
+            }
+        })
+
+        const memoryManager = await this.CreateMemoryManagerAsync(state, allEntities)
+
+        try {
+            const entityMapBeforeCall = new CLM.FilledEntityMap(await state.EntityState.FilledEntityMap())
+            logicResult.logicValue = logicValue
+
+            if (logicValue != undefined) {
+                let outputEntityNameValueMap = new Map<string, any>(JSON.parse(logicValue))
+                outputEntityNameValueMap.forEach((v, k) => {
+                    memoryManager.Set(k, v)
+                })
+            }
+
+            // Update memory with changes from logic callback
+            await state.EntityState.RestoreFromMemoryManagerAsync(memoryManager)
+            // Store changes to filled entities
+            logicResult.changedFilledEntities = CLM.ModelUtils.changedFilledEntities(entityMapBeforeCall, memoryManager.curMemories)
+        }
+        catch (e) {
+            const error: Error = e
+            let botAPIError: CLM.LogicAPIError = { APIError: error.stack || error.message || JSON.stringify(error) }
+            logicResult.logicValue = JSON.stringify(botAPIError)
+            replayError = new CLM.ReplayErrorAPIException()
+        }
+
+        return {
+            logicResult,
+            response,
+            replayError: replayError || undefined
         }
     }
 
