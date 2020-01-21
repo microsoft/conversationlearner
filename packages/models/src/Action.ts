@@ -13,7 +13,7 @@ export enum ActionTypes {
   SET_ENTITY = 'SET_ENTITY',
   DISPATCH = 'DISPATCH',
   CHANGE_MODEL = 'CHANGE_MODEL',
-  REMOTE_WORKFLOW = 'REMOTE_WORKFLOW',
+  API_REMOTE = 'API_REMOTE',
 }
 
 export enum ConditionType {
@@ -135,6 +135,10 @@ export class ActionBase {
         const actionPayload = JSON.parse(action.payload) as ModelPayload
         return `${ActionTypes.CHANGE_MODEL}: ${actionPayload.modelName}`
       }
+      case ActionTypes.API_REMOTE: {
+        let remoteApiActionPayload = JSON.parse(action.payload) as RemoteApiActionPayload
+        return remoteApiActionPayload.name
+      }
       default:
         return action.payload
     }
@@ -217,6 +221,13 @@ export interface ActionPayloadSingleArguments {
 export interface CardPayload {
   payload: string
   arguments: IActionArgument[]
+}
+
+export interface RemoteApiActionPayload {
+  name: string
+  url: string
+  inputEntityNames: string[]
+  outputEntityNames: string[]
 }
 
 export interface IActionArgument {
@@ -339,6 +350,27 @@ export class CardAction extends ActionBase {
         value: value
       }
     })
+  }
+}
+
+export class RemoteApiAction extends ActionBase {
+  name: string
+  url: string
+  inputEntityNames: string[]
+  outputEntityNames: string[]
+
+  constructor(action: ActionBase) {
+    super(action)
+
+    if (action.actionType !== ActionTypes.API_REMOTE) {
+      throw new Error(`You attempted to create remote api action from action of type: ${action.actionType}`)
+    }
+
+    const remoteApiActionPayload: RemoteApiActionPayload = JSON.parse(this.payload)
+    this.name = remoteApiActionPayload.name
+    this.url = remoteApiActionPayload.url
+    this.inputEntityNames = remoteApiActionPayload.inputEntityNames
+    this.outputEntityNames = remoteApiActionPayload.outputEntityNames
   }
 }
 
