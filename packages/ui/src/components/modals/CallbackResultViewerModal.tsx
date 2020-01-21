@@ -416,7 +416,7 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                         readOnly={props.isEditing === false}
                         value={state.name}
                         onChange={onChangeName}
-                        autoComplete={"false"}
+                        autoComplete={"off"}
                         onGetErrorMessage={onGetNameErrorMessage}
                         validateOnLoad={false}
                     />
@@ -452,7 +452,7 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                                                 value={valueObject.value}
                                                 disabled={entityValues.clear}
                                                 onChange={(e, value) => value !== undefined && onChangeValue(entityName, valueIndex, value)}
-                                                autoComplete={"false"}
+                                                autoComplete={"off"}
                                             />
                                             <OF.IconButton
                                                 data-testid="entity-enum-value-button-delete"
@@ -518,7 +518,7 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                             multiline={state.isReturnValueMultiline}
                             value={state.returnValue}
                             onChange={onChangeReturnValue}
-                            autoComplete={"false"}
+                            autoComplete={"off"}
                         />
                     </div>
                 </div>
