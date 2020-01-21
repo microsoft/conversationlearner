@@ -58,6 +58,7 @@ type Action = {
     name: string
 } | {
     type: ActionTypes.AddEntity
+    entity: CLM.EntityBase
 } | {
     type: ActionTypes.AddEntityValue
     entityName: string
@@ -91,7 +92,7 @@ const reducer: React.Reducer<State, Action> = produce((state: State, action: Act
         case ActionTypes.AddEntity: {
             // Add new empty value the user can fill in. Currently editable values are strings
             const newValue: EntityValue = { value: '', isMultiline: false }
-            const newEntity: [string, EntityValues] = ['', { values: [newValue], clear: false }]
+            const newEntity: [string, EntityValues] = [action.entity.entityName, { values: [newValue], clear: false }]
             state.entitiesValues.push(newEntity)
             return
         }
@@ -235,15 +236,10 @@ const convertStateToMockResult = (state: State, entities: CLM.EntityBase[]): CLM
     }
 }
 
-const noneOption: OF.IDropdownOption = {
-    key: 'none',
-    text: 'None',
-}
-
 const CallbackResultModal: React.FC<Props> = (props) => {
     // If mock result is sourced from model, allow editing
     const entityDropdownOptions = React.useMemo(() => {
-        const entityOptions = props.entities
+        return props.entities
             .map<OF.IDropdownOption>(e => {
                 return {
                     key: e.entityId,
@@ -251,12 +247,16 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                     data: e,
                 }
             })
-
-        return [
-            noneOption,
-            ...entityOptions,
-        ]
     }, [props.entities.length])
+    const firstOption: OF.IDropdownOption | undefined = entityDropdownOptions[0]
+    const [selectedEntityOption, setSelectedEntityOption] = React.useState<OF.IDropdownOption | undefined>(firstOption)
+    const onChangeSelectedEntity = (event: React.FormEvent<HTMLDivElement>, option?: OF.IDropdownOption | undefined, index?: number): void => {
+        if (!option) {
+            return
+        }
+
+        setSelectedEntityOption(option)
+    }
 
     const [state, dispatch] = React.useReducer(reducer, props.callbackResult?.mockResult, initializeState)
     // Every time the modal opens, reset the state
@@ -318,9 +318,10 @@ const CallbackResultModal: React.FC<Props> = (props) => {
         })
     }
 
-    const onClickNewEntity = () => {
+    const onClickNewEntity = (entity: CLM.EntityBase) => {
         dispatch({
             type: ActionTypes.AddEntity,
+            entity,
         })
     }
 
@@ -389,9 +390,6 @@ const CallbackResultModal: React.FC<Props> = (props) => {
     const isStateValid = isResultValid(state)
     const getDropdownErrorMessage = (entityIndex: number): string => {
         const [entityName] = state.entitiesValues[entityIndex]
-        if (['', noneOption.key].includes(entityName)) {
-            return `An entity must be selected`
-        }
 
         const isEntityAlreadyUsed = state.entitiesValues
             .filter((_, i) => i !== entityIndex)
@@ -403,6 +401,10 @@ const CallbackResultModal: React.FC<Props> = (props) => {
 
         return ''
     }
+
+    const existingEntitiesWithValue = state.entitiesValues.map(([entityName]) => entityName)
+    const availableEntities = props.entities.filter(e => existingEntitiesWithValue.includes(e.entityName) === false)
+    const nextEntity: CLM.EntityBase | undefined = availableEntities.sort((a, b) => a.entityName.localeCompare(b.entityName))[0]
 
     return <OF.Modal
         isOpen={props.isOpen}
@@ -443,8 +445,10 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                             {state.entitiesValues.map(([entityName, entityValues], entityIndex) => {
                                 // const previousEntityValuesNames = state.entitiesValues.slice(0, entityIndex).map(entry => entry[0])
                                 // const availableEntityDropdownOptions = entityDropdownOptions.filter(e => e.text === noneOption.text || previousEntityValuesNames.includes(e.text) === false)
-                                const entityDropdownOption = entityDropdownOptions.find(e => e.data?.entityName === entityName)
-                                const selectedEntityOption = entityDropdownOption ?? noneOption
+                                const selectedEntityOption = entityDropdownOptions.find(e => e.data?.entityName === entityName)
+                                if (!selectedEntityOption) {
+                                    throw new Error(`Entity dropdown did not have valid entity selected. This should not be possible.`)
+                                }
                                 const isMultiValue = selectedEntityOption.data?.isMultivalue === true
 
                                 let values
@@ -510,8 +514,16 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                         </div>
                     }
                     {props.isEditing && <div>
+                        <OF.Dropdown
+                            data-testid="condition-creator-modal-dropdown-entity"
+                            selectedKey={selectedEntityOption}
+                            options={entityDropdownOptions}
+                            onChange={onChangeSelectedEntity}
+                        />
+
                         <OF.DefaultButton
-                            onClick={onClickNewEntity}
+                            onClick={() => onClickNewEntity(nextEntity)}
+                            disabled={nextEntity === undefined}
                             text={"Add Mock Entity Value"}
                             iconProps={{ iconName: 'Add' }}
                             className="cl-callback-result-modal__new-entity-button"
