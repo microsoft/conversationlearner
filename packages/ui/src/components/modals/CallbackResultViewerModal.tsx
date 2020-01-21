@@ -357,12 +357,20 @@ const CallbackResultModal: React.FC<Props> = (props) => {
             return `Mock results must have a name to identify them.`
         }
 
+        const doesNameMatchExistingCallback = props.existingCallbackResults.some(cr => cr.mockResult.name.toLowerCase() === state.name.toLowerCase())
+        if (doesNameMatchExistingCallback) {
+            return `Callback name matches existing callback, choose another name.`
+        }
 
         return
     }
 
     const isResultValid = (state: State): boolean => {
-        if (state.name === '') {
+        const doesNameMatchExistingCallback = props.existingCallbackResults.some(cr => cr.mockResult.name.toLowerCase() === state.name.toLowerCase())
+
+        if (state.name === ''
+            || doesNameMatchExistingCallback
+        ) {
             return false
         }
 
