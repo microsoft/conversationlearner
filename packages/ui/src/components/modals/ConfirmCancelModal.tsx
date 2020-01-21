@@ -44,9 +44,9 @@ const ConfirmCancelModal: React.FC<Props> = (props) => {
                 title: props.title
             }}
             modalProps={{
-                isBlocking: false
+                isBlocking: false,
+                containerClassName: `${props.style ? props.style : ''}`
             }}
-            containerClassName={`${props.style ? props.style : ''}`}
         >
             {typeof props.message === 'function' && props.message()}
             <OF.DialogFooter>
