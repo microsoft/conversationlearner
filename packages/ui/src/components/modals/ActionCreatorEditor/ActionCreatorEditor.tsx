@@ -1606,7 +1606,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     @autobind
     onClickDeleteCallbackResult(mockResultIndex: number): void {
         this.setState(prevState => ({
-            callbackResults: prevState.callbackResults.filter((_, i) => i !== mockResultIndex)
+            callbackResults: prevState.callbackResults.filter((_, i) => i !== mockResultIndex),
         }))
     }
 
@@ -1614,6 +1614,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     onClickCancelCallbackResultModal(): void {
         this.setState({
             isCallbackResultModalOpen: false,
+            selectedCallbackResult: undefined,
         })
     }
 
@@ -1621,9 +1622,32 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     @autobind
     onClickSubmitCallbackResultModal(callbackResult: CLM.CallbackResult): void {
         console.log({ callbackResult })
-        this.setState(prevState => ({
-            callbackResults: [...prevState.callbackResults, { mockResult: callbackResult, source: MockResultSource.MODEL }],
-        }))
+        // Can only create mock results in UI that are stored on Model
+        const newMockResultWithSource = { mockResult: callbackResult, source: MockResultSource.MODEL }
+
+        // If result was already selected assume it was for editing, replace result in list
+        // Otherwise assume it's a new callback result, add it to list
+        const selectedCallbackResult = this.state.selectedCallbackResult
+        if (selectedCallbackResult) {
+            this.setState(prevState => {
+                const selectedCallbackResultIndex = prevState.callbackResults.findIndex(cr => cr.mockResult.name === selectedCallbackResult.mockResult.name)
+                const newCallbackResults = [...prevState.callbackResults]
+                newCallbackResults.splice(selectedCallbackResultIndex, 1, newMockResultWithSource)
+
+                return {
+                    callbackResults: newCallbackResults,
+                }
+            })
+        }
+        else {
+            this.setState(prevState => ({
+                callbackResults: [...prevState.callbackResults, newMockResultWithSource],
+            }))
+        }
+
+        this.setState({
+            isCallbackResultModalOpen: false,
+        })
     }
 
     @autobind
@@ -1792,6 +1816,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                 {mockResultsWithSource.length === 0
                                                     ? <div>No Results Defined</div>
                                                     : mockResultsWithSource.map((mockResultWithSource, mockResultIndex) => {
+                                                        // TODO: Find way to simplify index logic?
+                                                        // Consider split rendering to avoid index complexity, but adds complexity to rendering
+                                                        const mockResultIndexOnState = mockResultIndex - mockResultsFromCode.length
                                                         return <div className="cl-action-creator-input-with-button"
                                                             data-testid="action-callback-result-row"
                                                             key={mockResultWithSource.mockResult.name}>
@@ -1814,7 +1841,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                                 disabled={mockResultWithSource.source === MockResultSource.CODE}
                                                                 className={`cl-button-delete`}
                                                                 iconProps={{ iconName: 'Delete' }}
-                                                                onClick={() => this.onClickDeleteCallbackResult(mockResultIndex)}
+                                                                onClick={() => this.onClickDeleteCallbackResult(mockResultIndexOnState)}
                                                                 ariaDescription="Delete Callback Result"
                                                             />
                                                         </div>
