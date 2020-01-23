@@ -1,5 +1,9 @@
+.cl-callback-result-modal__fields {
+    display: grid;
+    grid-gap: 1rem;
+}
+
 .cl-callback-result-modal__name {
-    margin-bottom: 1em;
 }
 
 .cl-callback-result-modal__entity-values {
@@ -26,10 +30,14 @@
     grid-gap: 0.5rem;
 }
 
-.cl-callback-result-modal__new-entity-button {
-    margin-top: 1rem;
+.cl-callback-result-modal__new-entity-section {
+    display: grid;
+    grid-gap: 1rem;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(200px, max-content);
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-neutralLight);
 }
 
 .cl-callback-result-modal__return-value {
-    margin-top: 1rem
 }
