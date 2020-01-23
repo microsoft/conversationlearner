@@ -273,16 +273,8 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                 }
             })
     }, [props.entities.length])
-    const firstOption: OF.IDropdownOption | undefined = entityDropdownOptions[0]
-    const [selectedEntityOption, setSelectedEntityOption] = React.useState<OF.IDropdownOption | undefined>(firstOption)
-    const onChangeSelectedEntity = (event: React.FormEvent<HTMLDivElement>, option?: OF.IDropdownOption | undefined, index?: number): void => {
-        if (!option) {
-            return
-        }
 
-        setSelectedEntityOption(option)
-    }
-
+    const [selectedEntityOption, setSelectedEntityOption] = React.useState<OF.IDropdownOption | undefined>()
     const [state, dispatch] = React.useReducer(reducer, props.callbackResult, initializeState)
     // Every time the modal opens, reset the state
     React.useEffect(() => {
@@ -293,6 +285,22 @@ const CallbackResultModal: React.FC<Props> = (props) => {
             })
         }
     }, [props.isOpen])
+
+    // When new mock entity value is added, adjust selected entity dropdown for addition of next entity
+    const existingEntitiesWithValue = state.entitiesValues.map(([entityName]) => entityName)
+    const availableEntityOptions = entityDropdownOptions.filter(eo => existingEntitiesWithValue.includes(eo.data.entityName) === false)
+    React.useEffect(() => {
+        const firstOption: OF.IDropdownOption | undefined = availableEntityOptions[0]
+        setSelectedEntityOption(firstOption)
+    }, [state.entitiesValues.length])
+
+    const onChangeSelectedEntity = (event: React.FormEvent<HTMLDivElement>, option?: OF.IDropdownOption | undefined, index?: number): void => {
+        if (!option) {
+            return
+        }
+
+        setSelectedEntityOption(option)
+    }
 
     const onClickSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
         const mockResult = convertStateToMockResult(state, props.entities)
@@ -400,8 +408,6 @@ const CallbackResultModal: React.FC<Props> = (props) => {
     }
 
     const isStateValid = isResultValid(state)
-    const existingEntitiesWithValue = state.entitiesValues.map(([entityName]) => entityName)
-    const availableEntityOptions = entityDropdownOptions.filter(eo => existingEntitiesWithValue.includes(eo.data.entityName) === false)
 
     return <OF.Modal
         isOpen={props.isOpen}
