@@ -39,18 +39,20 @@ type State = {
     entitiesValues: [string, EntityValues][]
     returnValue: string
     isReturnValueMultiline: boolean
+    viewCode: boolean
 }
 
 enum ActionTypes {
-    AddEntity,
-    AddEntityValue,
-    RemoveEntityValue,
-    ChangeName,
-    ChangeEntity,
-    ChangeValue,
-    ChangeReturnValue,
-    OpenModal,
-    ToggleClear,
+    AddEntity = 'AddEntity',
+    AddEntityValue = 'AddEntityValue',
+    RemoveEntityValue = 'RemoveEntityValue',
+    ChangeName = 'ChangeName',
+    ChangeEntity = 'ChangeEntity',
+    ChangeValue = 'ChangeValue',
+    ChangeReturnValue = 'ChangeReturnValue',
+    OpenModal = 'OpenModal',
+    ToggleClear = 'ToggleClear',
+    ToggleViewCode = 'ToggleViewCode',
 }
 
 type Action = {
@@ -85,6 +87,8 @@ type Action = {
 } | {
     type: ActionTypes.ChangeReturnValue
     returnValue: string
+} | {
+    type: ActionTypes.ToggleViewCode
 }
 
 const reducer: React.Reducer<State, Action> = produce((state: State, action: Action) => {
@@ -164,8 +168,12 @@ const reducer: React.Reducer<State, Action> = produce((state: State, action: Act
         case ActionTypes.OpenModal: {
             return initializeState(action.mockResult)
         }
+        case ActionTypes.ToggleViewCode: {
+            state.viewCode = !state.viewCode
+            return
+        }
         default: {
-            console.warn(`You dispatched an action of type: ${ActionTypes[(action as any).type]} which was not handled. This is likely an error.`)
+            console.warn(`You dispatched an action of type: ${(action as any).type} which was not handled. This is likely an error.`)
             return
         }
     }
@@ -223,6 +231,7 @@ const initializeState = (callbackResult: MockResultWithSource | undefined): Stat
         entitiesValues,
         returnValue: returnValueString,
         isReturnValueMultiline,
+        viewCode: false,
     }
 }
 
@@ -407,6 +416,14 @@ const CallbackResultModal: React.FC<Props> = (props) => {
         return true
     }
 
+    const onChangeViewToggle = (event: React.MouseEvent<HTMLElement, MouseEvent>, checked?: boolean | undefined): void => {
+        if (typeof checked === 'boolean') {
+            dispatch({
+                type: ActionTypes.ToggleViewCode,
+            })
+        }
+    }
+
     const isStateValid = isResultValid(state)
 
     return <OF.Modal
@@ -421,131 +438,148 @@ const CallbackResultModal: React.FC<Props> = (props) => {
             </span>
         </div>
         <div className="cl-modal_body">
-            <div className="cl-callback-result-modal__fields">
-                <div className="cl-callback-result-modal__name">
-                    <OF.TextField
-                        label={"Name"}
-                        className={OF.FontClassNames.mediumPlus}
-                        readOnly={props.isEditing === false}
-                        value={state.name}
-                        onChange={onChangeName}
-                        autoComplete={"off"}
-                        onGetErrorMessage={onGetNameErrorMessage}
-                        validateOnLoad={false}
-                    />
+            {state.viewCode
+                ? <div className="cl-callback-result-modal__code">
+                    <pre>
+                        {props.callbackResult?.source === MockResultSource.CODE
+                            ? JSON.stringify(props.callbackResult?.mockResult, null, '  ')
+                            : JSON.stringify(convertStateToMockResult(state, props.entities), null, '  ')}
+                    </pre>
                 </div>
-                <div>
-                    <div className={OF.FontClassNames.mediumPlus}>
-                        <OF.Label className="cl-label">
-                            <FormattedMessageId id={FM.CALLBACK_RESULT_MODAL_ENTITY_VALUES} />
-                            <HelpIcon tipType={ToolTips.TipType.MOCK_RESULT} />
-                        </OF.Label>
+                : <div className="cl-callback-result-modal__fields">
+                    <div className="cl-callback-result-modal__name">
+                        <OF.TextField
+                            label={"Name"}
+                            className={OF.FontClassNames.mediumPlus}
+                            readOnly={props.isEditing === false}
+                            value={state.name}
+                            onChange={onChangeName}
+                            autoComplete={"off"}
+                            onGetErrorMessage={onGetNameErrorMessage}
+                            validateOnLoad={false}
+                        />
                     </div>
+                    <div>
+                        <div className={OF.FontClassNames.mediumPlus}>
+                            <OF.Label className="cl-label">
+                                <FormattedMessageId id={FM.CALLBACK_RESULT_MODAL_ENTITY_VALUES} />
+                                <HelpIcon tipType={ToolTips.TipType.MOCK_RESULT} />
+                            </OF.Label>
+                        </div>
 
-                    {state.entitiesValues.length === 0
-                        ? <div>No Entity Values Set</div>
-                        : <div className="cl-callback-result-modal__entity-values">
-                            {state.entitiesValues.map(([entityName, entityValues], entityIndex) => {
-                                // const previousEntityValuesNames = state.entitiesValues.slice(0, entityIndex).map(entry => entry[0])
-                                // const availableEntityDropdownOptions = entityDropdownOptions.filter(e => e.text === noneOption.text || previousEntityValuesNames.includes(e.text) === false)
-                                const entity = props.entities.find(e => e.entityName === entityName)
-                                const isMultiValue = entity?.isMultivalue === true
+                        {state.entitiesValues.length === 0
+                            ? <div>No Entity Values Set</div>
+                            : <div className="cl-callback-result-modal__entity-values">
+                                {state.entitiesValues.map(([entityName, entityValues], entityIndex) => {
+                                    // const previousEntityValuesNames = state.entitiesValues.slice(0, entityIndex).map(entry => entry[0])
+                                    // const availableEntityDropdownOptions = entityDropdownOptions.filter(e => e.text === noneOption.text || previousEntityValuesNames.includes(e.text) === false)
+                                    const entity = props.entities.find(e => e.entityName === entityName)
+                                    const isMultiValue = entity?.isMultivalue === true
 
-                                let values
-                                if (entityValues === null) {
-                                    values = [<div className="cl-callback-result-modal__entity-values__entity-removed">Deleted</div>]
-                                }
-                                else {
-                                    values = entityValues.values.map((valueObject, valueIndex) => {
-                                        return <div className="cl-callback-result-modal__entity-value" key={`${entityName}-value-${valueIndex}`}>
-                                            <OF.TextField
-                                                readOnly={props.isEditing === false}
-                                                multiline={valueObject.isMultiline}
-                                                value={valueObject.value}
-                                                disabled={entityValues.clear}
-                                                onChange={(e, value) => value !== undefined && onChangeValue(entityName, valueIndex, value)}
-                                                autoComplete={"off"}
-                                            />
-                                            <OF.IconButton
-                                                data-testid="entity-enum-value-button-delete"
+                                    let values
+                                    if (entityValues === null) {
+                                        values = [<div className="cl-callback-result-modal__entity-values__entity-removed">Deleted</div>]
+                                    }
+                                    else {
+                                        values = entityValues.values.map((valueObject, valueIndex) => {
+                                            return <div className="cl-callback-result-modal__entity-value" key={`${entityName}-value-${valueIndex}`}>
+                                                <OF.TextField
+                                                    readOnly={props.isEditing === false}
+                                                    multiline={valueObject.isMultiline}
+                                                    value={valueObject.value}
+                                                    disabled={entityValues.clear}
+                                                    onChange={(e, value) => value !== undefined && onChangeValue(entityName, valueIndex, value)}
+                                                    autoComplete={"off"}
+                                                />
+                                                <OF.IconButton
+                                                    data-testid="entity-enum-value-button-delete"
+                                                    disabled={props.isEditing === false || entityValues.clear}
+                                                    className={`cl-button-delete`}
+                                                    iconProps={{ iconName: 'Delete' }}
+                                                    onClick={() => onClickDeleteEntityValue(entityName, valueIndex)}
+                                                    ariaDescription="Delete Entity Value"
+                                                />
+                                            </div>
+                                        })
+                                    }
+
+                                    if (isMultiValue) {
+                                        const newValueButton = <div key={`${entityName}-add-value-button`}>
+                                            <OF.DefaultButton
+                                                onClick={() => onClickAddEntityValue(entityName)}
                                                 disabled={props.isEditing === false || entityValues.clear}
-                                                className={`cl-button-delete`}
-                                                iconProps={{ iconName: 'Delete' }}
-                                                onClick={() => onClickDeleteEntityValue(entityName, valueIndex)}
-                                                ariaDescription="Delete Entity Value"
+                                                text={"Add Value"}
+                                                iconProps={{ iconName: 'Add' }}
+                                                data-testid="callback-result-modal-button-new-value"
                                             />
                                         </div>
-                                    })
-                                }
 
-                                if (isMultiValue) {
-                                    const newValueButton = <div key={`${entityName}-add-value-button`}>
-                                        <OF.DefaultButton
-                                            onClick={() => onClickAddEntityValue(entityName)}
-                                            disabled={props.isEditing === false || entityValues.clear}
-                                            text={"Add Value"}
-                                            iconProps={{ iconName: 'Add' }}
-                                            data-testid="callback-result-modal-button-new-value"
+                                        values.push(newValueButton)
+                                    }
+
+                                    return <React.Fragment key={`${entityName}-${entityIndex}`}>
+                                        <div className="cl-callback-result-modal__entity-name">
+                                            {entityName}
+                                            {entity === undefined
+                                                && <div className="cl-callback-result-modal__entity-name__error">
+                                                    Entity does not exist on model <HelpIcon tipType={ToolTips.TipType.MOCK_RESULT_MISSING_ENTITY} />
+                                                </div>}
+                                        </div>
+                                        <div className="cl-callback-result-modal__entity-values__list">{values}</div>
+                                        <OF.Checkbox
+                                            label={"Clear"}
+                                            disabled={props.isEditing === false}
+                                            checked={entityValues.clear}
+                                            onChange={(e, cleared) => cleared !== undefined && onChangeClear(entityName, cleared)}
                                         />
-                                    </div>
+                                    </React.Fragment>
+                                })}
+                            </div>
+                        }
+                    </div>
 
-                                    values.push(newValueButton)
-                                }
+                    {props.isEditing && <div className="cl-callback-result-modal__new-entity-section">
+                        <OF.Dropdown
+                            data-testid="condition-creator-modal-dropdown-entity"
+                            selectedKey={selectedEntityOption?.key}
+                            options={availableEntityOptions}
+                            onChange={onChangeSelectedEntity}
+                            disabled={selectedEntityOption === undefined}
+                        />
 
-                                return <React.Fragment key={`${entityName}-${entityIndex}`}>
-                                    <div className="cl-callback-result-modal__entity-name">
-                                        {entityName}
-                                        {entity === undefined
-                                            && <div className="cl-callback-result-modal__entity-name__error">
-                                                Entity does not exist on model <HelpIcon tipType={ToolTips.TipType.MOCK_RESULT_MISSING_ENTITY} />
-                                            </div>}
-                                    </div>
-                                    <div className="cl-callback-result-modal__entity-values__list">{values}</div>
-                                    <OF.Checkbox
-                                        label={"Clear"}
-                                        disabled={props.isEditing === false}
-                                        checked={entityValues.clear}
-                                        onChange={(e, cleared) => cleared !== undefined && onChangeClear(entityName, cleared)}
-                                    />
-                                </React.Fragment>
-                            })}
-                        </div>
-                    }
+                        <OF.DefaultButton
+                            onClick={() => selectedEntityOption && onClickAddEntity(selectedEntityOption.data)}
+                            disabled={selectedEntityOption === undefined}
+                            text={"Add Mock Entity Value"}
+                            iconProps={{ iconName: 'Add' }}
+                            className="cl-callback-result-modal__new-entity-button"
+                            data-testid="callback-result-modal-button-new-entity"
+                        />
+                    </div>}
+
+                    <div className="cl-callback-result-modal__return-value">
+                        <OF.Label>Return Value</OF.Label>
+                        <OF.TextField
+                            readOnly={props.isEditing === false}
+                            multiline={state.isReturnValueMultiline}
+                            value={state.returnValue}
+                            onChange={onChangeReturnValue}
+                            autoComplete={"off"}
+                        />
+                    </div>
                 </div>
-
-                {props.isEditing && <div className="cl-callback-result-modal__new-entity-section">
-                    <OF.Dropdown
-                        data-testid="condition-creator-modal-dropdown-entity"
-                        selectedKey={selectedEntityOption?.key}
-                        options={availableEntityOptions}
-                        onChange={onChangeSelectedEntity}
-                        disabled={selectedEntityOption === undefined}
-                    />
-
-                    <OF.DefaultButton
-                        onClick={() => selectedEntityOption && onClickAddEntity(selectedEntityOption.data)}
-                        disabled={selectedEntityOption === undefined}
-                        text={"Add Mock Entity Value"}
-                        iconProps={{ iconName: 'Add' }}
-                        className="cl-callback-result-modal__new-entity-button"
-                        data-testid="callback-result-modal-button-new-entity"
-                    />
-                </div>}
-
-                <div className="cl-callback-result-modal__return-value">
-                    <OF.Label>Return Value</OF.Label>
-                    <OF.TextField
-                        readOnly={props.isEditing === false}
-                        multiline={state.isReturnValueMultiline}
-                        value={state.returnValue}
-                        onChange={onChangeReturnValue}
-                        autoComplete={"off"}
-                    />
-                </div>
-            </div>
+            }
         </div>
         <div className="cl-modal_footer cl-modal-buttons cl-modal_footer--border">
             <div className="cl-modal-buttons_secondary">
+                <OF.Toggle
+                    label="View"
+                    onText="Code"
+                    offText="Visual"
+                    checked={state.viewCode}
+                    onChange={onChangeViewToggle}
+                    inlineLabel={true}
+                />
             </div>
             <div className="cl-modal-buttons_primary">
                 <OF.PrimaryButton
