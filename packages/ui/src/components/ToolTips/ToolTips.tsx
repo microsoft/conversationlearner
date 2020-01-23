@@ -89,6 +89,7 @@ export enum TipType {
     PLACEHOLDER_API = 'PLACEHOLDER_API',
 
     MOCK_RESULT = 'CALLBACK_RESULT',
+    MOCK_RESULT_MISSING_ENTITY = 'MOCK_RESULT_MISSING_ENTITY',
 
     TRANSCRIPT_IMPORTER = 'transcriptImporter',
 }
@@ -981,6 +982,16 @@ export function getTip(tipType: string) {
 
                     <h3>Example Callback Definition with Results</h3>
                     <img src="https://blisstorage.blob.core.windows.net/uiimages/temperatureCallback.png" alt="Unstable Temperature Callback" />
+                </div>
+            )
+
+        case TipType.MOCK_RESULT_MISSING_ENTITY:
+            return (
+                <div>
+                    <h2>Mock Results with Missing Entity</h2>
+                    <p>There are cases where you mock results may not match the current state if your model.</p>
+                    <p>If you have written a mock result in Code you may have a typo in your entity name or you could have edited your model and removed the entity that was referenced by that result.</p>
+                    <p>Update the callback definition in code and reload to see changes.</p>
                 </div>
             )
 

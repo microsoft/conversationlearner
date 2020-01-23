@@ -9,7 +9,7 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 import HelpIcon from '../HelpIcon'
 import './CallbackResultViewerModal.css'
 import produce from 'immer'
-import { MockResultWithSource } from 'src/types'
+import { MockResultWithSource, MockResultSource } from 'src/types'
 
 type ReceivedProps = {
     entities: CLM.EntityBase[]
@@ -68,7 +68,7 @@ type Action = {
     valueIndex: number
 } | {
     type: ActionTypes.OpenModal
-    mockResult: CLM.CallbackResult | undefined
+    mockResult: MockResultWithSource | undefined
 } | {
     type: ActionTypes.ToggleClear
     entityName: string
@@ -171,9 +171,9 @@ const reducer: React.Reducer<State, Action> = produce((state: State, action: Act
     }
 })
 
-const initializeState = (callbackResult: CLM.CallbackResult | undefined): State => {
-    const name = callbackResult?.name ?? ''
-    const entitiesValues = Object.entries(callbackResult?.entityValues ?? [])
+const initializeState = (callbackResult: MockResultWithSource | undefined): State => {
+    const name = callbackResult?.mockResult.name ?? ''
+    const entitiesValues = Object.entries(callbackResult?.mockResult.entityValues ?? [])
         .map<[string, EntityValues]>(([entityName, entityValue]) => {
             // Entity might be single value or multi value, convert all to array for consistent processing
             let clear = false
@@ -183,8 +183,22 @@ const initializeState = (callbackResult: CLM.CallbackResult | undefined): State 
 
             const entityValuesArray = Array.isArray(entityValue) ? entityValue : [entityValue]
             const entityValuesForDisplay = entityValuesArray
-                // Convert all values to strings and strip off quotes
-                .map(value => value === null ? '' : JSON.stringify(value, null, '  ').slice(1, -1))
+                // Convert all values to strings
+                .map<string>(value => {
+                    if (value === null) {
+                        return ''
+                    }
+
+                    if (callbackResult?.source === MockResultSource.CODE) {
+                        return JSON.stringify(value, null, '  ')
+                    }
+
+                    if (callbackResult?.source === MockResultSource.MODEL) {
+                        return value as string
+                    }
+
+                    return JSON.stringify(value, null, '  ')
+                })
                 // Enable multiline if the value is multiline
                 // Likely used to represent readable JSON objects, but could be multiline strings
                 .map<EntityValue>(value => {
@@ -199,8 +213,8 @@ const initializeState = (callbackResult: CLM.CallbackResult | undefined): State 
             return [entityName, { values: entityValuesForDisplay, clear }]
         })
 
-    const returnValueString = callbackResult?.returnValue
-        ? JSON.stringify(callbackResult.returnValue, null, '  ').slice(1, -1)
+    const returnValueString = callbackResult?.mockResult.returnValue
+        ? JSON.stringify(callbackResult.mockResult.returnValue, null, '  ').slice(1, -1)
         : ''
     const isReturnValueMultiline = returnValueString?.includes('\n') ?? false
 
@@ -269,13 +283,13 @@ const CallbackResultModal: React.FC<Props> = (props) => {
         setSelectedEntityOption(option)
     }
 
-    const [state, dispatch] = React.useReducer(reducer, props.callbackResult?.mockResult, initializeState)
+    const [state, dispatch] = React.useReducer(reducer, props.callbackResult, initializeState)
     // Every time the modal opens, reset the state
     React.useEffect(() => {
         if (props.isOpen) {
             dispatch({
                 type: ActionTypes.OpenModal,
-                mockResult: props.callbackResult?.mockResult,
+                mockResult: props.callbackResult,
             })
         }
     }, [props.isOpen])
@@ -309,27 +323,14 @@ const CallbackResultModal: React.FC<Props> = (props) => {
         ? Util.formatMessageId(props.intl, FM.BUTTON_SAVE)
         : Util.formatMessageId(props.intl, FM.BUTTON_OK)
 
-    const onClickNewEntityValue = (entityName: string) => {
+    const onClickAddEntityValue = (entityName: string) => {
         dispatch({
             type: ActionTypes.AddEntityValue,
             entityName,
         })
     }
 
-    const onChangeEntity = (entityValuesIndex: number, event: React.FormEvent<HTMLDivElement>, option?: OF.IDropdownOption | undefined, index?: number | undefined): void => {
-        if (!option) {
-            return
-        }
-
-        const entityName = option.text as string
-        dispatch({
-            type: ActionTypes.ChangeEntity,
-            entityValuesIndex,
-            entityName,
-        })
-    }
-
-    const onClickNewEntity = (entity: CLM.EntityBase) => {
+    const onClickAddEntity = (entity: CLM.EntityBase) => {
         dispatch({
             type: ActionTypes.AddEntity,
             entity,
@@ -401,7 +402,6 @@ const CallbackResultModal: React.FC<Props> = (props) => {
     const isStateValid = isResultValid(state)
     const existingEntitiesWithValue = state.entitiesValues.map(([entityName]) => entityName)
     const availableEntityOptions = entityDropdownOptions.filter(eo => existingEntitiesWithValue.includes(eo.data.entityName) === false)
-    const nextEntityOption: OF.IDropdownOption | undefined = availableEntityOptions.sort((a, b) => a.data.entityName.localeCompare(b.data.entityName))[0]
 
     return <OF.Modal
         isOpen={props.isOpen}
@@ -475,7 +475,7 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                                 if (isMultiValue) {
                                     const newValueButton = <div key={`${entityName}-add-value-button`}>
                                         <OF.DefaultButton
-                                            onClick={() => onClickNewEntityValue(entityName)}
+                                            onClick={() => onClickAddEntityValue(entityName)}
                                             disabled={props.isEditing === false || entityValues.clear}
                                             text={"Add Value"}
                                             iconProps={{ iconName: 'Add' }}
@@ -487,7 +487,13 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                                 }
 
                                 return <React.Fragment key={`${entityName}-${entityIndex}`}>
-                                    <div className="cl-callback-result-modal__entity-name">{entityName} {entity === undefined && 'Entity name does not exist'}</div>
+                                    <div className="cl-callback-result-modal__entity-name">
+                                        {entityName}
+                                        {entity === undefined
+                                            && <div className="cl-callback-result-modal__entity-name__error">
+                                                Entity does not exist on model <HelpIcon tipType={ToolTips.TipType.MOCK_RESULT_MISSING_ENTITY} />
+                                            </div>}
+                                    </div>
                                     <div className="cl-callback-result-modal__entity-values__list">{values}</div>
                                     <OF.Checkbox
                                         label={"Clear"}
@@ -504,15 +510,15 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                 {props.isEditing && <div className="cl-callback-result-modal__new-entity-section">
                     <OF.Dropdown
                         data-testid="condition-creator-modal-dropdown-entity"
-                        // selectedKey={selectedEntityOption?.key}
+                        selectedKey={selectedEntityOption?.key}
                         options={availableEntityOptions}
-                        // onChange={onChangeSelectedEntity}
-                        disabled={nextEntityOption === undefined}
+                        onChange={onChangeSelectedEntity}
+                        disabled={selectedEntityOption === undefined}
                     />
 
                     <OF.DefaultButton
-                        onClick={() => onClickNewEntity(nextEntityOption.data)}
-                        disabled={nextEntityOption === undefined}
+                        onClick={() => selectedEntityOption && onClickAddEntity(selectedEntityOption.data)}
+                        disabled={selectedEntityOption === undefined}
                         text={"Add Mock Entity Value"}
                         iconProps={{ iconName: 'Add' }}
                         className="cl-callback-result-modal__new-entity-button"
