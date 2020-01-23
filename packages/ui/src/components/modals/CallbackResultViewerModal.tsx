@@ -399,20 +399,6 @@ const CallbackResultModal: React.FC<Props> = (props) => {
     }
 
     const isStateValid = isResultValid(state)
-    const getDropdownErrorMessage = (entityIndex: number): string => {
-        const [entityName] = state.entitiesValues[entityIndex]
-
-        const isEntityAlreadyUsed = state.entitiesValues
-            .filter((_, i) => i !== entityIndex)
-            .some(([eName]) => eName === entityName)
-
-        if (isEntityAlreadyUsed) {
-            return `This entity is already defined. Only one row for an entity may exist`
-        }
-
-        return ''
-    }
-
     const existingEntitiesWithValue = state.entitiesValues.map(([entityName]) => entityName)
     const availableEntityOptions = entityDropdownOptions.filter(eo => existingEntitiesWithValue.includes(eo.data.entityName) === false)
     const nextEntityOption: OF.IDropdownOption | undefined = availableEntityOptions.sort((a, b) => a.data.entityName.localeCompare(b.data.entityName))[0]
