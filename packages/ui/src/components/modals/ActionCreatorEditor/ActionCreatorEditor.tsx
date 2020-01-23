@@ -1032,6 +1032,15 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             ? this.state.repromptActionId || REPROMPT_SELF
             : undefined
 
+        const clientData: CLM.ActionClientData = {
+            actionHashes: [],
+            mockResults: [],
+        }
+        // Copy over lgName and hashes from original action
+        Object.assign(clientData, this.props.action?.clientData)
+        // Overwrite mock result with current/latest mock results
+        clientData.mockResults = this.state.callbackResults.map(cr => cr.mockResult)
+
         // TODO: This should be new type such as ActionInput for creation only.
         const action = new CLM.ActionBase({
             actionId: null!,
@@ -1054,12 +1063,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             entityId: this.state.selectedEntityOptionKey,
             isEntryNode: this.state.isEntryNode,
             enumValueId: this.state.selectedEnumValueOptionKey,
-            clientData: this.props.action
-                ? this.props.action.clientData
-                : {
-                    actionHashes: [],
-                    mockResults: [],
-                }
+            clientData,
         })
 
         if (this.state.isEditing && this.props.action) {
