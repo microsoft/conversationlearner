@@ -9,6 +9,7 @@ import * as TC from '../../tipComponents'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../../Utils/util'
 import * as DialogUtils from '../../../Utils/dialogUtils'
+import * as MockResultUtils from '../../../Utils/mockResults'
 import * as ActionPayloadEditor from '../ActionPayloadEditor'
 import Plain from 'slate-plain-serializer'
 import actions from '../../../actions'
@@ -594,6 +595,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const isSelectedApiChanged = initialEditState.selectedApiOptionKey !== this.state.selectedApiOptionKey
         const isSelectedCardChanged = initialEditState.selectedCardOptionKey !== this.state.selectedCardOptionKey
         const isSelectedModelChanged = initialEditState.selectedModelOptionKey !== this.state.selectedCardOptionKey
+        const areCallbackResultsChanged = MockResultUtils.areCallbackResultsEqual(this.state.callbackResults, initialEditState.callbackResults) === false
 
         const hasPendingChanges = isAnyPayloadChanged
             || isSelectedApiChanged
@@ -605,6 +607,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             || isRepromptChanged
             || isEntryNodeChanged
             || isSelectedModelChanged
+            || areCallbackResultsChanged
 
         if (prevState.hasPendingChanges !== hasPendingChanges) {
             this.setState({
