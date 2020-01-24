@@ -1587,9 +1587,9 @@ export class CLRunner {
                     // Otherwise use logic function
                     let logicReturnValue: unknown
                     if (actionInput.mockResultName) {
-                        const callbackResult = callback.mockResults.find(result => result.name === actionInput.mockResultName)
+                        const callbackResult = [...callback.mockResults, ...(apiAction.clientData?.mockResults ?? [])].find(result => result.name === actionInput.mockResultName)
                         if (!callbackResult) {
-                            throw new Error(`A mock result name ${actionInput.mockResultName} was provided but no result by that name was found`)
+                            throw new Error(`A mock result name ${actionInput.mockResultName} was provided but no result by that name was found.`)
                         }
 
                         // Simulate calling set on memory manager to create changes in filled entities / bot state
