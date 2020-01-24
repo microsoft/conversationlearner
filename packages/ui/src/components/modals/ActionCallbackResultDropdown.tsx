@@ -35,6 +35,8 @@ const Component: React.FC<Props> = (props) => {
         setIsCallbackResultModalOpen(false)
     }
 
+    const onClickSubmitStubViewer = onClickCancelStubViewer
+
     // Compute combined list of results
     const callbackResultsFromBot = (props.callback?.mockResults ?? [])
     const callbackResultsFromModel = (props.action.clientData?.mockResults ?? [])
@@ -99,7 +101,7 @@ const Component: React.FC<Props> = (props) => {
             isOpen={isCallbackResultModalOpen}
             isEditing={false}
             onClickCancel={onClickCancelStubViewer}
-            onClickSubmit={() => { }}
+            onClickSubmit={onClickSubmitStubViewer}
             existingCallbackResults={[]}
             callbackResult={selectedCallbackResult}
         />
