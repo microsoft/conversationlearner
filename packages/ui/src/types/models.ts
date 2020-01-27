@@ -40,8 +40,8 @@ export type MockResultsWithSource = {
 }
 
 export enum MockResultSource {
-    CODE,
-    MODEL,
+    CODE = 'code',
+    MODEL = 'model',
 }
 
 export type MockResultWithSource = {

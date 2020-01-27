@@ -338,7 +338,7 @@ cl.AddCallback({
     },
     mockResults: [
         {
-            name: 'Set values 1',
+            name: 'Set All Entities - Code',
             entityValues: {
                 myNumber: 3,
                 myNumbers: [1, 2, 3, 4],
@@ -361,7 +361,27 @@ cl.AddCallback({
             returnValue: 3,
         },
         {
-            name: 'Clear Values',
+            name: 'Entity Errors - Code',
+            entityValues: {
+                // Try to set entity that doesn't exist
+                missingEntity: 3,
+                // Try to set multi value entity to single value
+                myNumbers: 1,
+                // Try to set single value entity to multiple values
+                myString: ['string1', 'string2', 'string3'],
+            },
+            returnValue: 3,
+        },
+        {
+            name: `Partially Correct - Code`,
+            entityValues: {
+                myBoolean: true,
+                myNumber: 10,
+            },
+            returnValue: undefined
+        },
+        {
+            name: 'Clear All Entities - Code',
             entityValues: {
                 myNumber: null,
                 myNumbers: null,
@@ -372,7 +392,7 @@ cl.AddCallback({
                 myObject: undefined,
                 myObjects: undefined,
             },
-            returnValue: 1,
+            returnValue: -1,
         },
     ],
 })

@@ -942,7 +942,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     convertStateToModel(): CLM.ActionBase {
-        let payload: string | null = null
+        let payload: string = ''
 
         /**
          * If action type if TEXT
@@ -973,19 +973,33 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 break
             }
             case CLM.ActionTypes.CARD:
-                const cp: CLM.CardPayload = {
-                    payload: this.state.selectedCardOptionKey!.toString(),
-                    arguments: this.getActionArguments(this.state.slateValuesMap)
+                if (this.state.selectedCardOptionKey) {
+                    const cp: CLM.CardPayload = {
+                        payload: this.state.selectedCardOptionKey.toString(),
+                        arguments: this.getActionArguments(this.state.slateValuesMap)
+                    }
+                    payload = JSON.stringify(cp)
                 }
-                payload = JSON.stringify(cp)
                 break
             case CLM.ActionTypes.API_LOCAL:
-                const ap: CLM.ActionPayload = {
-                    payload: this.state.selectedApiOptionKey!.toString(),
-                    logicArguments: this.getActionArguments(this.state.slateValuesMap),
-                    renderArguments: this.getActionArguments(this.state.secondarySlateValuesMap),
+                if (this.state.selectedApiOptionKey) {
+                    const ap: CLM.ActionPayload = {
+                        payload: this.state.selectedApiOptionKey.toString(),
+                        logicArguments: this.getActionArguments(this.state.slateValuesMap),
+                        renderArguments: this.getActionArguments(this.state.secondarySlateValuesMap),
+                    }
+                    payload = JSON.stringify(ap)
                 }
-                payload = JSON.stringify(ap)
+                else {
+                    // TODO: Formalize with types?
+                    const placeholderPayload = {
+                        payload: "Empty Payload: No callback name is associated with action",
+                        logicArguments: [],
+                        renderArguments: [],
+                        isPlaceholder: true,
+                    }
+                    payload = JSON.stringify(placeholderPayload)
+                }
                 break
             case CLM.ActionTypes.END_SESSION:
                 const value = this.state.slateValuesMap[TEXT_SLOT]
@@ -995,10 +1009,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 payload = JSON.stringify(t)
                 break
             case CLM.ActionTypes.SET_ENTITY:
-                // TODO: Fix types with discriminated unions
-                // If action being saved is set entity action, entityId and enumValueId should be defined
-                const entityId = this.state.selectedEntityOptionKey!
-                const enumValueId = this.state.selectedEnumValueOptionKey!
+                // If action being saved is set entity action, entityId and enumValueId should be defined as requirement to click save
+                if (!this.state.selectedEntityOptionKey || !this.state.selectedEnumValueOptionKey) {
+                    throw new Error(`You attempted to save a SET_ENTITY action but the entity and value were not selected.`)
+                }
+
+                const entityId = this.state.selectedEntityOptionKey
+                const enumValueId = this.state.selectedEnumValueOptionKey
                 const setEntityPayload: CLM.SetEntityPayload = {
                     entityId,
                     enumValueId,
@@ -1536,6 +1553,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 return this.state.selectedCardOptionKey === undefined
             case CLM.ActionTypes.API_LOCAL:
                 return this.state.selectedApiOptionKey === undefined
+                    && this.state.callbackResults.length === 0
             case CLM.ActionTypes.SET_ENTITY:
                 return this.state.selectedEntityOptionKey === undefined
                     || this.state.selectedEnumValueOptionKey === undefined
@@ -1745,7 +1763,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             </div>}
 
                         {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.API_LOCAL
-                            && <div>
+                            && <>
                                 <div className="cl-action-creator-input-with-button">
                                     <TC.Dropdown
                                         data-testid="dropdown-api-option"
@@ -1766,98 +1784,52 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 </div>
                                 {this.state.selectedApiOptionKey
                                     && (callback
-                                        ? <div>
-                                            {callback.logicArguments.length > 0
-                                                && <div>
-                                                    <OF.Label>Logic Arguments</OF.Label>
-                                                    {callback.logicArguments
-                                                        .map(apiArgument => {
-                                                            return (
-                                                                <React.Fragment key={apiArgument}>
-                                                                    <OF.Label className="cl-label">{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS} /></OF.Label>
-                                                                    <ActionPayloadEditor.Editor
-                                                                        options={optionsAvailableForPayload}
-                                                                        value={this.state.slateValuesMap[apiArgument]}
-                                                                        placeholder={''}
-                                                                        onChange={eState => this.onChangePayloadEditor(eState, apiArgument)}
-                                                                        onSubmit={() => this.onSubmitPayloadEditor()}
-                                                                        disabled={isPayloadDisabled}
-                                                                        data-testid={`action-logic-argument-${apiArgument}`}
-                                                                    />
-                                                                </React.Fragment>
-                                                            )
-                                                        })}
-                                                </div>}
-                                            {callback.renderArguments.length > 0
-                                                && <div>
-                                                    <OF.Label>Render Arguments</OF.Label>
-                                                    {callback.renderArguments
-                                                        .map(apiArgument => {
-                                                            return (
-                                                                <React.Fragment key={apiArgument}>
-                                                                    <OF.Label className="cl-label">{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS} /></OF.Label>
-                                                                    <ActionPayloadEditor.Editor
-                                                                        options={optionsAvailableForPayload}
-                                                                        value={this.state.secondarySlateValuesMap[apiArgument]}
-                                                                        placeholder={''}
-                                                                        onChange={eState => this.onChangePayloadEditor(eState, apiArgument, true)}
-                                                                        onSubmit={() => this.onSubmitPayloadEditor()}
-                                                                        disabled={isPayloadDisabled}
-                                                                        data-testid={`action-render-argument-${apiArgument}`}
-                                                                    />
-                                                                </React.Fragment>
-                                                            )
-                                                        })}
-                                                </div>}
-
-                                            <OF.Label>Mock Results <HelpIcon data-testid="action-help-panel-callback-result" tipType={ToolTip.TipType.MOCK_RESULT} /></OF.Label>
-                                            {/* In future include results defined in UI */}
-                                            <div className="cl-action-creator-section">
-                                                {mockResultsWithSource.length === 0
-                                                    ? <div>No Results Defined</div>
-                                                    : mockResultsWithSource.map((mockResultWithSource, mockResultIndex) => {
-                                                        // TODO: Find way to simplify index logic?
-                                                        // Consider split rendering to avoid index complexity, but adds complexity to rendering
-                                                        const mockResultIndexOnState = mockResultIndex - mockResultsFromCode.length
-                                                        return <div className="cl-action-creator-input-with-button"
-                                                            data-testid="action-callback-result-row"
-                                                            key={mockResultWithSource.mockResult.name}>
-                                                            <OF.TextField
-                                                                data-testid="action-callback-result-name"
-                                                                value={mockResultWithSource.mockResult.name}
-                                                                readOnly={true}
-                                                            />
-
-                                                            <OF.IconButton
-                                                                data-testid="action-callback-result-button-view"
-                                                                className="ms-Button--primary"
-                                                                onClick={() => this.onClickViewCallbackResult(mockResultWithSource)}
-                                                                ariaDescription="View Result"
-                                                                iconProps={{ iconName: 'EntryView' }}
-                                                            />
-
-                                                            <OF.IconButton
-                                                                data-testid="action-callback-result-button-delete"
-                                                                disabled={mockResultWithSource.source === MockResultSource.CODE}
-                                                                className={`cl-button-delete`}
-                                                                iconProps={{ iconName: 'Delete' }}
-                                                                onClick={() => this.onClickDeleteCallbackResult(mockResultIndexOnState)}
-                                                                ariaDescription="Delete Callback Result"
-                                                            />
-                                                        </div>
-                                                    })}
-
-                                                <div>
-                                                    <OF.DefaultButton
-                                                        onClick={this.onClickNewMockResult}
-                                                        iconProps={{ iconName: 'Add' }}
-                                                        ariaDescription={`New Mock Result`}
-                                                        text={`New Mock Result`}
-                                                        data-testid="action-creator-button-mock-result"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
+                                        ? <>
+                                            <>
+                                                {callback.logicArguments.length > 0
+                                                    && <div>
+                                                        <OF.Label>Logic Arguments</OF.Label>
+                                                        {callback.logicArguments
+                                                            .map(apiArgument => {
+                                                                return (
+                                                                    <React.Fragment key={apiArgument}>
+                                                                        <OF.Label className="cl-label">{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS} /></OF.Label>
+                                                                        <ActionPayloadEditor.Editor
+                                                                            options={optionsAvailableForPayload}
+                                                                            value={this.state.slateValuesMap[apiArgument]}
+                                                                            placeholder={''}
+                                                                            onChange={eState => this.onChangePayloadEditor(eState, apiArgument)}
+                                                                            onSubmit={() => this.onSubmitPayloadEditor()}
+                                                                            disabled={isPayloadDisabled}
+                                                                            data-testid={`action-logic-argument-${apiArgument}`}
+                                                                        />
+                                                                    </React.Fragment>
+                                                                )
+                                                            })}
+                                                    </div>}
+                                                {callback.renderArguments.length > 0
+                                                    && <div>
+                                                        <OF.Label>Render Arguments</OF.Label>
+                                                        {callback.renderArguments
+                                                            .map(apiArgument => {
+                                                                return (
+                                                                    <React.Fragment key={apiArgument}>
+                                                                        <OF.Label className="cl-label">{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS} /></OF.Label>
+                                                                        <ActionPayloadEditor.Editor
+                                                                            options={optionsAvailableForPayload}
+                                                                            value={this.state.secondarySlateValuesMap[apiArgument]}
+                                                                            placeholder={''}
+                                                                            onChange={eState => this.onChangePayloadEditor(eState, apiArgument, true)}
+                                                                            onSubmit={() => this.onSubmitPayloadEditor()}
+                                                                            disabled={isPayloadDisabled}
+                                                                            data-testid={`action-render-argument-${apiArgument}`}
+                                                                        />
+                                                                    </React.Fragment>
+                                                                )
+                                                            })}
+                                                    </div>}
+                                            </>
+                                        </>
                                         : <div className="cl-errorpanel" data-testid="action-creator-editor-error-callback">
                                             <div>
                                                 {this.props.action && CLM.ActionBase.isPlaceholderAPI(this.props.action)
@@ -1866,7 +1838,61 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                             </div>
                                         </div>)
                                 }
-                            </div>
+
+                                <div>
+                                    <OF.Label>Mock Results <HelpIcon data-testid="action-help-panel-callback-result" tipType={ToolTip.TipType.MOCK_RESULT} /></OF.Label>
+                                    {/* In future include results defined in UI */}
+                                    <div className="cl-action-creator-section">
+                                        {mockResultsWithSource.length === 0
+                                            ? <div>No Results Defined</div>
+                                            : mockResultsWithSource.map((mockResultWithSource, mockResultIndex) => {
+                                                // TODO: Find way to simplify index logic?
+                                                // Consider split rendering to avoid index complexity, but adds complexity to rendering
+                                                const mockResultIndexOnState = mockResultIndex - mockResultsFromCode.length
+                                                return <div className="cl-action-creator-input-with-button"
+                                                    data-testid={`action-callback-result-row action-callback-result-row-from-${mockResultWithSource.source} action-callback-result-row-${mockResultIndex}`}
+                                                    key={mockResultWithSource.mockResult.name}>
+                                                    <OF.TextField
+                                                        data-testid="action-callback-result-name"
+                                                        value={mockResultWithSource.mockResult.name}
+                                                        readOnly={true}
+                                                    />
+
+                                                    <OF.IconButton
+                                                        data-testid="action-callback-result-button-view"
+                                                        className="ms-Button--primary"
+                                                        onClick={() => this.onClickViewCallbackResult(mockResultWithSource)}
+                                                        ariaDescription="View Result"
+                                                        iconProps={{
+                                                            iconName: mockResultWithSource.source === MockResultSource.CODE
+                                                                ? 'EntryView'
+                                                                : 'Edit'
+                                                        }}
+                                                    />
+
+                                                    <OF.IconButton
+                                                        data-testid="action-callback-result-button-delete"
+                                                        disabled={mockResultWithSource.source === MockResultSource.CODE}
+                                                        className={`cl-button-delete`}
+                                                        iconProps={{ iconName: 'Delete' }}
+                                                        onClick={() => this.onClickDeleteCallbackResult(mockResultIndexOnState)}
+                                                        ariaDescription="Delete Callback Result"
+                                                    />
+                                                </div>
+                                            })}
+
+                                        <div>
+                                            <OF.DefaultButton
+                                                onClick={this.onClickNewMockResult}
+                                                iconProps={{ iconName: 'Add' }}
+                                                ariaDescription={`Add Mock Result`}
+                                                text={`Add Mock Result`}
+                                                data-testid="action-creator-button-mock-result-add"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
                         }
 
                         {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CARD

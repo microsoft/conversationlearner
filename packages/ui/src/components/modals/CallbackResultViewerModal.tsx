@@ -398,18 +398,16 @@ const CallbackResultModal: React.FC<Props> = (props) => {
     const isResultValid = (state: State): boolean => {
         const doesNameMatchExistingCallback = props.existingCallbackResults.some(cr => cr.mockResult.name.toLowerCase() === state.name.toLowerCase())
 
+        // Validate name
         if (state.name === ''
             || doesNameMatchExistingCallback
         ) {
             return false
         }
 
-        const noEntityValues = state.entitiesValues.length === 0
-            || state.entitiesValues.some(([entityName, entityValues]) =>
-                entityValues.clear === false
-                && entityValues.values.every(entityValue => entityValue.value === ''))
-
-        if (noEntityValues && state.returnValue === '') {
+        // Validate values
+        if (state.entitiesValues.length === 0
+            && state.returnValue === '') {
             return false
         }
 
@@ -430,22 +428,22 @@ const CallbackResultModal: React.FC<Props> = (props) => {
         isOpen={props.isOpen}
         containerClassName="cl-modal cl-modal--medium"
     >
-        <div className="cl-modal_header" data-testid="callback-result-viewer-title">
+        <div className="cl-modal_header" data-testid="callback-result-modal-title">
             <span className={OF.FontClassNames.xxLarge}>
                 {props.isEditing
-                    ? 'Edit'
+                    ? props.callbackResult
+                        ? 'Edit'
+                        : 'Create New'
                     : 'View'} Mocked Callback Result
             </span>
         </div>
         <div className="cl-modal_body">
             {state.viewCode
-                ? <div className="cl-callback-result-modal__code">
-                    <pre>
-                        {props.callbackResult?.source === MockResultSource.CODE
-                            ? JSON.stringify(props.callbackResult?.mockResult, null, '  ')
-                            : JSON.stringify(convertStateToMockResult(state, props.entities), null, '  ')}
-                    </pre>
-                </div>
+                ? <pre className="cl-callback-result-modal__code" data-testid="callback-result-modal__code">
+                    {props.callbackResult?.source === MockResultSource.CODE
+                        ? JSON.stringify(props.callbackResult?.mockResult, null, '  ')
+                        : JSON.stringify(convertStateToMockResult(state, props.entities), null, '  ')}
+                </pre>
                 : <div className="cl-callback-result-modal__fields">
                     <div className="cl-callback-result-modal__name">
                         <OF.TextField
@@ -457,6 +455,7 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                             autoComplete={"off"}
                             onGetErrorMessage={onGetNameErrorMessage}
                             validateOnLoad={false}
+                            data-testid="callback-result-modal-input-name"
                         />
                     </div>
                     <div>
@@ -490,9 +489,10 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                                                     disabled={entityValues.clear}
                                                     onChange={(e, value) => value !== undefined && onChangeValue(entityName, valueIndex, value)}
                                                     autoComplete={"off"}
+                                                    data-testid={`callback-result-modal-input-entity-${entityName}-value-${valueIndex}`}
                                                 />
                                                 <OF.IconButton
-                                                    data-testid="entity-enum-value-button-delete"
+                                                    data-testid={`callback-result-modal-button-delete-${entityName}-value-${valueIndex}`}
                                                     disabled={props.isEditing === false || entityValues.clear}
                                                     className={`cl-button-delete`}
                                                     iconProps={{ iconName: 'Delete' }}
@@ -510,7 +510,7 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                                                 disabled={props.isEditing === false || entityValues.clear}
                                                 text={"Add Value"}
                                                 iconProps={{ iconName: 'Add' }}
-                                                data-testid="callback-result-modal-button-new-value"
+                                                data-testid={`callback-result-modal-button-add-value-${entityName}`}
                                             />
                                         </div>
 
@@ -518,10 +518,12 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                                     }
 
                                     return <React.Fragment key={`${entityName}-${entityIndex}`}>
-                                        <div className="cl-callback-result-modal__entity-name">
+                                        <div className="cl-callback-result-modal__entity-name"
+                                            data-testid="callback-result-modal-entity-name">
                                             {entityName}
                                             {entity === undefined
-                                                && <div className="cl-callback-result-modal__entity-name__error">
+                                                && <div className="cl-callback-result-modal__entity-name__error"
+                                                    data-testid="callback-result-modal-entity-name-error">
                                                     Entity does not exist on model <HelpIcon tipType={ToolTips.TipType.MOCK_RESULT_MISSING_ENTITY} />
                                                 </div>}
                                         </div>
@@ -531,6 +533,7 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                                             disabled={props.isEditing === false}
                                             checked={entityValues.clear}
                                             onChange={(e, cleared) => cleared !== undefined && onChangeClear(entityName, cleared)}
+                                            data-testid="callback-result-modal-button-clear"
                                         />
                                     </React.Fragment>
                                 })}
@@ -540,7 +543,7 @@ const CallbackResultModal: React.FC<Props> = (props) => {
 
                     {props.isEditing && <div className="cl-callback-result-modal__new-entity-section">
                         <OF.Dropdown
-                            data-testid="condition-creator-modal-dropdown-entity"
+                            data-testid="callback-result-modal-dropdown-entity"
                             selectedKey={selectedEntityOption?.key}
                             options={availableEntityOptions}
                             onChange={onChangeSelectedEntity}
@@ -553,7 +556,7 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                             text={"Add Mock Entity Value"}
                             iconProps={{ iconName: 'Add' }}
                             className="cl-callback-result-modal__new-entity-button"
-                            data-testid="callback-result-modal-button-new-entity"
+                            data-testid="callback-result-modal-button-add-entity"
                         />
                     </div>}
 
@@ -565,6 +568,7 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                             value={state.returnValue}
                             onChange={onChangeReturnValue}
                             autoComplete={"off"}
+                            data-testid="callback-result-modal-return-value"
                         />
                     </div>
                 </div>
@@ -579,11 +583,12 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                     checked={state.viewCode}
                     onChange={onChangeViewToggle}
                     inlineLabel={true}
+                    data-testid="callback-result-modal-toggle-view"
                 />
             </div>
             <div className="cl-modal-buttons_primary">
                 <OF.PrimaryButton
-                    data-testid="callback-result-viewer-button-ok"
+                    data-testid="callback-result-modal-button-ok"
                     onClick={onClickSubmit}
                     disabled={isStateValid === false}
                     ariaDescription={acceptText}
@@ -591,7 +596,7 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                     iconProps={{ iconName: 'Accept' }}
                 />
                 <OF.DefaultButton
-                    data-testid="callback-result-viewer-button-cancel"
+                    data-testid="callback-result-modal-button-cancel"
                     onClick={onClickCancel}
                     ariaDescription={Util.formatMessageId(props.intl, FM.BUTTON_CANCEL)}
                     text={Util.formatMessageId(props.intl, FM.BUTTON_CANCEL)}
