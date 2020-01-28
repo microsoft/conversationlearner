@@ -209,6 +209,8 @@ export interface ActionPayload {
   logicArguments: IActionArgument[]
   renderArguments: IActionArgument[]
   isPlaceholder?: boolean
+  // TODO: Remove after consolidation with placeholder
+  isCallbackUnassigned?: boolean
 }
 
 export interface ActionPayloadSingleArguments {

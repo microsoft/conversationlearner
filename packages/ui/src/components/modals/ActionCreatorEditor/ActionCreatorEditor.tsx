@@ -250,6 +250,11 @@ interface ModelOption extends OF.IDropdownOption {
     data: CLM.AppBase
 }
 
+const callbackNameInputOption: OF.IDropdownOption = {
+    key: 'callback name input option',
+    text: 'Enter name for callback',
+}
+
 const convertModelToDropdownOption = (model: CLM.AppBase): ModelOption =>
     ({
         key: model.appId,
@@ -267,6 +272,7 @@ interface ComponentState {
     cardOptions: OF.IDropdownOption[]
     modelOptions: ModelOption[]
     conditionCreatorType: "required" | "disqualified"
+    customCallbackName: string
     selectedEntityOptionKey: string | undefined
     selectedEnumValueOptionKey: string | undefined
     selectedApiOptionKey: string | number | undefined
@@ -316,6 +322,7 @@ const initialState: Readonly<ComponentState> = {
     cardOptions: [],
     modelOptions: [],
     conditionCreatorType: "required",
+    customCallbackName: '',
     selectedEntityOptionKey: undefined,
     selectedEnumValueOptionKey: undefined,
     selectedApiOptionKey: undefined,
@@ -370,6 +377,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     initProps(): ComponentState {
         const { actions, entities, botInfo } = this.props
         const apiOptions = botInfo.callbacks.map<OF.IDropdownOption>(convertCallbackToOption)
+        apiOptions.push(callbackNameInputOption)
         const cardOptions = botInfo.templates.map<OF.IDropdownOption>(convertTemplateToOption)
         const modelOptions = this.props.models.map(convertModelToDropdownOption)
         const entityOptions = entities
@@ -414,6 +422,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 if (this.props.botInfo.callbacks !== prevProps.botInfo.callbacks) {
                     const { botInfo } = this.props
                     const apiOptions = botInfo.callbacks.map<OF.IDropdownOption>(convertCallbackToOption)
+                    apiOptions.push(callbackNameInputOption)
+
                     newState = {
                         ...newState,
                         apiOptions
@@ -778,6 +788,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     onChangeApiOption = (event: React.FormEvent<HTMLDivElement>, apiOption: OF.IDropdownOption) => {
+        if (apiOption.key === callbackNameInputOption.key) {
+            this.setState({
+                selectedApiOptionKey: apiOption.key,
+            })
+            return
+        }
+
         const callback = this.props.botInfo.callbacks.find(t => t.name === apiOption.key)
         if (!callback) {
             throw new Error(`Could not find api callback with name: ${apiOption.key}`)
@@ -982,23 +999,23 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 }
                 break
             case CLM.ActionTypes.API_LOCAL:
-                if (this.state.selectedApiOptionKey) {
+                if (this.state.selectedApiOptionKey === callbackNameInputOption.key) {
+                    // TODO: Naming is weird. Placeholder would be more appropriate but that's already used and means something different
+                    const mockResultPayload: CLM.ActionPayload = {
+                        payload: this.state.customCallbackName,
+                        logicArguments: [],
+                        renderArguments: [],
+                        isCallbackUnassigned: true,
+                    }
+                    payload = JSON.stringify(mockResultPayload)
+                }
+                else if (this.state.selectedApiOptionKey) {
                     const ap: CLM.ActionPayload = {
                         payload: this.state.selectedApiOptionKey.toString(),
                         logicArguments: this.getActionArguments(this.state.slateValuesMap),
                         renderArguments: this.getActionArguments(this.state.secondarySlateValuesMap),
                     }
                     payload = JSON.stringify(ap)
-                }
-                else {
-                    // TODO: Formalize with types?
-                    const placeholderPayload = {
-                        payload: "Empty Payload: No callback name is associated with action",
-                        logicArguments: [],
-                        renderArguments: [],
-                        isPlaceholder: true,
-                    }
-                    payload = JSON.stringify(placeholderPayload)
                 }
                 break
             case CLM.ActionTypes.END_SESSION:
@@ -1545,6 +1562,26 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         this.setState(nextState as ComponentState)
     }
 
+    @autobind
+    onChangeCustomCallbackName(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, customCallbackName?: string | undefined): void {
+        if (typeof customCallbackName !== 'string') {
+            return
+        }
+
+        this.setState({
+            customCallbackName,
+        })
+    }
+
+    @autobind
+    onGetCustomCallbackNameErrorMessage(value: string): string {
+        if (value === '') {
+            return 'A name to identify action is required'
+        }
+
+        return ''
+    }
+
     areInputsInvalid(): boolean {
         switch (this.state.selectedActionTypeOptionKey) {
             case CLM.ActionTypes.TEXT:
@@ -1553,7 +1590,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 return this.state.selectedCardOptionKey === undefined
             case CLM.ActionTypes.API_LOCAL:
                 return this.state.selectedApiOptionKey === undefined
-                    && this.state.callbackResults.length === 0
+                    || (this.state.customCallbackName.length === 0
+                        || this.state.callbackResults.length === 0)
             case CLM.ActionTypes.SET_ENTITY:
                 return this.state.selectedEntityOptionKey === undefined
                     || this.state.selectedEnumValueOptionKey === undefined
@@ -1782,7 +1820,17 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         iconProps={{ iconName: 'Sync' }}
                                     />
                                 </div>
+                                {this.state.selectedApiOptionKey === callbackNameInputOption.key
+                                    && <OF.TextField
+                                        value={this.state.customCallbackName}
+                                        onChange={this.onChangeCustomCallbackName}
+                                        autoComplete={"off"}
+                                        onGetErrorMessage={this.onGetCustomCallbackNameErrorMessage}
+                                        validateOnLoad={false}
+                                        data-testid="callback-result-modal-input-custom-callback-name"
+                                    />}
                                 {this.state.selectedApiOptionKey
+                                    && (this.state.selectedApiOptionKey !== callbackNameInputOption.key)
                                     && (callback
                                         ? <>
                                             <>
