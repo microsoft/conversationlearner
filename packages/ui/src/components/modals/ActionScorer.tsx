@@ -139,7 +139,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 
                 if (action.actionType === CLM.ActionTypes.API_LOCAL) {
                     const apiAction = new CLM.ApiAction(action)
-                    if (apiAction.isPlaceholder === false) {
+                    if (apiAction.isPlaceholder !== true) {
                         const callback = component.props.botInfo.callbacks.find(c => c.name === apiAction.name)
                         const mockResultsFromBot = callback?.mockResults ?? []
                         const mockResultsFromModel = apiAction.clientData?.mockResults ?? []

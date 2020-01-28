@@ -115,16 +115,11 @@ class Index extends React.Component<Props, ComponentState> {
             .filter(a => a.actionType === CLM.ActionTypes.API_LOCAL)
             .map(a => new CLM.ApiAction(a))
             .filter(a => {
-                if (a.isPlaceholder === true) {
+                if (a.isPlaceholder === true
+                    || a.isCallbackUnassigned === true) {
                     return false
                 }
 
-                // If call back is intentionally unassigned, ignore
-                if (a.isCallbackUnassigned === true) {
-                    return false
-                }
-
-                // If callback name does not exist
                 return botInfo.callbacks.some(cb => cb.name === a.name) === false
             })
 

@@ -94,6 +94,7 @@ const selectors = {
         inputRequiredConditions: '[data-testid="action-required-entities"] input',
         inputDisqualifiedConditions: '[data-testid="action-disqualifying-entities"] input',
         inputExpectedEntity: '[data-testid="action-expected-entity"] input',
+        inputCustomCallbackName: '[data-testid="callback-result-modal-input-custom-callback-name"]',
         tagPickerRequired: '[data-testid="action-required-entities"]',
         tagPickerExpected: '[data-testid="action-expected-entity"]',
         tagPickerDisqualified: '[data-testid="action-disqualifying-entities"]',

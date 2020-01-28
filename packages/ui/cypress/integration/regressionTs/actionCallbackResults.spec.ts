@@ -6,6 +6,7 @@ describe('Action Callback Results', () => {
     const testData = {
         modelName: 'CallbackResults',
         modelFile: 'actionMockResults.cl',
+        mockResultName: 'Mock Result from Text',
         callback: {
             name: 'Callback Results All Types',
             mockResults: {
@@ -30,6 +31,7 @@ describe('Action Callback Results', () => {
             'myObject',
             'myObjects',
         ],
+        customCallbackName: 'Custom Callback Name from Test',
     }
 
     before(() => {
@@ -41,7 +43,7 @@ describe('Action Callback Results', () => {
         // Train
     })
 
-    describe('Action Modal', () => {
+    xdescribe('Action Modal', () => {
         before(() => {
             cy.get(s.model.buttonNavActions)
                 .click()
@@ -99,7 +101,7 @@ describe('Action Callback Results', () => {
         })
     })
 
-    describe(`Callback Result Modal`, () => {
+    xdescribe(`Callback Result Modal`, () => {
         before(() => {
             cy.reload()
             cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
@@ -217,7 +219,6 @@ describe('Action Callback Results', () => {
             })
 
             after(() => {
-
                 cy.get(s.action.buttonCreate)
                     .click()
 
@@ -403,7 +404,7 @@ describe('Action Callback Results', () => {
                 })
             })
 
-            describe(`Defined in model`, () => {
+            describe(`Defined in Model`, () => {
                 before(() => {
                     cy.get(s.action.mockResult.rowIndex(4))
                         .find(s.action.mockResult.buttons.view)
@@ -412,6 +413,7 @@ describe('Action Callback Results', () => {
                     cy.get(s.callbackResultModal.toggleView)
                         .click()
                 })
+
                 // TODO: Why does it not match?
                 // Alternative is to get text and JSON.parse() then inspect it
                 it.skip(`should match expected code definition`, () => {
@@ -448,12 +450,47 @@ describe('Action Callback Results', () => {
     })
 
     describe(`Editing`, () => {
+        before(() => {
+            cy.reload()
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                .should('not.exist')
+            cy.get(s.model.buttonNavActions)
+                .click()
+
+            cy.get(s.actions.buttonNewAction)
+                .click()
+        })
+
         it(`should allow creating mock result even if no Callback name is selected`, () => {
-            return true
+            util.selectDropDownOption(s.action.dropDownType, 'API')
+            util.selectDropDownOption(s.action.dropDownApiCallback, constants.strings.customCallbackName)
+            cy.get(s.action.inputCustomCallbackName)
+                .type(testData.customCallbackName)
+
+            cy.get(s.action.mockResult.buttons.add)
+                .click()
+
+            cy.get(s.callbackResultModal.inputs.name)
+                .type(testData.mockResultName)
+
+            cy.get(s.callbackResultModal.inputs.returnValue)
+                .type(`Return Value From Text`)
+
+            cy.get(s.callbackResultModal.buttons.submit)
+                .click()
+
+            cy.get(s.action.buttonCreate)
+                .click()
+
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                .should('not.exist')
+
+            cy.get(s.actions.callbackName)
+                .contains(testData.customCallbackName)
         })
     })
 
-    describe.skip('Teaching', () => {
+    describe('Teaching', () => {
         describe('Action Scorer', () => {
             before(() => {
                 cy.reload()
@@ -466,7 +503,7 @@ describe('Action Callback Results', () => {
                     .click()
             })
 
-            it('select action WITHOUT selecting callback result should invoke callback', () => {
+            it('select action WITH callback WITHOUT selecting Callback Result should invoke callback', () => {
                 util.inputText(testData.dialogInputs.noCallbackResult)
                 util.clickScoreActionButton()
                 util.selectAction(s.trainDialog.actionScorer.callbackName, testData.callback.name)
@@ -480,7 +517,7 @@ describe('Action Callback Results', () => {
                     })
             })
 
-            it('select action WITH Callback Result selected should simulate result', () => {
+            it('select action WITH callback AND Callback Result selected should simulate result', () => {
                 util.inputText(`Chose 'Set Values' Result`)
                 util.clickScoreActionButton()
 
@@ -499,7 +536,7 @@ describe('Action Callback Results', () => {
                     })
             })
 
-            it('select action with Callback Results which REMOVES entities should effect memory', () => {
+            it('select action with Callback Results selected which REMOVES entities should effect memory', () => {
                 util.inputText(`Chose 'Clear Values' Results`)
                 util.clickScoreActionButton()
                 chooseCallbackResult(testData.callback.name, testData.callback.mockResults.clearAllEntities)
@@ -511,12 +548,28 @@ describe('Action Callback Results', () => {
                 chooseCallbackResult(testData.callback.name, testData.callback.mockResults.clearAllEntities)
                 util.selectAction(s.trainDialog.actionScorer.callbackName, testData.callback.name)
 
+                // No entities in memory, since all are cleared from above
                 cy.get(s.trainDialog.memory.entityName)
                     .should('not.exist')
             })
 
-            it(`should force a callback result to be selected if the action callback name is not defined as there is no fallback`, () => {
-                return false
+            it(`given action with no callback assigned it should, default the dropdown to one of the mock results`, () => {
+                util.inputText(`Select action with no callback assigned`)
+                util.clickScoreActionButton()
+
+                // Dropdown defaults to Mock Result instead of None
+                cy.get(s.trainDialog.actionScorer.callbackName)
+                    .contains(testData.customCallbackName)
+                    .parents(s.trainDialog.actionScorer.rowField)
+                    .within(() => {
+                        cy.get(s.trainDialog.actionScorer.callbackResultSelectorDropdown)
+                            .contains(testData.mockResultName)
+                    })
+            })
+
+            it(`given action with no callback assigned it should, execute the mock result as other callback results`, () => {
+                chooseCallbackResult(testData.customCallbackName, testData.mockResultName)
+                util.selectAction(s.trainDialog.actionScorer.callbackName, testData.customCallbackName)
             })
 
             after(() => {
@@ -591,7 +644,12 @@ function chooseCallbackResult(callbackName: string, callbackResultName: string) 
     cy.get(s.trainDialog.actionScorer.callbackName)
         .contains(callbackName)
         .parents(s.trainDialog.actionScorer.rowField)
-        .then(() => {
-            util.selectDropDownOption(s.trainDialog.actionScorer.callbackResultSelectorDropdown, callbackResultName)
+        .then($actionScorerRow => {
+            cy.get(s.trainDialog.actionScorer.callbackResultSelectorDropdown, { withinSubject: $actionScorerRow })
+                .click()
+
+            cy.get(s.common.dropDownOptions)
+                .contains(callbackResultName)
+                .click()
         })
 }

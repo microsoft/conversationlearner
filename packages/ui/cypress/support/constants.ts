@@ -20,6 +20,9 @@ export const constants = {
     events: {
         selectWord: 'Test_SelectWord',
     },
+    strings: {
+        customCallbackName: 'Enter name for callback',
+    },
 }
 
 export default constants

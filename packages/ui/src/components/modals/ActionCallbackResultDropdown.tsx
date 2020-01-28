@@ -21,6 +21,14 @@ type ReceivedProps = {
 
 type Props = ReceivedProps & InjectedIntlProps
 
+// If no results defined, show None and Disable preview.
+// If results defined list stub names and none selected.
+const noneOptionKey = 'none'
+const noneOption: OF.IDropdownOption = {
+    key: noneOptionKey,
+    text: 'None',
+}
+
 /**
  * Renders dropdown for mock result names of callback actions with preview modal.
  * This helps select which mock result should be used when the action is taken during training.
@@ -45,22 +53,17 @@ const Component: React.FC<Props> = (props) => {
         { mockResults: callbackResultsFromModel, source: MockResultSource.MODEL },
     )
 
-    const definedCallbackResultOptions = callbackResults.map(convertCallbackResultToDropdownOption)
-
-    // If no results defined, show None and Disable preview.
-    // If results defined list stub names and none selected.
-    const noneOptionKey = 'none'
-    const noneOption: OF.IDropdownOption = {
-        key: noneOptionKey,
-        text: 'None',
+    const callbackResultOptions = callbackResults.map(convertCallbackResultToDropdownOption)
+    if (props.action.isCallbackUnassigned !== true) {
+        callbackResultOptions.unshift(noneOption)
     }
 
-    const callbackResultOptions = [
-        noneOption,
-        ...definedCallbackResultOptions,
-    ]
+    if (callbackResultOptions.length === 0) {
+        throw new Error(`There are no callback result options to choose. This shouldn't be possible.`)
+    }
 
-    const [selectedCallbackResultOptionKey, setSelectedCallbackResultOptionKey] = React.useState<string>(props.selectedCallbackResult?.mockResult.name ?? noneOptionKey)
+    const firstOptionKey = callbackResultOptions[0].key as string
+    const [selectedCallbackResultOptionKey, setSelectedCallbackResultOptionKey] = React.useState<string>(props.selectedCallbackResult?.mockResult.name ?? firstOptionKey)
     const onChangeSelectedCallbackResult = (event: React.FormEvent<HTMLDivElement>, option?: OF.IDropdownOption | undefined, index?: number | undefined) => {
         if (!option) {
             return

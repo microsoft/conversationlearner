@@ -447,6 +447,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 const payloadOptions = prevProps.entities.map(convertEntityToOption)
                 const negativeConditionTags = convertEntityIdsToTags(action.negativeEntities, this.props.entities, false)
                 const expectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity] : []), this.props.entities)
+                let customCallbackName: string = ''
                 let selectedApiOptionKey: string | undefined
                 let selectedCardOptionKey: string | undefined
                 let selectedModelOptionKey: string | undefined
@@ -472,21 +473,27 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 }
                 else if (action.actionType === CLM.ActionTypes.API_LOCAL) {
                     const apiAction = new CLM.ApiAction(action)
-                    selectedApiOptionKey = apiAction.name
-                    const callback = prevProps.botInfo.callbacks.find(t => t.name === selectedApiOptionKey)
-                    if (callback) {
-                        for (const actionArgumentName of callback.logicArguments) {
-                            const argument = apiAction.logicArguments.find(a => a.parameter === actionArgumentName)
-                            const initialValue = argument ? argument.value : ''
-                            slateValuesMap[actionArgumentName] = tryCreateSlateValue(CLM.ActionTypes.API_LOCAL, actionArgumentName, initialValue, payloadOptions)
-                        }
-                        for (const actionArgumentName of callback.renderArguments) {
-                            const argument = apiAction.renderArguments.find(a => a.parameter === actionArgumentName)
-                            const initialValue = argument ? argument.value : ''
-                            secondarySlateValuesMap[actionArgumentName] = tryCreateSlateValue(CLM.ActionTypes.API_LOCAL, actionArgumentName, initialValue, payloadOptions)
+                    if (apiAction.isCallbackUnassigned === true) {
+                        selectedApiOptionKey = callbackNameInputOption.key as string
+                        customCallbackName = apiAction.name
+                    }
+                    else {
+                        selectedApiOptionKey = apiAction.name
+
+                        const callback = prevProps.botInfo.callbacks.find(t => t.name === selectedApiOptionKey)
+                        if (callback) {
+                            for (const actionArgumentName of callback.logicArguments) {
+                                const argument = apiAction.logicArguments.find(a => a.parameter === actionArgumentName)
+                                const initialValue = argument ? argument.value : ''
+                                slateValuesMap[actionArgumentName] = tryCreateSlateValue(CLM.ActionTypes.API_LOCAL, actionArgumentName, initialValue, payloadOptions)
+                            }
+                            for (const actionArgumentName of callback.renderArguments) {
+                                const argument = apiAction.renderArguments.find(a => a.parameter === actionArgumentName)
+                                const initialValue = argument ? argument.value : ''
+                                secondarySlateValuesMap[actionArgumentName] = tryCreateSlateValue(CLM.ActionTypes.API_LOCAL, actionArgumentName, initialValue, payloadOptions)
+                            }
                         }
                     }
-
                 }
                 else if (action.actionType === CLM.ActionTypes.CARD) {
                     const cardAction = new CLM.CardAction(action)
@@ -557,6 +564,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     entityWarning,
                     selectedActionTypeOptionKey: action.actionType,
                     selectedApiOptionKey,
+                    customCallbackName,
                     selectedCardOptionKey,
                     selectedModelOptionKey,
                     slateValuesMap,
@@ -605,6 +613,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const isSelectedApiChanged = initialEditState.selectedApiOptionKey !== this.state.selectedApiOptionKey
         const isSelectedCardChanged = initialEditState.selectedCardOptionKey !== this.state.selectedCardOptionKey
         const isSelectedModelChanged = initialEditState.selectedModelOptionKey !== this.state.selectedCardOptionKey
+        const isCustomCallbackNameChanged = initialEditState.customCallbackName !== this.state.customCallbackName
         const areCallbackResultsChanged = MockResultUtils.areCallbackResultsEqual(this.state.callbackResults, initialEditState.callbackResults) === false
 
         const hasPendingChanges = isAnyPayloadChanged
@@ -617,6 +626,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             || isRepromptChanged
             || isEntryNodeChanged
             || isSelectedModelChanged
+            || isCustomCallbackNameChanged
             || areCallbackResultsChanged
 
         if (prevState.hasPendingChanges !== hasPendingChanges) {
@@ -1891,7 +1901,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 }
 
                                 <div>
-                                    <OF.Label>Mock Results <HelpIcon data-testid="action-help-panel-callback-result" tipType={ToolTip.TipType.MOCK_RESULT} /></OF.Label>
+                                    <OF.Label className="cl-label">Mock Results <HelpIcon data-testid="action-help-panel-callback-result" tipType={ToolTip.TipType.MOCK_RESULT} /></OF.Label>
                                     {/* In future include results defined in UI */}
                                     <div className="cl-action-creator-section">
                                         {mockResultsWithSource.length === 0
