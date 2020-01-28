@@ -1590,7 +1590,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 return this.state.selectedCardOptionKey === undefined
             case CLM.ActionTypes.API_LOCAL:
                 return this.state.selectedApiOptionKey === undefined
-                    || (this.state.customCallbackName.length === 0
+                    || (// If custom callback name is chose, must have name
+                        (this.state.selectedApiOptionKey === callbackNameInputOption.key
+                            && this.state.customCallbackName.length === 0)
+                        // Must have at least one mock result defined
                         || this.state.callbackResults.length === 0)
             case CLM.ActionTypes.SET_ENTITY:
                 return this.state.selectedEntityOptionKey === undefined

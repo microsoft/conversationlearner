@@ -209,11 +209,15 @@ describe('Action Callback Results', () => {
                 cy.get(s.callbackResultModal.buttons.submit)
                     .click()
 
+                // TODO: Why wait needed? Modal not closing?
+                cy.wait(1000)
+
                 cy.get(s.action.mockResult.row)
                     .should('have.length', 7)
             })
 
             after(() => {
+
                 cy.get(s.action.buttonCreate)
                     .click()
 

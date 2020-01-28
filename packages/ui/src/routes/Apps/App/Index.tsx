@@ -112,9 +112,21 @@ class Index extends React.Component<Props, ComponentState> {
     botValidationErrors(botInfo: CLM.BotInfo, actionList: CLM.ActionBase[]): string[] {
         // Check for missing APIs
         const actionsMissingCallbacks = actionList
-            .filter(a => a.actionType === CLM.ActionTypes.API_LOCAL && !CLM.ActionBase.isPlaceholderAPI(a))
+            .filter(a => a.actionType === CLM.ActionTypes.API_LOCAL)
             .map(a => new CLM.ApiAction(a))
-            .filter(a => !botInfo.callbacks || !botInfo.callbacks.some(cb => cb.name === a.name))
+            .filter(a => {
+                if (a.isPlaceholder === true) {
+                    return false
+                }
+
+                // If call back is intentionally unassigned, ignore
+                if (a.isCallbackUnassigned === true) {
+                    return false
+                }
+
+                // If callback name does not exist
+                return botInfo.callbacks.some(cb => cb.name === a.name) === false
+            })
 
         // Make unique list of missing APIs
         const uniqueCallbackNames = actionsMissingCallbacks

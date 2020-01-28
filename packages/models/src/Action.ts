@@ -210,6 +210,7 @@ export interface ActionPayload {
   renderArguments: IActionArgument[]
   isPlaceholder?: boolean
   // TODO: Remove after consolidation with placeholder
+  // Better name? Want to imply only mocked results can be used.
   isCallbackUnassigned?: boolean
 }
 
@@ -270,6 +271,7 @@ export class ApiAction extends ActionBase {
   logicArguments: ActionArgument[]
   renderArguments: ActionArgument[]
   isPlaceholder?: boolean
+  isCallbackUnassigned?: boolean
 
   constructor(action: ActionBase) {
     super(action)
@@ -283,7 +285,9 @@ export class ApiAction extends ActionBase {
     this.logicArguments = actionPayload.logicArguments ? actionPayload.logicArguments.map(aa => new ActionArgument(aa)) : []
     this.renderArguments = actionPayload.renderArguments ? actionPayload.renderArguments.map(aa => new ActionArgument(aa)) : []
     this.isPlaceholder = actionPayload.isPlaceholder
+    this.isCallbackUnassigned = actionPayload.isCallbackUnassigned
   }
+
   renderLogicArguments(entityValues: Map<string, string>, serializerOptions: Partial<IOptions> = {}): RenderedActionArgument[] {
     return this.renderArgs(this.logicArguments, entityValues, serializerOptions)
   }

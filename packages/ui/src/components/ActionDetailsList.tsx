@@ -69,7 +69,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
             case CLM.ActionTypes.API_LOCAL: {
                 const apiAction = new CLM.ApiAction(action)
                 // If placeholder not expecting action to exist
-                if (apiAction.isPlaceholder) {
+                if (apiAction.isPlaceholder || apiAction.isCallbackUnassigned) {
                     return false
                 }
                 // Otherwise make sure callback exists
