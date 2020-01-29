@@ -235,7 +235,7 @@ const initializeState = (callbackResult: MockResultWithSource | undefined): Stat
     }
 }
 
-const convertStateToMockResult = (state: State, entities: CLM.EntityBase[]): CLM.CallbackResult => {
+const convertStateToMockResult = (state: State, entities: CLM.EntityBase[], options: { useEntityNameAsKey?: boolean } = {}): CLM.CallbackResult => {
     const entityValues = state.entitiesValues.reduce((eValues, [entityName, entityValues]) => {
         const entity = entities.find(e => e.entityName === entityName)
         if (entity) {
@@ -246,9 +246,13 @@ const convertStateToMockResult = (state: State, entities: CLM.EntityBase[]): CLM
             const isValueRemoved = entityValues.clear
                 || nonEmptyValues.length === 0
 
+            const entityKey = options.useEntityNameAsKey === true
+                ? entity.entityName
+                : entity.entityId
+
             // If entity should be cleared set to null
             // If entity is multi value, use array, otherwise use first value
-            eValues[entityName] = isValueRemoved
+            eValues[entityKey] = isValueRemoved
                 ? null
                 : entity.isMultivalue
                     ? nonEmptyValues
@@ -442,7 +446,7 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                 ? <pre className="cl-callback-result-modal__code" data-testid="callback-result-modal__code">
                     {props.callbackResult?.source === MockResultSource.CODE
                         ? JSON.stringify(props.callbackResult?.mockResult, null, '  ')
-                        : JSON.stringify(convertStateToMockResult(state, props.entities), null, '  ')}
+                        : JSON.stringify(convertStateToMockResult(state, props.entities, { useEntityNameAsKey: true }), null, '  ')}
                 </pre>
                 : <div className="cl-callback-result-modal__fields">
                     <div className="cl-callback-result-modal__name">
