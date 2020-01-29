@@ -548,11 +548,17 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         let callbackResultName = undefined
         if (scoredBase.actionType === CLM.ActionTypes.API_LOCAL) {
             const apiAction = new CLM.ApiAction(scoredBase as CLM.ActionBase)
-            const callback = this.props.botInfo.callbacks.find(c => c.name === apiAction.name)
+            const selectedMockResultName = actionIdCallbackResultMap[apiAction.actionId]?.mockResult.name
 
-            if (callback?.mockResults) {
-                callbackResultName = actionIdCallbackResultMap[apiAction.actionId]?.mockResult.name
+            const combinedMockResults = apiAction.clientData?.mockResults ?? []
+            // If action has callback, action name is callback name, find and add mock results from callback definition
+            if (apiAction.isCallbackUnassigned !== true) {
+                const callback = this.props.botInfo.callbacks.find(c => c.name === apiAction.name)
+                combinedMockResults.push(...(callback?.mockResults ?? []))
             }
+
+            const mockResult = combinedMockResults.find(mr => mr.name === selectedMockResultName)
+            callbackResultName = mockResult?.name
         }
 
         const trainScorerStep: CLM.TrainScorerStep = {

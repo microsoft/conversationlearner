@@ -59,7 +59,7 @@ const Component: React.FC<Props> = (props) => {
     }
 
     if (callbackResultOptions.length === 0) {
-        throw new Error(`There are no callback result options to choose. This shouldn't be possible.`)
+        throw new Error(`There are no callback result options to choose for action ${props.action.name}. There should not be possible.`)
     }
 
     const firstOptionKey = callbackResultOptions[0].key as string

@@ -1550,23 +1550,59 @@ export class CLRunner {
         showAPICard: boolean,
         actionInput: IActionInput,
     ): Promise<IActionResult> {
-        // Extract API name and args
-        const callback = this.callbacks[apiAction.name]
-        if (!callback) {
-            return {
-                logicResult: undefined,
-                response: `ERROR: API callback with name "${apiAction.name}" is not defined`
-            }
-        }
-
         try {
+            let logicResult: CLM.LogicResult = {
+                logicValue: undefined,
+                changedFilledEntities: [],
+            }
+
+            // If there is no callback there shouldn't be an errors because we're not executing user code
+            if (apiAction.isCallbackUnassigned === true) {
+                // If callback is unassigned, must be mock result from model
+                const mockResult = apiAction.clientData?.mockResults?.find(result => result.name === actionInput.mockResultName)
+                if (!mockResult) {
+                    throw new Error(`A mock result name ${actionInput.mockResultName} for action ${apiAction.name} was provided but no result by that name was found.`)
+                }
+
+                const memory = await this.CreateMemoryManagerAsync(state, allEntities)
+                const entityMapBeforeCall = new CLM.FilledEntityMap(await state.EntityState.FilledEntityMap())
+                this.simulateEffectsOfMockResultOnMemory(mockResult, memory)
+                // Update memory with changes from logic callback
+                await state.EntityState.RestoreFromMemoryManagerAsync(memory)
+                // Store changes to filled entities
+                const changedFilledEntities = CLM.ModelUtils.changedFilledEntities(entityMapBeforeCall, memory.curMemories)
+
+                logicResult = {
+                    logicValue: JSON.stringify(mockResult.returnValue),
+                    changedFilledEntities,
+                }
+
+                let response = showAPICard
+                    ? this.RenderCallbackPlaceholderCard(apiAction.name)
+                    : null
+
+                return {
+                    logicResult,
+                    response,
+                    replayError: undefined,
+                }
+            }
+
+            // Extract API name and args
+            const callback = this.callbacks[apiAction.name]
+            if (!callback) {
+                return {
+                    logicResult: undefined,
+                    response: `ERROR: API callback with name "${apiAction.name}" is not defined`
+                }
+            }
+
             const renderedLogicArgumentValues = this.GetRenderedArguments(callback.logicArguments, apiAction.logicArguments, filledEntityMap)
             const memoryManager = await this.CreateMemoryManagerAsync(state, allEntities)
             let replayError: CLM.ReplayError | null = null
 
             // If we're only doing the render part, used stored values
             // This happens when replaying dialog to recreated action outputs
-            let logicResult: CLM.LogicResult = { logicValue: undefined, changedFilledEntities: [] }
             if (actionInput.type === ActionInputType.RENDER_ONLY) {
                 logicResult = actionInput.logicResult ?? logicResult
 
@@ -1592,22 +1628,7 @@ export class CLRunner {
                             throw new Error(`A mock result name ${actionInput.mockResultName} was provided but no result by that name was found.`)
                         }
 
-                        // Simulate calling set on memory manager to create changes in filled entities / bot state
-                        Object.entries(callbackResult.entityValues)
-                            .forEach(([entityName, entityValue]) => {
-                                if (entityValue === null || entityValue === undefined) {
-                                    memoryManager.Delete(entityName)
-                                }
-                                // Force mocks results to overwrite values
-                                else if (Array.isArray(entityValue)) {
-                                    memoryManager.Delete(entityName)
-                                    memoryManager.Set(entityName, entityValue)
-                                }
-                                else {
-                                    memoryManager.Set(entityName, entityValue)
-                                }
-                            })
-
+                        this.simulateEffectsOfMockResultOnMemory(callbackResult, memoryManager)
                         logicReturnValue = callbackResult.returnValue
                     }
                     else {
@@ -1691,6 +1712,23 @@ export class CLRunner {
                 replayError
             }
         }
+    }
+
+    private simulateEffectsOfMockResultOnMemory(callbackResult: CLM.CallbackResult, memoryManager: ClientMemoryManager) {
+        Object.entries(callbackResult.entityValues)
+            .forEach(([entityName, entityValue]) => {
+                if (entityValue === null || entityValue === undefined) {
+                    memoryManager.Delete(entityName)
+                }
+                // Force mocks results to overwrite values
+                else if (Array.isArray(entityValue)) {
+                    memoryManager.Delete(entityName)
+                    memoryManager.Set(entityName, entityValue)
+                }
+                else {
+                    memoryManager.Set(entityName, entityValue)
+                }
+            })
     }
 
     public async TakeTextAction(textAction: CLM.TextAction, filledEntityMap: CLM.FilledEntityMap): Promise<Partial<BB.Activity> | string> {
@@ -2526,6 +2564,11 @@ export class CLRunner {
 
     private RenderChangeModelCard(modelName: string): Partial<BB.Activity> {
         return this.renderPlaceholderCard("Change Model:", modelName)
+    }
+
+    // Generate a card for actions with only mock results and no rendering
+    private RenderCallbackPlaceholderCard(name: string): Partial<BB.Activity> {
+        return this.renderPlaceholderCard("Mocked Call", name)
     }
 
     // Generate a card to show for an API action w/o output
