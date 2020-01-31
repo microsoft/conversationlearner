@@ -1556,9 +1556,9 @@ export class CLRunner {
                 changedFilledEntities: [],
             }
 
-            // If there is no callback there shouldn't be an errors because we're not executing user code
+            // If there is no callback there is no logic and render function to coordinate and shouldn't be an errors since it does not execute user code
             if (apiAction.isCallbackUnassigned === true) {
-                // If callback is unassigned, must be mock result from model
+                // If callback is unassigned but action exists it must have mock results
                 const mockResult = apiAction.clientData?.mockResults?.find(result => result.name === actionInput.mockResultName)
                 if (!mockResult) {
                     throw new Error(`A mock result name ${actionInput.mockResultName} for action ${apiAction.name} was provided but no result by that name was found.`)
