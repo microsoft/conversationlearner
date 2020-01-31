@@ -18,7 +18,6 @@ export const TurnUndoButtonSelector = '[data-testid="edit-teach-dialog-undo-butt
 
 export function ClickSetInitialStateButton() { cy.Get('[data-testid="teach-session-set-initial-state"]').Click() }
 export function ClickScoreActionsButton() { cy.Get(ScoreActionsButtonSelector).Click() }
-export function VerifyEntityMemoryIsEmpty() { cy.Get('[data-testid="memory-table-empty"]').contains('Empty') }
 export function ClickAddAlternativeInputButton() { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
 
 export function VerifyWarningMessage(expectedMessage) { cy.Get('[data-testid="dialog-modal-warning"]').find('span').ExactMatch(expectedMessage) }
@@ -67,7 +66,7 @@ export function GetDescription() { return Cypress.$('[data-testid="train-dialog-
 export function VerifyDescription(expectedDescription) { cy.Get(`[data-testid="train-dialog-description"][value="${expectedDescription}"]`) }
 export function TypeDescription(description) { cy.Get('[data-testid="train-dialog-description"]').clear().type(`${description}{enter}`) }
 
-export function GetAllTags() { return helpers.ArrayOfTextContentWithoutNewlines('[data-testid="train-dialog-tags"] > div.cl-tags__tag > span') }
+export function GetAllTags() { return helpers.StringArrayFromElementText('[data-testid="train-dialog-tags"] > div.cl-tags__tag > span') }
 export function ClickAddTagButton() { cy.Get('[data-testid="tags-input-add-tag-button"]').Click() }
 export function VerifyNoTags() { cy.Get('[data-testid="train-dialog-tags"] > div.cl-tags__tag > button > i [data-icon-name="Clear"]').should('have.length', 0) }
 
@@ -123,7 +122,10 @@ export function SelectEndSessionAction(expectedData) {
   chatPanel.VerifyEndSessionChatMessage(expectedData)
 }
 
-export function PreSaveDataUsedToVerifyTdGrid() {
+// Before we save this data, we capture the various data items that can show up in the grid
+// on the model page so that we can verify that this Train Dialog is represented correctly
+// in the grid after it is saved.
+function _PreSaveDataUsedToVerifyTdGrid() {
   cy.WaitForStableDOM().then(() => {
     const description = GetDescription()
     const tagList = GetAllTags().join('')
@@ -132,7 +134,7 @@ export function PreSaveDataUsedToVerifyTdGrid() {
 }
 
 export function SaveAsIsVerifyInGrid() {
-  PreSaveDataUsedToVerifyTdGrid()
+  _PreSaveDataUsedToVerifyTdGrid()
   cy.Enqueue(() => { SaveAsIs() }).then(() => {
     trainDialogsGrid.TdGrid.VerifySavedTrainDialogIsInGridAlongWithAllOtherExpectedTDs()
   })
@@ -149,7 +151,7 @@ export function SaveAsIs() {
       if (mergeModal.IsVisible()) {
         helpers.ConLog(funcName, 'mergeModal.IsVisible')
 
-        mergeModal.$ClickSaveAsButton()
+        mergeModal.$ClickSaveAsIsButton()
         renderingShouldBeCompleteTime = new Date().getTime() + 1000
         throw new Error('The Merge Modal popped up, and we clicked the Save As Is button...need to retry and wait for the grid to become visible')
       }
@@ -170,7 +172,7 @@ export function SaveAsIs() {
 }
 
 export function SaveVerifyNoMergePopup() {
-  const funcName = 'SaveAsIs'
+  const funcName = 'SaveVerifyNoMergePopup'
 
   let mergeModalIsVisible = false
 
@@ -182,7 +184,7 @@ export function SaveVerifyNoMergePopup() {
       if (mergeModal.IsVisible()) {
         helpers.ConLog(funcName, 'mergeModal.IsVisible')
         mergeModalIsVisible = true
-        return
+        return // So that we can throw an exception in the then command that follows.
       }
 
       if (modelPage.IsOverlaid() && !helpers.HasErrorMessage()) {
@@ -197,6 +199,8 @@ export function SaveVerifyNoMergePopup() {
       }
       helpers.ConLog(funcName, 'No overlays for at least 1 second')
     }).then(() => {
+      // This exception had to be thrown in a then command, otherwise it would have taken
+      // up to 60 seconds before it actually caused the test to fail if done in the retry loop.
       if (mergeModalIsVisible) {
         throw new Error('The "Merge?" modal popup is showing but it is not expected to be there.')
       }

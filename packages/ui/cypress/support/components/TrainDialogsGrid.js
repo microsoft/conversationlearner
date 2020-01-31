@@ -36,7 +36,6 @@ export function GetLastResponses() { return helpers.StringArrayFromElementText('
 export function GetTurns() { return helpers.NumericArrayFromElementText('[data-testid="train-dialogs-turns"]') }
 export function GetLastModifiedDates() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-last-modified"]') }
 export function GetCreatedDates() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-created"]') }
-
 export function GetTagLists() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-tags"]') }
 export function GetDescriptions() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-description"]') }
 
@@ -238,7 +237,7 @@ export class TdGrid {
     return this._tagLists
   }
 
-  // STATICS:
+  // PUBLIC STATICS:
   // Once CreateNewTrainDialog or one of the two EditTraining* functions are used, the Train Dialog Grid is hidden,
   // it should not change, there is no need to access it again until a change is saved from the Train Dialog Editor
   // and the Model page is once again the top most view.
@@ -290,8 +289,8 @@ export class TdGrid {
     })
   }
 
-  // Sometimes the first click on the grid row does not work, so we implemented this logic to watch and see
-  // if it loaded, and if not to re-click on the row. So far we've never seen it require a 3rd click.
+  // Sometimes the first click on the grid row element does not work, so we implemented this logic to watch
+  // and see if it loaded, and if not to re-click on the row. So far we've never seen it require a 3rd click.
   static EditTrainingValidationPhase(iRow) {
     cy.WaitForStableDOM()
 

@@ -31,7 +31,7 @@
   })
 
   // -----------------------------------------------------------------------------
-  // Redirecting console.log so that we can persist it to a file.
+  // Redirecting console.log so that we can persist all logging to a file.
   // -----------------------------------------------------------------------------
 
   // Override the original console.log() function
@@ -39,7 +39,7 @@
 
   // This becomes the effective console.log() function.
   console.log = function (message) {
-    originalConsolLog.apply(console, arguments)
+    originalConsolLog.apply(console, arguments) // calls the original console.log() function
     logEntries += message + '\r\n'
   }
 
@@ -54,9 +54,8 @@
 
   // FINAL LOGGING SUPPORT FOR PREVIOUS TEST CASE
   // In an ideal world this code would be in an afterEach call, however, since 
-  // there will be other afterEach functions that will be called after ours and 
-  // we want to ensure the logging we do here is the final logging for the test 
-  // case.
+  // there will be other afterEach functions that will be called after ours this 
+  // ensures that the logging we do here is the final logging for the test case.
   //
   // Also important to notice is that this results in a call to cy.writeFile
   // which will execute in a different time sequence than all of the other 

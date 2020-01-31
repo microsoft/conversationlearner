@@ -56,7 +56,7 @@ export function CreateNewEntityThenVerifyInGrid({
 }) {
 
   modelPage.NavigateToEntities()
-  entitiesGrid.ClickButtonNewEntity()
+  entitiesGrid.ClickNewEntityButton()
 
   CreateNewEntity(arguments[0])
 

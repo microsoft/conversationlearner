@@ -10,6 +10,8 @@ export function VerifyPageTitle() { cy.Get('[data-testid="actions-title"]').cont
 export function ClickNewAction() { cy.Get('[data-testid="actions-button-create"]').Click() }
 export function VerifyTextActionNotInGrid(actionName) { cy.DoesNotContainExact('[data-testid="action-scorer-text-response"]', actionName) }
 
+// Because each Action type is formatted differenly in the grid we need a different function to locate each
+// individual one to edit.
 export function EditTextAction(actionName) { new Row('TEXT', actionName).EditAction() }
 export function EditCardAction(cardText) { new Row('CARD', cardText).EditAction() }
 export function EditEndSessionAction(endSessionData) { new Row('END_SESSION', endSessionData).EditAction() }
@@ -107,8 +109,8 @@ export function GetAllRows() {
     let type = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-action-type"]')[0])
     let response = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find(actionTypeSelector.GetSelector(type))[0])
 
-    let requiredEntities = helpers.ArrayOfTextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-required-entities"]'))
-    let disqualifyingEntities = helpers.ArrayOfTextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-disqualifying-entities"]'))
+    let requiredEntities = helpers.StringArrayFromElementText(Cypress.$(allRowElements[i]).find('[data-testid="action-details-required-entities"]'))
+    let disqualifyingEntities = helpers.StringArrayFromElementText(Cypress.$(allRowElements[i]).find('[data-testid="action-details-disqualifying-entities"]'))
     let expectedEntity = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-expected-entity"]')[0])
     let wait = Cypress.$(allRowElements[i]).find('[data-icon-name="CheckMark"][data-testid="action-details-wait"]').length == 1
 

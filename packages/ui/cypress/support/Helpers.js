@@ -22,6 +22,14 @@ export function SkipRemainingTestsOfSuiteIfFailed() {
   }
 }
 
+// The returned string will be of the minimumLength passed in or longer. If the number
+// does not have enough digits the string will be pre-padded with leading zeros.
+export function NumberToStringWithLeadingZeros(number, minimumLength) {
+  let string = String(number)
+  if (string.length < minimumLength) { string = '0'.repeat(minimumLength - string.length) + string }
+  return string
+}
+
 // NOTE: the '-+-' is a signature for filtering console output
 export function ConLog(funcName, message) { console.log(`-+- ${Cypress.moment().format("HH:mm:ss..SSS")} - ${funcName} - ${message}`) }
 
@@ -29,12 +37,6 @@ export function DumpObject(funcName, object) {
   let propertyList = ''
   for (let property in object) propertyList += `${(propertyList.length == 0 ? '' : ', ')}${property}: ${object[property]}`
   ConLog(funcName, propertyList)
-}
-
-export function NumberToStringWithLeadingZeros(number, length) {
-  let string = String(number)
-  if (string.length < length) { string = '0'.repeat(length - string.length) + string }
-  return string
 }
 
 export function DumpElements(funcName, elements) {
@@ -54,25 +56,15 @@ export function RemoveDuplicates(inputArray) {
   return uniqueOutputArray
 }
 
-// This will return an array of the Inner Text (with New Lines removed) of an array of elements.
 // Pass in either an array of elements or the selector to get the array of elements with.
-export function ArrayOfTextContentWithoutNewlines(elementsOrSelector) {
+export function StringArrayFromElementText(elementsOrSelector, retainMarkup = false) {
+  let funcName = `StringArrayFromElementText(${elementsOrSelector})`
   if (elementsOrSelector === undefined || elementsOrSelector.length == 0) { return undefined }
 
   let elements
   if (typeof elementsOrSelector == 'string') { elements = Cypress.$(elementsOrSelector) }
   else { elements = elementsOrSelector }
 
-  let arrayOfTextContent = []
-  for (let i = 0; i < elements.length; i++) {
-    arrayOfTextContent.push(TextContentWithoutNewlines(elements[i]))
-  }
-  return arrayOfTextContent
-}
-
-export function StringArrayFromElementText(selector, retainMarkup = false) {
-  let funcName = `StringArrayFromElementText(${selector})`
-  let elements = Cypress.$(selector)
   ConLog(funcName, `Number of Elements Found: ${elements.length}`)
   let returnValues = []
   for (let i = 0; i < elements.length; i++) {
