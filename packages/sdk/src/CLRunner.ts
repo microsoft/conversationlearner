@@ -1722,7 +1722,7 @@ export class CLRunner {
                 // Don't know callback source so try both keys
                 const entity = entities.find(e => e.entityName === entityKey || e.negativeId === entityKey)
                 if (!entity) {
-                    throw new Error(`Mock result ${callbackResult.name} references an entity that does not exist`)
+                    throw new Error(`Mock result '${callbackResult.name}' references an entity that does not exist. Entity key: ${entityKey}`)
                 }
 
                 if (entityValue === null || entityValue === undefined) {
