@@ -991,8 +991,8 @@ export function getTip(tipType: string) {
                 <div>
                     <h2>Mock Results with Missing Entity</h2>
                     <p>There are cases where you mock results may not match the current state if your model.</p>
-                    <p>If you have written a mock result in Code you may have a typo in your entity name or you could have edited your model and removed the entity that was referenced by that result.</p>
-                    <p>Update the callback definition in code and reload to see changes.</p>
+                    <p>If you have defined a mock result in code you may have a typo in your entity name. If you have defined mock results in the UI you may have edited your model and removed the entity that was referenced by that result.</p>
+                    <p>Note: If the mock result is defined in code you would need to update the definition, restart the bot, and refresh the UI to remove the errors.</p>
                 </div>
             )
 
@@ -1003,7 +1003,7 @@ export function getTip(tipType: string) {
                     <p>There are cases where the values assigned to an entity in a mock result may be incorrect.</p>
                     <ol>
                         <li>If you have assigned multiple values to a single value entity.</li>
-                        <li>If you have assigned non-array, single value to a multi value entity.</li>
+                        <li>If you have assigned single value (non-array) to a multi value entity.</li>
                     </ol>
                 </div>
             )
