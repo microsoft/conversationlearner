@@ -102,13 +102,13 @@ html {
   to { transform: rotate(360deg); }
 }
 
-.cl-icon-themePrimary {
-  color:var(--color-themePrimary) !important;
+.cl-icon-whitebackground {
+  color:rgb(16, 110, 190) !important;
   background-color:transparent !important;
 }
 
-.cl-icon-themePrimary:hover {
-  color:var(--color-red) !important;
+.cl-icon-whitebackground:hover {
+  color:#ff0000 !important;
   background-color:transparent !important;
 }
 
