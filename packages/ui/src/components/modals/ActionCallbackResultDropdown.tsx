@@ -23,9 +23,8 @@ type Props = ReceivedProps & InjectedIntlProps
 
 // If no results defined, show None and Disable preview.
 // If results defined list stub names and none selected.
-const noneOptionKey = 'none'
 const noneOption: OF.IDropdownOption = {
-    key: noneOptionKey,
+    key: 'none',
     text: 'None',
 }
 
@@ -62,8 +61,8 @@ const Component: React.FC<Props> = (props) => {
         throw new Error(`There are no callback result options to choose for action ${props.action.name}. There should not be possible.`)
     }
 
-    const firstOptionKey = callbackResultOptions[0].key as string
-    const [selectedCallbackResultOptionKey, setSelectedCallbackResultOptionKey] = React.useState<string>(props.selectedCallbackResult?.mockResult.name ?? firstOptionKey)
+    const firstOption = callbackResultOptions[0]
+    const [selectedCallbackResultOptionKey, setSelectedCallbackResultOptionKey] = React.useState<string>(props.selectedCallbackResult?.mockResult.name ?? firstOption.key as string)
     const onChangeSelectedCallbackResult = (event: React.FormEvent<HTMLDivElement>, option?: OF.IDropdownOption | undefined, index?: number | undefined) => {
         if (!option) {
             return
@@ -74,7 +73,17 @@ const Component: React.FC<Props> = (props) => {
         props.onChangeSelectedCallbackResult(option.data)
     }
 
-    const isCallbackResultViewDisabled = selectedCallbackResultOptionKey === noneOptionKey
+    // Used to initialize action mock result mapping to whatever the dropdown is set to.
+    // Avoids need for explicit user click.
+    React.useEffect(() => {
+        const dropdownItem = callbackResultOptions.find(option => option.key === selectedCallbackResultOptionKey)
+        if (dropdownItem
+            && dropdownItem.key !== noneOption.key) {
+            props.onChangeSelectedCallbackResult(dropdownItem.data)
+        }
+    }, [])
+
+    const isCallbackResultViewDisabled = selectedCallbackResultOptionKey === noneOption.key
     const selectedCallbackResult = callbackResults.find(mockResultWithSource => mockResultWithSource.mockResult.name === selectedCallbackResultOptionKey)
 
     return <>

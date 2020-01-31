@@ -1578,7 +1578,7 @@ export class CLRunner {
                 }
 
                 let response = showAPICard
-                    ? this.RenderCallbackPlaceholderCard(apiAction.name)
+                    ? this.RenderCallbackPlaceholderCard(apiAction.name, mockResult.name)
                     : null
 
                 return {
@@ -1691,7 +1691,9 @@ export class CLRunner {
                     // If response is empty, but we're in teach session return a placeholder card in WebChat so they can click it to edit
                     // Otherwise return the response as is.
                     if (!response && showAPICard) {
-                        response = this.RenderAPICard(callback, renderedLogicArgumentValues)
+                        response = typeof actionInput.mockResultName === 'string'
+                            ? this.RenderCallbackPlaceholderCard(callback.name, actionInput.mockResultName)
+                            : this.RenderAPICard(callback, renderedLogicArgumentValues)
                     }
                 }
                 return {
@@ -2573,13 +2575,13 @@ export class CLRunner {
     }
 
     // Generate a card for actions with only mock results and no rendering
-    private RenderCallbackPlaceholderCard(name: string): Partial<BB.Activity> {
-        return this.renderPlaceholderCard("Mocked Call", name)
+    private RenderCallbackPlaceholderCard(callbackName: string, mockResultName: string): Partial<BB.Activity> {
+        return this.renderPlaceholderCard("Callback:", `Mock Result '${mockResultName}' from '${callbackName}'`)
     }
 
     // Generate a card to show for an API action w/o output
     private RenderAPICard(callback: InternalCallback<any>, args: string[]): Partial<BB.Activity> {
-        return this.renderPlaceholderCard("API Call:", `${callback.name}(${args.join(', ')})`)
+        return this.renderPlaceholderCard("Callback:", `${callback.name}(${args.join(', ')})`)
     }
 
     // Generate a card to show for an API action w/o output

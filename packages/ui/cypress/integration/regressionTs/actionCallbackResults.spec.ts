@@ -103,7 +103,7 @@ describe('Action Callback Results', () => {
         })
     })
 
-    describe.only(`Callback Result Modal`, () => {
+    describe(`Callback Result Modal`, () => {
         before(() => {
             cy.reload()
             cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
@@ -579,6 +579,7 @@ describe('Action Callback Results', () => {
             })
 
             it(`given action with no callback assigned it should, execute the mock result as other callback results`, () => {
+                // Note: even though mock result is already selected it must be explicitly selected to set value
                 chooseCallbackResult(testData.customCallbackName, testData.mockResultName)
                 util.selectAction(s.trainDialog.actionScorer.callbackName, testData.customCallbackName)
             })
@@ -597,7 +598,7 @@ describe('Action Callback Results', () => {
         before(() => {
             cy.get(s.trainDialogs.descriptions)
                 .contains(testData.dialogInputs.noCallbackResult)
-                .click()
+                .click('left')
         })
 
         describe('Activity Selection', () => {
