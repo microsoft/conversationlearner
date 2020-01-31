@@ -2368,11 +2368,13 @@ export class CLRunner {
                                 const actionInput: IActionInput = {
                                     type: ActionInputType.RENDER_ONLY,
                                     logicResult: scorerStep.logicResult,
+                                    mockResultName: scorerStep.stubName,
                                 }
 
                                 botResponse = await this.TakeAPIAction(apiAction, filledEntityMap, state, entityList.entities, true, actionInput)
 
-                                if (!this.callbacks[apiAction.name]) {
+                                if (apiAction.isCallbackUnassigned !== true
+                                    && this.callbacks[apiAction.name] === undefined) {
                                     replayError = new CLM.ReplayErrorAPIUndefined(apiAction.name)
                                     replayErrors.push(replayError)
                                 }
