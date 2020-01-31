@@ -1912,7 +1912,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                 // Consider split rendering to avoid index complexity, but adds complexity to rendering
                                                 const mockResultIndexOnState = mockResultIndex - mockResultsFromCode.length
                                                 return <div className="cl-action-creator-input-with-button"
-                                                    data-testid={`action-callback-result-row action-callback-result-row-from-${mockResultWithSource.source} action-callback-result-row-${mockResultIndex}`}
+                                                    data-testid={`action-callback-result-row action-callback-result-row-from-${mockResultWithSource.source}`}
                                                     key={mockResultWithSource.mockResult.name}>
                                                     <OF.TextField
                                                         data-testid="action-callback-result-name"

@@ -528,7 +528,10 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                                     }
                                     else {
                                         values = entityValues.values.map((valueObject, valueIndex) => {
-                                            return <div className="cl-callback-result-modal__entity-value" key={`${entityKey}-value-${valueIndex}`}>
+                                            return <div
+                                                className="cl-callback-result-modal__entity-value"
+                                                key={`${entityKey}-value-${valueIndex}`}
+                                            >
                                                 <OF.TextField
                                                     readOnly={props.isEditing === false}
                                                     multiline={valueObject.isMultiline}
@@ -536,10 +539,10 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                                                     disabled={entityValues.clear}
                                                     onChange={(e, value) => value !== undefined && onChangeValue(entityKey, valueIndex, value)}
                                                     autoComplete={"off"}
-                                                    data-testid={`callback-result-modal-input-entity-${entity?.entityName}-value-${valueIndex}`}
+                                                    data-testid="callback-result-modal-input-entity-value"
                                                 />
                                                 <OF.IconButton
-                                                    data-testid={`callback-result-modal-button-delete-${entity?.entityName}-value-${valueIndex}`}
+                                                    data-testid={`callback-result-modal-button-delete-value`}
                                                     disabled={props.isEditing === false || entityValues.clear}
                                                     className={`cl-button-delete`}
                                                     iconProps={{ iconName: 'Delete' }}
@@ -557,7 +560,7 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                                                 disabled={props.isEditing === false || entityValues.clear}
                                                 text={"Add Value"}
                                                 iconProps={{ iconName: 'Add' }}
-                                                data-testid={`callback-result-modal-button-add-value-${entity?.entityName}`}
+                                                data-testid="callback-result-modal-button-add-value"
                                             />
                                         </div>
 
@@ -591,7 +594,8 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                                                     Entity does not exist on model <HelpIcon tipType={ToolTips.TipType.MOCK_RESULT_MISSING_ENTITY} />
                                                 </div>}
                                         </div>
-                                        <div className="cl-callback-result-modal__entity-values__list">{values}</div>
+                                        <div className="cl-callback-result-modal__entity-values__list"
+                                            data-testid="callback-result-modal-entity-values-list">{values}</div>
                                         <OF.Checkbox
                                             label={"Clear"}
                                             disabled={props.isEditing === false}

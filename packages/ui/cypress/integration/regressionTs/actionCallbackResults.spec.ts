@@ -78,16 +78,18 @@ describe('Action Callback Results', () => {
 
         it(`should allow deletion of result from model`, () => {
             // TODO: Should find by text value instead of index. contains() doesn't work
-            cy.get(s.action.mockResult.rowIndex(5))
+            cy.get(s.action.mockResult.row)
+                .eq(5)
                 .find(s.action.mockResult.buttons.delete)
                 .should('not.have.attr', 'disabled')
 
-            cy.get(s.action.mockResult.rowIndex(5))
-
+            cy.get(s.action.mockResult.row)
+                .eq(5)
                 .find(s.action.mockResult.buttons.delete)
                 .click()
 
-            cy.get(s.action.mockResult.rowIndex(5))
+            cy.get(s.action.mockResult.row)
+                .eq(5)
                 .should('not.exist')
         })
 
@@ -101,7 +103,7 @@ describe('Action Callback Results', () => {
         })
     })
 
-    describe(`Callback Result Modal`, () => {
+    describe.only(`Callback Result Modal`, () => {
         before(() => {
             cy.reload()
             cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
@@ -135,14 +137,14 @@ describe('Action Callback Results', () => {
                 cy.get(s.callbackResultModal.buttons.addEntity)
                     .click()
 
-                cy.get(s.callbackResultModal.buttons.removeEntityValue(entityName, 0))
+                getRemoveEntityValueButton(entityName, 0)
                     .click()
 
                 util.selectDropDownOption(s.callbackResultModal.dropdownEntity, entityName)
                 cy.get(s.callbackResultModal.buttons.addEntity)
                     .click()
 
-                cy.get(s.callbackResultModal.inputs.entityValue(entityName, 0))
+                getEntityValue(entityName, 0)
                     .type('1')
             })
 
@@ -152,22 +154,22 @@ describe('Action Callback Results', () => {
                 cy.get(s.callbackResultModal.buttons.addEntity)
                     .click()
 
-                cy.get(s.callbackResultModal.inputs.entityValue(entityName, 0))
+                getEntityValue(entityName, 0)
                     .type('3')
 
-                cy.get(s.callbackResultModal.buttons.addValue(entityName))
+                getAddValue(entityName)
                     .click()
 
-                cy.get(s.callbackResultModal.inputs.entityValue(entityName, 1))
+                getEntityValue(entityName, 1)
                     .type('4')
 
-                cy.get(s.callbackResultModal.buttons.addValue(entityName))
+                getAddValue(entityName)
                     .click()
 
-                cy.get(s.callbackResultModal.inputs.entityValue(entityName, 2))
+                getEntityValue(entityName, 2)
                     .type('5')
 
-                cy.get(s.callbackResultModal.buttons.removeEntityValue(entityName, 2))
+                getRemoveEntityValueButton(entityName, 2)
                     .click()
             })
 
@@ -177,10 +179,10 @@ describe('Action Callback Results', () => {
                 cy.get(s.callbackResultModal.buttons.addEntity)
                     .click()
 
-                cy.get(s.callbackResultModal.inputs.entityValue(entityName, 0))
+                getEntityValue(entityName, 0)
                     .type('my string value')
 
-                cy.get(s.callbackResultModal.buttons.removeEntityValue(entityName, 0))
+                getRemoveEntityValueButton(entityName, 0)
                     .click()
 
                 cy.get(s.callbackResultModal.entityName)
@@ -243,13 +245,14 @@ describe('Action Callback Results', () => {
 
             it(`should discard edits to mock result if cancelled`, () => {
                 // TODO: Get by text instead of index, so it's not order dependent
-                cy.get(s.action.mockResult.rowIndex(4))
+                cy.get(s.action.mockResult.row)
+                    .eq(4)
                     .find(s.action.mockResult.buttons.view)
                     .click()
 
                 // Make Edits
                 const entityName = 'myNumber'
-                cy.get(s.callbackResultModal.inputs.entityValue(entityName, 0))
+                getEntityValue(entityName, 0)
                     .type('99')
 
                 // Cancel
@@ -257,12 +260,13 @@ describe('Action Callback Results', () => {
                     .click()
 
                 // Open
-                cy.get(s.action.mockResult.rowIndex(4))
+                cy.get(s.action.mockResult.row)
+                    .eq(4)
                     .find(s.action.mockResult.buttons.view)
                     .click()
 
                 // Verify original value
-                cy.get(s.callbackResultModal.inputs.entityValue(entityName, 0))
+                getEntityValue(entityName, 0)
                     .should('have.value', '3')
 
                 // Cancel
@@ -272,7 +276,8 @@ describe('Action Callback Results', () => {
 
             it(`edits to mock results should persist`, () => {
                 // open
-                cy.get(s.action.mockResult.rowIndex(5))
+                cy.get(s.action.mockResult.row)
+                    .eq(5)
                     .find(s.action.mockResult.buttons.view)
                     .click()
 
@@ -302,7 +307,8 @@ describe('Action Callback Results', () => {
                     .click()
 
                 // open mock results
-                cy.get(s.action.mockResult.rowIndex(5))
+                cy.get(s.action.mockResult.row)
+                    .eq(5)
                     .find(s.action.mockResult.buttons.view)
                     .click()
 
@@ -325,7 +331,8 @@ describe('Action Callback Results', () => {
                     .contains(testData.callback.name)
                     .click()
 
-                cy.get(s.action.mockResult.rowIndex(1))
+                cy.get(s.action.mockResult.row)
+                    .eq(1)
                     .find(s.action.mockResult.buttons.view)
                     .click()
             })
@@ -339,7 +346,7 @@ describe('Action Callback Results', () => {
             })
 
             it(`should still show values gracefully, but show errors for incorrect types (single to multi) assigned to entity`, () => {
-                cy.get(s.callbackResultModal.inputs.entityValue('myNumbers', 0))
+                getEntityValue('myNumbers', 0)
                     .should('have.value', '1')
 
                 // Verify shows single value for multi value
@@ -348,11 +355,11 @@ describe('Action Callback Results', () => {
 
             it(`should still show values gracefully, but show errors for incorrect types (multi to single) assigned to entity`, () => {
                 // Verify shows multiple values for single value entity
-                cy.get(s.callbackResultModal.inputs.entityValue('myString', 0))
+                getEntityValue('myString', 0)
                     .should('have.value', `"string1"`)
-                cy.get(s.callbackResultModal.inputs.entityValue('myString', 1))
+                getEntityValue('myString', 1)
                     .should('have.value', `"string2"`)
-                cy.get(s.callbackResultModal.inputs.entityValue('myString', 2))
+                getEntityValue('myString', 2)
                     .should('have.value', `"string3"`)
             })
         })
@@ -375,7 +382,8 @@ describe('Action Callback Results', () => {
                 before(() => {
                     // TODO: Get by text?
                     // cy.get(s.action.mockResult.codeRow).contains(testData.callback.mockResults.entityErrors)
-                    cy.get(s.action.mockResult.rowIndex(1))
+                    cy.get(s.action.mockResult.row)
+                        .eq(1)
                         .find(s.action.mockResult.buttons.view)
                         .click()
 
@@ -408,7 +416,8 @@ describe('Action Callback Results', () => {
 
             describe(`Defined in Model`, () => {
                 before(() => {
-                    cy.get(s.action.mockResult.rowIndex(4))
+                    cy.get(s.action.mockResult.row)
+                        .eq(4)
                         .find(s.action.mockResult.buttons.view)
                         .click()
 
@@ -654,4 +663,27 @@ function chooseCallbackResult(callbackName: string, callbackResultName: string) 
                 .contains(callbackResultName)
                 .click()
         })
+}
+
+function getEntityValue(entityName: string, valueIndex: number) {
+    return cy.get(s.callbackResultModal.entityName)
+        .contains(entityName)
+        .next(s.callbackResultModal.valuesList)
+        .find(s.callbackResultModal.value)
+        .eq(valueIndex)
+}
+
+function getAddValue(entityName: string) {
+    return cy.get(s.callbackResultModal.entityName)
+        .contains(entityName)
+        .next(s.callbackResultModal.valuesList)
+        .find(s.callbackResultModal.buttons.addValue)
+}
+
+function getRemoveEntityValueButton(entityName: string, valueIndex: number) {
+    return cy.get(s.callbackResultModal.entityName)
+        .contains(entityName)
+        .next(s.callbackResultModal.valuesList)
+        .find(s.callbackResultModal.buttons.removeValue)
+        .eq(valueIndex)
 }
