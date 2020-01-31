@@ -10,10 +10,12 @@ import { setTipType } from '../actions/displayActions'
 import { TipType } from './ToolTips/ToolTips'
 import { IconButton } from 'office-ui-fabric-react'
 
+const testIdAttribute = 'data-testid'
 class HelpIcon extends React.Component<Props> {
     render() {
         return (
             <IconButton
+                data-testid={this.props[testIdAttribute]}
                 className={`cl-icon cl-icon--short ${this.props.customClass ?? 'cl-icon-whitebackground'}`}
                 iconProps={{ iconName: this.props.iconName ?? 'Info' }}
                 onClick={() => { this.props.setTipType(this.props.tipType) }}
@@ -37,6 +39,7 @@ export interface ReceivedProps {
     tipType: TipType,
     iconName?: string
     customClass?: string
+    [testIdAttribute]?: string
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

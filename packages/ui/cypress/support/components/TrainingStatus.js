@@ -8,7 +8,7 @@ import * as helpers from '../Helpers'
 // There is a test case that can help to test and debug this code.
 //    test case: Tools/TrainingStatus.spec.js
 export class TrainingStatus {
-  // PUBLIC:  
+  // PUBLIC:
   constructor() {
     this.canRefreshTrainingStatusTime = 0
     this.trainingStatusElements = []
@@ -34,6 +34,7 @@ export class TrainingStatus {
     }
   }
 
+  // PUBLIC:
   WaitForCompleted() { this._RetryWaitForRunning() }
 
   // PRIVATE:

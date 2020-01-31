@@ -66,6 +66,7 @@ export function LoadModel(modelName) {
   modelPage.VerifyModelName(modelName)
 }
 
+// We need the model ID to use the API to quickly delete models.
 export function GetModelNameIdList() {
   cy.Enqueue(() => {
     let listToReturn = []

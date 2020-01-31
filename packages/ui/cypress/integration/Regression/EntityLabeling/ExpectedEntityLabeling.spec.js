@@ -54,7 +54,7 @@ describe('Expected Entity Labeling', () => {
     })
 
     it('Should verify the "name" Entity is in memory with its value', () => {
-      memoryTableComponent.VerifyEntityValues('name', ['David'])
+      memoryTableComponent.VerifyNewEntityNameAndValues('name', ['David'])
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()

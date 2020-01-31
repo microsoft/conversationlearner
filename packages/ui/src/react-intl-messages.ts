@@ -78,6 +78,7 @@ export enum FM {
 
     // ActionScorer
     ACTIONSCORER_COLUMNS_SCORE = 'ActionScorer.columns.score',
+    ACTIONSCORER_ALREADYSELECTED = 'ActionScorer.alreadySelected',
 
     // App
     APP_HEADER_MODELS = 'App.header.home',
@@ -360,7 +361,6 @@ export enum FM {
     LOGDIALOGS_LOGDISABLED = 'LogDialogs.logdisabled',
     LOGDIALOGS_CREATED_DATE_TIME = 'LogDialogs.createdDateTime',
     LOGDIALOGS_LAST_MODIFIED_DATE_TIME = 'LogDialogs.lastModifiedDateTime',
-    LOGDIALOGS_ALREADYSELECTED = 'LogDialogs.alreadySelected',
     LOGDIALOGS_BUTTON_DELETESELECTED = 'LogDialogs.button.deleteSelected',
     LOGDIALOGS_CONFIRMCANCEL_DELETESELECTED = 'LogDialogs.confirmCancel.deleteSelected',
 
@@ -458,6 +458,11 @@ export enum FM {
     SETTINGS_MODEL_VERSIONS_CREATE = 'Settings.modelVersionsCreate',
     SETTINGS_MODEL_VERSIONS_TITLE = 'Settings.modelVersionsTitle',
     SETTINGS_MODEL_VERSIONS_DESCRIPTION = 'Settings.modelVersionsDescription',
+
+    // Callback Result Creator Editor Modal
+    CALLBACK_RESULT_DROPDOWN_LABEL = 'CallbackResult.dropdown.label',
+    CALLBACK_RESULT_MODAL_TITLE = 'CallbackResult.title',
+    CALLBACK_RESULT_MODAL_ENTITY_VALUES = 'CallbackResult.entityValues',
 
     // Tags and Description
     TAGSINPUT_ADD = 'TagsInput.add',
@@ -731,6 +736,7 @@ export default {
 
         // ActionScorer
         [FM.ACTIONSCORER_COLUMNS_SCORE]: 'Score',
+        [FM.ACTIONSCORER_ALREADYSELECTED]: 'Action already selected',
 
         // ActionDeleteModal
         [FM.ACTION_DELETE_INUSE_TITLE]: 'Deleting actions used by train dialogs',
@@ -1026,7 +1032,6 @@ export default {
         [FM.LOGDIALOGS_LOGDISABLED]: 'Logging is disabled',
         [FM.LOGDIALOGS_CREATED_DATE_TIME]: 'Created',
         [FM.LOGDIALOGS_LAST_MODIFIED_DATE_TIME]: 'Last Modified',
-        [FM.LOGDIALOGS_ALREADYSELECTED]: 'Action already selected',
         [FM.LOGDIALOGS_BUTTON_DELETESELECTED]: 'Delete Selected ({selectionCount})',
         [FM.LOGDIALOGS_CONFIRMCANCEL_DELETESELECTED]: 'This will permanentaly delete {selectionCount} log dialog(s). Are you sure?',
 
@@ -1124,6 +1129,11 @@ export default {
         [FM.SETTINGS_MODEL_VERSIONS_CREATE]: 'New Version',
         [FM.SETTINGS_MODEL_VERSIONS_TITLE]: 'Model Versions',
         [FM.SETTINGS_MODEL_VERSIONS_DESCRIPTION]: 'Creating a new version will save a snapshot of the currently active model. You can promote this version to "live" for use in deployed bots while you continue to edit the latest version.  You can also recall these snapshots at any point in time.',
+
+        // Stub Creator Editor Modal
+        [FM.CALLBACK_RESULT_DROPDOWN_LABEL]: 'Mock Result',
+        [FM.CALLBACK_RESULT_MODAL_TITLE]: 'View Result',
+        [FM.CALLBACK_RESULT_MODAL_ENTITY_VALUES]: 'Entity Values',
 
         // TagsInput
         [FM.TAGSINPUT_ADD]: 'Add Tag',

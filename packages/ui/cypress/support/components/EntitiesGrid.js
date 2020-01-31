@@ -5,7 +5,7 @@
 import * as helpers from '../../support/Helpers'
 
 export function VerifyPageTitle() { cy.Get('[data-testid="entities-title"]').contains('Entities').should('be.visible') }
-export function ClickButtonNewEntity() { cy.Get('[data-testid="entities-button-create"]').Click() }
+export function ClickNewEntityButton() { cy.Get('[data-testid="entities-button-create"]').Click() }
 export function EditEntity(name) { new Row(name).EditEntity() }
 export function VerifyEntityNotInGrid(name) { cy.DoesNotContainExact('[data-testid="entities-name"]', name) }
 
@@ -41,6 +41,7 @@ export function VerifyEntityRow(name, type, resolverType, multiValue, negatable)
   })
 }
 
+// This is expecting the same data that was returned from the "GetAllRows()" function.
 export function VerifyAllEntityRows(rows) {
   cy.WaitForStableDOM()
   cy.Enqueue(() => {
@@ -56,7 +57,7 @@ export function VerifyAllEntityRows(rows) {
   })
 }
 
-
+// Returns an array of the values in all rows of the Entity grid.
 export function GetAllRows() {
   helpers.ConLog('GetAllRows', 'start')
 

@@ -16,7 +16,6 @@ const SelectorEndSessionResponse = '[data-testid="action-scorer-session-response
 export const stateEnum = { selected: 1, qualified: 2, disqualified: 3 }
 export const entityQualifierStateEnum = { unknown: 'unknown', green: 'Green', greenStrikeout: 'GreenStrikeout', red: 'Red', redStrikeout: 'RedStrikeout' }
 
-// data-testid="teach-session-admin-train-status" (Running, Completed, Failed)
 export function ClickRefreshScoreButton() { cy.Get('[data-testid="teach-session-admin-refresh-score-button"]').Click() }
 export function ClickAddActionButton() { cy.Get('[data-testid="action-scorer-add-action-button"]').Click() }
 export function VerifyMissingActionNotice() { cy.Get('.cl-font--warning').ExactMatch('MISSING ACTION') }
@@ -97,6 +96,7 @@ export class GeneratedData {
     }
   }
 
+  // Same function as above but without the "it"s a test function calls.
   VerifyScoreActionsListUnwrapped(acceptableScoreDeviation = 70) {
     if (this.generateScoreActionsData) {
       if (this.generateScoreActionsData == 'pause') { cy.pause() }
@@ -119,7 +119,7 @@ export class GeneratedData {
 }
 
 
-export function FindActionRowElements(selector, expectedData) {
+function _FindActionRowElements(selector, expectedData) {
   helpers.ConLog('FindActionRowElements', `selector: '${selector}' - expectedData: '${expectedData}'`)
 
   let elements = Cypress.$(selector)
@@ -137,7 +137,7 @@ export function FindActionRowElements(selector, expectedData) {
 export function VerifyActionExists(selector, expectedData) {
   cy.WaitForStableDOM()
   cy.Enqueue(() => {
-    const rowElementsOrErrorMessage = FindActionRowElements(selector, expectedData)
+    const rowElementsOrErrorMessage = _FindActionRowElements(selector, expectedData)
     if (typeof rowElementsOrErrorMessage == 'string') { throw new Error(rowElementsOrErrorMessage) }
   })
 }
@@ -145,7 +145,7 @@ export function VerifyActionExists(selector, expectedData) {
 export function ClickActionButon(selector, expectedData) {
   cy.WaitForStableDOM()
   cy.Enqueue(() => {
-    const rowElementsOrErrorMessage = FindActionRowElements(selector, expectedData)
+    const rowElementsOrErrorMessage = _FindActionRowElements(selector, expectedData)
     if (typeof rowElementsOrErrorMessage == 'string') { throw new Error(rowElementsOrErrorMessage) }
 
     cy.wrap(rowElementsOrErrorMessage).find('[data-testid="action-scorer-button-clickable"]').Click()
@@ -155,7 +155,7 @@ export function ClickActionButon(selector, expectedData) {
 export function ClickEntityValueNameToggleButon(selector, expectedData) {
   cy.WaitForStableDOM()
   cy.Enqueue(() => {
-    const rowElementsOrErrorMessage = FindActionRowElements(selector, expectedData)
+    const rowElementsOrErrorMessage = _FindActionRowElements(selector, expectedData)
     if (typeof rowElementsOrErrorMessage == 'string') { throw new Error(rowElementsOrErrorMessage) }
 
     cy.wrap(rowElementsOrErrorMessage).find('[data-testid="action-scorer-entity-toggle"]').Click()
@@ -164,7 +164,7 @@ export function ClickEntityValueNameToggleButon(selector, expectedData) {
 
 export function VerifyActionState(rowSelector, expectedData, buttonSelector, disabled) {
   cy.RetryLoop(() => {
-    const rowElementsOrErrorMessage = FindActionRowElements(rowSelector, expectedData)
+    const rowElementsOrErrorMessage = _FindActionRowElements(rowSelector, expectedData)
     if (typeof rowElementsOrErrorMessage == 'string') { throw new Error(rowElementsOrErrorMessage) }
 
     let elements = Cypress.$(rowElementsOrErrorMessage).find(buttonSelector)
@@ -229,7 +229,7 @@ export function VerifyScoreActions(expectedScoreActions, acceptableScoreDeviatio
       rowIndex = undefined
 
       // This gets the row of the Score Action to validate and it also validates the response while doing so.
-      const rowElementsOrErrorMessage = FindActionRowElements(actionTypeSelector.GetSelector(expectedScoreAction.type), expectedScoreAction.response)
+      const rowElementsOrErrorMessage = _FindActionRowElements(actionTypeSelector.GetSelector(expectedScoreAction.type), expectedScoreAction.response)
       if (typeof rowElementsOrErrorMessage == 'string') {
         AccumulateErrors(rowElementsOrErrorMessage)
         continue
@@ -427,7 +427,7 @@ export function GenerateScoreActionsDataFromGrid() {
 // For example it would capture: "Hello $name" rather than "Hello David"
 // If there are no entities specified for the action, it still returns the text of the action.
 export function GetTextWithEntityNamesFromSelectedAction() {
-  const elements = FindActionRowElements('[data-testid="action-scorer-button-selected"]', 'SelectedSelected')
+  const elements = _FindActionRowElements('[data-testid="action-scorer-button-selected"]', 'SelectedSelected')
   if (typeof elements == 'string') {
     throw new Error(elements)
   }

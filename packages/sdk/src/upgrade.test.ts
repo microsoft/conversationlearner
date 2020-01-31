@@ -45,7 +45,8 @@ describe('upgrade', () => {
                     "renderArg",
                     "sharedArg"
                 ],
-                isRenderFunctionProvided: true
+                isRenderFunctionProvided: true,
+                mockResults: [],
             }
 
             // Act
@@ -78,6 +79,7 @@ describe('upgrade', () => {
                 renderArguments: [
                 ],
                 isRenderFunctionProvided: true,
+                mockResults: [],
             }
 
             // Act

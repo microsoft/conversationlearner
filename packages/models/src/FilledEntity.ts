@@ -268,9 +268,7 @@ export class FilledEntityMap {
 
   /** Return FilledEntity array for items I've remembered */
   public FilledEntities(): FilledEntity[] {
-    return Object.keys(this.map).map(val => {
-      return this.map[val]
-    })
+    return Object.values(this.map)
   }
 
   public static Split(action: string): string[] {

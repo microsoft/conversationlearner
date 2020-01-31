@@ -39,8 +39,10 @@ export interface TrainScorerStep {
   // ID of the selected action
   labelAction: string | undefined
   logicResult: LogicResult | undefined
-  // Score of the selected action
+  // Selected Action only available during teaching
   scoredAction: ScoredAction | undefined
+  // Name of stub used for action during training
+  stubName?: string
   // Import text for this action (before real action is created)
   importText?: string
   // Used for UI rendering only

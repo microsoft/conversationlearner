@@ -8,6 +8,9 @@ import * as deleteModelModal from '../../support/components/DeleteModelModal'
 import * as models from '../Models'
 
 export function VerifyPageTitle() { cy.Get('[data-testid="settings-title"]').contains('Settings').should('be.visible') }
+
+// The problem here is that we have not yet figured out how to make the Electron Browser download the file
+// without popping up UI that we have no control over.
 export function ClickExportModelButton() { cy.Get('[data-testid="settings-export-model-button"]').Click() }
 export function ClickCopyModelButton() { cy.Get('[data-testid="settings-copy-model-button"]').Click() }
 export function ClickDeleteModelButton() { cy.Get('[data-testid="settings-delete-model-button"]').Click() }

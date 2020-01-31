@@ -482,6 +482,26 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
 
         const hasNoScorerStep = curRound.scorerSteps.length === 0 || curRound.scorerSteps[0].labelAction === undefined
+        let isScorerStepCallbackAction = false
+        let callbackResultName = 'None'
+        if (typeof clData.scoreIndex === 'number') {
+            const scorerStep = curRound.scorerSteps[clData.scoreIndex]
+            let action = (scorerStep.scoredAction as unknown) as CLM.ActionBase | undefined
+            if (!action) {
+                const actionId = scorerStep.labelAction
+                const selectedAction = this.props.actions.find(a => a.actionId === actionId)
+                if (selectedAction) {
+                    action = selectedAction
+                }
+            }
+
+            if (action) {
+                isScorerStepCallbackAction = action.actionType === CLM.ActionTypes.API_LOCAL
+                if (scorerStep.stubName) {
+                    callbackResultName = scorerStep.stubName
+                }
+            }
+        }
 
         // Can only delete first user input if it has no scorer steps
         // and is followed by user input
@@ -501,6 +521,12 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         const isEndSession = isLastActivity && this.state.hasEndSession
         return (
             <div className="cl-wc-buttonbar">
+                {isScorerStepCallbackAction &&
+                    <div className="cl-wc-buttonbar__callback-result-name"
+                        data-testid="webchat-action-callback-result-name">
+                        Result: {callbackResultName}
+                    </div>
+                }
                 {!isEndSession &&
                     <AddButtonInput
                         onClick={() => this.onClickAddUserInput(selectionType)}
