@@ -29,12 +29,21 @@ type EntityValue = {
     isMultiline: boolean
 }
 
+enum EntityValuesError {
+    NONE = 'NONE',
+    UNKNOWN = 'UNKNOWN',
+    SINGLE_VALUE_ASSIGNED_TO_MULTI_VALUE = 'SINGLE_VALUE_ASSIGNED_TO_MULTI_VALUE',
+    MULTI_VALUE_ASSIGNED_TO_SINGLE_VALUE = 'MULTI_VALUE_ASSIGNED_TO_SINGLE_VALUE',
+}
+
 type EntityValues = {
     values: EntityValue[]
     clear: boolean
+    errorType: EntityValuesError
 }
 
 type State = {
+    source: MockResultSource
     name: string
     entitiesValues: [string, EntityValues][]
     returnValue: string
@@ -47,7 +56,6 @@ enum ActionTypes {
     AddEntityValue = 'AddEntityValue',
     RemoveEntityValue = 'RemoveEntityValue',
     ChangeName = 'ChangeName',
-    ChangeEntity = 'ChangeEntity',
     ChangeValue = 'ChangeValue',
     ChangeReturnValue = 'ChangeReturnValue',
     OpenModal = 'OpenModal',
@@ -56,37 +64,34 @@ enum ActionTypes {
 }
 
 type Action = {
+    type: ActionTypes.OpenModal
+    entities: CLM.EntityBase[]
+    mockResult: MockResultWithSource | undefined
+} | {
     type: ActionTypes.ChangeName
     name: string
 } | {
-    type: ActionTypes.AddEntity
-    entity: CLM.EntityBase
-} | {
-    type: ActionTypes.AddEntityValue
-    entityName: string
-} | {
-    type: ActionTypes.RemoveEntityValue
-    entityName: string
-    valueIndex: number
-} | {
-    type: ActionTypes.OpenModal
-    mockResult: MockResultWithSource | undefined
-} | {
-    type: ActionTypes.ToggleClear
-    entityName: string
-    cleared: boolean
-} | {
-    type: ActionTypes.ChangeEntity
-    entityValuesIndex: number
-    entityName: string
-} | {
     type: ActionTypes.ChangeValue
-    entityName: string
+    entityKey: string
     valueIndex: number
     value: string
 } | {
     type: ActionTypes.ChangeReturnValue
     returnValue: string
+} | {
+    type: ActionTypes.AddEntity
+    entity: CLM.EntityBase
+} | {
+    type: ActionTypes.AddEntityValue
+    entityKey: string
+} | {
+    type: ActionTypes.RemoveEntityValue
+    entityKey: string
+    valueIndex: number
+} | {
+    type: ActionTypes.ToggleClear
+    entityKey: string
+    cleared: boolean
 } | {
     type: ActionTypes.ToggleViewCode
 }
@@ -96,14 +101,22 @@ const reducer: React.Reducer<State, Action> = produce((state: State, action: Act
         case ActionTypes.AddEntity: {
             // Add new empty value the user can fill in. Currently editable values are strings
             const newValue: EntityValue = { value: '', isMultiline: false }
-            const newEntity: [string, EntityValues] = [action.entity.entityName, { values: [newValue], clear: false }]
+            const newEntity: [string, EntityValues] = [
+                action.entity.entityId,
+                {
+                    values: [newValue],
+                    clear: false,
+                    errorType: EntityValuesError.NONE,
+                }
+            ]
+
             state.entitiesValues.push(newEntity)
             return
         }
         case ActionTypes.AddEntityValue: {
-            const entityValues = state.entitiesValues.find(([entityName]) => entityName === action.entityName)
+            const entityValues = state.entitiesValues.find(([entityKey]) => entityKey === action.entityKey)
             if (!entityValues) {
-                throw new Error(`Could not find entity values entry for entity named: ${action.entityName}`)
+                throw new Error(`Could not find entity values entry for entity named: ${action.entityKey}`)
             }
 
             const newValue: EntityValue = {
@@ -115,9 +128,9 @@ const reducer: React.Reducer<State, Action> = produce((state: State, action: Act
             return
         }
         case ActionTypes.RemoveEntityValue: {
-            const entityStateIndex = state.entitiesValues.findIndex(([entityName]) => entityName === action.entityName)
+            const entityStateIndex = state.entitiesValues.findIndex(([entityKey]) => entityKey === action.entityKey)
             if (entityStateIndex < 0) {
-                throw new Error(`Entity state not found for entity named: ${action.entityName} on callback results: ${state.name}`)
+                throw new Error(`Entity state not found for entity named: ${action.entityKey} on callback results: ${state.name}`)
             }
 
             const [, entityValues] = state.entitiesValues[entityStateIndex]
@@ -131,21 +144,12 @@ const reducer: React.Reducer<State, Action> = produce((state: State, action: Act
             return
         }
         case ActionTypes.ToggleClear: {
-            const entityState = state.entitiesValues.find(([entityName]) => entityName === action.entityName)
+            const entityState = state.entitiesValues.find(([entityKey]) => entityKey === action.entityKey)
             if (!entityState) {
-                throw new Error(`Entity state not found for entity named: ${action.entityName} on callback results: ${state.name}`)
+                throw new Error(`Entity state not found for entity named: ${action.entityKey} on callback results: ${state.name}`)
             }
 
             entityState[1].clear = action.cleared
-            return
-        }
-        case ActionTypes.ChangeEntity: {
-            const entityState = state.entitiesValues[action.entityValuesIndex]
-            if (!entityState) {
-                throw new Error(`Entity state not found for entity named: ${action.entityName} on callback results: ${state.name}`)
-            }
-
-            entityState[0] = action.entityName
             return
         }
         case ActionTypes.ChangeName: {
@@ -153,9 +157,9 @@ const reducer: React.Reducer<State, Action> = produce((state: State, action: Act
             return
         }
         case ActionTypes.ChangeValue: {
-            const entityState = state.entitiesValues.find(([entityName]) => entityName === action.entityName)
+            const entityState = state.entitiesValues.find(([entityKey]) => entityKey === action.entityKey)
             if (!entityState) {
-                throw new Error(`Entity state not found for entity named: ${action.entityName} on callback results: ${state.name}`)
+                throw new Error(`Entity state not found for entity named: ${action.entityKey} on callback results: ${state.name}`)
             }
 
             entityState[1].values[action.valueIndex].value = action.value
@@ -166,7 +170,7 @@ const reducer: React.Reducer<State, Action> = produce((state: State, action: Act
             return
         }
         case ActionTypes.OpenModal: {
-            return initializeState(action.mockResult)
+            return initializeState(action.entities, action.mockResult)
         }
         case ActionTypes.ToggleViewCode: {
             state.viewCode = !state.viewCode
@@ -179,16 +183,32 @@ const reducer: React.Reducer<State, Action> = produce((state: State, action: Act
     }
 })
 
-const initializeState = (callbackResult: MockResultWithSource | undefined): State => {
+const initializeState = (entities: CLM.EntityBase[], callbackResult: MockResultWithSource | undefined): State => {
+    const source = callbackResult?.source ?? MockResultSource.MODEL
     const name = callbackResult?.mockResult.name ?? ''
     const entitiesValues = Object.entries(callbackResult?.mockResult.entityValues ?? [])
-        .map<[string, EntityValues]>(([entityName, entityValue]) => {
-            // Entity might be single value or multi value, convert all to array for consistent processing
+        .map<[string, EntityValues]>(([entityKey, entityValue]) => {
+            const entity = entities.find(e => source === MockResultSource.CODE
+                ? entityKey === e.entityName
+                : entityKey === e.entityId)
+
             let clear = false
             if (entityValue === null) {
                 clear = true
             }
 
+            let errorType = EntityValuesError.NONE
+            if (entityValue !== null) {
+                if (entity?.isMultivalue === true
+                    && Array.isArray(entityValue) === false) {
+                    errorType = EntityValuesError.SINGLE_VALUE_ASSIGNED_TO_MULTI_VALUE
+                } else if (entity?.isMultivalue !== true
+                    && Array.isArray(entityValue) === true) {
+                    errorType = EntityValuesError.MULTI_VALUE_ASSIGNED_TO_SINGLE_VALUE
+                }
+            }
+
+            // Entity might be single value or multi value, convert all to array for consistent processing
             const entityValuesArray = Array.isArray(entityValue) ? entityValue : [entityValue]
             const entityValuesForDisplay = entityValuesArray
                 // Convert all values to strings
@@ -218,7 +238,14 @@ const initializeState = (callbackResult: MockResultWithSource | undefined): Stat
                     }
                 })
 
-            return [entityName, { values: entityValuesForDisplay, clear }]
+            return [
+                entityKey,
+                {
+                    values: entityValuesForDisplay,
+                    clear,
+                    errorType,
+                }
+            ]
         })
 
     const returnValueString = callbackResult?.mockResult.returnValue
@@ -227,6 +254,7 @@ const initializeState = (callbackResult: MockResultWithSource | undefined): Stat
     const isReturnValueMultiline = returnValueString?.includes('\n') ?? false
 
     return {
+        source,
         name,
         entitiesValues,
         returnValue: returnValueString,
@@ -236,8 +264,12 @@ const initializeState = (callbackResult: MockResultWithSource | undefined): Stat
 }
 
 const convertStateToMockResult = (state: State, entities: CLM.EntityBase[], options: { useEntityNameAsKey?: boolean } = {}): CLM.CallbackResult => {
-    const entityValues = state.entitiesValues.reduce((eValues, [entityName, entityValues]) => {
-        const entity = entities.find(e => e.entityName === entityName)
+    const entityValues = state.entitiesValues.reduce((eValues, [entityKey, entityValues]) => {
+
+        const entity = entities.find(e => state.source === MockResultSource.CODE
+            ? e.entityName === entityKey
+            : e.entityId === entityKey)
+
         if (entity) {
             const nonEmptyValues = entityValues.values
                 .filter(v => v.value !== '')
@@ -288,20 +320,28 @@ const CallbackResultModal: React.FC<Props> = (props) => {
     }, [props.entities.length])
 
     const [selectedEntityOption, setSelectedEntityOption] = React.useState<OF.IDropdownOption | undefined>()
-    const [state, dispatch] = React.useReducer(reducer, props.callbackResult, initializeState)
+    const [state, dispatch] = React.useReducer(reducer, props.callbackResult, callbackResult => initializeState(props.entities, callbackResult))
     // Every time the modal opens, reset the state
     React.useEffect(() => {
         if (props.isOpen) {
             dispatch({
                 type: ActionTypes.OpenModal,
+                entities: props.entities,
                 mockResult: props.callbackResult,
             })
         }
     }, [props.isOpen])
 
     // When new mock entity value is added, adjust selected entity dropdown for addition of next entity
-    const existingEntitiesWithValue = state.entitiesValues.map(([entityName]) => entityName)
-    const availableEntityOptions = entityDropdownOptions.filter(eo => existingEntitiesWithValue.includes(eo.data.entityName) === false)
+    const existingEntityKeysWithValue = state.entitiesValues.map(([entityKey]) => entityKey)
+    const availableEntityOptions = entityDropdownOptions.filter(eo => {
+        const entity = eo.data as CLM.EntityBase
+        const entityKeyValue = state.source === MockResultSource.CODE
+            ? entity.entityName
+            : entity.entityId
+        return existingEntityKeysWithValue.includes(entityKeyValue) === false
+    })
+
     React.useEffect(() => {
         const firstOption: OF.IDropdownOption | undefined = availableEntityOptions[0]
         setSelectedEntityOption(firstOption)
@@ -332,10 +372,10 @@ const CallbackResultModal: React.FC<Props> = (props) => {
         })
     }
 
-    const onChangeClear = (entityName: string, cleared: boolean): void => {
+    const onChangeClear = (entityKey: string, cleared: boolean): void => {
         dispatch({
             type: ActionTypes.ToggleClear,
-            entityName,
+            entityKey,
             cleared,
         })
     }
@@ -344,10 +384,10 @@ const CallbackResultModal: React.FC<Props> = (props) => {
         ? Util.formatMessageId(props.intl, FM.BUTTON_SAVE)
         : Util.formatMessageId(props.intl, FM.BUTTON_OK)
 
-    const onClickAddEntityValue = (entityName: string) => {
+    const onClickAddEntityValue = (entityKey: string) => {
         dispatch({
             type: ActionTypes.AddEntityValue,
-            entityName,
+            entityKey,
         })
     }
 
@@ -358,18 +398,18 @@ const CallbackResultModal: React.FC<Props> = (props) => {
         })
     }
 
-    const onClickDeleteEntityValue = (entityName: string, valueIndex: number): void => {
+    const onClickDeleteEntityValue = (entityKey: string, valueIndex: number): void => {
         dispatch({
             type: ActionTypes.RemoveEntityValue,
-            entityName,
+            entityKey,
             valueIndex,
         })
     }
 
-    const onChangeValue = (entityName: string, valueIndex: number, value: string): void => {
+    const onChangeValue = (entityKey: string, valueIndex: number, value: string): void => {
         dispatch({
             type: ActionTypes.ChangeValue,
-            entityName,
+            entityKey,
             valueIndex,
             value,
         })
@@ -473,10 +513,13 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                         {state.entitiesValues.length === 0
                             ? <div>No Entity Values Set</div>
                             : <div className="cl-callback-result-modal__entity-values">
-                                {state.entitiesValues.map(([entityName, entityValues], entityIndex) => {
+                                {state.entitiesValues.map(([entityKey, entityValues], entityIndex) => {
                                     // const previousEntityValuesNames = state.entitiesValues.slice(0, entityIndex).map(entry => entry[0])
                                     // const availableEntityDropdownOptions = entityDropdownOptions.filter(e => e.text === noneOption.text || previousEntityValuesNames.includes(e.text) === false)
-                                    const entity = props.entities.find(e => e.entityName === entityName)
+                                    const entity = props.entities.find(e => state.source === MockResultSource.CODE
+                                        ? e.entityName === entityKey
+                                        : e.entityId === entityKey)
+
                                     const isMultiValue = entity?.isMultivalue === true
 
                                     let values
@@ -485,22 +528,22 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                                     }
                                     else {
                                         values = entityValues.values.map((valueObject, valueIndex) => {
-                                            return <div className="cl-callback-result-modal__entity-value" key={`${entityName}-value-${valueIndex}`}>
+                                            return <div className="cl-callback-result-modal__entity-value" key={`${entityKey}-value-${valueIndex}`}>
                                                 <OF.TextField
                                                     readOnly={props.isEditing === false}
                                                     multiline={valueObject.isMultiline}
                                                     value={valueObject.value}
                                                     disabled={entityValues.clear}
-                                                    onChange={(e, value) => value !== undefined && onChangeValue(entityName, valueIndex, value)}
+                                                    onChange={(e, value) => value !== undefined && onChangeValue(entityKey, valueIndex, value)}
                                                     autoComplete={"off"}
-                                                    data-testid={`callback-result-modal-input-entity-${entityName}-value-${valueIndex}`}
+                                                    data-testid={`callback-result-modal-input-entity-${entity?.entityName}-value-${valueIndex}`}
                                                 />
                                                 <OF.IconButton
-                                                    data-testid={`callback-result-modal-button-delete-${entityName}-value-${valueIndex}`}
+                                                    data-testid={`callback-result-modal-button-delete-${entity?.entityName}-value-${valueIndex}`}
                                                     disabled={props.isEditing === false || entityValues.clear}
                                                     className={`cl-button-delete`}
                                                     iconProps={{ iconName: 'Delete' }}
-                                                    onClick={() => onClickDeleteEntityValue(entityName, valueIndex)}
+                                                    onClick={() => onClickDeleteEntityValue(entityKey, valueIndex)}
                                                     ariaDescription="Delete Entity Value"
                                                 />
                                             </div>
@@ -508,23 +551,40 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                                     }
 
                                     if (isMultiValue) {
-                                        const newValueButton = <div key={`${entityName}-add-value-button`}>
+                                        const newValueButton = <div key={`${entityKey}-add-value-button`}>
                                             <OF.DefaultButton
-                                                onClick={() => onClickAddEntityValue(entityName)}
+                                                onClick={() => onClickAddEntityValue(entityKey)}
                                                 disabled={props.isEditing === false || entityValues.clear}
                                                 text={"Add Value"}
                                                 iconProps={{ iconName: 'Add' }}
-                                                data-testid={`callback-result-modal-button-add-value-${entityName}`}
+                                                data-testid={`callback-result-modal-button-add-value-${entity?.entityName}`}
                                             />
                                         </div>
 
                                         values.push(newValueButton)
                                     }
 
-                                    return <React.Fragment key={`${entityName}-${entityIndex}`}>
+                                    if (entityValues.errorType !== EntityValuesError.NONE) {
+                                        let message = 'Unknown'
+                                        if (entityValues.errorType === EntityValuesError.MULTI_VALUE_ASSIGNED_TO_SINGLE_VALUE) {
+                                            message = 'Multiple values assigned to entity that can only have single value'
+                                        } else if (entityValues.errorType === EntityValuesError.SINGLE_VALUE_ASSIGNED_TO_MULTI_VALUE) {
+                                            message = 'Non-array value assigned to entity that is multi value'
+                                        }
+
+                                        const entityValueError = <div key={`entity-value-error`}
+                                            className="cl-callback-result-modal__entity-value__error"
+                                            data-testid="callback-result-modal-entity-value-error">
+                                            Error: {message} <HelpIcon tipType={ToolTips.TipType.MOCK_RESULT_INVALID_VALUE} />
+                                        </div>
+
+                                        values.push(entityValueError)
+                                    }
+
+                                    return <React.Fragment key={`${entityKey}-${entityIndex}`}>
                                         <div className="cl-callback-result-modal__entity-name"
                                             data-testid="callback-result-modal-entity-name">
-                                            {entityName}
+                                            {entity?.entityName ?? entityKey}
                                             {entity === undefined
                                                 && <div className="cl-callback-result-modal__entity-name__error"
                                                     data-testid="callback-result-modal-entity-name-error">
@@ -536,7 +596,7 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                                             label={"Clear"}
                                             disabled={props.isEditing === false}
                                             checked={entityValues.clear}
-                                            onChange={(e, cleared) => cleared !== undefined && onChangeClear(entityName, cleared)}
+                                            onChange={(e, cleared) => cleared !== undefined && onChangeClear(entityKey, cleared)}
                                             data-testid="callback-result-modal-button-clear"
                                         />
                                     </React.Fragment>

@@ -43,7 +43,7 @@ describe('Action Callback Results', () => {
         // Train
     })
 
-    xdescribe('Action Modal', () => {
+    describe('Action Modal', () => {
         before(() => {
             cy.get(s.model.buttonNavActions)
                 .click()
@@ -101,7 +101,7 @@ describe('Action Callback Results', () => {
         })
     })
 
-    xdescribe(`Callback Result Modal`, () => {
+    describe(`Callback Result Modal`, () => {
         before(() => {
             cy.reload()
             cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
@@ -339,9 +339,11 @@ describe('Action Callback Results', () => {
             })
 
             it(`should still show values gracefully, but show errors for incorrect types (single to multi) assigned to entity`, () => {
-                // Verify shows single value for multi value
                 cy.get(s.callbackResultModal.inputs.entityValue('myNumbers', 0))
                     .should('have.value', '1')
+
+                // Verify shows single value for multi value
+                cy.get(s.callbackResultModal.entityNameError)
             })
 
             it(`should still show values gracefully, but show errors for incorrect types (multi to single) assigned to entity`, () => {
@@ -582,7 +584,7 @@ describe('Action Callback Results', () => {
         })
     })
 
-    describe.skip('Editing', () => {
+    describe('Editing', () => {
         before(() => {
             cy.get(s.trainDialogs.descriptions)
                 .contains(testData.dialogInputs.noCallbackResult)

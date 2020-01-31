@@ -1566,7 +1566,7 @@ export class CLRunner {
 
                 const memory = await this.CreateMemoryManagerAsync(state, allEntities)
                 const entityMapBeforeCall = new CLM.FilledEntityMap(await state.EntityState.FilledEntityMap())
-                this.simulateEffectsOfMockResultOnMemory(mockResult, memory)
+                this.simulateEffectsOfMockResultOnMemory(allEntities, mockResult, memory)
                 // Update memory with changes from logic callback
                 await state.EntityState.RestoreFromMemoryManagerAsync(memory)
                 // Store changes to filled entities
@@ -1628,7 +1628,7 @@ export class CLRunner {
                             throw new Error(`A mock result name ${actionInput.mockResultName} was provided but no result by that name was found.`)
                         }
 
-                        this.simulateEffectsOfMockResultOnMemory(callbackResult, memoryManager)
+                        this.simulateEffectsOfMockResultOnMemory(allEntities, callbackResult, memoryManager)
                         logicReturnValue = callbackResult.returnValue
                     }
                     else {
@@ -1714,19 +1714,25 @@ export class CLRunner {
         }
     }
 
-    private simulateEffectsOfMockResultOnMemory(callbackResult: CLM.CallbackResult, memoryManager: ClientMemoryManager) {
+    private simulateEffectsOfMockResultOnMemory(entities: CLM.EntityBase[], callbackResult: CLM.CallbackResult, memoryManager: ClientMemoryManager) {
         Object.entries(callbackResult.entityValues)
-            .forEach(([entityName, entityValue]) => {
+            .forEach(([entityKey, entityValue]) => {
+                // Don't know callback source so try both keys
+                const entity = entities.find(e => e.entityName === entityKey || e.negativeId === entityKey)
+                if (!entity) {
+                    throw new Error(`Mock result ${callbackResult.name} references an entity that does not exist`)
+                }
+
                 if (entityValue === null || entityValue === undefined) {
-                    memoryManager.Delete(entityName)
+                    memoryManager.Delete(entity.entityName)
                 }
                 // Force mocks results to overwrite values
                 else if (Array.isArray(entityValue)) {
-                    memoryManager.Delete(entityName)
-                    memoryManager.Set(entityName, entityValue)
+                    memoryManager.Delete(entity.entityName)
+                    memoryManager.Set(entity.entityName, entityValue)
                 }
                 else {
-                    memoryManager.Set(entityName, entityValue)
+                    memoryManager.Set(entity.entityName, entityValue)
                 }
             })
     }

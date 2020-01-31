@@ -90,6 +90,7 @@ export enum TipType {
 
     MOCK_RESULT = 'CALLBACK_RESULT',
     MOCK_RESULT_MISSING_ENTITY = 'MOCK_RESULT_MISSING_ENTITY',
+    MOCK_RESULT_INVALID_VALUE = 'MOCK_RESULT_INVALID_VALUE',
 
     TRANSCRIPT_IMPORTER = 'transcriptImporter',
 }
@@ -992,6 +993,18 @@ export function getTip(tipType: string) {
                     <p>There are cases where you mock results may not match the current state if your model.</p>
                     <p>If you have written a mock result in Code you may have a typo in your entity name or you could have edited your model and removed the entity that was referenced by that result.</p>
                     <p>Update the callback definition in code and reload to see changes.</p>
+                </div>
+            )
+
+        case TipType.MOCK_RESULT_INVALID_VALUE:
+            return (
+                <div>
+                    <h2>Mock Results with Mismatched Value Types</h2>
+                    <p>There are cases where the values assigned to an entity in a mock result may be incorrect.</p>
+                    <ol>
+                        <li>If you have assigned multiple values to a single value entity.</li>
+                        <li>If you have assigned non-array, single value to a multi value entity.</li>
+                    </ol>
                 </div>
             )
 

@@ -132,6 +132,7 @@ const selectors = {
         title: '[data-testid="callback-result-modal-title"]',
         entityName: `[data-testid="callback-result-modal-entity-name"]`,
         entityNameError: `[data-testid="callback-result-modal-entity-name-error"]`,
+        entityValueError: `[data-testid="callback-result-modal-entity-value-error"]`,
         code: '[data-testid="callback-result-modal__code"]',
         toggleView: '[data-testid="callback-result-modal-toggle-view"]',
         inputs: {

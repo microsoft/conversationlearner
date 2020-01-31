@@ -34,6 +34,13 @@
     grid-template-columns: 1fr min-content;
 }
 
+.cl-callback-result-modal__entity-value__error {
+    margin-top: 0.5rem;
+    padding-top: 0.25rem;
+    border-top: 2px solid var(--cl-color-error);
+    color: var(--cl-color-error);
+}
+
 .cl-callback-result-modal__entity-values__entity-removed {
     padding: 5px 0;
 }

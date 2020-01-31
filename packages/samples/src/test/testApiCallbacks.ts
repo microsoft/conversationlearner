@@ -310,6 +310,17 @@ cl.AddCallback({
     ],
 })
 
+cl.AddCallback({
+    name: 'Set Entity that Does Not Exist',
+    logic: async (memory) => {
+        const entityName = 'missingEntity'
+        memory.Set(entityName, 2134)
+        return entityName
+    },
+    render: async (s) => {
+        return `Attempted to set ${s}`
+    },
+})
 
 cl.AddCallback({
     name: 'Callback Results All Types',
