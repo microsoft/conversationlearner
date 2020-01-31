@@ -210,7 +210,7 @@ export interface ActionPayload {
   renderArguments: IActionArgument[]
   isPlaceholder?: boolean
   // TODO: Remove after consolidation with placeholder
-  // Better name? Want to imply only mocked results can be used.
+  // Has different behavior than placeholders and implies only mock results can be used
   isCallbackUnassigned?: boolean
 }
 
