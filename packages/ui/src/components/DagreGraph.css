@@ -1,0 +1,33 @@
+
+.graph {
+    border: 1px solid black;
+    overflow-x: auto;
+}
+
+/* This sets the color for "TK" nodes to a light blue green. */
+
+g>rect {
+    fill: white;
+    stroke: black;
+}
+
+text {
+    font-weight: 300;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+}
+
+.node rect {
+    stroke: #333;
+    /* fill: #fff; */
+}
+
+.edgePath path {
+    stroke: #333;
+    /* fill: #333; */
+    stroke-width: 1.5px;
+}
+
+.node text {
+    pointer-events: none;
+}

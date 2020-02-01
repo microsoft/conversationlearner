@@ -3,6 +3,7 @@ import * as dagreD3 from 'dagre-d3'
 import * as dagre from 'dagre'
 import * as d3 from 'd3'
 import * as uuid from 'uuid/v4'
+import './DagreGraph.css'
 
 export type Props = {
     graph: {
