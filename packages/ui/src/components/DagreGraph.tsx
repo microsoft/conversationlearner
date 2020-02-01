@@ -74,7 +74,7 @@ const Component: React.FC<Props> = ({ graph, width = 380, isZoomEnabled }) => {
     }, [graph.edges, graph.nodes, guid, isZoomEnabled])
 
     return (
-        <svg id={`svg${guid}`} width={width}></svg>
+        <svg id={`svg${guid}`} className="cl-graph" width={width}></svg>
     )
 }
 
