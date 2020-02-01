@@ -65,7 +65,7 @@ export const getLabelFromNode = (model: Model) => (n: graph.Node<CLM.TrainRound>
     const text = `
 User Inputs:
 ${extractorText.map(t => `- ${t}`).join('\n')}
-
+\n \n
 Bot Responses:
 ${scorerStepsText.map(t => `- ${t}`).join("\n")}
 `
@@ -83,12 +83,19 @@ ${scorerStepsText.map(t => `- ${t}`).join("\n")}
 
 export const mergeNodeData = (n1: graph.Node<CLM.TrainRound>, n2: graph.Node<CLM.TrainRound>): graph.Node<CLM.TrainRound> => {
     // Add text variations from n2 to n1
-    console.log(`Merge: `, n2, ` into `, n1)
+    // console.log(`Merge: `, n2, ` into `, n1)
 
     // TODO: Fix issue with duplicate text variations added.
     // Think it is due to node being added multiple times during computation as graph is recomputed
 
     // n1.data.extractorStep.textVariations.push(...n2.data.extractorStep.textVariations)
+
+    for (const tv of n2.data.extractorStep.textVariations) {
+        const node1includesTvText = n1.data.extractorStep.textVariations.some(n1tv => n1tv.text === tv.text)
+        if (node1includesTvText === false) {
+            n1.data.extractorStep.textVariations.push(tv)
+        }
+    }
 
     return n1
 }
