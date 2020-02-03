@@ -73,6 +73,18 @@ const Component: React.FC<Props> = (props) => {
         props.onChangeSelectedCallbackResult(option.data)
     }
 
+    // Every time the number of options change, recompute default selected item.
+    React.useLayoutEffect(() => {
+        const selectedOptionKey = props.selectedCallbackResult?.mockResult.name ?? firstOption.key as string
+        setSelectedCallbackResultOptionKey(selectedOptionKey)
+
+        const dropdownItem = callbackResultOptions.find(option => option.key === selectedCallbackResultOptionKey)
+        if (dropdownItem
+            && dropdownItem.key !== noneOption.key) {
+            props.onChangeSelectedCallbackResult(dropdownItem.data)
+        }
+    }, [callbackResultOptions.length])
+
     // Used to initialize action mock result mapping to whatever the dropdown is set to.
     // Avoids need for explicit user click.
     React.useEffect(() => {
