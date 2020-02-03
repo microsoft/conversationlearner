@@ -489,19 +489,16 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                         : JSON.stringify(convertStateToMockResult(state, props.entities, { useEntityNameAsKey: true }), null, '  ')}
                 </pre>
                 : <div className="cl-callback-result-modal__fields">
-                    <div className="cl-callback-result-modal__name">
-                        <OF.TextField
-                            label={"Name"}
-                            className={OF.FontClassNames.mediumPlus}
-                            readOnly={props.isEditing === false}
-                            value={state.name}
-                            onChange={onChangeName}
-                            autoComplete={"off"}
-                            onGetErrorMessage={onGetNameErrorMessage}
-                            validateOnLoad={false}
-                            data-testid="callback-result-modal-input-name"
-                        />
-                    </div>
+                    <OF.TextField
+                        label={"Name"}
+                        readOnly={props.isEditing === false}
+                        value={state.name}
+                        onChange={onChangeName}
+                        autoComplete={"off"}
+                        onGetErrorMessage={onGetNameErrorMessage}
+                        validateOnLoad={false}
+                        data-testid="callback-result-modal-input-name"
+                    />
                     <div>
                         <div className={OF.FontClassNames.mediumPlus}>
                             <OF.Label className="cl-label">
@@ -628,7 +625,7 @@ const CallbackResultModal: React.FC<Props> = (props) => {
                         />
                     </div>}
 
-                    <div className="cl-callback-result-modal__return-value">
+                    <div>
                         <OF.Label>Return Value</OF.Label>
                         <OF.TextField
                             readOnly={props.isEditing === false}

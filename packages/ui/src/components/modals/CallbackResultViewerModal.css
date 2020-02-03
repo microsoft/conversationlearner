@@ -3,9 +3,6 @@
     grid-gap: 1rem;
 }
 
-.cl-callback-result-modal__name {
-}
-
 .cl-callback-result-modal__code {
     padding: 1rem;
     border-radius: 0.5rem;
@@ -57,7 +54,4 @@
     grid-auto-columns: minmax(200px, max-content);
     padding-top: 1rem;
     border-top: 1px solid var(--color-neutralLight);
-}
-
-.cl-callback-result-modal__return-value {
 }
