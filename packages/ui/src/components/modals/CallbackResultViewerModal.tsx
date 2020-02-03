@@ -15,7 +15,9 @@ type ReceivedProps = {
     entities: CLM.EntityBase[]
     isOpen: boolean
     isEditing: boolean
+    // Existing callbacks results excluding the one being edited.
     existingCallbackResults: MockResultWithSource[]
+    // The callback result currently being edited.
     callbackResult: MockResultWithSource | undefined
     onClickSubmit: (callbackResult: CLM.CallbackResult) => void
     onClickCancel: () => void
