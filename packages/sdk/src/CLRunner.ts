@@ -1719,7 +1719,7 @@ export class CLRunner {
     private simulateEffectsOfMockResultOnMemory(entities: CLM.EntityBase[], callbackResult: CLM.CallbackResult, memoryManager: ClientMemoryManager) {
         Object.entries(callbackResult.entityValues)
             .forEach(([entityKey, entityValue]) => {
-                // Don't know callback source so try both keys
+                // Don't know callback source so try both keys. E.g. code: name, model: id
                 const entity = entities.find(e => e.entityName === entityKey || e.negativeId === entityKey)
                 if (!entity) {
                     throw new Error(`Mock result '${callbackResult.name}' references an entity that does not exist. Entity key: ${entityKey}`)
