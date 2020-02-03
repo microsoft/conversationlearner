@@ -1902,15 +1902,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 }
 
                                 <div>
-                                    <OF.Label className="cl-label">Mock Results <HelpIcon data-testid="action-help-panel-callback-result" tipType={ToolTip.TipType.MOCK_RESULT} /></OF.Label>
-                                    {/* In future include results defined in UI */}
+                                    <div>
+                                        <OF.Label className="cl-label">Mock Results <HelpIcon data-testid="action-help-panel-callback-result" tipType={ToolTip.TipType.MOCK_RESULT} /></OF.Label>
+                                    </div>
+                                    <OF.Label className="cl-label">Defined in Code</OF.Label>
                                     <div className="cl-action-creator-section">
-                                        {mockResultsWithSource.length === 0
+                                        {mockResultsFromCode.length === 0
                                             ? <div>No Results Defined</div>
-                                            : mockResultsWithSource.map((mockResultWithSource, mockResultIndex) => {
-                                                // TODO: Find way to simplify index logic?
-                                                // Consider split rendering to avoid index complexity, but adds complexity to rendering
-                                                const mockResultIndexOnState = mockResultIndex - mockResultsFromCode.length
+                                            : mockResultsFromCode.map(mockResultWithSource => {
                                                 return <div className="cl-action-creator-input-with-button"
                                                     data-testid={`action-callback-result-row action-callback-result-row-from-${mockResultWithSource.source}`}
                                                     key={mockResultWithSource.mockResult.name}>
@@ -1926,32 +1925,63 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                         onClick={() => this.onClickViewCallbackResult(mockResultWithSource)}
                                                         ariaDescription="View Result"
                                                         iconProps={{
-                                                            iconName: mockResultWithSource.source === MockResultSource.CODE
-                                                                ? 'EntryView'
-                                                                : 'Edit'
+                                                            iconName: 'EntryView'
                                                         }}
                                                     />
 
                                                     <OF.IconButton
                                                         data-testid="action-callback-result-button-delete"
-                                                        disabled={mockResultWithSource.source === MockResultSource.CODE}
+                                                        disabled={true}
                                                         className={`cl-button-delete`}
                                                         iconProps={{ iconName: 'Delete' }}
-                                                        onClick={() => this.onClickDeleteCallbackResult(mockResultIndexOnState)}
                                                         ariaDescription="Delete Callback Result"
                                                     />
                                                 </div>
                                             })}
+                                    </div>
 
-                                        <div>
-                                            <OF.DefaultButton
-                                                onClick={this.onClickNewMockResult}
-                                                iconProps={{ iconName: 'Add' }}
-                                                ariaDescription={`Add Mock Result`}
-                                                text={`Add Mock Result`}
-                                                data-testid="action-creator-button-mock-result-add"
-                                            />
-                                        </div>
+                                    <OF.Label className="cl-label">Defined in Model</OF.Label>
+                                    <div className="cl-action-creator-section">
+                                        {mockResultsFromModel.length === 0
+                                            ? <div>No Results Defined</div>
+                                            : mockResultsFromModel.map((mockResultWithSource, mockResultIndex) => {
+                                                return <div className="cl-action-creator-input-with-button"
+                                                    data-testid={`action-callback-result-row action-callback-result-row-from-${mockResultWithSource.source}`}
+                                                    key={mockResultWithSource.mockResult.name}>
+                                                    <OF.TextField
+                                                        data-testid="action-callback-result-name"
+                                                        value={mockResultWithSource.mockResult.name}
+                                                        readOnly={true}
+                                                    />
+
+                                                    <OF.IconButton
+                                                        data-testid="action-callback-result-button-view"
+                                                        className="ms-Button--primary"
+                                                        onClick={() => this.onClickViewCallbackResult(mockResultWithSource)}
+                                                        ariaDescription="View Result"
+                                                        iconProps={{
+                                                            iconName: 'Edit'
+                                                        }}
+                                                    />
+
+                                                    <OF.IconButton
+                                                        data-testid="action-callback-result-button-delete"
+                                                        className={`cl-button-delete`}
+                                                        iconProps={{ iconName: 'Delete' }}
+                                                        onClick={() => this.onClickDeleteCallbackResult(mockResultIndex)}
+                                                        ariaDescription="Delete Callback Result"
+                                                    />
+                                                </div>
+                                            })}
+                                    </div>
+                                    <div className="cl-action-creator__button-add-mock-result">
+                                        <OF.DefaultButton
+                                            onClick={this.onClickNewMockResult}
+                                            iconProps={{ iconName: 'Add' }}
+                                            ariaDescription={`Add Mock Result`}
+                                            text={`Add Mock Result`}
+                                            data-testid="action-creator-button-mock-result-add"
+                                        />
                                     </div>
                                 </div>
                             </>

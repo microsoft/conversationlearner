@@ -47,3 +47,7 @@
     grid-gap: 0.75rem;
     align-items: end;
 }
+
+.cl-action-creator__button-add-mock-result {
+    margin-top: 0.5rem;
+}
