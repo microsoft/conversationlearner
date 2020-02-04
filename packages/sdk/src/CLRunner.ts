@@ -1398,23 +1398,10 @@ export class CLRunner {
 
             let feMap = CLM.FilledEntityMap.FromFilledEntities(placeHolderFilledEntities, allEntities)
 
-            let body = Object.keys(feMap.map).map(feKey => {
-                return {
-                    type: "TextBlock",
-                    text: `${feKey} = ${feMap.ValueAsString(feKey)}`
-                }
-            })
-
-            // Render card for placeholder
-            let card = {
-                type: "AdaptiveCard",
-                version: "1.0",
-                body: body
-            }
-            const attachment = BB.CardFactory.adaptiveCard(card)
-            const response = BB.MessageFactory.attachment(attachment)
-            response.text = `API Placeholder: ${placeholderAction.name}`
-
+            const entityValues = Object.keys(feMap.map)
+                .map(feKey => `${feKey} = ${feMap.ValueAsString(feKey)}`)
+            const title = `API Placeholder: ${placeholderAction.name}`
+            const response = this.renderPlaceholderCard(title, ...entityValues)
             // Store placeholder entities in logic reult
             return {
                 logicResult: { changedFilledEntities: placeHolderFilledEntities, logicValue: undefined },
@@ -2539,20 +2526,22 @@ export class CLRunner {
         }
     }
 
-    private renderPlaceholderCard(title: string, text: string): Partial<BB.Activity> {
+    private renderPlaceholderCard(title: string, ...texts: string[]): Partial<BB.Activity> {
+        const items = texts.map(text => {
+            return {
+                type: "TextBlock",
+                text,
+                wrap: true
+            }
+        })
+
         const card = {
             type: "AdaptiveCard",
             version: "1.0",
             body: [
                 {
                     type: "Container",
-                    items: [
-                        {
-                            type: "TextBlock",
-                            text,
-                            wrap: true
-                        }
-                    ]
+                    items,
                 }
             ]
         }
@@ -2578,12 +2567,12 @@ export class CLRunner {
 
     // Generate a card for actions with only mock results and no rendering
     private RenderCallbackPlaceholderCard(callbackName: string, mockResultName: string): Partial<BB.Activity> {
-        return this.renderPlaceholderCard("Callback:", `Mock Result '${mockResultName}' from '${callbackName}'`)
+        return this.renderPlaceholderCard(`Callback: ${callbackName}`, `Mock Result: ${mockResultName}`)
     }
 
     // Generate a card to show for an API action w/o output
     private RenderAPICard(callback: InternalCallback<any>, args: string[]): Partial<BB.Activity> {
-        return this.renderPlaceholderCard("Callback:", `${callback.name}(${args.join(', ')})`)
+        return this.renderPlaceholderCard(`Callback: ${callback.name}`, `logic(${['memory', ...args].join(', ')})`)
     }
 
     // Generate a card to show for an API action w/o output
