@@ -273,6 +273,7 @@ interface ComponentState {
     modelOptions: ModelOption[]
     conditionCreatorType: "required" | "disqualified"
     customCallbackName: string
+    placeholderName: string
     selectedEntityOptionKey: string | undefined
     selectedEnumValueOptionKey: string | undefined
     selectedApiOptionKey: string | number | undefined
@@ -323,6 +324,7 @@ const initialState: Readonly<ComponentState> = {
     modelOptions: [],
     conditionCreatorType: "required",
     customCallbackName: '',
+    placeholderName: '',
     selectedEntityOptionKey: undefined,
     selectedEnumValueOptionKey: undefined,
     selectedApiOptionKey: undefined,
@@ -447,7 +449,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 const payloadOptions = prevProps.entities.map(convertEntityToOption)
                 const negativeConditionTags = convertEntityIdsToTags(action.negativeEntities, this.props.entities, false)
                 const expectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity] : []), this.props.entities)
-                let customCallbackName: string = ''
+                let customCallbackName = ''
+                let placeholderName = ''
                 let selectedApiOptionKey: string | undefined
                 let selectedCardOptionKey: string | undefined
                 let selectedModelOptionKey: string | undefined
@@ -476,6 +479,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     if (apiAction.isCallbackUnassigned === true) {
                         selectedApiOptionKey = callbackNameInputOption.key as string
                         customCallbackName = apiAction.name
+                    }
+                    else if (apiAction.isPlaceholder === true) {
+                        placeholderName = apiAction.name
                     }
                     else {
                         selectedApiOptionKey = apiAction.name
@@ -565,6 +571,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     selectedActionTypeOptionKey: action.actionType,
                     selectedApiOptionKey,
                     customCallbackName,
+                    placeholderName,
                     selectedCardOptionKey,
                     selectedModelOptionKey,
                     slateValuesMap,
@@ -1895,7 +1902,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         : <div className="cl-errorpanel" data-testid="action-creator-editor-error-callback">
                                             <div>
                                                 {this.props.action && CLM.ActionBase.isPlaceholderAPI(this.props.action)
-                                                    ? `Placeholder API: ${this.state.selectedApiOptionKey}`
+                                                    ? `Placeholder API: ${this.state.placeholderName}`
                                                     : `ERROR: Bot Missing Callback: ${this.state.selectedApiOptionKey}`}
                                             </div>
                                         </div>)
