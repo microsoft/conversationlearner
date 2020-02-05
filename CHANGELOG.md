@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.503.1](https://github.com/microsoft/conversationlearner/compare/v0.503.0...v0.503.1) (2020-02-05)
+
+
+### Bug Fixes
+
+* log dialog deletion ([#38](https://github.com/microsoft/conversationlearner/issues/38)) ([247cff7](https://github.com/microsoft/conversationlearner/commit/247cff7bc8f776901f128aa002be0a01e1501715))
+
+
+
+
+
 # [0.503.0](https://github.com/microsoft/conversationlearner/compare/v0.502.2...v0.503.0) (2020-02-05)
 
 
