@@ -132,13 +132,10 @@ describe('Action Callback Results', () => {
         it(`should show errors on lists of model mock results`, () => {
             cy.get(s.action.mockResult.modelRow)
                 .eq(1)
-                .as('currentMockResult')
-
-            cy.get('@currentMockResult')
-                .find('[data-automation-id="error-message"]')
-
-            cy.get('@currentMockResult')
-                .find(s.action.mockResult.iconError)
+                .within(() => {
+                    cy.get('[data-automation-id="error-message"]')
+                    cy.get(s.action.mockResult.iconError)
+                })
         })
     })
 
