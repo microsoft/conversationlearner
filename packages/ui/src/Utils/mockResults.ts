@@ -1,5 +1,6 @@
 import * as OF from 'office-ui-fabric-react'
-import { MockResultWithSource, MockResultsWithSource } from 'src/types'
+import * as CLM from '@conversationlearner/models'
+import { MockResultWithSource, MockResultsWithSource } from '../types'
 
 export function assignSourcesToMockResults(...mockResultsWithSourceList: MockResultsWithSource[]): MockResultWithSource[] {
     return mockResultsWithSourceList.reduce<MockResultWithSource[]>((mockResultWithSourceList, mockResultsWithSource) => {
@@ -73,4 +74,30 @@ export function areCallbackResultsEqual(mockResultsA: MockResultWithSource[], mo
     }
 
     return true
+}
+
+export function getMockResultErrors(mockResult: CLM.CallbackResult, entities: CLM.EntityBase[]): string[] {
+    const errors: string[] = []
+
+    for (const [entityKey, entityValues] of Object.entries(mockResult.entityValues)) {
+        const entity = entities.find(e => e.entityId === entityKey || e.entityName === entityKey)
+        if (entity === undefined) {
+            errors.push(`Mock Result ${mockResult.name} referenced an entity that does not exist. Entity key: ${entityKey}`)
+            continue
+        }
+
+        if (entityValues != null) {
+            if (entity?.isMultivalue === true
+                && Array.isArray(entityValues) === false) {
+                errors.push(`Mock Result ${mockResult.name} referenced an entity ${entity.entityName} that is multi value but was assigned a single value. It should assign a list of values.`)
+                continue
+            } else if (entity?.isMultivalue !== true
+                && Array.isArray(entityValues) === true) {
+                errors.push(`Mock Result ${mockResult.name} referenced an entity ${entity.entityName} that is singe value but was assigned multiple values. It should assign a single value.`)
+                continue
+            }
+        }
+    }
+
+    return errors
 }
