@@ -1823,7 +1823,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                         {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.API_LOCAL
                             && <>
-                                <div className="cl-action-creator-input-with-button">
+                                <div className="cl-action-creator-input-with-button cl-action-creator-input-with-button--align-end">
                                     <TC.Dropdown
                                         data-testid="dropdown-api-option"
                                         label="Callback Name"
@@ -1917,6 +1917,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         {mockResultsFromCode.length === 0
                                             ? <div>No Results Defined</div>
                                             : mockResultsFromCode.map(mockResultWithSource => {
+                                                const errors = MockResultUtils.getMockResultErrors(mockResultWithSource.mockResult, this.props.entities)
+
                                                 return <div className="cl-action-creator-input-with-button"
                                                     data-testid={`action-callback-result-row action-callback-result-row-from-${mockResultWithSource.source}`}
                                                     key={mockResultWithSource.mockResult.name}>
@@ -1924,6 +1926,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                         data-testid="action-callback-result-name"
                                                         value={mockResultWithSource.mockResult.name}
                                                         readOnly={true}
+                                                        errorMessage={errors.length > 0
+                                                            ? errors[0]
+                                                            : undefined}
                                                     />
 
                                                     <OF.IconButton
@@ -1943,7 +1948,16 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                         iconProps={{ iconName: 'Delete' }}
                                                         ariaDescription="Delete Callback Result"
                                                     />
+
+                                                    <div className="cl-action-creator-callback-result-error">
+                                                        {errors.length > 0
+                                                            && <OF.Icon
+                                                                className="cl-color-error"
+                                                                iconName="IncidentTriangle"
+                                                            />}
+                                                    </div>
                                                 </div>
+
                                             })}
                                     </div>
 
@@ -1952,6 +1966,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         {mockResultsFromModel.length === 0
                                             ? <div>No Results Defined</div>
                                             : mockResultsFromModel.map((mockResultWithSource, mockResultIndex) => {
+                                                const errors = MockResultUtils.getMockResultErrors(mockResultWithSource.mockResult, this.props.entities)
+
                                                 return <div className="cl-action-creator-input-with-button"
                                                     data-testid={`action-callback-result-row action-callback-result-row-from-${mockResultWithSource.source}`}
                                                     key={mockResultWithSource.mockResult.name}>
@@ -1959,6 +1975,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                         data-testid="action-callback-result-name"
                                                         value={mockResultWithSource.mockResult.name}
                                                         readOnly={true}
+                                                        errorMessage={errors.length > 0
+                                                            ? errors[0]
+                                                            : undefined}
                                                     />
 
                                                     <OF.IconButton
@@ -1978,6 +1997,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                         onClick={() => this.onClickDeleteCallbackResult(mockResultIndex)}
                                                         ariaDescription="Delete Callback Result"
                                                     />
+
+                                                    <div className="cl-action-creator-callback-result-error">
+                                                        {errors.length > 0
+                                                            && <OF.Icon
+                                                                className="cl-color-error"
+                                                                iconName="IncidentTriangle"
+                                                            />}
+                                                    </div>
                                                 </div>
                                             })}
                                     </div>
