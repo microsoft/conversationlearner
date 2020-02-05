@@ -14,7 +14,7 @@ import { actionTypeRenderer, actionListViewRenderer } from '../ActionRenderers'
 import EditApiPlaceholder from '../modals/EditApiPlaceholder'
 import ActionCreatorEditor from './ActionCreatorEditor/ActionCreatorEditor'
 import AdaptiveCardViewer, { getRawTemplateText } from './AdaptiveCardViewer/AdaptiveCardViewer'
-import { ImportedAction } from '../../types/models'
+import { ImportedAction, MockResultWithSource, MockResultSource } from '../../types/models'
 import { compareTwoStrings } from 'string-similarity'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -25,6 +25,7 @@ import { FM } from '../../react-intl-messages'
 import './ActionScorer.css'
 import { autobind } from 'core-decorators'
 import ActionCallbackResultDropdown from './ActionCallbackResultDropdown'
+import { assignSourcesToMockResults } from 'src/Utils/mockResults'
 
 const MISSING_ACTION = 'missing_action'
 
@@ -33,7 +34,7 @@ interface ActionForRender extends CLM.ScoredBase {
     score?: number
     reason?: CLM.ScoreReason | null
     repromptActionId?: string | undefined
-    selectedCallbackResult?: CLM.CallbackResult
+    selectedCallbackResult?: MockResultWithSource
 }
 
 interface IRenderableColumn extends OF.IColumn {
@@ -138,13 +139,21 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 
                 if (action.actionType === CLM.ActionTypes.API_LOCAL) {
                     const apiAction = new CLM.ApiAction(action)
-                    if (!apiAction.isPlaceholder) {
+                    if (apiAction.isPlaceholder !== true) {
                         const callback = component.props.botInfo.callbacks.find(c => c.name === apiAction.name)
-                        const callbackResultFromActivity = callback?.mockResults.find(result => result.name === component.props.selectedScorerStep?.stubName)
+                        const mockResultsFromBot = callback?.mockResults ?? []
+                        const mockResultsFromModel = apiAction.clientData?.mockResults ?? []
+                        const mockResultsWithSource = assignSourcesToMockResults(
+                            { mockResults: mockResultsFromBot, source: MockResultSource.CODE },
+                            { mockResults: mockResultsFromModel, source: MockResultSource.MODEL },
+                        )
+
+                        const callbackResultFromActivity = mockResultsWithSource.find(callbackResult => callbackResult.mockResult.name === component.props.selectedScorerStep?.stubName)
 
                         return <div className="cl-action-scorer-callback">
                             {actionResponseComponent}
                             <ActionCallbackResultDropdown
+                                entities={component.props.entities}
                                 action={apiAction}
                                 callback={callback}
                                 selectedCallbackResult={callbackResultFromActivity ?? actionForRender.selectedCallbackResult}
@@ -262,7 +271,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     ]
 }
 
-const actionIdCallbackResultMap: { [actionId: string]: CLM.CallbackResult | undefined } = {}
+const actionIdCallbackResultMap: { [actionId: string]: MockResultWithSource | undefined } = {}
 
 interface ComponentState {
     isActionCreatorModalOpen: boolean
@@ -369,7 +378,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onChangeSelectedStub(action: CLM.ActionBase, callbackResult: CLM.CallbackResult) {
+    onChangeSelectedStub(action: CLM.ActionBase, callbackResult: MockResultWithSource) {
         actionIdCallbackResultMap[action.actionId] = callbackResult
     }
 
@@ -491,7 +500,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         let dropdownStubName = undefined
         if (scoredBase.actionType === CLM.ActionTypes.API_LOCAL) {
             const apiAction = new CLM.ApiAction(scoredBase as CLM.ActionBase)
-            dropdownStubName = actionIdCallbackResultMap[apiAction.actionId]?.name
+            dropdownStubName = actionIdCallbackResultMap[apiAction.actionId]?.mockResult.name
         }
 
         const isStubChanged = dropdownStubName !== this.props.selectedScorerStep?.stubName
@@ -539,11 +548,22 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         let callbackResultName = undefined
         if (scoredBase.actionType === CLM.ActionTypes.API_LOCAL) {
             const apiAction = new CLM.ApiAction(scoredBase as CLM.ActionBase)
-            const callback = this.props.botInfo.callbacks.find(c => c.name === apiAction.name)
+            const selectedMockResultName = actionIdCallbackResultMap[apiAction.actionId]?.mockResult.name
 
-            if (callback?.mockResults) {
-                callbackResultName = actionIdCallbackResultMap[apiAction.actionId]?.name
+            const combinedMockResults = []
+            if (apiAction.clientData?.mockResults) {
+                combinedMockResults.push(...apiAction.clientData.mockResults)
             }
+            // If action has callback, action name is callback name, find and add mock results from callback definition
+            if (apiAction.isCallbackUnassigned !== true) {
+                const callback = this.props.botInfo.callbacks.find(c => c.name === apiAction.name)
+                if (callback) {
+                    combinedMockResults.push(...callback.mockResults)
+                }
+            }
+
+            const mockResult = combinedMockResults.find(mr => mr.name === selectedMockResultName)
+            callbackResultName = mockResult?.name
         }
 
         const trainScorerStep: CLM.TrainScorerStep = {

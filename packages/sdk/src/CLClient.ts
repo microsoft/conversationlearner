@@ -247,7 +247,7 @@ export class CLClient {
 
     public DeleteLogDialogs(appId: string, logDialogIds: string[]): Promise<void> {
         const ids = logDialogIds.map(p => `id=${p}`).join("&")
-        let apiPath = `app/${appId}/logdialog&${ids}`
+        let apiPath = `app/${appId}/logdialog?${ids}`
         return this.send('DELETE', this.MakeURL(apiPath))
     }
 

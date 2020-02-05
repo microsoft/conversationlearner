@@ -45,5 +45,19 @@
     grid-auto-flow: column;
     grid-template-columns: 1fr;
     grid-gap: 0.75rem;
+    align-items: start;
+}
+
+.cl-action-creator-input-with-button--align-end {
     align-items: end;
+}
+
+.cl-action-creator__button-add-mock-result {
+    margin-top: 0.5rem;
+}
+
+.cl-action-creator-callback-result-error {
+    font-size: 1.2rem;
+    width: 2rem;
+    padding-top: 3px;
 }

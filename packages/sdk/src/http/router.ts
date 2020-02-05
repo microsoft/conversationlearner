@@ -483,7 +483,7 @@ export const getRouter = (
             const { packageId } = getQuery(req)
             const appDefinition = await client.GetAppSource(appId, packageId)
 
-            // Remove the action
+            // Remove the entity
             appDefinition.entities = appDefinition.entities.filter(e => e.entityId != entityId)
 
             const clRunner = CLRunner.GetRunnerForUI(appId)

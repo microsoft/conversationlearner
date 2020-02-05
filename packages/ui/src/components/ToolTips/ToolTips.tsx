@@ -89,6 +89,8 @@ export enum TipType {
     PLACEHOLDER_API = 'PLACEHOLDER_API',
 
     MOCK_RESULT = 'CALLBACK_RESULT',
+    MOCK_RESULT_MISSING_ENTITY = 'MOCK_RESULT_MISSING_ENTITY',
+    MOCK_RESULT_INVALID_VALUE = 'MOCK_RESULT_INVALID_VALUE',
 
     TRANSCRIPT_IMPORTER = 'transcriptImporter',
 }
@@ -981,6 +983,28 @@ export function getTip(tipType: string) {
 
                     <h3>Example Callback Definition with Results</h3>
                     <img src="https://blisstorage.blob.core.windows.net/uiimages/temperatureCallback.png" alt="Unstable Temperature Callback" />
+                </div>
+            )
+
+        case TipType.MOCK_RESULT_MISSING_ENTITY:
+            return (
+                <div>
+                    <h2>Mock Results with Missing Entity</h2>
+                    <p>There are cases where you mock results may not match the current state if your model.</p>
+                    <p>If you have defined a mock result in code you may have a typo in your entity name. If you have defined mock results in the UI you may have edited your model and removed the entity that was referenced by that result.</p>
+                    <p>Note: If the mock result is defined in code you would need to update the definition, restart the bot, and refresh the UI to remove the errors.</p>
+                </div>
+            )
+
+        case TipType.MOCK_RESULT_INVALID_VALUE:
+            return (
+                <div>
+                    <h2>Mock Results with Mismatched Value Types</h2>
+                    <p>There are cases where the values assigned to an entity in a mock result may be incorrect.</p>
+                    <ol>
+                        <li>If you have assigned multiple values to a single value entity.</li>
+                        <li>If you have assigned single value (non-array) to a multi value entity.</li>
+                    </ol>
                 </div>
             )
 

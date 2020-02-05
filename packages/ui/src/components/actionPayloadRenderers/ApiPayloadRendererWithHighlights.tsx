@@ -25,12 +25,12 @@ const Component: React.FC<Props> = (props) => {
         || renderPayloadRenderData.showToggle
 
     const showLogicFunction = !props.callback
-        ? true
+        ? false
         : props.callback.isLogicFunctionProvided
     // && callback.logicArguments.length > 0
 
     const showRenderFunction = !props.callback
-        ? true
+        ? false
         : props.callback.isRenderFunctionProvided
     // && callback.renderArguments.length > 0
 

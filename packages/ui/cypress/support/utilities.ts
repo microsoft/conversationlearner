@@ -16,11 +16,10 @@ export function generateUniqueModelName(name: string): string {
 export function selectDropDownOption(dropDownSelector: string, optionName: string) {
     cy.get(dropDownSelector)
         .click()
-        .then(() => {
-            cy.get(s.common.dropDownOptions)
-                .contains(optionName)
-                .click()
-        })
+
+    cy.get(s.common.dropDownOptions)
+        .contains(optionName)
+        .click()
 }
 
 export function importModel(modelName: string, modelFile: string): void {
