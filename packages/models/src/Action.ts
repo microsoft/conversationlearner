@@ -4,6 +4,7 @@
  */
 import EntityIdSerializer, { IOptions } from './slateSerializer'
 import { ScoredBase, ScoredAction } from './Score'
+import { CallbackResult } from './Callback'
 
 export enum ActionTypes {
   TEXT = 'TEXT',
@@ -36,6 +37,7 @@ export interface ActionClientData {
   // Used to match import utterances
   actionHashes?: string[]
   lgName?: string
+  mockResults: CallbackResult[]
 }
 
 // Need dummy actionId for stub action
@@ -207,6 +209,9 @@ export interface ActionPayload {
   logicArguments: IActionArgument[]
   renderArguments: IActionArgument[]
   isPlaceholder?: boolean
+  // TODO: Remove after consolidation with placeholder
+  // Has different behavior than placeholders and implies only mock results can be used
+  isCallbackUnassigned?: boolean
 }
 
 export interface ActionPayloadSingleArguments {
@@ -266,6 +271,7 @@ export class ApiAction extends ActionBase {
   logicArguments: ActionArgument[]
   renderArguments: ActionArgument[]
   isPlaceholder?: boolean
+  isCallbackUnassigned?: boolean
 
   constructor(action: ActionBase) {
     super(action)
@@ -279,7 +285,9 @@ export class ApiAction extends ActionBase {
     this.logicArguments = actionPayload.logicArguments ? actionPayload.logicArguments.map(aa => new ActionArgument(aa)) : []
     this.renderArguments = actionPayload.renderArguments ? actionPayload.renderArguments.map(aa => new ActionArgument(aa)) : []
     this.isPlaceholder = actionPayload.isPlaceholder
+    this.isCallbackUnassigned = actionPayload.isCallbackUnassigned
   }
+
   renderLogicArguments(entityValues: Map<string, string>, serializerOptions: Partial<IOptions> = {}): RenderedActionArgument[] {
     return this.renderArgs(this.logicArguments, entityValues, serializerOptions)
   }

@@ -780,8 +780,9 @@ async function createActionFromImport(
         enumValueId: undefined,
         clientData: {
             actionHashes: importedAction.actionHash ? [importedAction.actionHash] : [],
-            lgName: importedAction.lgName
-        }
+            lgName: importedAction.lgName,
+            mockResults: [],
+        },
     })
     // Set properties associated with this scorer step, if applicable.
     if (scorerStep.importId) {

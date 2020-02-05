@@ -107,7 +107,7 @@ class MergeModal extends React.Component<Props, ComponentState> {
                     </div>
                 </div>
                 <div>
-                    <OF.Label className="ms-Label--tight cl-label">
+                    <OF.Label className="cl-label">
                         {Util.formatMessageId(intl, FM.MERGE_LABEL_SAVED)}
                     </OF.Label>
                     <div className="cl-merge-box cl-merge-box--readonly">
@@ -119,7 +119,7 @@ class MergeModal extends React.Component<Props, ComponentState> {
                             readOnly={true}
                         />
                     </div>
-                    <OF.Label className="ms-Label--tight cl-label">
+                    <OF.Label className="cl-label">
                         {Util.formatMessageId(intl, FM.MERGE_LABEL_EQUIVALENT)}
                     </OF.Label>
                     <div className="cl-merge-box cl-merge-box--readonly">
@@ -131,7 +131,7 @@ class MergeModal extends React.Component<Props, ComponentState> {
                             readOnly={true}
                         />
                     </div>
-                    <OF.Label className="ms-Label--tight cl-label">
+                    <OF.Label className="cl-label">
                         {Util.formatMessageId(intl, FM.MERGE_LABEL_MERGED)}
                     </OF.Label>
                     <div className="cl-merge-box">
