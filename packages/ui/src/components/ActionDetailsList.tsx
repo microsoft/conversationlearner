@@ -19,6 +19,7 @@ import { FM } from '../react-intl-messages'
 import './ActionDetailsList.css'
 import { autobind } from 'core-decorators'
 import { getValueConditionName, getEnumConditionName } from '../Utils/actionCondition'
+import * as MockResultUtil from '../Utils/mockResults'
 
 interface ComponentState {
     columns: IRenderableColumn[]
@@ -72,8 +73,22 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
                 if (apiAction.isPlaceholder || apiAction.isCallbackUnassigned) {
                     return false
                 }
+
                 // Otherwise make sure callback exists
-                return !this.props.botInfo.callbacks.some(t => t.name === apiAction.name)
+                const callback = this.props.botInfo.callbacks.find(t => t.name === apiAction.name)
+                if (callback === undefined) {
+                    return false
+                }
+
+                // If any of mock results have errors
+                const mockResults = [
+                    ...callback.mockResults,
+                    ...(apiAction.clientData?.mockResults ?? [])
+                ]
+
+                const mockResultsHaveErrors = mockResults.some(mr => MockResultUtil.getMockResultErrors(mr, this.props.entities).length > 0)
+
+                return mockResultsHaveErrors
             }
             case CLM.ActionTypes.CARD: {
                 const cardAction = new CLM.CardAction(action)
@@ -400,6 +415,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     <span>
                         {isValidationError &&
                             <OF.Icon
+                                data-testid="actions-error"
                                 className={`cl-icon cl-color-error`}
                                 iconName="IncidentTriangle"
                             />

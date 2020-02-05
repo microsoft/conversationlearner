@@ -1954,6 +1954,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                             && <OF.Icon
                                                                 className="cl-color-error"
                                                                 iconName="IncidentTriangle"
+                                                                data-testid="action-callback-result-icon-error"
                                                             />}
                                                     </div>
                                                 </div>

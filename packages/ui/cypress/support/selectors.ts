@@ -60,11 +60,15 @@ const selectors = {
         buttonUseCondition: (index: number) => `[data-testid="entity-creator-button-use-condition-${index}"]`,
     },
     actions: {
+        cells: {
+            response: '[data-automation-key="actionResponse"]',
+        },
         buttonNewAction: '[data-testid="actions-button-create"]',
         setEntityResponseText: '[data-testid="actions-list-set-entity"]',
         textResponse: '[data-testid="action-scorer-text-response"]',
         callbackName: '[data-testid="action-scorer-api-name"]',
         requiredConditions: '[data-testid="action-details-required-entities"]',
+        iconError: '[data-testid="actions-error"]',
     },
     action: {
         mockResult: {
@@ -77,6 +81,7 @@ const selectors = {
                 add: '[data-testid="action-creator-button-mock-result-add"]',
                 delete: '[data-testid="action-callback-result-button-delete"]',
             },
+            iconError: '[data-testid="action-callback-result-icon-error"]',
         },
         dropDownType: '[data-testid="dropdown-action-type"]',
         dropDownEntity: '[data-testid="action-set-entity"]',

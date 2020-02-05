@@ -43,6 +43,19 @@ describe('Action Callback Results', () => {
         // Train
     })
 
+    describe('Action Details List', () => {
+        before(() => {
+            cy.get(s.model.buttonNavActions)
+                .click()
+        })
+
+        it(`should show an error on action which has errors in mock results`, () => {
+            cy.get(s.actions.callbackName)
+                .parents(s.actions.cells.response)
+                .find(s.actions.iconError)
+        })
+    })
+
     describe('Action Modal', () => {
         before(() => {
             cy.get(s.model.buttonNavActions)
@@ -53,9 +66,14 @@ describe('Action Callback Results', () => {
                 .click()
         })
 
-        it('should show both results defined in Code and results defined on model', () => {
-            cy.get(s.action.mockResult.name)
-                .should('have.length', 6)
+        it('should show results defined in Code', () => {
+            cy.get(s.action.mockResult.codeRow)
+                .should('have.length', 4)
+        })
+
+        it('should show results defined in Model', () => {
+            cy.get(s.action.mockResult.modelRow)
+                .should('have.length', 3)
         })
 
         it(`should open callback result modal when clicking on view button`, () => {
@@ -78,18 +96,18 @@ describe('Action Callback Results', () => {
 
         it(`should allow deletion of result from model`, () => {
             // TODO: Should find by text value instead of index. contains() doesn't work
-            cy.get(s.action.mockResult.row)
-                .eq(5)
+            cy.get(s.action.mockResult.modelRow)
+                .eq(2)
                 .find(s.action.mockResult.buttons.delete)
                 .should('not.have.attr', 'disabled')
 
-            cy.get(s.action.mockResult.row)
-                .eq(5)
+            cy.get(s.action.mockResult.modelRow)
+                .eq(2)
                 .find(s.action.mockResult.buttons.delete)
                 .click()
 
-            cy.get(s.action.mockResult.row)
-                .eq(5)
+            cy.get(s.action.mockResult.modelRow)
+                .eq(2)
                 .should('not.exist')
         })
 
@@ -100,6 +118,27 @@ describe('Action Callback Results', () => {
 
             cy.get(s.helpPanel.buttonClose)
                 .click()
+        })
+
+        it(`should show errors on lists of code mock results`, () => {
+            cy.get(s.action.mockResult.codeRow)
+                .eq(1)
+                .within(() => {
+                    cy.get('[data-automation-id="error-message"]')
+                    cy.get(s.action.mockResult.iconError)
+                })
+        })
+
+        it(`should show errors on lists of model mock results`, () => {
+            cy.get(s.action.mockResult.modelRow)
+                .eq(1)
+                .as('currentMockResult')
+
+            cy.get('@currentMockResult')
+                .find('[data-automation-id="error-message"]')
+
+            cy.get('@currentMockResult')
+                .find(s.action.mockResult.iconError)
         })
     })
 
@@ -213,11 +252,11 @@ describe('Action Callback Results', () => {
                 cy.get(s.callbackResultModal.buttons.submit)
                     .click()
 
-                // TODO: Why wait needed? Modal not closing?
-                cy.wait(1000)
+                cy.get(s.callbackResultModal.title)
+                    .should('not.exist')
 
-                cy.get(s.action.mockResult.row)
-                    .should('have.length', 7)
+                cy.get(s.action.mockResult.modelRow)
+                    .should('have.length', 4)
             })
 
             after(() => {
@@ -245,8 +284,8 @@ describe('Action Callback Results', () => {
 
             it(`should discard edits to mock result if cancelled`, () => {
                 // TODO: Get by text instead of index, so it's not order dependent
-                cy.get(s.action.mockResult.row)
-                    .eq(4)
+                cy.get(s.action.mockResult.modelRow)
+                    .eq(0)
                     .find(s.action.mockResult.buttons.view)
                     .click()
 
@@ -260,8 +299,8 @@ describe('Action Callback Results', () => {
                     .click()
 
                 // Open
-                cy.get(s.action.mockResult.row)
-                    .eq(4)
+                cy.get(s.action.mockResult.modelRow)
+                    .eq(0)
                     .find(s.action.mockResult.buttons.view)
                     .click()
 
@@ -276,8 +315,8 @@ describe('Action Callback Results', () => {
 
             it(`edits to mock results should persist`, () => {
                 // open
-                cy.get(s.action.mockResult.row)
-                    .eq(5)
+                cy.get(s.action.mockResult.modelRow)
+                    .eq(2)
                     .find(s.action.mockResult.buttons.view)
                     .click()
 
@@ -307,8 +346,8 @@ describe('Action Callback Results', () => {
                     .click()
 
                 // open mock results
-                cy.get(s.action.mockResult.row)
-                    .eq(5)
+                cy.get(s.action.mockResult.modelRow)
+                    .eq(2)
                     .find(s.action.mockResult.buttons.view)
                     .click()
 
@@ -331,36 +370,44 @@ describe('Action Callback Results', () => {
                     .contains(testData.callback.name)
                     .click()
 
-                cy.get(s.action.mockResult.row)
+                cy.get(s.action.mockResult.codeRow)
                     .eq(1)
                     .find(s.action.mockResult.buttons.view)
                     .click()
             })
 
-            it(`should show errors about missing entity`, () => {
-                // Verify shows missing entity and error
-                cy.get(s.callbackResultModal.entityName)
-                    .contains('missingEntity')
+            describe(`Code Mock Results`, () => {
+                before(() => {
+                    cy.get(s.action.mockResult.codeRow)
+                        .eq(1)
+                        .find(s.action.mockResult.buttons.view)
+                        .click()
+                })
 
-                cy.get(s.callbackResultModal.entityNameError)
-            })
+                it(`should show errors about missing entity`, () => {
+                    // Verify shows missing entity and error
+                    cy.get(s.callbackResultModal.entityName)
+                        .contains('missingEntity')
 
-            it(`should still show values gracefully, but show errors for incorrect types (single to multi) assigned to entity`, () => {
-                getEntityValue('myNumbers', 0)
-                    .should('have.value', '1')
+                    cy.get(s.callbackResultModal.entityNameError)
 
-                // Verify shows single value for multi value
-                cy.get(s.callbackResultModal.entityNameError)
-            })
+                    cy.get(s.callbackResultModal.entityValueError)
+                        .should('have.length', 2)
+                })
 
-            it(`should still show values gracefully, but show errors for incorrect types (multi to single) assigned to entity`, () => {
-                // Verify shows multiple values for single value entity
-                getEntityValue('myString', 0)
-                    .should('have.value', `"string1"`)
-                getEntityValue('myString', 1)
-                    .should('have.value', `"string2"`)
-                getEntityValue('myString', 2)
-                    .should('have.value', `"string3"`)
+                it(`should still show values gracefully, but show errors for incorrect types (single to multi) assigned to entity`, () => {
+                    getEntityValue('myNumbers', 0)
+                        .should('have.value', '1')
+                })
+
+                it(`should still show values gracefully, but show errors for incorrect types (multi to single) assigned to entity`, () => {
+                    getEntityValue('myString', 0)
+                        .should('have.value', `"string1"`)
+                    getEntityValue('myString', 1)
+                        .should('have.value', `"string2"`)
+                    getEntityValue('myString', 2)
+                        .should('have.value', `"string3"`)
+                })
             })
         })
 
