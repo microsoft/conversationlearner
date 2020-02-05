@@ -366,11 +366,6 @@ describe('Action Callback Results', () => {
                 cy.get(s.actions.callbackName)
                     .contains(testData.callback.name)
                     .click()
-
-                cy.get(s.action.mockResult.codeRow)
-                    .eq(1)
-                    .find(s.action.mockResult.buttons.view)
-                    .click()
             })
 
             describe(`Code Mock Results`, () => {
@@ -404,6 +399,46 @@ describe('Action Callback Results', () => {
                         .should('have.value', `"string2"`)
                     getEntityValue('myString', 2)
                         .should('have.value', `"string3"`)
+                })
+
+                after(() => {
+                    cy.get(s.callbackResultModal.buttons.cancel)
+                })
+            })
+
+            describe(`Mock Mock Results`, () => {
+                before(() => {
+                    cy.get(s.action.mockResult.modelRow)
+                        .eq(1)
+                        .find(s.action.mockResult.buttons.view)
+                        .click()
+                })
+
+                it(`should show errors about missing entity`, () => {
+                    // Verify shows missing entity and error
+                    cy.get(s.callbackResultModal.entityName)
+                        .contains('invalid-entity')
+
+                    cy.get(s.callbackResultModal.entityNameError)
+
+                    cy.get(s.callbackResultModal.entityValueError)
+                        .should('have.length', 2)
+                })
+
+                it(`should still show values gracefully, but show errors for incorrect types (single to multi) assigned to entity`, () => {
+                    getEntityValue('myBooleans', 0)
+                        .should('have.value', 'false')
+                })
+
+                it(`should still show values gracefully, but show errors for incorrect types (multi to single) assigned to entity`, () => {
+                    getEntityValue('myNumber', 0)
+                        .should('have.value', `4`)
+                    getEntityValue('myNumber', 1)
+                        .should('have.value', `5`)
+                })
+
+                after(() => {
+                    cy.get(s.callbackResultModal.buttons.cancel)
                 })
             })
         })

@@ -40,7 +40,7 @@
                     {
                         "name": "Entity Errors - Model",
                         "entityValues": {
-                            "invalid-entity-ey": "true",
+                            "invalid-entity": "true",
                             "3e7d9ced-9cc6-4021-b46d-64ce09559967": "false",
                             "10b12a24-dbc9-4ba7-9330-f1566f905c30": [
                                 "4",
