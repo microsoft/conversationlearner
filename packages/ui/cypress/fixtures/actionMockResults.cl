@@ -38,6 +38,22 @@
                         }
                     },
                     {
+                        "name": "Entity Errors - Model",
+                        "entityValues": {
+                            "invalid-entity-ey": "true",
+                            "3e7d9ced-9cc6-4021-b46d-64ce09559967": "false",
+                            "10b12a24-dbc9-4ba7-9330-f1566f905c30": [
+                                "4",
+                                "5"
+                            ],
+                            "9325bf02-c332-47e7-9342-8ad825a3c2fe": "my string value",
+                            "ba7e977f-c529-478d-8d00-8f046a950741": null,
+                            "1d415592-a031-4364-9fd7-7a9290f545e6": [
+                                "{ \"id\": 1, \"title\": \"hello\" }"
+                            ]
+                        }
+                    },
+                    {
                         "name": "Result to Delete",
                         "entityValues": {},
                         "returnValue": "2"
