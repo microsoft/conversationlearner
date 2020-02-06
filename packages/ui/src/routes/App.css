@@ -23,7 +23,7 @@
     --color-alert: #d83b01;
     --color-alertBackground: #deecf9;
     --color-black: #000000;
-    --color-blackTranslucent40: rgba(0, 0, 0, .4);
+    --color-blackTranslucent40: rgba(0,0,0,.4);
     --color-blue: #0078d7;
     --color-blueDark: #002050;
     --color-blueLight: #00bcf2;
@@ -52,9 +52,10 @@
     --color-tealDark: #004b50;
     --color-tealLight: #00b294;
     --color-white: #ffffff;
-    --color-whiteTranslucent40: rgba(255, 255, 255, .4);
+    --color-whiteTranslucent40: rgba(255,255,255,.4);
     --color-yellow: #ffb900;
     --color-yellowLight: #fff100;
+
     /* Custom colors */
     --color-yellow-darkest: #9E7203;
     --cl-color-botchat-grey: #dbdee1;
@@ -65,6 +66,7 @@
     --cl-color-error: var(--color-error);
     --cl-color-caution: var(--color-orangeLighter);
     --cl-color-warning: var(--color-yellow);
+
     /* Vars */
     --min-gutter-width: 10px;
     --gutter-width: 100px;
@@ -80,20 +82,16 @@ This is NOT to be confused with our concept of Model/App within Conversation Lea
 
 This causes deviation from traditional BEM naming for remaining .cl-app-* classes since it is not always a parent if these children
 */
-
 .cl-o-app-columns {
     display: grid;
     grid-template-columns: minmax(var(--min-gutter-width), var(--gutter-width)) 1fr minmax(var(--min-gutter-width), var(--gutter-width));
 }
-
 .cl-app_header-placeholder {
     background-color: var(--color-neutralDark)
 }
-
 .cl-app_header {
     background-color: var(--color-neutralDark)
 }
-
 .cl-app_content {
     grid-column: 2;
     padding: 2em 0;
@@ -105,8 +103,8 @@ This causes deviation from traditional BEM naming for remaining .cl-app-* classe
     color: white;
     font-size: 1.2rem;
 }
-
-.cl-header a, .cl-header .cl-header-text {
+.cl-header a,
+.cl-header .cl-header-text {
     padding: var(--nav-link-padding);
     white-space: nowrap;
 }
@@ -131,26 +129,24 @@ This causes deviation from traditional BEM naming for remaining .cl-app-* classe
     display: flex;
     flex-direction: row;
 }
-
 .cl-header_links a {
     text-decoration: none;
     color: white;
 }
-
-.cl-header_links a:link, .cl-header_links a:visited {
+.cl-header_links a:link,
+.cl-header_links a:visited {
     color: white;
 }
-
-.cl-header_links a.active, .cl-header_links a:hover {
+.cl-header_links a.active,
+.cl-header_links a:hover {
     background-color: var(--color-neutralPrimary);
 }
-
 .cl-header_user {
     text-decoration: none;
     color: white;
 }
-
-.cl-header_user.active, .cl-header_user:hover {
+.cl-header_user.active,
+.cl-header_user:hover {
     background-color: var(--color-neutralPrimary);
 }
 
@@ -159,11 +155,9 @@ This causes deviation from traditional BEM naming for remaining .cl-app-* classe
     grid-template-columns: 1fr min-content;
     grid-gap: 1em;
 }
-
-.cl-buttons-row,
-/* TODO: This was one-off for EntityExtractor. Doesn't really comply to BEM but is temporary solution */
-
-.cl-modal-buttons_primary, .cl-modal-buttons_secondary {
+.cl-buttons-row, /* TODO: This was one-off for EntityExtractor. Doesn't really comply to BEM but is temporary solution */
+.cl-modal-buttons_primary,
+.cl-modal-buttons_secondary {
     display: grid;
     grid-auto-flow: column;
     grid-gap: 0.75em;
