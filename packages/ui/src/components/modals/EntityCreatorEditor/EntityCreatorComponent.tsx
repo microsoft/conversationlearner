@@ -10,7 +10,6 @@ import * as CLM from '@conversationlearner/models'
 import * as Util from '../../../Utils/util'
 import ActionDetailsList from '../../ActionDetailsList'
 import ConfirmCancelModal from '../ConfirmCancelModal'
-import { CLDropdownOption } from '../CLDropDownOption'
 import './styles.css'
 import { FM } from '../../../react-intl-messages'
 import FormattedMessageId from '../../FormattedMessageId'
@@ -114,11 +113,6 @@ const EditComponent: React.FC<Props> = (props) => {
             label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL)}
             options={props.entityOptions}
             onChange={(event, typeOption) => props.onChangeType(typeOption)}
-            onRenderOption={(option: CLDropdownOption) =>
-                <div className="dropdownExample-option">
-                    <span className={option.style}>{option.text}</span>
-                </div>
-            }
             selectedKey={props.entityTypeKey}
             disabled={props.isTypeDisabled}
             tipType={ToolTip.TipType.ENTITY_TYPE}
@@ -143,11 +137,6 @@ const EditComponent: React.FC<Props> = (props) => {
                 label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_RESOLVER_LABEL)}
                 options={props.resolverOptions}
                 onChange={(event, resolverOption) => props.onChangeResolver(resolverOption)}
-                onRenderOption={(option: CLDropdownOption) =>
-                    <div className="dropdownExample-option">
-                        <span className={option.style}>{option.text}</span>
-                    </div>
-                }
                 selectedKey={props.selectedResolverKey}
                 tipType={ToolTip.TipType.ENTITY_RESOLVER}
             />
