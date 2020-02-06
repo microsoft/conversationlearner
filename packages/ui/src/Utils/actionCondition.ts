@@ -5,7 +5,7 @@
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
 import produce from 'immer'
-import { PreBuilts } from 'src/types'
+import { PreBuilts } from '../types'
 
 export interface IConditionalTag extends OF.ITag {
     condition: CLM.Condition | null
