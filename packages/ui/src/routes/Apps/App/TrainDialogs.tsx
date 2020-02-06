@@ -35,6 +35,9 @@ import { TeachSessionState } from '../../../types/StateTypes'
 import { autobind } from 'core-decorators'
 import { DispatcherAlgorithmType } from '../../../components/modals/DispatcherCreator'
 import './TrainDialogs.css'
+import * as graph from '../../../Utils/graph'
+import * as clGraph from '../../../Utils/clGraph'
+import DialogGraph, { Props as GraphProps } from '../../../components/DagreGraph'
 
 export interface EditHandlerArgs {
     userInput?: string,
@@ -170,6 +173,7 @@ interface ComponentState {
     isTranscriptImportOpen: boolean
     isImportWaitModalOpen: boolean
     transcriptImport: TranscriptImportData | undefined
+    isGraphViewOpen: boolean
     isTreeViewModalOpen: boolean
     replayDialogs: CLM.TrainDialog[]
     replayDialogIndex: number
@@ -185,6 +189,7 @@ interface ComponentState {
     originalTrainDialog: CLM.TrainDialog | null
     // Is Dialog being edited a new one, a TrainDialog or a LogDialog
     editType: EditDialogType
+    selectedViewOptionKey: string
     searchValue: string
     selectionCount: number
     dialogKey: number
@@ -194,6 +199,31 @@ interface ComponentState {
     // Used to prevent screen from flashing when transition to Edit Page
     lastTeachSession: TeachSessionState | null
 }
+
+const dropdownViewOptions: OF.IDropdownOption[] = [
+    {
+        key: 'list',
+        text: 'List',
+        data: {
+            icon: 'List',
+        },
+    },
+    {
+        key: 'tree',
+        text: 'Tree',
+        data: {
+            icon: 'BranchFork2',
+            className: 'cl-rotate',
+        },
+    },
+    {
+        key: 'graph',
+        text: 'Graph',
+        data: {
+            icon: 'VisioDiagram',
+        },
+    },
+]
 
 class TrainDialogs extends React.Component<Props, ComponentState> {
     newTeachSessionButtonRef = React.createRef<OF.IButton>()
@@ -227,6 +257,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isTranscriptImportOpen: false,
             isImportWaitModalOpen: false,
             transcriptImport: undefined,
+            isGraphViewOpen: false,
             isTreeViewModalOpen: false,
             isReplaySelectedActive: false,
             isRegenActive: false,
@@ -238,6 +269,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             currentTrainDialog: null,
             originalTrainDialog: null,
             editType: EditDialogType.TRAIN_ORIGINAL,
+            selectedViewOptionKey: 'list',
             searchValue: '',
             selectionCount: 0,
             dialogKey: 0,
@@ -1539,6 +1571,76 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         return trainDialogs
     }
 
+    @autobind
+    onClickGraphView() {
+        this.setState(prevState => ({
+            isGraphViewOpen: !prevState.isGraphViewOpen,
+        }))
+    }
+
+    @autobind
+    onChangeView(event: React.FormEvent<HTMLDivElement>, option?: OF.IDropdownOption | undefined, index?: number | undefined) {
+        if (option === undefined) {
+            return
+        }
+
+        // TODO: Change to single view state?
+        switch (option.key) {
+            case "graph": {
+                this.setState({
+                    isTreeViewModalOpen: false,
+                    isGraphViewOpen: true,
+                })
+                break
+            }
+            case "tree": {
+                this.setState({
+                    isTreeViewModalOpen: true,
+                    isGraphViewOpen: false,
+                })
+                break
+            }
+            default: {
+                this.setState({
+                    isTreeViewModalOpen: false,
+                    isGraphViewOpen: false,
+                })
+            }
+        }
+
+        this.setState({
+            selectedViewOptionKey: option.key as string,
+        })
+    }
+
+    onRenderViewOption: OF.IRenderFunction<OF.ISelectableOption> = (option) => {
+        if (!option) {
+            return null
+        }
+
+        return <div>
+            {option.data?.icon && (
+                <OF.Icon
+                    style={{ marginRight: '8px' }}
+                    iconName={option.data.icon}
+                    aria-hidden="true"
+                    title={option.data.icon}
+                    className={option.data.className}
+                />
+            )}
+            <span>{option.text}</span>
+        </div>
+    }
+
+    onRenderViewTitle: OF.IRenderFunction<OF.IDropdownOption[]> = (options) => {
+        if (!options) {
+            return null
+        }
+
+        const option = options[0]
+        return this.onRenderViewOption(option)
+    }
+
     render() {
         const { intl } = this.props
         const computedTrainDialogs = this.getFilteredAndSortedDialogs()
@@ -1558,6 +1660,34 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         // Assume if app has DISPATCH actions, it must be dispatcher model
         const isDispatchModel = this.props.actions.some(a => a.actionType === CLM.ActionTypes.DISPATCH)
+        const isGraphFeatureEnabled = Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.GRAPH)
+
+        const createDagreGraphFromGenericGraph = (g: graph.Graph, getLabel: (n: graph.Node) => string): GraphProps => {
+            // Convert nodes to dagre nodes
+            const nodes = g.nodes.map(n => (
+                {
+                    id: n.id,
+                    label: {
+                        label: getLabel(n),
+                        class: 'cl-graph-custom-label'
+                    },
+                }
+            ))
+
+            // Convert edges from object references to ids
+            const edges: [string, string][] = g.edges.map(e => [e.vertexA.id, e.vertexB.id])
+
+            return {
+                graph: {
+                    nodes,
+                    edges,
+                }
+            }
+        }
+
+        const getLabelFromNode = clGraph.getLabelFromNode({ entities: this.props.entities, actions: this.props.actions })
+        const allDialogsGraph = graph.createDagFromNodes(this.props.trainDialogs, clGraph.getNodes, clGraph.mergeNodeData)
+        const dagreDialogsGraph = createDagreGraphFromGenericGraph(allDialogsGraph, getLabelFromNode)
 
         return (
             <div className="cl-page">
@@ -1591,22 +1721,30 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                             text={Util.formatMessageId(intl, FM.BUTTON_IMPORT)}
                         />
                     }
-                    {this.state.isTreeViewModalOpen ?
-                        <OF.DefaultButton
-                            className="cl-rotate"
-                            iconProps={{ iconName: 'AlignJustify' }}
-                            onClick={this.onCloseTreeView}
-                            ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_LISTVIEW_BUTTON)}
-                            text={Util.formatMessageId(intl, FM.TRAINDIALOGS_LISTVIEW_BUTTON)}
+                    {isGraphFeatureEnabled
+                        ? <OF.Dropdown
+                            selectedKey={this.state.selectedViewOptionKey}
+                            options={dropdownViewOptions}
+                            onChange={this.onChangeView}
+                            onRenderOption={this.onRenderViewOption}
+                            onRenderTitle={this.onRenderViewTitle}
+                            className="cl-traindialogs-dropdown-view"
                         />
-                        :
-                        <OF.DefaultButton
-                            className="cl-rotate"
-                            iconProps={{ iconName: 'BranchFork2' }}
-                            onClick={this.onOpenTreeView}
-                            ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_TREEVIEW_BUTTON)}
-                            text={Util.formatMessageId(intl, FM.TRAINDIALOGS_TREEVIEW_BUTTON)}
-                        />
+                        : this.state.isTreeViewModalOpen
+                            ? <OF.DefaultButton
+                                className="cl-rotate-icons"
+                                iconProps={{ iconName: 'AlignJustify' }}
+                                onClick={this.onCloseTreeView}
+                                ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_LISTVIEW_BUTTON)}
+                                text={Util.formatMessageId(intl, FM.TRAINDIALOGS_LISTVIEW_BUTTON)}
+                            />
+                            : <OF.DefaultButton
+                                className="cl-rotate-icons"
+                                iconProps={{ iconName: 'BranchFork2' }}
+                                onClick={this.onOpenTreeView}
+                                ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_TREEVIEW_BUTTON)}
+                                text={Util.formatMessageId(intl, FM.TRAINDIALOGS_TREEVIEW_BUTTON)}
+                            />
                     }
                     <OF.DefaultButton
                         data-testid="button-replay-selected"
@@ -1630,7 +1768,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                             text={Util.formatMessageId(intl, FM.BUTTON_REGENERATE, { selectionCount: this.state.selectionCount })}
                         />
                     }
+
+
                 </div>
+
+
                 <TreeView
                     open={this.state.isTreeViewModalOpen}
                     app={this.props.app}
@@ -1643,7 +1785,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onCancel={this.onCloseTreeView}
                     openTrainDialog={this.selectTrainDialog}
                 />
-
+                {this.state.isGraphViewOpen
+                    && <div>
+                        <DialogGraph graph={dagreDialogsGraph.graph} width={1000} />
+                    </div>}
                 {isNoDialogs &&
                     <div className="cl-page-placeholder">
                         <div className="cl-page-placeholder__content">
@@ -1660,7 +1805,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 }
-                {!this.state.isTreeViewModalOpen && !isNoDialogs &&
+                {!this.state.isGraphViewOpen && !this.state.isTreeViewModalOpen && !isNoDialogs &&
                     <React.Fragment>
                         <div>
                             <OF.Label htmlFor="train-dialogs-input-search" className={OF.FontClassNames.medium}>

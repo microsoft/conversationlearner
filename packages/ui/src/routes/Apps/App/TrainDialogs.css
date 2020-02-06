@@ -7,3 +7,7 @@
     grid-template-columns: auto max-content;
     grid-gap: 1em;
 }
+
+.cl-traindialogs-dropdown-view {
+    width: 100px;
+}
