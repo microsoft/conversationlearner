@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.504.2](https://github.com/Microsoft/ConversationLearner-WebChat/compare/v0.504.1...v0.504.2) (2020-02-06)
+
+
+### Reverts
+
+* Revert "feat: add graph view (#36)" (#40) ([4893d37](https://github.com/Microsoft/ConversationLearner-WebChat/commit/4893d37b689c80bca967756aa365836ed9cae795)), closes [#36](https://github.com/Microsoft/ConversationLearner-WebChat/issues/36) [#40](https://github.com/Microsoft/ConversationLearner-WebChat/issues/40) [#36](https://github.com/Microsoft/ConversationLearner-WebChat/issues/36) [#36](https://github.com/Microsoft/ConversationLearner-WebChat/issues/36)
+
+
+
+
+
 # [0.504.0](https://github.com/Microsoft/ConversationLearner-WebChat/compare/v0.503.1...v0.504.0) (2020-02-06)
 
 
