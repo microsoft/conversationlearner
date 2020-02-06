@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.504.0](https://github.com/Microsoft/conversationlearner-models/compare/v0.503.1...v0.504.0) (2020-02-06)
+
+**Note:** Version bump only for package @conversationlearner/models
+
+
+
+
+
 # [0.503.0](https://github.com/Microsoft/conversationlearner-models/compare/v0.502.2...v0.503.0) (2020-02-05)
 
 
