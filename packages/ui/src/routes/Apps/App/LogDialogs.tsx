@@ -505,7 +505,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         onColumnHeaderClick={this.onClickColumnHeader}
                         onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
                         onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
-                        onActiveItemChanged={logDialog => this.onClickLogDialogItem(logDialog)}
+                        onItemInvoked={logDialog => this.onClickLogDialogItem(logDialog)}
                     />
                 </>
                 <ChatSessionModal
