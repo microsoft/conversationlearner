@@ -896,10 +896,7 @@ i[data-icon-name="Edit"]:hover {
   color: 1px solid var(--color-neutralQuaternary) !important;
 }
 
-.cl-rotate {
-  transform: rotateX(180deg);
-}
-.cl-rotate-icons i[data-icon-name] {
+.cl-rotate i {
   transform: rotateX(180deg);
 }
 

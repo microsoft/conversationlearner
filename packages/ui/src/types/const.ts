@@ -61,7 +61,6 @@ export const ports: Readonly<any> = {
 export enum FeatureStrings {
     CCI = "CCI",
     DISPATCHER = "DISPATCHER",
-    GRAPH = "GRAPH",
 }
 
 export const fromLogTag = 'from-log'
