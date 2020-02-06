@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.504.1](https://github.com/Microsoft/ConversationLearner-UI/compare/v0.504.0...v0.504.1) (2020-02-06)
+
+
+### Bug Fixes
+
+* changes to log dialogs list click handler ([#39](https://github.com/Microsoft/ConversationLearner-UI/issues/39)) ([32f8c0c](https://github.com/Microsoft/ConversationLearner-UI/commit/32f8c0ce0d471c2d9bfdd89b510281c5552560b8))
+
+
+
+
+
 # [0.504.0](https://github.com/Microsoft/ConversationLearner-UI/compare/v0.503.1...v0.504.0) (2020-02-06)
 
 
