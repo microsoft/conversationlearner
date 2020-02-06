@@ -153,7 +153,7 @@ class MergeModal extends React.Component<Props, ComponentState> {
                         <div className="cl-modal-buttons_primary">
                             <OF.PrimaryButton
                                 onClick={() => this.props.onMerge(this.state.description, this.state.tags)}
-                                className="cl-icon--rotate"
+                                className="cl-rotate"
                                 text={Util.formatMessageId(intl, FM.MERGE_BUTTON_MERGE)}
                                 iconProps={{ iconName: 'Merge' }}
                                 data-testid="merge-modal-merge-button"
