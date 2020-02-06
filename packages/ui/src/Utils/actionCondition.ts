@@ -5,6 +5,7 @@
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
 import produce from 'immer'
+import { PreBuilts } from 'src/types'
 
 export interface IConditionalTag extends OF.ITag {
     condition: CLM.Condition | null
@@ -164,4 +165,25 @@ export const getUpdatedActionsUsingCondition = (actions: CLM.ActionBase[], exist
 
         return actionsUsingCondition
     }, [])
+}
+
+/**
+ * Given entity return true if entity can be used in condition false otherwise
+ */
+export const isEntityAllowedInCondition = (entity: CLM.EntityBase): boolean => {
+    if (entity.entityType === CLM.EntityType.ENUM) {
+        return true
+    }
+
+    if (entity.entityType === CLM.EntityType.LUIS
+        && entity.resolverType === PreBuilts.Number
+        && entity.isResolutionRequired === true) {
+        return true
+    }
+
+    if (entity.isMultivalue === true) {
+        return true
+    }
+
+    return false
 }
