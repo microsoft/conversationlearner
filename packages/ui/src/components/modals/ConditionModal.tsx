@@ -9,27 +9,8 @@ import * as CLM from '@conversationlearner/models'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import { Position } from 'office-ui-fabric-react/lib/utilities/positioning'
-import { PreBuilts } from 'src/types'
-import { conditionDisplay, convertConditionToConditionalTag, isConditionEqual } from '../../Utils/actionCondition'
+import { conditionDisplay, convertConditionToConditionalTag, isConditionEqual, isEntityAllowedInCondition } from '../../Utils/actionCondition'
 import './ConditionModal.css'
-
-const entityIsAllowedInCondition = (entity: CLM.EntityBase): boolean => {
-    if (entity.entityType === CLM.EntityType.ENUM) {
-        return true
-    }
-
-    if (entity.entityType === CLM.EntityType.LUIS
-        && entity.resolverType === PreBuilts.Number
-        && entity.isResolutionRequired === true) {
-        return true
-    }
-
-    if (entity.isMultivalue === true) {
-        return true
-    }
-
-    return false
-}
 
 interface EntityOption extends OF.IDropdownOption {
     data: CLM.EntityBase
@@ -105,7 +86,7 @@ type Props = InjectedIntlProps
 const Component: React.FC<Props> = (props) => {
     // Entity Dropdown
     const entityOptions = props.entities
-        .filter(entityIsAllowedInCondition)
+        .filter(isEntityAllowedInCondition)
         .map(e => convertEntityToDropdownOption(e))
         .sort((a, b) => a.text.localeCompare(b.text))
 

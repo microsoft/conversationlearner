@@ -16,7 +16,7 @@ import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import Component, { IEnumValueForDisplay } from './EntityCreatorComponent'
 import { autobind } from 'core-decorators'
-import { getUniqueConditions, getUpdatedActionsUsingCondition } from 'src/Utils/actionCondition'
+import { getUniqueConditions, getUpdatedActionsUsingCondition, isEntityAllowedInCondition } from 'src/Utils/actionCondition'
 import { NONE_RESOLVER_KEY } from '../../../types/const'
 
 const entityNameMaxLength = 30
@@ -29,6 +29,7 @@ const initState: ComponentState = {
     entityResolverVal: NONE_RESOLVER_KEY,
     isPrebuilt: false,
     isMultivalueVal: false,
+    isMultiValueDisabled: false,
     isNegatableVal: false,
     isResolutionRequired: false,
     enumValues: [],
@@ -53,6 +54,7 @@ interface ComponentState {
     entityResolverVal: string
     isPrebuilt: boolean
     isMultivalueVal: boolean
+    isMultiValueDisabled: boolean
     isNegatableVal: boolean
     isResolutionRequired: boolean
     enumValues: (CLM.EnumValue | null)[]
@@ -172,12 +174,15 @@ class Container extends React.Component<Props, ComponentState> {
                         ? NONE_RESOLVER_KEY
                         : nextProps.entity.resolverType
 
+                    const isMultiValueDisabled = this.isMultiValueDisabled(nextProps.entity, this.props.actions)
+
                     this.setState({
                         entityNameVal: nextProps.entity.entityName,
                         entityTypeVal: entityType,
                         entityResolverVal: resolverType,
                         isPrebuilt: isPrebuilt,
                         isMultivalueVal: nextProps.entity.isMultivalue,
+                        isMultiValueDisabled,
                         isNegatableVal: nextProps.entity.isNegatible,
                         isResolutionRequired: nextProps.entity.isResolutionRequired,
                         title: nextProps.intl.formatMessage({
@@ -323,6 +328,13 @@ class Container extends React.Component<Props, ComponentState> {
         }
 
         return newOrEditedEntity
+    }
+
+    isMultiValueDisabled(entity: CLM.EntityBase, actions: CLM.ActionBase[]) {
+        // If entity is already used in condition and changing multivalue to false would prevent entity from being valid in condition
+        const entityWithMultiValueFalse: CLM.EntityBase = { ...entity, isMultivalue: false }
+        return actions.some(a => a.requiredConditions.some(condition => condition.entityId === entity.entityId)) === true
+            && isEntityAllowedInCondition(entityWithMultiValueFalse) === false
     }
 
     @autobind
@@ -849,7 +861,7 @@ class Container extends React.Component<Props, ComponentState> {
             onKeyDownName={this.onKeyDownName}
 
             isMultiValue={this.state.isMultivalueVal}
-            isMultiValueDisabled={false}
+            isMultiValueDisabled={this.state.isMultiValueDisabled}
             onChangeMultiValue={this.onChangeMultivalue}
 
             isNegatable={this.state.isNegatableVal}
