@@ -1191,6 +1191,7 @@ export class CLRunner {
                     break
                 }
                 case CLM.ActionTypes.CHANGE_MODEL: {
+                    app = await clRecognizeResult.state.BotState.GetApp()
                     const changeModelAction = new CLM.ChangeModelAction(clRecognizeResult.scoredAction as any)
                     sessionId = await clRecognizeResult.state.BotState.GetSessionIdAndSetConversationId(conversationReference)
                     actionResult = await this.TakeChangeModelAction(
