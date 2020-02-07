@@ -403,10 +403,11 @@ describe('Action Callback Results', () => {
 
                 after(() => {
                     cy.get(s.callbackResultModal.buttons.cancel)
+                        .click()
                 })
             })
 
-            describe(`Mock Mock Results`, () => {
+            describe(`Model Mock Results`, () => {
                 before(() => {
                     cy.get(s.action.mockResult.modelRow)
                         .eq(1)
@@ -439,6 +440,7 @@ describe('Action Callback Results', () => {
 
                 after(() => {
                     cy.get(s.callbackResultModal.buttons.cancel)
+                        .click()
                 })
             })
         })
