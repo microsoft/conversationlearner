@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.504.5](https://github.com/microsoft/conversationlearner/compare/v0.504.4...v0.504.5) (2020-02-07)
+
+
+### Bug Fixes
+
+* get app for change_model actions ([#43](https://github.com/microsoft/conversationlearner/issues/43)) ([84757fe](https://github.com/microsoft/conversationlearner/commit/84757fe0bcc61b59b491f847065c2bfe9b5dad6a))
+
+
+
+
+
 ## [0.504.4](https://github.com/microsoft/conversationlearner/compare/v0.504.3...v0.504.4) (2020-02-07)
 
 
