@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.504.4](https://github.com/microsoft/conversationlearner/compare/v0.504.3...v0.504.4) (2020-02-07)
+
+
+### Bug Fixes
+
+* prevent crash when multivalue is removed for condition ([#41](https://github.com/microsoft/conversationlearner/issues/41)) ([b4655f2](https://github.com/microsoft/conversationlearner/commit/b4655f2e261a444f034689370e769fb9d163d60a))
+
+
+
+
+
 ## [0.504.3](https://github.com/microsoft/conversationlearner/compare/v0.504.2...v0.504.3) (2020-02-07)
 
 **Note:** Version bump only for package root
