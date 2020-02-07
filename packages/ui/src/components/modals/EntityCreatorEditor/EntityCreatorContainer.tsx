@@ -10,7 +10,6 @@ import actions from '../../../actions'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State, PreBuiltEntities } from '../../../types'
-import { CLDropdownOption } from '../CLDropDownOption'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { withRouter } from 'react-router-dom'
@@ -78,10 +77,10 @@ export const getPrebuiltEntityName = (preBuiltType: string): string => {
 }
 
 class Container extends React.Component<Props, ComponentState> {
-    staticEntityOptions: CLDropdownOption[]
-    staticResolverOptions: CLDropdownOption[]
-    entityOptions: CLDropdownOption[]
-    resolverOptions: CLDropdownOption[]
+    staticEntityOptions: OF.IDropdownOption[]
+    staticResolverOptions: OF.IDropdownOption[]
+    entityOptions: OF.IDropdownOption[]
+    resolverOptions: OF.IDropdownOption[]
 
     constructor(props: Props) {
         super(props)
@@ -90,48 +89,42 @@ class Container extends React.Component<Props, ComponentState> {
         this.staticResolverOptions = this.getStaticResolverOptions(this.props.intl)
     }
 
-    getStaticEntityOptions(intl: InjectedIntl): CLDropdownOption[] {
+    getStaticEntityOptions(intl: InjectedIntl): OF.IDropdownOption[] {
         return [
             {
                 key: CLM.EntityType.LUIS,
                 text: Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_ENTITYOPTION_LUIS),
                 itemType: OF.DropdownMenuItemType.Normal,
-                style: 'clDropdown--command'
             },
             {
                 key: CLM.EntityType.LOCAL,
                 text: Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_ENTITYOPTION_PROG),
                 itemType: OF.DropdownMenuItemType.Normal,
-                style: 'clDropdown--command'
             },
             {
                 key: CLM.EntityType.ENUM,
                 text: Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_ENTITYOPTION_ENUM),
                 itemType: OF.DropdownMenuItemType.Normal,
-                style: 'clDropdown--command'
             },
             {
                 key: 'divider',
                 text: '-',
                 itemType: OF.DropdownMenuItemType.Divider,
-                style: 'clDropdown--normal'
             },
             {
                 key: 'Header',
                 text: 'Pre-Trained',
                 itemType: OF.DropdownMenuItemType.Header,
-                style: 'clDropdown--normal'
             }
         ]
     }
 
-    getStaticResolverOptions(intl: InjectedIntl): CLDropdownOption[] {
+    getStaticResolverOptions(intl: InjectedIntl): OF.IDropdownOption[] {
         return [
             {
                 key: NONE_RESOLVER_KEY,
                 text: Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_ENTITY_RESOLVEROPTION_NONE),
                 itemType: OF.DropdownMenuItemType.Normal,
-                style: 'clDropdown--command'
             }
         ]
     }
@@ -148,12 +141,11 @@ class Container extends React.Component<Props, ComponentState> {
                 }
 
                 const localePreBuiltOptions = preBuiltLocale.preBuiltEntities
-                    .map<CLDropdownOption>(entityName =>
+                    .map<OF.IDropdownOption>(entityName =>
                         ({
                             key: entityName,
                             text: entityName,
                             itemType: OF.DropdownMenuItemType.Normal,
-                            style: 'clDropdown--normal'
                         }))
 
                 if (nextProps.entity === null) {
@@ -410,18 +402,18 @@ class Container extends React.Component<Props, ComponentState> {
         })
     }
 
-    onChangeType = (obj: CLDropdownOption) => {
-        const isPrebuilt = obj.key !== CLM.EntityType.LUIS && obj.key !== CLM.EntityType.LOCAL && obj.key !== CLM.EntityType.ENUM
+    onChangeType = (option: OF.IDropdownOption) => {
+        const isPrebuilt = option.key !== CLM.EntityType.LUIS && option.key !== CLM.EntityType.LOCAL && option.key !== CLM.EntityType.ENUM
         const isNegatableVal = isPrebuilt ? false : this.state.isNegatableVal
         const isMultivalueVal = this.state.isMultivalueVal
 
-        const entityTypeVal = isPrebuilt ? obj.text : obj.key as string
+        const entityTypeVal = isPrebuilt ? option.text : option.key as string
         this.setState(prevState => ({
             isPrebuilt,
             isMultivalueVal,
             isNegatableVal,
             entityTypeVal,
-            entityNameVal: isPrebuilt ? getPrebuiltEntityName(obj.text) : prevState.isPrebuilt ? "" : prevState.entityNameVal,
+            entityNameVal: isPrebuilt ? getPrebuiltEntityName(option.text) : prevState.isPrebuilt ? "" : prevState.entityNameVal,
         }))
     }
 
@@ -466,9 +458,9 @@ class Container extends React.Component<Props, ComponentState> {
             enumValues: enumValuesObjs
         })
     }
-    onChangeResolverType = (obj: CLDropdownOption) => {
+    onChangeResolverType = (option: OF.IDropdownOption) => {
         this.setState({
-            entityResolverVal: obj.key as string
+            entityResolverVal: option.key as string
         })
     }
     onChangeResolverResolutionRequired = () => {
@@ -583,14 +575,6 @@ class Container extends React.Component<Props, ComponentState> {
             : allActions.filter(a =>
                 a.requiredEntities.find(id => id === entity.entityId)
                 || a.entityId === entity.entityId)
-    }
-
-    onRenderOption = (option: CLDropdownOption): JSX.Element => {
-        return (
-            <div className="dropdownExample-option">
-                <span className={option.style}>{option.text}</span>
-            </div>
-        )
     }
 
     isInUse(): boolean {
