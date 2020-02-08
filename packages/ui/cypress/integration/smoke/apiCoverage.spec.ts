@@ -316,12 +316,13 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
 
         after(() => {
             cy.server()
-            cy.route('/sdk/app/*/logdialogs*').as('getLogDialogs')
 
             cy.get(s.logDialog.buttonDone)
                 .click()
 
-            cy.wait(['@getLogDialogs'])
+            cy.wait(1000)
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                .should('not.exist')
         })
     })
 
