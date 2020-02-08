@@ -27,7 +27,7 @@ describe('action modal', () => {
         cy.wait(500)
         cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
             .should('not.exist')
-            
+
         cy.get(s.actions.buttonNewAction)
             .click()
     })
@@ -94,13 +94,17 @@ describe('action modal', () => {
         // TODO: Find out why this fails to select picker item?
         it('adding an entity should make removable required entities non-removable', () => {
             cy.WaitForStableDOM()
-            
+
             cy.get(s.action.inputRequiredConditions)
-                .type('e{enter}')
+                .type('e')
+
+            cy.get(s.officePicker.splitButton)
+                .contains(testData.entity1)
+                .click()
 
             // Condition is removable
             cy.get(s.action.tagPickerRequired)
-                .get(s.officePicker.tagItem)
+                .find(s.officePicker.tagItem)
                 .contains(testData.entity1)
                 .get(s.officePicker.tagItemClose)
 
@@ -172,8 +176,13 @@ describe('action modal', () => {
 
     describe('required entities', () => {
         it('should not be able to add entities that are disqualified', () => {
+            const entityName = testData.entity1
             cy.get(s.action.inputDisqualifiedConditions)
-                .type('e{enter}')
+                .type('e')
+
+            cy.get(s.officePicker.splitButton)
+                .contains(entityName)
+                .click()
 
             cy.get(s.action.inputRequiredConditions)
                 .type('e')
@@ -186,15 +195,20 @@ describe('action modal', () => {
 
     describe('disqualifying entities', () => {
         it('should not be able to add entities that are required', () => {
+            const entityName = testData.entity1
             cy.get(s.action.inputRequiredConditions)
-                .type('e{enter}')
+                .type('e')
+
+            cy.get(s.officePicker.splitButton)
+                .contains(entityName)
+                .click()
 
             cy.get(s.action.inputDisqualifiedConditions)
                 .type('e')
 
             cy.get(s.officePicker.suggestions)
                 .get(s.officePicker.buttonSuggestion)
-                .should('not.have.text', testData.entity1)
+                .should('not.have.text', entityName)
         })
     })
 
@@ -235,7 +249,11 @@ describe('action modal', () => {
                 .should('not.exist')
 
             cy.get(s.action.inputRequiredConditions)
-                .type('new{enter}')
+                .type('new')
+
+            cy.get(s.officePicker.splitButton)
+                .contains(testData.newEntity)
+                .click()
         })
     })
 

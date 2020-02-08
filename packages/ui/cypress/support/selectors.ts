@@ -18,6 +18,7 @@ const selectors = {
         suggestions: '.ms-Suggestions',
         tagItem: '.ms-TagItem',
         tagItemClose: '.ms-TagItem-close',
+        splitButton: '[data-automationid="splitbuttonprimary"]',
     },
     models: {
         buttonCreate: '[data-testid=model-list-create-new-button]',
