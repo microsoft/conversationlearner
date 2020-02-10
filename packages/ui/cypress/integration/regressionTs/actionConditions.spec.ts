@@ -604,7 +604,7 @@ describe('Action Conditions', () => {
                         util.removeLabel('4')
 
                         cy.get('body')
-                            .trigger(constants.events.selectWord, { detail: { phrase: '21', inex: 0 } })
+                            .trigger(constants.events.selectWord, { detail: { phrase: '21', index: 0 } })
 
                         cy.get(s.entityPicker.inputSearch)
                             .type(testData.entities.number)

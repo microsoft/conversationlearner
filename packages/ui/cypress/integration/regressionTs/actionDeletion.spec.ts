@@ -137,6 +137,9 @@ describe('Action Deletion', () => {
                     .contains(testData.dialogs.markInvalid)
                     .click()
 
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
+
                 // verify has invalid
                 cy.get(s.webChat.messageFromMeException)
                 cy.get(s.dialogModal.error)
@@ -146,6 +149,9 @@ describe('Action Deletion', () => {
                 cy.get(s.trainDialogs.descriptions)
                     .contains(testData.dialogs.stillValidAfterRemoval)
                     .click()
+
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
 
                 // verify not invalid
                 cy.get(s.dialogModal.container)
@@ -161,6 +167,9 @@ describe('Action Deletion', () => {
                 cy.get(s.trainDialogs.descriptions)
                     .contains(testData.dialogs.notOnlyScorerStep)
                     .click()
+
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
 
                 // verify not invalid
                 cy.get(s.dialogModal.container)

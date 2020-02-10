@@ -42,6 +42,10 @@ describe('From Log Tag', () => {
 
                 cy.get(s.logDialog.modal)
                     .should('not.exist')
+
+                cy.wait(1000)
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
             })
     })
 
@@ -181,13 +185,21 @@ describe('From Log Tag', () => {
         cy.get(s.mergeModal.buttonMerge)
             .click()
 
-        cy.get(s.model.buttonNavTrainDialogs)
-            .click()
+        cy.get(s.mergeModal.title)
+            .should('not.exist')
+        cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+            .should('not.exist')
 
         // Need to reload to ensure tags actually persist on dialog
         cy.reload()
         cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
             .should('not.exist')
+        cy.wait(500)
+        cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+            .should('not.exist')
+
+        cy.get(s.model.buttonNavTrainDialogs)
+            .click()
 
         cy.get(s.trainDialogs.descriptions)
             .contains(testData.trainDialogInput)

@@ -27,6 +27,8 @@ describe('Set Entity Actions', () => {
         before(() => {
             cy.visit('/')
             util.importModel(testData.modelName, testData.modelFile)
+            cy.wait(2000)
+            cy.get(s.trainingStatus.completed, { timeout: constants.training.timeout })
         })
 
         describe('enum entity deletion', () => {

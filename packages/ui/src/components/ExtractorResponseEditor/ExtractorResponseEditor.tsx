@@ -60,7 +60,7 @@ const initialState: Readonly<State> = {
 
 const disallowedOperations = ['insert_text', 'remove_text']
 const externalChangeOperations = ['insert_node', 'remove_node']
-
+const selectWordEventName = "Test_SelectWord"
 /**
  * The higher level goal behind this component is for consumers to think of it like a normal controlled <input value={value} onChange={this.onChangeValue} />
  * However, instead of editing a simple string of text we are editing an extractorResponse object. Then it becomes easy to understand the
@@ -413,12 +413,12 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
     componentDidMount() {
         // For end 2 end unit testing.
-        document.addEventListener("Test_SelectWord", this.onTestSelectWord as any)
+        document.addEventListener(selectWordEventName, this.onTestSelectWord as any)
     }
 
     componentWillUnmount() {
         // For end 2 end unit testing.
-        document.removeEventListener("Test_SelectWord", this.onTestSelectWord as any)
+        document.removeEventListener(selectWordEventName, this.onTestSelectWord as any)
     }
 
     /**
@@ -437,11 +437,24 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     onTestSelectWord(val: { detail: { phrase: string, index: number } } | { detail: string }) {
 
         if (!val.detail) {
-            throw new Error("Test_SelectWord expecting detail phrase")
+            throw new Error(`Event: ${selectWordEventName} expecting detail phrase`)
         }
 
-        const phrase: string = (typeof val.detail !== "string") ? val.detail.phrase : val.detail
-        const index: number = (typeof val.detail !== "string") ? val.detail.index : 0
+        let phrase: string
+        let index = 0
+        if (typeof val.detail === "string") {
+            phrase = val.detail
+        }
+        else if (typeof val.detail?.phrase === 'string') {
+            phrase = val.detail.phrase
+
+            if (typeof val.detail.index === 'number') {
+                index = val.detail.index
+            }
+        }
+        else {
+            throw new Error(`Event ${selectWordEventName} did not provided a phrase to select.`)
+        }
 
         const words = phrase.split(" ")
         const firstWord = words[0]

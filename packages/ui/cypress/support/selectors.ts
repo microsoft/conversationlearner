@@ -18,6 +18,7 @@ const selectors = {
         suggestions: '.ms-Suggestions',
         tagItem: '.ms-TagItem',
         tagItemClose: '.ms-TagItem-close',
+        splitButton: '[data-automationid="splitbuttonprimary"]',
     },
     models: {
         buttonCreate: '[data-testid=model-list-create-new-button]',
@@ -201,6 +202,7 @@ const selectors = {
         branchInput: '[data-testid="user-input-modal-new-message-input"]',
     },
     dialogModal: {
+        title: '[data-testid="traindialog-title"]',
         container: '.cl-modal',
         branchButton: '[data-testid="edit-dialog-modal-branch-button"]',
         branchSubmit: '[data-testid="app-create-button-submit"]',
