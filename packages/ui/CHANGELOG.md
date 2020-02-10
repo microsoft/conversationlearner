@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.504.6](https://github.com/Microsoft/ConversationLearner-UI/compare/v0.504.5...v0.504.6) (2020-02-10)
+
+**Note:** Version bump only for package @conversationlearner/ui
+
+
+
+
+
 ## [0.504.4](https://github.com/Microsoft/ConversationLearner-UI/compare/v0.504.3...v0.504.4) (2020-02-07)
 
 
