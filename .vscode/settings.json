@@ -6,7 +6,9 @@
         "docs/**/*": true,
         "build/**/*": true,
         "lib/**/*": true,
+        "dist/**/*": true,
     },
     "editor.formatOnSave": true,
-    "typescript.format.semicolons": "remove"
+    "typescript.format.semicolons": "remove",
+    "typescript.preferences.importModuleSpecifier": "relative"
 }
