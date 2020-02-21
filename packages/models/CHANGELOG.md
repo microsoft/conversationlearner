@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.504.7](https://github.com/Microsoft/conversationlearner-models/compare/v0.504.6...v0.504.7) (2020-02-21)
+
+
+### Bug Fixes
+
+* hide action types ([#46](https://github.com/Microsoft/conversationlearner-models/issues/46)) ([069b37b](https://github.com/Microsoft/conversationlearner-models/commit/069b37bbc4f9387be1b7c25bbd7530c69996a4c4))
+
+
+
+
+
 # [0.504.0](https://github.com/Microsoft/conversationlearner-models/compare/v0.503.1...v0.504.0) (2020-02-06)
 
 **Note:** Version bump only for package @conversationlearner/models
