@@ -134,9 +134,9 @@ const convertEntityToConditionalTags = (entity: CLM.EntityBase, expand = true): 
 }
 
 // Returns deduplicated array of conditions currently used as required or negative conditions.
-const conditionalEntityTags = (entities: CLM.EntityBase[], actionz: CLM.ActionBase[]): IConditionalTag[] => {
+const conditionalEntityTags = (entities: CLM.EntityBase[], actions: CLM.ActionBase[]): IConditionalTag[] => {
     // Might have duplicates since different actions can have same conditions
-    const actionConditionTags = actionz
+    const actionConditionTags = actions
         .map(a => [...a.requiredConditions, ...a.negativeConditions])
         .reduce((a, b) => [...a, ...b], [])
         .map(c => convertConditionToConditionalTag(c, entities))
@@ -235,7 +235,7 @@ const tryCreateSlateValue = (actionType: string, slotName: string, content: obje
     }
 }
 
-const actionTypeOptions = (Object.values(CLM.ActionTypes) as string[])
+const actionTypeOptions = Object.values<string>(CLM.ActionTypes)
     .map<OF.IDropdownOption>(actionTypeString => {
         return {
             key: actionTypeString,
@@ -1785,6 +1785,17 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             ? this.props.actions.find(a => a.actionId === this.state.repromptActionId)
             : undefined
 
+        const isDispatcherFeatureEnabled = Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.DISPATCHER)
+        const availableActionTypeOptions = actionTypeOptions
+            .filter(actionTypeOption => {
+                if (isDispatcherFeatureEnabled === false
+                    && actionTypeOption.key === CLM.ActionTypes.DISPATCH) {
+                    return false
+                }
+
+                return true
+            })
+
         return (
             <OF.Modal
                 isOpen={this.props.open}
@@ -1800,7 +1811,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         <TC.Dropdown
                             data-testid="dropdown-action-type"
                             label="Action Type"
-                            options={actionTypeOptions}
+                            options={availableActionTypeOptions}
                             onChange={(event, actionTypeOption) => this.onChangeActionType(actionTypeOption)}
                             selectedKey={this.state.selectedActionTypeOptionKey}
                             disabled={disabled}
