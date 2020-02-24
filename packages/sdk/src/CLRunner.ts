@@ -1102,6 +1102,12 @@ export class CLRunner {
             else {
                 this.SaveLogicResult(clRecognizeResult, actionResult, apiAction.actionId, conversationReference)
             }
+        } 
+        else if (CLM.ActionBase.isPVAContent(clRecognizeResult.scoredAction)) {
+            actionResult = {
+                logicResult: undefined,
+                response: JSON.parse(clRecognizeResult.scoredAction.payload).value
+            }
         }
         else {
             switch (clRecognizeResult.scoredAction.actionType) {
@@ -2039,7 +2045,7 @@ export class CLRunner {
                                 const filledIdMap = filledEntityMap.EntityMapToIdMap()
                                 const actionResult = await this.TakeAPIAction(apiAction, filledIdMap, state, entities, true, actionInput)
                                 scorerStep.logicResult = actionResult.logicResult
-                            } else if (curAction.actionType === CLM.ActionTypes.END_SESSION) {
+                            } else if (curAction.actionType === CLM.ActionTypes.END_SESSION && !CLM.ActionBase.isPVAContent(curAction)) {
                                 const sessionAction = new CLM.SessionAction(curAction)
                                 const filledIdMap = filledEntityMap.EntityMapToIdMap()
                                 await this.TakeSessionAction(sessionAction, filledIdMap, true, state, null, null)
@@ -2350,6 +2356,12 @@ export class CLRunner {
                                 botResponse = await this.TakeAPIPlaceholderAction(apiAction, placedholderFilledEntities, state, entities)
                                 replayError = replayError ?? new CLM.ReplayErrorAPIPlaceholder()
                                 replayErrors.push(replayError)
+                            }
+                            else if (CLM.ActionBase.isPVAContent(curAction)) {
+                                botResponse = {
+                                    logicResult: undefined,
+                                    response: JSON.parse(curAction.payload).value
+                                }
                             }
                             else if (curAction.actionType === CLM.ActionTypes.API_LOCAL) {
                                 const apiAction = new CLM.ApiAction(curAction)

@@ -38,7 +38,10 @@ export function actionListViewRenderer(
 
     const defaultEntityMap = Util.getDefaultEntityMap(entities)
 
-    if (action.actionType === CLM.ActionTypes.TEXT) {
+    if (CLM.ActionBase.isPVAContent(action)) {
+        return JSON.parse(action.payload).value; 
+    }
+    else if (action.actionType === CLM.ActionTypes.TEXT) {
         const textAction = new CLM.TextAction(action)
         return (
             <ActionPayloadRenderers.TextPayloadRendererWithHighlights

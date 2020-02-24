@@ -166,7 +166,11 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
         }
 
         const action = item as CLM.ActionBase
-        this.props.onSelectAction(action)
+
+        // Not allowed to edit PVA actions
+        if (!CLM.ActionBase.isPVAContent(action)) {
+            this.props.onSelectAction(action)
+        }
     }
 
     onCloseCardViewer = () => {
@@ -244,7 +248,10 @@ type Props = stateProps & ReceivedProps & InjectedIntlProps
 export default connect<stateProps, {}, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ActionDetailsList) as any)
 
 function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetailsList, isValidationError: boolean) {
-    if (action.actionType === CLM.ActionTypes.TEXT) {
+    if (CLM.ActionBase.isPVAContent(action)) {
+        return JSON.parse(action.payload).value; 
+    }
+    else if (action.actionType === CLM.ActionTypes.TEXT) {
         const textAction = new CLM.TextAction(action)
         return (<ActionPayloadRenderers.TextPayloadRendererWithHighlights
             textAction={textAction}
@@ -369,6 +376,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 const entityMap = Util.getDefaultEntityMap(component.props.entities)
 
                 try {
+                    if (CLM.ActionBase.isPVAContent(action)) {
+                        return JSON.parse(action.payload).value;
+                    }
                     switch (action.actionType) {
                         case CLM.ActionTypes.TEXT: {
                             const textAction = new CLM.TextAction(action)
@@ -409,7 +419,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 }
             },
             render: (action, component) => {
-                const isValidationError = component.validationError(action)
+                const isValidationError = !CLM.ActionBase.isPVAContent(action) && component.validationError(action)
                 const payloadRenderer = getActionPayloadRenderer(action, component, isValidationError)
                 return (
                     <span>

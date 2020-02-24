@@ -94,6 +94,11 @@ export class ActionBase {
   // safety for those places which should require it.
   // TODO: Remove ScoredAction since it doesn't have payload
   static GetPayload(action: ActionBase | ScoredBase, entityValues: Map<string, string>): string {
+    
+    if (this.isPVAContent(action)) {
+      return JSON.parse(action.payload).value
+    }
+    
     switch (action.actionType) {
       case ActionTypes.TEXT: {
         /**
@@ -147,6 +152,17 @@ export class ActionBase {
       return false
     }
     if (action.payload && JSON.parse(action.payload).isPlaceholder) {
+      return true
+    }
+    return false
+  }
+
+   // Return true if action should be rendered as PVA content
+  static isPVAContent(action: Partial<ActionBase> | undefined): boolean {
+    if (!action) {
+      return false
+    }
+    if (action.payload && JSON.parse(action.payload).isPVAContent) {
       return true
     }
     return false
