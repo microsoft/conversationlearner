@@ -110,7 +110,7 @@ const convertToMapById = (entityMap: CLM.FilledEntityMap): CLM.FilledEntityMap =
 export const actionHasHash = (actionId: string, hash: string, actions: CLM.ActionBase[]) => {
     // Check that correct action was taken
     const action = actions.find(a => a.actionId === actionId)
-    if (action?.clientData?.actionHashes) {
+    if (action ?.clientData ?.actionHashes) {
         return action.clientData.actionHashes.includes(hash)
     }
     return false
@@ -167,11 +167,11 @@ export function IsCardValid(card: string | Partial<BB.Activity>): boolean {
 }
 
 export function GetLogicAPIError(logicResult: CLM.LogicResult | undefined): CLM.LogicAPIError | null {
-    if (!logicResult?.logicValue) {
+    if (!logicResult ?.logicValue) {
         return null
     }
     const logicAPIResult = JSON.parse(logicResult.logicValue) as CLM.LogicAPIError
-    if (!logicAPIResult?.APIError) {
+    if (!logicAPIResult ?.APIError) {
         return null
     }
     return logicAPIResult
@@ -219,7 +219,7 @@ export const getSha256Hash: (id: string) => string = (id) => {
 }
 
 export const isRunningInClUI: (context: BB.TurnContext) => boolean = (context) => {
-    return context?.activity?.from?.name === CL_DEVELOPER
+    return context ?.activity ?.from ?.name === CL_DEVELOPER
 }
 
 export const isConditionTrue = (
@@ -227,7 +227,7 @@ export const isConditionTrue = (
     filledEntities: CLM.FilledEntity[],
     entities: CLM.EntityBase[]
 ): boolean => {
-    if (condition.stringValue){
+    if (condition.stringValue) {
         return isStringConditionTrue(condition, filledEntities)
     }
     else if (condition.valueId) {
@@ -246,9 +246,9 @@ const isStringConditionTrue = (
     condition: CLM.Condition,
     filledEntities: CLM.FilledEntity[]
 ): boolean => {
-    if (condition.stringValue) {
+    if (condition.stringValue && condition.condition === CLM.ConditionType.STRING_EQUAL) {
         const filledEntity = filledEntities.find(e => e.entityId === condition.entityId)
-        const stringValue = filledEntity && filledEntity.values.length > 0 && filledEntity.values[0].displayText
+        const stringValue = filledEntity && filledEntity.values.length > 0 && filledEntity.values[0].userText
         if (stringValue === condition.stringValue) {
             return true
         }
@@ -256,7 +256,7 @@ const isStringConditionTrue = (
 
     return false
 }
-    
+
 const isEnumConditionTrue = (
     condition: CLM.Condition,
     filledEntities: CLM.FilledEntity[]
@@ -305,7 +305,7 @@ const findNumberFromFilledEntity = (filledEntity: CLM.FilledEntity, isMultivalue
         return filledEntity.values.length
     }
 
-    const valueString: string | undefined = (filledEntity?.values?.[0]?.resolution as any)?.value
+    const valueString: string | undefined = (filledEntity ?.values ?.[0] ?.resolution as any) ?.value
 
     const value = valueString
         ? parseInt(valueString, 10)

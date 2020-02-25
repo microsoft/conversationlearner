@@ -83,7 +83,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
                 // If any of mock results have errors
                 const mockResults = [
                     ...callback.mockResults,
-                    ...(apiAction.clientData ?.mockResults ?? [])
+                    ...(apiAction.clientData?.mockResults ?? [])
                 ]
 
                 const mockResultsHaveErrors = mockResults.some(mr => MockResultUtil.getMockResultErrors(mr, this.props.entities).length > 0)
@@ -161,7 +161,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
 
     onClickRow(item: any, index: number | undefined, event: Event | undefined) {
         // Don't response to row click if it's button that was clicked
-        if ((event ?.target as any).type === 'button') {
+        if ((event?.target as any).type === 'button') {
             return
         }
 
@@ -196,7 +196,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
                     items={sortedActions}
                     columns={this.state.columns}
                     checkboxVisibility={OF.CheckboxVisibility.hidden}
-                    onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender ?.(props)}</div>}
+                    onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender?.(props)}</div>}
                     onRenderItemColumn={(action: CLM.ActionBase, i, column: IRenderableColumn) => column.render(action, this)}
                     onItemInvoked={(item, index, ev) => this.onClickRow(item, index, ev)}
                     onColumnHeaderClick={this.onClickColumnHeader}

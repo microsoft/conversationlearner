@@ -35,7 +35,7 @@ export interface DialogRenderData {
 }
 
 export function getReplayError(activity: BB.Activity | null): CLM.ReplayError | null | undefined {
-    if (!activity ?.channelData ?.clData) {
+    if (!activity?.channelData?.clData) {
         return null
     }
     const clData: CLM.CLChannelData = activity.channelData.clData
@@ -371,7 +371,7 @@ export function convertToScorerCondition(condition: CLM.Condition, entities: CLM
 
     // If EnumCondition
     if (condition.valueId) {
-        const enumValue = entity.enumValues ?.find(ev => ev.enumValueId === condition.valueId)
+        const enumValue = entity.enumValues?.find(ev => ev.enumValueId === condition.valueId)
         const value = enumValue
             ? enumValue.enumValue
             : "NOT FOUND"
@@ -405,7 +405,7 @@ export function convertToScorerCondition(condition: CLM.Condition, entities: CLM
         let match = false
         if (memory) {
             const value = findStringFromMemory(memory)
-            match = isStringConditionTrue(condition, value);
+            match = isStringConditionTrue(condition, value)
         }
 
         return {
@@ -443,14 +443,14 @@ export function dialogSampleInput(dialog: CLM.TrainDialog | CLM.LogDialog): stri
 }
 
 export function trainDialogFirstInput(trainDialog: CLM.TrainDialog): string {
-    if (trainDialog.rounds ?.length > 0) {
+    if (trainDialog.rounds?.length > 0) {
         return trainDialog.rounds[0].extractorStep.textVariations[0].text
     }
     return ""
 }
 
 export function trainDialogLastInput(trainDialog: CLM.TrainDialog): string | void {
-    if (trainDialog.rounds ?.length > 0) {
+    if (trainDialog.rounds?.length > 0) {
         return trainDialog.rounds[trainDialog.rounds.length - 1].extractorStep.textVariations[0].text
     }
 }
@@ -458,7 +458,7 @@ export function trainDialogLastInput(trainDialog: CLM.TrainDialog): string | voi
 export function trainDialogLastResponse(trainDialog: CLM.TrainDialog, actions: CLM.ActionBase[], entities: CLM.EntityBase[]): string | void {
     // Find last action of last scorer step of last round
     // If found, return payload, otherwise return not found icon
-    if (trainDialog.rounds ?.length > 0) {
+    if (trainDialog.rounds?.length > 0) {
         const scorerSteps = trainDialog.rounds[trainDialog.rounds.length - 1].scorerSteps
         if (scorerSteps.length > 0) {
             const actionId = scorerSteps[scorerSteps.length - 1].labelAction
@@ -502,7 +502,7 @@ export function getMostSevereReplayError(activities: BB.Activity[]): CLM.ReplayE
     let worstReplayError: CLM.ReplayError | null = null
     for (const a of activities) {
         const clData: CLM.CLChannelData = a.channelData.clData
-        if (clData ?.replayError) {
+        if (clData?.replayError) {
             if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.BLOCKING) {
                 return clData.replayError
             }
@@ -964,7 +964,7 @@ export function bestTemplateMatch(importedAction: ImportedAction, templates: CLM
 
             // If cound is the same, find string similarity in body
             if (templateButtonCount === importedAction.buttons.length) {
-                const score = (template ?.body)
+                const score = (template?.body)
                     ? compareTwoStrings(importedAction.text, template.body)
                     : 0
                 if (score > CARD_MATCH_THRESHOLD && score > bestScore) {

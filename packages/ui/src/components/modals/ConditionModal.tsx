@@ -37,7 +37,7 @@ const convertConditionTypesToDropdownOptions = (conditionTypes: object): Operato
     return Object.keys(conditionTypes)
         .map((conditionType: string) => {
             let conditionText = `unknown`
-            if (conditionDisplay ?.[conditionType]) {
+            if (conditionDisplay?.[conditionType]) {
                 conditionText = conditionDisplay[conditionType]
             }
 
@@ -55,7 +55,7 @@ const equalOperatorOption = allOperatorOptions.find(o => o.data === CLM.Conditio
 const stringEqualOperatorOption = allOperatorOptions.find(o => o.data === CLM.ConditionType.STRING_EQUAL)!
 const stringEqualOperatorOptions = allOperatorOptions.filter(o => o.data === CLM.ConditionType.STRING_EQUAL)!
 const arithmeticOperatorOptions = allOperatorOptions.filter(o => o.data !== CLM.ConditionType.STRING_EQUAL)!
-var operatorOptions = allOperatorOptions
+let operatorOptions = allOperatorOptions
 
 
 
@@ -82,10 +82,10 @@ interface ComparisonTypeOption extends OF.IDropdownOption {
     data: CLM.ComparisonType
 }
 
-const constructComparisonTypeDropdownOptions = (options: CLM.ComparisonType[]): ComparisonTypeOption[] => {
+const convertComparisonTypeToDropdownOption = (options: CLM.ComparisonType[]): ComparisonTypeOption[] => {
     return options.map((comparisonType: string) => {
         let conditionText = `unknown`
-        if (comparisonTypeDisplay ?.[comparisonType]) {
+        if (comparisonTypeDisplay?.[comparisonType]) {
             conditionText = comparisonTypeDisplay[comparisonType]
         }
 
@@ -98,13 +98,13 @@ const constructComparisonTypeDropdownOptions = (options: CLM.ComparisonType[]): 
 }
 
 
-const singleEntityDropdownOptions = constructComparisonTypeDropdownOptions(Object.values(CLM.ComparisonType).filter(t => t !== CLM.ComparisonType.NUMBER_OF_ITEMS)) // number of items only valid for multi entities
-const multiEntityDropdownOptions = constructComparisonTypeDropdownOptions(Object.values(CLM.ComparisonType).filter(t => t === CLM.ComparisonType.NUMBER_OF_ITEMS)) // number of items only valid for multi entities
-const enumEntityDropdownOptions = constructComparisonTypeDropdownOptions([])
-var comparisonTypeDropdownOptions = singleEntityDropdownOptions
+const singleEntityDropdownOptions = convertComparisonTypeToDropdownOption(Object.values(CLM.ComparisonType).filter(t => t !== CLM.ComparisonType.NUMBER_OF_VALUES)) // number of items only valid for multi entities
+const multiEntityDropdownOptions = convertComparisonTypeToDropdownOption(Object.values(CLM.ComparisonType).filter(t => t === CLM.ComparisonType.NUMBER_OF_VALUES)) // number of items only valid for multi entities
+const enumEntityDropdownOptions = convertComparisonTypeToDropdownOption(Object.values(CLM.ComparisonType).filter(t => t === CLM.ComparisonType.STRING))
+let comparisonTypeDropdownOptions = singleEntityDropdownOptions
 
 const stringComparisonTypeOption = singleEntityDropdownOptions.find(o => o.data === CLM.ComparisonType.STRING)!
-const numItemsComparisonTypeOption = multiEntityDropdownOptions.find(o => o.data === CLM.ComparisonType.NUMBER_OF_ITEMS)!
+const numItemsComparisonTypeOption = multiEntityDropdownOptions.find(o => o.data === CLM.ComparisonType.NUMBER_OF_VALUES)!
 
 type Props = InjectedIntlProps
     & {
@@ -131,6 +131,9 @@ const Component: React.FC<Props> = (props) => {
         }
     }, [props.entities])
 
+    // Operator Dropdown
+    const [selectedOperatorOption, setSelectedOperatorOption] = React.useState(equalOperatorOption)
+
     const setComparisonTypeAndOperator = (option?: EntityOption | undefined) => {
         if (!option) {
             return
@@ -146,8 +149,9 @@ const Component: React.FC<Props> = (props) => {
             setShowStringField(true)
         } else if (option.data.entityType === CLM.EntityType.ENUM) {
             comparisonTypeDropdownOptions = enumEntityDropdownOptions
-            operatorOptions = arithmeticOperatorOptions
-            setSelectedOperatorOption(equalOperatorOption)
+            operatorOptions = stringEqualOperatorOptions
+            setSelectedComparisonType(stringComparisonTypeOption)
+            setSelectedOperatorOption(stringEqualOperatorOption)
             setShowStringField(false)
         } else {
             comparisonTypeDropdownOptions = singleEntityDropdownOptions
@@ -161,8 +165,7 @@ const Component: React.FC<Props> = (props) => {
         setComparisonTypeAndOperator(option)
     }
 
-    // Operator Dropdown
-    const [selectedOperatorOption, setSelectedOperatorOption] = React.useState(equalOperatorOption)
+
     const onChangeOperator = (event: React.FormEvent<HTMLDivElement>, option?: OperatorOption) => {
         if (!option) {
             return
@@ -194,12 +197,12 @@ const Component: React.FC<Props> = (props) => {
     }
 
     // Value text field
-    const onChangeTextField = (_: any, value: string) => {
-        var num = Number(value);
+    const onChangeTextField = (_: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, value: string) => {
+        const num = Number(value)
         if (isNaN(num)) {
-            setStringValue(value);
+            setStringValue(value)
         } else {
-            setNumberValue(num);
+            setNumberValue(num)
         }
     }
 
@@ -239,13 +242,15 @@ const Component: React.FC<Props> = (props) => {
             const valueOptions = entity.enumValues.map(ev => convertEnumValueToDropdownOption(ev))
             setEnumValueOptions(valueOptions)
             // Only allow equal operator when selecting enum
-            setSelectedOperatorOption(equalOperatorOption)
+            setSelectedOperatorOption(stringEqualOperatorOption)
             setShowStringField(false)
         } else if (!entity.isMultivalue) {
             setSelectedOperatorOption(stringEqualOperatorOption)
             setShowStringField(true)
             console.log(selectedComparisonType)
-        } else { // multivalue
+        }
+        // multivalue
+        else {
             setSelectedOperatorOption(equalOperatorOption)
             setShowStringField(true)
         }
@@ -311,7 +316,7 @@ const Component: React.FC<Props> = (props) => {
 
         if (selectedEntityOption.data.entityType === CLM.EntityType.ENUM) {
             // TODO: Fix enum types
-            conditionFromState.valueId = selectedEnumValueOption ?.data ?.enumValueId!
+            conditionFromState.valueId = selectedEnumValueOption?.data?.enumValueId!
         }
         else if (selectedOperatorOption === stringEqualOperatorOption) {
             conditionFromState.stringValue = stringValue
@@ -341,16 +346,13 @@ const Component: React.FC<Props> = (props) => {
         props.onClickCreate(theCondition)
     }
 
-    var isOperatorDisabled = false
-    const setIsOperatorDisabled = () => {
-        isOperatorDisabled = (selectedEntityOption ?.data.entityType === CLM.EntityType.ENUM) || (selectedComparisonType === stringComparisonTypeOption)
-    }
-    setIsOperatorDisabled()
-    const conditionsUsingEntity = props.conditions.filter(c => c.entityId === selectedEntityOption ?.key)
+    let isOperatorDisabled = (selectedEntityOption?.data.entityType === CLM.EntityType.ENUM) || (selectedComparisonType === stringComparisonTypeOption)
+
+    const conditionsUsingEntity = props.conditions.filter(c => c.entityId === selectedEntityOption?.key)
     const currentCondition = createConditionFromState()
 
 
-    var isComparisonTypeDisabled = (selectedEntityOption ?.data.entityType === CLM.EntityType.ENUM)
+    let isComparisonTypeDisabled = (selectedEntityOption?.data.entityType === CLM.EntityType.ENUM)
 
     return <OF.Modal
         isOpen={props.isOpen}
@@ -374,7 +376,7 @@ const Component: React.FC<Props> = (props) => {
                             <OF.Dropdown
                                 label="Entity"
                                 data-testid="condition-creator-modal-dropdown-entity"
-                                selectedKey={selectedEntityOption ?.key}
+                                selectedKey={selectedEntityOption?.key}
                                 disabled={props.condition !== undefined}
                                 options={entityOptions}
                                 onChange={onChangeEntity}

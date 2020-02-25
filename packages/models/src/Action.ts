@@ -28,7 +28,7 @@ export enum ConditionType {
 }
 
 export enum ComparisonType {
-  NUMBER_OF_ITEMS = "NUMBER_OF_ITEMS",
+  NUMBER_OF_VALUES = "NUMBER_OF_VALUES",
   NUMERIC_VALUE = "NUMERIC_VALUE",
   STRING = "STRING",
 }
