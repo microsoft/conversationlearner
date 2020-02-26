@@ -137,7 +137,9 @@ class TreeView extends React.Component<Props, ComponentState> {
     simpleActionRenderer(action: CLM.ActionBase): string {
 
         if (CLM.ActionBase.isPVAContent(action)) {
-            return JSON.parse(action.payload).value
+            const pvaAction = new CLM.PVAAction(action)
+            const defaultEntityMap = Util.getDefaultEntityMap(this.props.entities)
+            return pvaAction.renderValue(defaultEntityMap)
         }
         else if (action.actionType === CLM.ActionTypes.TEXT) {
             const textAction = new CLM.TextAction(action)

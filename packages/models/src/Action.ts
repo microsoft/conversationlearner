@@ -96,7 +96,8 @@ export class ActionBase {
   static GetPayload(action: ActionBase | ScoredBase, entityValues: Map<string, string>): string {
     
     if (this.isPVAContent(action)) {
-      return JSON.parse(action.payload).value
+      let pvaAction = new PVAAction(action as ActionBase)
+      return pvaAction.renderValue(entityValues)
     }
     
     switch (action.actionType) {
@@ -380,6 +381,30 @@ export class SessionAction extends ActionBase {
 
   renderValue(entityValues: Map<string, string>, serializerOptions: Partial<IOptions> = {}): string {
     return EntityIdSerializer.serialize(this.value, entityValues, serializerOptions)
+  }
+}
+
+export class PVAAction extends ActionBase {
+  value: string 
+
+  constructor(action: ActionBase) {
+    super(action)
+
+    const payload = JSON.parse(this.payload)
+    if (!payload.isPVAContent) {
+      throw new Error(`You attempted to create PVA action for non-PVA content`)
+    }
+
+    this.value = payload.value
+  }
+
+  renderValue(entityValues: Map<string, string>): string {
+    let output = this.value
+    entityValues.forEach((value: string, key: string) =>
+    {
+      output = output.replace(`{${key}}`, value)
+    })
+    return output
   }
 }
 

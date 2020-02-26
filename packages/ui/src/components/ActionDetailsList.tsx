@@ -249,7 +249,9 @@ export default connect<stateProps, {}, ReceivedProps>(mapStateToProps, mapDispat
 
 function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetailsList, isValidationError: boolean) {
     if (CLM.ActionBase.isPVAContent(action)) {
-        return JSON.parse(action.payload).value; 
+        const pvaAction = new CLM.PVAAction(action)
+        const entityMap = Util.getDefaultEntityMap(component.props.entities)
+        return pvaAction.renderValue(entityMap)
     }
     else if (action.actionType === CLM.ActionTypes.TEXT) {
         const textAction = new CLM.TextAction(action)
@@ -377,7 +379,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 
                 try {
                     if (CLM.ActionBase.isPVAContent(action)) {
-                        return JSON.parse(action.payload).value;
+                        const pvaAction = new CLM.PVAAction(action)
+                        return pvaAction.renderValue(entityMap)
                     }
                     switch (action.actionType) {
                         case CLM.ActionTypes.TEXT: {

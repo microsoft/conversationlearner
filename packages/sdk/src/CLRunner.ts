@@ -1104,9 +1104,11 @@ export class CLRunner {
             }
         } 
         else if (CLM.ActionBase.isPVAContent(clRecognizeResult.scoredAction)) {
+            const pvaAction = new CLM.PVAAction(clRecognizeResult.scoredAction as any)
+            const response = await this.TakePVAAction(pvaAction, filledEntityMap)
             actionResult = {
                 logicResult: undefined,
-                response: JSON.parse(clRecognizeResult.scoredAction.payload).value
+                response
             }
         }
         else {
@@ -1731,6 +1733,10 @@ export class CLRunner {
                     memoryManager.Set(entity.entityName, entityValue)
                 }
             })
+    }
+
+    public async TakePVAAction(pvaAction: CLM.PVAAction, filledEntityMap: CLM.FilledEntityMap): Promise<Partial<BB.Activity> | string> {
+        return Promise.resolve(pvaAction.renderValue(CLM.getEntityDisplayValueMap(filledEntityMap)))
     }
 
     public async TakeTextAction(textAction: CLM.TextAction, filledEntityMap: CLM.FilledEntityMap): Promise<Partial<BB.Activity> | string> {
@@ -2358,9 +2364,11 @@ export class CLRunner {
                                 replayErrors.push(replayError)
                             }
                             else if (CLM.ActionBase.isPVAContent(curAction)) {
+                                const pvaAction = new CLM.PVAAction(curAction)
+                                const response = await this.TakePVAAction(pvaAction, filledEntityMap)
                                 botResponse = {
                                     logicResult: undefined,
-                                    response: JSON.parse(curAction.payload).value
+                                    response: response
                                 }
                             }
                             else if (curAction.actionType === CLM.ActionTypes.API_LOCAL) {
