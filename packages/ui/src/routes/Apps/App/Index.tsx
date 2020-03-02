@@ -125,6 +125,7 @@ class Index extends React.Component<Props, ComponentState> {
 
         // Make unique list of missing APIs
         const uniqueCallbackNames = actionsMissingCallbacks
+            .filter(a => !CLM.ActionBase.isPVAContent(a))
             .map(a => a.name)
             .filter((item, i, ar) => ar.indexOf(item) === i)
 
