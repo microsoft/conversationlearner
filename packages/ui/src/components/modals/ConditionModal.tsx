@@ -247,7 +247,6 @@ const Component: React.FC<Props> = (props) => {
         } else if (!entity.isMultivalue) {
             setSelectedOperatorOption(stringEqualOperatorOption)
             setShowStringField(true)
-            console.log(selectedComparisonType)
         }
         // multivalue
         else {
