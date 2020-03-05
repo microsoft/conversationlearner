@@ -166,11 +166,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
         }
 
         const action = item as CLM.ActionBase
-
-        // Not allowed to edit PVA actions
-        if (!CLM.ActionBase.isPVAContent(action)) {
-            this.props.onSelectAction(action)
-        }
+        this.props.onSelectAction(action)
     }
 
     onCloseCardViewer = () => {
@@ -318,7 +314,7 @@ function renderCondition(text: string, isRequired: boolean): JSX.Element {
         </div>
     )
 }
-function renderConditions(entityIds: string[], conditions: CLM.Condition[], allEntities: CLM.EntityBase[], isRequired: boolean): JSX.Element[] {
+export function renderConditions(entityIds: string[], conditions: CLM.Condition[], allEntities: CLM.EntityBase[], isRequired: boolean): JSX.Element[] {
     if (entityIds.length === 0 && (!conditions || conditions.length === 0)) {
         return ([
             <OF.Icon

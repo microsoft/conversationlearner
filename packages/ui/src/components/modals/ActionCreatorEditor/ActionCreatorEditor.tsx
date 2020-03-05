@@ -35,6 +35,7 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { autobind } from 'core-decorators'
 import { IConditionalTag, getEnumConditionName, convertConditionToConditionalTag, isConditionEqual, getUniqueConditions } from '../../../Utils/actionCondition'
+import { renderConditions } from '../../ActionDetailsList'
 import './ActionCreatorEditor.css'
 import CallbackResultModal from '../CallbackResultViewerModal'
 import { assignSourcesToMockResults } from 'src/Utils/mockResults'
@@ -455,115 +456,119 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 let selectedCardOptionKey: string | undefined
                 let selectedModelOptionKey: string | undefined
                 let entityWarning = false
+                let requiredEntityTagsFromPayload: OF.ITag[] = []
+                let requiredConditionTags: IConditionalTag[] = []
 
                 const slateValuesMap = {}
                 const secondarySlateValuesMap = {}
-                if (action.actionType === CLM.ActionTypes.TEXT) {
-                    const textAction = new CLM.TextAction(action)
-                    try {
-                        slateValuesMap[TEXT_SLOT] = createSlateValue(textAction.value, payloadOptions)
-                    }
-                    catch {
-                        // Default to raw value
-                        const contentString: string = JSON.parse(textAction.payload).text
-                        slateValuesMap[TEXT_SLOT] = Plain.deserialize(contentString)
-                        entityWarning = true
-                    }
-                }
-                else if (action.actionType === CLM.ActionTypes.END_SESSION) {
-                    const sessionAction = new CLM.SessionAction(action)
-                    slateValuesMap[TEXT_SLOT] = tryCreateSlateValue(CLM.ActionTypes.TEXT, TEXT_SLOT, sessionAction.value, payloadOptions)
-                }
-                else if (action.actionType === CLM.ActionTypes.API_LOCAL) {
-                    const apiAction = new CLM.ApiAction(action)
-                    if (apiAction.isCallbackUnassigned === true) {
-                        selectedApiOptionKey = callbackNameInputOption.key as string
-                        customCallbackName = apiAction.name
-                    }
-                    else if (apiAction.isPlaceholder === true) {
-                        placeholderName = apiAction.name
-                    }
-                    else {
-                        selectedApiOptionKey = apiAction.name
+                if (!CLM.ActionBase.isPVAContent(action)) {
 
-                        const callback = prevProps.botInfo.callbacks.find(t => t.name === selectedApiOptionKey)
-                        if (callback) {
-                            for (const actionArgumentName of callback.logicArguments) {
-                                const argument = apiAction.logicArguments.find(a => a.parameter === actionArgumentName)
-                                const initialValue = argument ? argument.value : ''
-                                slateValuesMap[actionArgumentName] = tryCreateSlateValue(CLM.ActionTypes.API_LOCAL, actionArgumentName, initialValue, payloadOptions)
-                            }
-                            for (const actionArgumentName of callback.renderArguments) {
-                                const argument = apiAction.renderArguments.find(a => a.parameter === actionArgumentName)
-                                const initialValue = argument ? argument.value : ''
-                                secondarySlateValuesMap[actionArgumentName] = tryCreateSlateValue(CLM.ActionTypes.API_LOCAL, actionArgumentName, initialValue, payloadOptions)
+                    if (action.actionType === CLM.ActionTypes.TEXT) {
+                        const textAction = new CLM.TextAction(action)
+                        try {
+                            slateValuesMap[TEXT_SLOT] = createSlateValue(textAction.value, payloadOptions)
+                        }
+                        catch {
+                            // Default to raw value
+                            const contentString: string = JSON.parse(textAction.payload).text
+                            slateValuesMap[TEXT_SLOT] = Plain.deserialize(contentString)
+                            entityWarning = true
+                        }
+                    }
+                    else if (action.actionType === CLM.ActionTypes.END_SESSION) {
+                        const sessionAction = new CLM.SessionAction(action)
+                        slateValuesMap[TEXT_SLOT] = tryCreateSlateValue(CLM.ActionTypes.TEXT, TEXT_SLOT, sessionAction.value, payloadOptions)
+                    }
+                    else if (action.actionType === CLM.ActionTypes.API_LOCAL) {
+                        const apiAction = new CLM.ApiAction(action)
+                        if (apiAction.isCallbackUnassigned === true) {
+                            selectedApiOptionKey = callbackNameInputOption.key as string
+                            customCallbackName = apiAction.name
+                        }
+                        else if (apiAction.isPlaceholder === true) {
+                            placeholderName = apiAction.name
+                        }
+                        else {
+                            selectedApiOptionKey = apiAction.name
+
+                            const callback = prevProps.botInfo.callbacks.find(t => t.name === selectedApiOptionKey)
+                            if (callback) {
+                                for (const actionArgumentName of callback.logicArguments) {
+                                    const argument = apiAction.logicArguments.find(a => a.parameter === actionArgumentName)
+                                    const initialValue = argument ? argument.value : ''
+                                    slateValuesMap[actionArgumentName] = tryCreateSlateValue(CLM.ActionTypes.API_LOCAL, actionArgumentName, initialValue, payloadOptions)
+                                }
+                                for (const actionArgumentName of callback.renderArguments) {
+                                    const argument = apiAction.renderArguments.find(a => a.parameter === actionArgumentName)
+                                    const initialValue = argument ? argument.value : ''
+                                    secondarySlateValuesMap[actionArgumentName] = tryCreateSlateValue(CLM.ActionTypes.API_LOCAL, actionArgumentName, initialValue, payloadOptions)
+                                }
                             }
                         }
                     }
-                }
-                else if (action.actionType === CLM.ActionTypes.CARD) {
-                    const cardAction = new CLM.CardAction(action)
-                    selectedCardOptionKey = cardAction.templateName
-                    const template = prevProps.botInfo.templates.find(t => t.name === selectedCardOptionKey)
-                    if (template) {
-                        // For each template variable initialize to the associated argument value or default to empty string
-                        for (const cardTemplateVariable of template.variables) {
-                            const argument = cardAction.arguments.find(a => a.parameter === cardTemplateVariable.key)
-                            const initialValue = argument ? argument.value : ''
-                            slateValuesMap[cardTemplateVariable.key] = tryCreateSlateValue(CLM.ActionTypes.CARD, cardTemplateVariable.key, initialValue, payloadOptions)
+                    else if (action.actionType === CLM.ActionTypes.CARD) {
+                        const cardAction = new CLM.CardAction(action)
+                        selectedCardOptionKey = cardAction.templateName
+                        const template = prevProps.botInfo.templates.find(t => t.name === selectedCardOptionKey)
+                        if (template) {
+                            // For each template variable initialize to the associated argument value or default to empty string
+                            for (const cardTemplateVariable of template.variables) {
+                                const argument = cardAction.arguments.find(a => a.parameter === cardTemplateVariable.key)
+                                const initialValue = argument ? argument.value : ''
+                                slateValuesMap[cardTemplateVariable.key] = tryCreateSlateValue(CLM.ActionTypes.CARD, cardTemplateVariable.key, initialValue, payloadOptions)
+                            }
                         }
                     }
-                }
-                else if (action.actionType === CLM.ActionTypes.SET_ENTITY) {
-                    const entity = prevProps.entities.find(e => e.entityId === action.entityId)
-                    if (!entity) {
-                        throw new Error(`The action references an entity by id: ${action.entityId} but it was not found.`)
+                    else if (action.actionType === CLM.ActionTypes.SET_ENTITY) {
+                        const entity = prevProps.entities.find(e => e.entityId === action.entityId)
+                        if (!entity) {
+                            throw new Error(`The action references an entity by id: ${action.entityId} but it was not found.`)
+                        }
+                        if (entity.entityType !== CLM.EntityType.ENUM) {
+                            throw new Error(`The action references entity: ${entity.entityName} but its type ${entity.entityType} was not ${CLM.EntityType.ENUM}.`)
+                        }
+
+                        if (!entity.enumValues) {
+                            throw new Error(`The action references entity: ${entity.entityName} has no enum values.`)
+                        }
+
+                        const enumValueOptions = entity.enumValues.map(ev => convertEnumValueToDropdownOptions(ev))
+                        newState = {
+                            ...newState,
+                            enumValueOptions,
+                            selectedEntityOptionKey: action.entityId,
+                            selectedEnumValueOptionKey: action.enumValueId,
+                        }
                     }
-                    if (entity.entityType !== CLM.EntityType.ENUM) {
-                        throw new Error(`The action references entity: ${entity.entityName} but its type ${entity.entityType} was not ${CLM.EntityType.ENUM}.`)
+                    else if (action.actionType === CLM.ActionTypes.DISPATCH) {
+                        const dispatchAction = new CLM.DispatchAction(action)
+                        selectedModelOptionKey = dispatchAction.modelId
+                    }
+                    else if (action.actionType === CLM.ActionTypes.CHANGE_MODEL) {
+                        const changeModelAction = new CLM.ChangeModelAction(action)
+                        selectedModelOptionKey = changeModelAction.modelId
                     }
 
-                    if (!entity.enumValues) {
-                        throw new Error(`The action references entity: ${entity.entityName} has no enum values.`)
+                    requiredEntityTagsFromPayload = Object.values(slateValuesMap)
+                        .reduce<OF.ITag[]>((entities, value) => {
+                            const newEntities = ActionPayloadEditor.Utilities.getNonOptionalEntitiesFromValue(value).map(convertOptionToTag)
+                            // Only add new entities which are not already included from a previous payload
+                            return [...entities, ...newEntities.filter(ne => !entities.some(e => e.key === ne.key))]
+                        }, [])
+                    
+                    requiredConditionTags = convertEntityIdsToTags(action.requiredEntities, this.props.entities, false)
+                        .filter(t => !requiredEntityTagsFromPayload.some(tag => tag.key === t.key))
+                
+                    if (action.requiredConditions) {
+                        const tags = action.requiredConditions.map(c => convertConditionToConditionalTag(c, prevProps.entities))
+                        requiredConditionTags.push(...tags)
                     }
 
-                    const enumValueOptions = entity.enumValues.map(ev => convertEnumValueToDropdownOptions(ev))
-                    newState = {
-                        ...newState,
-                        enumValueOptions,
-                        selectedEntityOptionKey: action.entityId,
-                        selectedEnumValueOptionKey: action.enumValueId,
+                    if (action.negativeConditions) {
+                        const tags = action.negativeConditions.map(c => convertConditionToConditionalTag(c, prevProps.entities))
+                        negativeConditionTags.push(...tags)
                     }
                 }
-                else if (action.actionType === CLM.ActionTypes.DISPATCH) {
-                    const dispatchAction = new CLM.DispatchAction(action)
-                    selectedModelOptionKey = dispatchAction.modelId
-                }
-                else if (action.actionType === CLM.ActionTypes.CHANGE_MODEL) {
-                    const changeModelAction = new CLM.ChangeModelAction(action)
-                    selectedModelOptionKey = changeModelAction.modelId
-                }
-
-                const requiredEntityTagsFromPayload = Object.values(slateValuesMap)
-                    .reduce<OF.ITag[]>((entities, value) => {
-                        const newEntities = ActionPayloadEditor.Utilities.getNonOptionalEntitiesFromValue(value).map(convertOptionToTag)
-                        // Only add new entities which are not already included from a previous payload
-                        return [...entities, ...newEntities.filter(ne => !entities.some(e => e.key === ne.key))]
-                    }, [])
-
-                const requiredConditionTags = convertEntityIdsToTags(action.requiredEntities, this.props.entities, false)
-                    .filter(t => !requiredEntityTagsFromPayload.some(tag => tag.key === t.key))
-
-                if (action.requiredConditions) {
-                    const tags = action.requiredConditions.map(c => convertConditionToConditionalTag(c, prevProps.entities))
-                    requiredConditionTags.push(...tags)
-                }
-
-                if (action.negativeConditions) {
-                    const tags = action.negativeConditions.map(c => convertConditionToConditionalTag(c, prevProps.entities))
-                    negativeConditionTags.push(...tags)
-                }
-
                 newState = {
                     ...newState,
                     isPayloadMissing: action.actionType === CLM.ActionTypes.TEXT && action.payload.length === 0,
@@ -1796,6 +1801,19 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 return true
             })
 
+        let pvaAction: CLM.PVAAction | null = null
+        const defaultEntityMap = Util.getDefaultEntityMap(this.props.entities)
+        if (this.props.action && CLM.ActionBase.isPVAContent(this.props.action)) {
+            pvaAction = new CLM.PVAAction(this.props.action)
+        }
+
+        const pvastyle = {
+            padding: "10px",
+            border: "#3e3e3e",
+            borderWidth: "1px",
+            borderStyle: "solid"
+        }
+
         return (
             <OF.Modal
                 isOpen={this.props.open}
@@ -2087,7 +2105,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             </div>
                         }
 
-                        {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.TEXT
+                        {pvaAction &&
+                            <div style={pvastyle}>
+                                {pvaAction.renderValue(defaultEntityMap)}
+                            </div>
+                        }
+                        {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.TEXT && this.props.open &&
+                            (this.props.action == null || !pvaAction)
                             && (<div className={(payloadError ? 'editor--error' : '')}>
                                 <div data-testid="action-text-response">
                                     <OF.Label className="cl-label">Bot's response...
@@ -2183,6 +2207,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.SET_ENTITY
                             && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.DISPATCH
                             && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.CHANGE_MODEL
+                            && !pvaAction
                             && (<div className="cl-action-creator--expected-entity">
                                 <TC.TagPicker
                                     data-testid="action-expected-entity"
@@ -2207,46 +2232,62 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                         {this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.DISPATCH
                             && <>
-                                <div className="cl-action-creator--required-entities">
-                                    <CLTagPicker
-                                        data-testid="action-required-entities"
-                                        nonRemovableTags={this.state.requiredEntityTagsFromPayload}
-                                        nonRemoveableStrikethrough={false}
-                                        label="Required Conditions"
-                                        onResolveSuggestions={this.onResolveRequiredConditionTags}
-                                        onEmptyResolveSuggestions={selectedItems => this.onResolveRequiredConditionTags('', selectedItems ?? [])}
-                                        onRenderItem={this.onRenderRequiredConditionTag}
-                                        onRenderSuggestionsItem={this.onRenderConditionSuggestion}
-                                        onChange={this.onChangeRequiredConditionTags}
-                                        pickerSuggestionsProps={
-                                            {
-                                                suggestionsHeaderText: 'Conditions',
-                                                noResultsFoundText: 'No Conditions Found'
+                            <div className="cl-action-creator--required-entities">
+                                {pvaAction !== null 
+                                    ? <div>
+                                        <OF.Label>Required Conditions</OF.Label>
+                                        <div style={pvastyle}>
+                                            {renderConditions(pvaAction.requiredEntities, pvaAction.requiredConditions, this.props.entities, true)}
+                                        </div>
+                                    </div>
+                                    :   <CLTagPicker
+                                            data-testid="action-required-entities"
+                                            nonRemovableTags={this.state.requiredEntityTagsFromPayload}
+                                            nonRemoveableStrikethrough={false}
+                                            label="Required Conditions"
+                                            onResolveSuggestions={this.onResolveRequiredConditionTags}
+                                            onEmptyResolveSuggestions={selectedItems => this.onResolveRequiredConditionTags('', selectedItems ?? [])}
+                                            onRenderItem={this.onRenderRequiredConditionTag}
+                                            onRenderSuggestionsItem={this.onRenderConditionSuggestion}
+                                            onChange={this.onChangeRequiredConditionTags}
+                                            pickerSuggestionsProps={
+                                                {
+                                                    suggestionsHeaderText: 'Conditions',
+                                                    noResultsFoundText: 'No Conditions Found'
+                                                }
                                             }
-                                        }
-                                        selectedItems={this.state.requiredConditionTags}
-                                        tipType={ToolTip.TipType.ACTION_REQUIRED}
+                                            selectedItems={this.state.requiredConditionTags}
+                                            tipType={ToolTip.TipType.ACTION_REQUIRED}
                                     />
+                                }
                                 </div>
 
                                 <div className="cl-action-creator--disqualifying-entities">
-                                    <TC.TagPicker
-                                        data-testid="action-disqualifying-entities"
-                                        label="Disqualifying Conditions"
-                                        onResolveSuggestions={this.onResolveNegativeConditionTags}
-                                        onEmptyResolveSuggestions={selectedItems => this.onResolveNegativeConditionTags('', selectedItems ?? [])}
-                                        onRenderItem={this.onRenderNegativeConditionTag}
-                                        onRenderSuggestionsItem={this.onRenderConditionSuggestion}
-                                        onChange={this.onChangeNegativeConditionTags}
-                                        pickerSuggestionsProps={
-                                            {
-                                                suggestionsHeaderText: 'Conditions',
-                                                noResultsFoundText: 'No Conditions Found'
+                                {pvaAction !== null
+                                    ? <div >
+                                        <OF.Label>Disqualifying Conditions</OF.Label>
+                                        <div style={pvastyle}>
+                                            {renderConditions(pvaAction.negativeEntities, pvaAction.negativeConditions, this.props.entities, true)}
+                                        </div>
+                                    </div>
+                                    :   <TC.TagPicker
+                                            data-testid="action-disqualifying-entities"
+                                            label="Disqualifying Conditions"
+                                            onResolveSuggestions={this.onResolveNegativeConditionTags}
+                                            onEmptyResolveSuggestions={selectedItems => this.onResolveNegativeConditionTags('', selectedItems ?? [])}
+                                            onRenderItem={this.onRenderNegativeConditionTag}
+                                            onRenderSuggestionsItem={this.onRenderConditionSuggestion}
+                                            onChange={this.onChangeNegativeConditionTags}
+                                            pickerSuggestionsProps={
+                                                {
+                                                    suggestionsHeaderText: 'Conditions',
+                                                    noResultsFoundText: 'No Conditions Found'
+                                                }
                                             }
-                                        }
-                                        selectedItems={this.state.negativeConditionTags}
-                                        tipType={ToolTip.TipType.ACTION_NEGATIVE}
-                                    />
+                                            selectedItems={this.state.negativeConditionTags}
+                                            tipType={ToolTip.TipType.ACTION_NEGATIVE}
+                                        />
+                                    }
                                 </div>
                             </>}
 
@@ -2272,6 +2313,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     onChange={this.onChangeRepromptCheckbox}
                                     disabled={
                                         !this.state.isTerminal
+                                        || pvaAction != null
                                         || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)
                                         // Expected Entity and Reprompt can't both be in use
                                         || this.state.expectedEntityTags.length > 0
@@ -2281,6 +2323,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 {this.state.shouldReprompt &&
                                     <RepromptAction
                                         intl={intl}
+                                        disabled={pvaAction != null}
                                         action={repromptAction}
                                         selfprompt={this.isSelfReprompt(this.state.repromptActionId)}
                                         entities={this.props.entities}
@@ -2295,7 +2338,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_ENTRY_NODE_LABEL)}
                                         checked={this.state.isEntryNode}
                                         onChange={this.onChangeIsEntryNodeCheckbox}
-                                        disabled={[CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
+                                        disabled={pvaAction != null || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
                                         tipType={ToolTip.TipType.ACTION_IS_ENTRY_NODE}
                                     />
                                 }
@@ -2333,7 +2376,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     <div className="cl-modal-buttons_primary">
                         <OF.PrimaryButton
                             data-testid="action-creator-create-button"
-                            disabled={this.saveDisabled()}
+                            disabled={this.saveDisabled() || pvaAction !== null}
                             onClick={this.onClickSaveCreate}
                             ariaDescription={this.state.isEditing ?
                                 Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION) :

@@ -14,6 +14,7 @@ import { actionListViewRenderer } from '../../ActionRenderers'
 import { autobind } from 'core-decorators'
 
 interface ReceivedProps {
+    disabled: boolean
     action: CLM.ActionBase | undefined
     selfprompt: boolean,
     entities: CLM.EntityBase[],
@@ -84,6 +85,7 @@ class RepromptAction extends React.Component<Props, ComponentState> {
             <OF.ChoiceGroup
                 defaultSelectedKey={this.props.selfprompt ? repromptOptions[0].key : repromptOptions[1].key}
                 options={repromptOptions}
+                disabled={this.props.disabled}
                 onChange={this.props.onChangeRepromptType}
                 label={undefined}
                 required={true}
@@ -94,6 +96,7 @@ class RepromptAction extends React.Component<Props, ComponentState> {
             {!this.props.selfprompt &&
                 <OF.PrimaryButton
                     className="cl-action-creator-select-action"
+                    disabled={this.props.disabled}
                     onClick={this.props.onPickAction}
                     ariaDescription={Util.formatMessageId(this.props.intl, FM.REPROMPTACTION_SELECTACTION_BUTTON)}
                     text={Util.formatMessageId(this.props.intl, FM.REPROMPTACTION_SELECTACTION_BUTTON)}
