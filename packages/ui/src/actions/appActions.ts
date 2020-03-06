@@ -89,7 +89,9 @@ export const createApplicationThunkAsync = (userId: string, application: CLM.App
 
             let appToSend = application
             // If appId is set in the app definition, use it.
-            appToSend.appId = source?.appId ?? ""
+            if (source?.appId && source.appId !== "") {
+                appToSend.appId = source.appId
+            }
 
             const newApp = await clClient.appsCreate(userId, appToSend)
 
