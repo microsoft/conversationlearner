@@ -86,8 +86,14 @@ export const createApplicationThunkAsync = (userId: string, application: CLM.App
         const clClient = ClientFactory.getInstance(AT.CREATE_APPLICATION_ASYNC)
         try {
             dispatch(createApplicationAsync(userId, application))
-            const { appId, ...appToSend } = application
-            const newApp = await clClient.appsCreate(userId, appToSend as CLM.AppBase)
+
+            let appToSend = application
+            // If appId is set in the app definition, use it.
+            if (source?.appId && source.appId !== "") {
+                appToSend.appId = source.appId
+            }
+
+            const newApp = await clClient.appsCreate(userId, appToSend)
 
             if (source) {
                 await clClient.sourcepost(newApp.appId, source)
