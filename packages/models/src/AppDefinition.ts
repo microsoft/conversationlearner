@@ -7,6 +7,7 @@ import { ActionBase } from './Action'
 import { TrainDialog } from './TrainDialog'
 
 export interface AppDefinition {
+  appId?: string
   entities: EntityBase[]
   actions: ActionBase[]
   trainDialogs: TrainDialog[]
