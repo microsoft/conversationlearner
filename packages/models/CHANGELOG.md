@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.504.9](https://github.com/Microsoft/conversationlearner-models/compare/v0.504.8...v0.504.9) (2020-03-07)
+
+
+### Bug Fixes
+
+* plumb action id through ([#49](https://github.com/Microsoft/conversationlearner-models/issues/49)) ([a1ff8e7](https://github.com/Microsoft/conversationlearner-models/commit/a1ff8e7135d43569ca35764f3ff3f68d81c59a77))
+
+
+
+
+
 ## [0.504.8](https://github.com/Microsoft/conversationlearner-models/compare/v0.504.7...v0.504.8) (2020-02-21)
 
 **Note:** Version bump only for package @conversationlearner/models
