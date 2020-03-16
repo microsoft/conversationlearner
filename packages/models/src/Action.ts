@@ -23,12 +23,20 @@ export enum ConditionType {
   GREATER_THAN_OR_EQUAL = "GREATER_THAN_OR_EQUAL",
   LESS_THAN = "LESS_THAN",
   LESS_THAN_OR_EQUAL = "LESS_THAN_OR_EQUAL",
+  STRING_EQUAL = "STRING_EQUAL",
+}
+
+export enum ComparisonType {
+  NUMBER_OF_VALUES = "NUMBER_OF_VALUES",
+  NUMERIC_VALUE = "NUMERIC_VALUE",
+  STRING = "STRING",
 }
 
 export interface Condition {
   entityId: string
   valueId?: string
   value?: number
+  stringValue?: string
   condition: ConditionType
 }
 

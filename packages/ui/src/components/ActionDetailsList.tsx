@@ -18,7 +18,7 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import './ActionDetailsList.css'
 import { autobind } from 'core-decorators'
-import { getValueConditionName, getEnumConditionName } from '../Utils/actionCondition'
+import { getValueConditionName, getEnumConditionName, getStringConditionName } from '../Utils/actionCondition'
 import * as MockResultUtil from '../Utils/mockResults'
 
 interface ComponentState {
@@ -343,6 +343,9 @@ function renderConditions(entityIds: string[], conditions: CLM.Condition[], allE
                 name = !enumValue
                     ? `Error - Missing Enum: ${condition.valueId}`
                     : getEnumConditionName(entity, enumValue)
+            }
+            else if (condition.stringValue) {
+                name = getStringConditionName(entity, condition)
             }
             else {
                 name = getValueConditionName(entity, condition)
