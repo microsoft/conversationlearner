@@ -85,7 +85,7 @@ interface ComparisonTypeOption extends OF.IDropdownOption {
 const convertComparisonTypeToDropdownOption = (options: CLM.ComparisonType[]): ComparisonTypeOption[] => {
     return options.map((comparisonType: string) => {
         let conditionText = `unknown`
-        if (comparisonTypeDisplay?.[comparisonType]) {
+        if (comparisonTypeDisplay[comparisonType]) {
             conditionText = comparisonTypeDisplay[comparisonType]
         }
 
@@ -345,13 +345,13 @@ const Component: React.FC<Props> = (props) => {
         props.onClickCreate(theCondition)
     }
 
-    let isOperatorDisabled = (selectedEntityOption?.data.entityType === CLM.EntityType.ENUM) || (selectedComparisonType === stringComparisonTypeOption)
+    const isOperatorDisabled = (selectedEntityOption?.data.entityType === CLM.EntityType.ENUM) || (selectedComparisonType === stringComparisonTypeOption)
 
     const conditionsUsingEntity = props.conditions.filter(c => c.entityId === selectedEntityOption?.key)
     const currentCondition = createConditionFromState()
 
 
-    let isComparisonTypeDisabled = (selectedEntityOption?.data.entityType === CLM.EntityType.ENUM)
+    const isComparisonTypeDisabled = (selectedEntityOption?.data.entityType === CLM.EntityType.ENUM)
 
     return <OF.Modal
         isOpen={props.isOpen}

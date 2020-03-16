@@ -182,7 +182,7 @@ class Container extends React.Component<Props, ComponentState> {
                         entityResolverVal: resolverType,
                         isPrebuilt: isPrebuilt,
                         isMultivalueVal: nextProps.entity.isMultivalue,
-                        isMultiValueDisabled: isMultiValueDisabled,
+                        isMultiValueDisabled,
                         isNegatableVal: nextProps.entity.isNegatible,
                         isResolutionRequired: nextProps.entity.isResolutionRequired,
                         title: nextProps.intl.formatMessage({
