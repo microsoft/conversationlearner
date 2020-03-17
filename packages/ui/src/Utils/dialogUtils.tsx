@@ -11,7 +11,7 @@ import TagsReadOnly from '../components/TagsReadOnly'
 import { compareTwoStrings } from 'string-similarity'
 import { deepCopy, getDefaultEntityMap } from './util'
 import { ImportedAction } from '../types/models'
-import { getValueConditionName, findNumberFromMemory, isValueConditionTrue, isEnumConditionTrue } from './actionCondition'
+import { getValueConditionName, findNumberFromMemory, findStringFromMemory, isValueConditionTrue, isEnumConditionTrue, isStringConditionTrue, getStringConditionName } from './actionCondition'
 import { fromLogTag } from '../types'
 
 const MAX_SAMPLE_INPUT_LENGTH = 150
@@ -400,7 +400,20 @@ export function convertToScorerCondition(condition: CLM.Condition, entities: CLM
             name
         }
     }
-    // Other conditions (StringCondition in future)
+    else if (condition.stringValue) {
+        const name = getStringConditionName(entity, condition)
+        let match = false
+        if (memory) {
+            const value = findStringFromMemory(memory)
+            match = isStringConditionTrue(condition, value)
+        }
+
+        return {
+            match,
+            name
+        }
+    }
+    // Other conditions
     else {
         return {
             match: false,

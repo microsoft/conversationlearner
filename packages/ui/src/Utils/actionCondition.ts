@@ -18,6 +18,13 @@ export const conditionDisplay: Record<CLM.ConditionType, string> = {
     [CLM.ConditionType.GREATER_THAN_OR_EQUAL]: '>=',
     [CLM.ConditionType.LESS_THAN]: '<',
     [CLM.ConditionType.LESS_THAN_OR_EQUAL]: '<=',
+    [CLM.ConditionType.STRING_EQUAL]: 'Matches exactly'
+}
+
+export const comparisonTypeDisplay: Record<CLM.ComparisonType, string> = {
+    [CLM.ComparisonType.NUMBER_OF_VALUES]: 'Number of Items',
+    [CLM.ComparisonType.NUMERIC_VALUE]: 'Numeric Value',
+    [CLM.ComparisonType.STRING]: 'String',
 }
 
 export const getEnumConditionName = (entity: CLM.EntityBase, enumValue: CLM.EnumValue): string => {
@@ -26,6 +33,10 @@ export const getEnumConditionName = (entity: CLM.EntityBase, enumValue: CLM.Enum
 
 export const getValueConditionName = (entity: CLM.EntityBase, condition: CLM.Condition): string => {
     return `${entity.entityName} ${conditionDisplay[condition.condition]} ${condition.value}`
+}
+
+export const getStringConditionName = (entity: CLM.EntityBase, condition: CLM.Condition): string => {
+    return `${entity.entityName} ${conditionDisplay[condition.condition]} "${condition.stringValue}"`
 }
 
 export const convertConditionToConditionalTag = (condition: CLM.Condition, entities: CLM.EntityBase[]): IConditionalTag => {
@@ -57,7 +68,9 @@ export const convertConditionToConditionalTag = (condition: CLM.Condition, entit
         }
     }
     else {
-        const name = getValueConditionName(entity, condition)
+        const name = condition.value
+            ? getValueConditionName(entity, condition)
+            : getStringConditionName(entity, condition)
         const key = CLM.hashText(name)
         conditionalTag = {
             key,
@@ -92,6 +105,22 @@ export const findNumberFromMemory = (memory: CLM.Memory, isMultivalue: boolean):
     return valueString
         ? parseInt(valueString, 10)
         : undefined
+}
+
+/**
+ * Given memory value,
+ * return the userText field of the given memory value, if it exists, or undefined otherwise.
+ */
+export const findStringFromMemory = (memory: CLM.Memory): string | undefined => {
+    return (memory?.entityValues?.[0]?.userText) ?? undefined
+}
+
+
+export const isStringConditionTrue = (condition: CLM.Condition, stringValue: string | undefined): boolean => {
+    if (condition.stringValue) {
+        return condition.condition == CLM.ConditionType.STRING_EQUAL && stringValue === condition.stringValue
+    }
+    return false
 }
 
 export const isValueConditionTrue = (condition: CLM.Condition, numberValue: number): boolean => {
