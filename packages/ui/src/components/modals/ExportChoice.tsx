@@ -64,7 +64,7 @@ class ExportChoice extends React.Component<Props, ComponentState> {
         transcripts.forEach(t => {
             const content = JSON.stringify(t.activities)
             // const blob = new Blob([JSON.stringify(t.activities)], { type: "text/plain;charset=utf-8" })
-            zip.addFile(`${CLM.ModelUtils.generateGUID()}.transcript`, Buffer.alloc(content.length, content))
+            zip.addFile(`${CLM.ModelUtils.generateGUID()}.transcript`, Buffer.from(content))
         })
         const zipBuffer = zip.toBuffer()
         const zipBlob = new Blob([zipBuffer])
