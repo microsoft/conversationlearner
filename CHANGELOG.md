@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.505.1](https://github.com/microsoft/conversationlearner/compare/v0.505.0...v0.505.1) (2020-03-17)
+
+
+### Bug Fixes
+
+* resolve truncation issue when exporting transcripts ([#50](https://github.com/microsoft/conversationlearner/issues/50)) ([22c3c6c](https://github.com/microsoft/conversationlearner/commit/22c3c6c57f16c6d8258c366ccd3c6f75bee5e1f5))
+
+
+
+
+
 # [0.505.0](https://github.com/microsoft/conversationlearner/compare/v0.504.9...v0.505.0) (2020-03-16)
 
 
