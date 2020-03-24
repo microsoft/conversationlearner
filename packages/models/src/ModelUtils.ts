@@ -4,7 +4,7 @@
  */
 import { ExtractResponse } from './Extract'
 import { Teach, TeachResponse } from './Teach'
-import { TrainRound, TrainDialog, TrainScorerStep, TextVariation, CreateTeachParams } from './TrainDialog'
+import { TrainRound, TrainDialog, TrainScorerStep, TextVariation, CreateTeachParams, ExtractorStepType, TrainExtractorStep, OUT_OF_DOMAIN_INPUT } from './TrainDialog'
 import { LogDialog, LogRound, LogScorerStep } from './LogDialog'
 import { EntityBase, LabeledEntity, PredictedEntity } from './Entity'
 import { ActionBase } from './Action'
@@ -162,7 +162,9 @@ export class ModelUtils {
     if (trainRounds.length !== 0 && trainRounds[0].scorerSteps.length !== 0) {
 
       // Get entities extracted on first input
-      const firstEntityIds = trainRounds[0].extractorStep.textVariations[0].labelEntities.map(le => le.entityId)
+      const firstEntityIds = trainRounds[0].extractorStep.textVariations[0]
+        ? trainRounds[0].extractorStep.textVariations[0].labelEntities.map(le => le.entityId)
+        : []
 
       // Intial entities are ones on first round that weren't extracted on the first utterance 
       initialFilledEntities = trainRounds[0].scorerSteps[0].input.filledEntities
@@ -196,7 +198,8 @@ export class ModelUtils {
             labelEntities: ModelUtils.ToLabeledEntities(logRound.extractorStep.predictedEntities),
             text: logRound.extractorStep.text
           }
-        ]
+        ],
+        type: ExtractorStepType.USER_INPUT
       },
       scorerSteps: logRound.scorerSteps.map<TrainScorerStep>(logScorerStep => ({
         input: logScorerStep.input,
@@ -329,6 +332,16 @@ export class ModelUtils {
     }
 
     return changedFilledEntities
+  }
+
+  public static userText(extractorStep: TrainExtractorStep, excludedEntities: string[] = [], useMarkdown: boolean = false) {
+    if (extractorStep.type === ExtractorStepType.OUT_OF_DOMAIN) {
+      return OUT_OF_DOMAIN_INPUT
+    }
+    if (useMarkdown) {
+      return ModelUtils.textVariationToMarkdown(extractorStep.textVariations[0], excludedEntities)
+    }
+    return extractorStep.textVariations[0].text
   }
 
   public static textVariationToMarkdown(textVariation: TextVariation, excludeEntities: string[]) {

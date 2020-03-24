@@ -8,10 +8,16 @@ import { FilledEntity } from './FilledEntity'
 import { ScoreInput, ScoredAction, ScoreResponse } from './Score'
 
 export const MAX_TEXT_VARIATIONS = 20
+export const OUT_OF_DOMAIN_INPUT = "[OUT OF DOMAIN]"
 
 export enum SenderType {
   User = 0,
   Bot = 1
+}
+
+export enum ExtractorStepType {
+  USER_INPUT = "userInput",
+  OUT_OF_DOMAIN = "outOfDomain"
 }
 
 export interface TextVariation {
@@ -21,6 +27,7 @@ export interface TextVariation {
 
 export interface TrainExtractorStep {
   textVariations: TextVariation[]
+  type: ExtractorStepType
 }
 
 export interface LogicResult {

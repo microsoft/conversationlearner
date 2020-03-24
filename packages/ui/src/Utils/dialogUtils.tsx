@@ -427,9 +427,18 @@ export function dialogSampleInput(dialog: CLM.TrainDialog | CLM.LogDialog): stri
     let round = 0
     let length = 0
     while (round < dialog.rounds.length && length < MAX_SAMPLE_INPUT_LENGTH) {
+        // If a LogDialog text will be set
         let userInput = (dialog as CLM.LogDialog).rounds[round].extractorStep.text
-        if (!userInput && (dialog as CLM.TrainDialog).rounds[round].extractorStep.textVariations[0]) {
-            userInput = (dialog as CLM.TrainDialog).rounds[round].extractorStep.textVariations[0].text
+
+        // Otherwise TrainDialog should have extractor step
+        if (!userInput) {
+            const extractorStep = (dialog as CLM.TrainDialog).rounds[round].extractorStep;
+            if (extractorStep.type === CLM.ExtractorStepType.OUT_OF_DOMAIN) {
+                userInput = CLM.OUT_OF_DOMAIN_INPUT
+            }
+            else if ((dialog as CLM.TrainDialog).rounds[round].extractorStep.textVariations[0]) {
+                userInput = (dialog as CLM.TrainDialog).rounds[round].extractorStep.textVariations[0].text
+            }
         }
         if (!userInput) {
             userInput = "MISSING USER INPUT"
@@ -444,14 +453,14 @@ export function dialogSampleInput(dialog: CLM.TrainDialog | CLM.LogDialog): stri
 
 export function trainDialogFirstInput(trainDialog: CLM.TrainDialog): string {
     if (trainDialog.rounds?.length > 0) {
-        return trainDialog.rounds[0].extractorStep.textVariations[0].text
+        return CLM.ModelUtils.userText(trainDialog.rounds[0].extractorStep);
     }
     return ""
 }
 
 export function trainDialogLastInput(trainDialog: CLM.TrainDialog): string | void {
     if (trainDialog.rounds?.length > 0) {
-        return trainDialog.rounds[trainDialog.rounds.length - 1].extractorStep.textVariations[0].text
+        return CLM.ModelUtils.userText(trainDialog.rounds[trainDialog.rounds.length - 1].extractorStep);
     }
 }
 

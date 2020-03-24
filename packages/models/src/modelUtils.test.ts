@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import { ModelUtils, TrainDialog, Validity, MemoryValue, FilledEntity, FilledEntityMap } from './'
+import { ModelUtils, TrainDialog, Validity, MemoryValue, FilledEntity, FilledEntityMap, ExtractorStepType } from './'
 
 function makeMemoryValue(userText: string = 'userText'): MemoryValue {
   return {
@@ -384,7 +384,8 @@ describe('ModelUtils', () => {
       rounds: [
         {
           extractorStep: {
-            textVariations: []
+            textVariations: [],
+            type: ExtractorStepType.USER_INPUT
           },
           scorerSteps: [
             {

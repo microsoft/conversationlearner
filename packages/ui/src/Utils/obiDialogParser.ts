@@ -10,6 +10,7 @@ import * as Util from './util'
 import * as fspath from 'path'
 import * as stripJsonComments from 'strip-json-comments'
 import { NONE_RESOLVER_KEY } from '../types/const'
+import { ExtractorStepType } from '@conversationlearner/models'
 
 enum OBIStepType {
     BEGIN_DIALOG = "Microsoft.BeginDialog",
@@ -387,7 +388,8 @@ export class ObiDialogParser {
 
                 if (currentIntent) {
                     const extractorStep: CLM.TrainExtractorStep = {
-                        textVariations: this.getTextVariations(currentIntent)
+                        textVariations: this.getTextVariations(currentIntent),
+                        type: ExtractorStepType.USER_INPUT
                     }
                     const trainRound: CLM.TrainRound = {
                         extractorStep,

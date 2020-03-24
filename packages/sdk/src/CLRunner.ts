@@ -1102,7 +1102,7 @@ export class CLRunner {
             else {
                 this.SaveLogicResult(clRecognizeResult, actionResult, apiAction.actionId, conversationReference)
             }
-        } 
+        }
         else if (CLM.ActionBase.isPVAContent(clRecognizeResult.scoredAction)) {
             const pvaAction = new CLM.PVAAction(clRecognizeResult.scoredAction as any)
             const response = await this.TakePVAAction(pvaAction, filledEntityMap)
@@ -1851,7 +1851,7 @@ export class CLRunner {
         let validationErrors: string[] = []
 
         for (let round of trainDialog.rounds) {
-            let userText = round.extractorStep.textVariations[0].text
+            let userText = round.extractorStep.textVariations[0] ? round.extractorStep.textVariations[0].text : ""
             let filledEntities = round.scorerSteps[0]?.input?.filledEntities ?? []
 
             // Check that entities exist
@@ -1987,7 +1987,7 @@ export class CLRunner {
 
             // Call entity detection callback with first text Variation
             const textVariation = round.extractorStep.textVariations[0]
-            const predictedEntities = CLM.ModelUtils.ToPredictedEntities(textVariation.labelEntities)
+            const predictedEntities = textVariation ? CLM.ModelUtils.ToPredictedEntities(textVariation.labelEntities) : []
 
             // Call EntityDetectionCallback and populate filledEntities with the result
             let scoreInput: CLM.ScoreInput
@@ -2243,9 +2243,7 @@ export class CLRunner {
             replayError = this.GetTrainDialogRoundErrors(round, roundIndex, curAction, trainDialog, entities, filledEntities, replayErrors)
 
             // Generate activity.  Add markdown to highlight labelled entities
-            let userText = useMarkdown
-                ? CLM.ModelUtils.textVariationToMarkdown(round.extractorStep.textVariations[0], excludedEntities)
-                : round.extractorStep.textVariations[0].text
+            let userText = CLM.ModelUtils.userText(round.extractorStep, excludedEntities, useMarkdown)
 
             let userActivity: Partial<BB.Activity> = Utils.InputToActivity(userText, roundIndex)
 
@@ -2268,7 +2266,7 @@ export class CLRunner {
             prevMemories = await state.EntityState.DumpMemory()
 
             let textVariation = round.extractorStep.textVariations[0]
-            let predictedEntities = CLM.ModelUtils.ToPredictedEntities(textVariation.labelEntities)
+            let predictedEntities = textVariation ? CLM.ModelUtils.ToPredictedEntities(textVariation.labelEntities) : []
 
             // Use scorer step to populate pre-built data (when)
             if (round.scorerSteps.length > 0) {

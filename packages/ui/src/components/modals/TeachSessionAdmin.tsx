@@ -109,7 +109,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 
         const uiScoreInput: CLM.UIScoreInput = {
             trainExtractorStep: {
-                textVariations
+                textVariations,
+                type: CLM.ExtractorStepType.USER_INPUT
             },
             extractResponse
         }

@@ -8,7 +8,7 @@ import { ModelUtils } from './ModelUtils'
 import { ScoreInput, ScoreResponse, ScoredAction, UnscoredAction, ScoredBase } from './Score'
 import { LabeledEntity } from './Entity'
 import { Metrics } from './Metrics'
-import { TrainDialog, TrainScorerStep, TextVariation, TrainExtractorStep, TrainRound } from './TrainDialog'
+import { TrainDialog, TrainScorerStep, TextVariation, TrainExtractorStep, TrainRound, ExtractorStepType } from './TrainDialog'
 import { LogDialog, LogScorerStep, LogExtractorStep, LogRound } from './LogDialog'
 import { ActionTypes } from './Action'
 import { ExtractResponse } from './Extract'
@@ -145,7 +145,8 @@ export namespace MockData {
         return {
             textVariations: textVariations
                 ? textVariations.map(entities => makeTextVariation(entities))
-                : [makeTextVariation()]
+                : [makeTextVariation()],
+            type: ExtractorStepType.USER_INPUT
         }
     }
 

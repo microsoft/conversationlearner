@@ -152,7 +152,10 @@ export async function onInsertInput(
     }
 
     const textVariations = CLM.ModelUtils.ToTextVariations([extractResponse])
-    const extractorStep: CLM.TrainExtractorStep = { textVariations }
+    const extractorStep: CLM.TrainExtractorStep = {
+        textVariations,
+        type: CLM.ExtractorStepType.USER_INPUT
+    }
 
     // Copy original and insert new round for the text
     let newTrainDialog = Util.deepCopy(trainDialog)

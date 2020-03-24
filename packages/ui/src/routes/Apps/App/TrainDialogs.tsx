@@ -706,7 +706,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
 
             const textVariations = CLM.ModelUtils.ToTextVariations([extractResponse])
-            const extractorStep: CLM.TrainExtractorStep = { textVariations }
+            const extractorStep: CLM.TrainExtractorStep = {
+                textVariations,
+                type: CLM.ExtractorStepType.USER_INPUT
+            }
 
             // Create new round
             const newRound = {

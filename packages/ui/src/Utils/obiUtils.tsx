@@ -12,6 +12,7 @@ import { REPROMPT_SELF } from '../types/const'
 import { ImportedAction } from '../types/models'
 import { Case } from '../types/obiTypes'
 import { User } from '../types'
+import { ExtractorStepType } from '@conversationlearner/models'
 
 export async function toTranscripts(
     appDefinition: CLM.AppDefinition,
@@ -254,7 +255,8 @@ export async function trainDialogFromTranscriptImport(
                     })
                 }
                 let extractorStep: CLM.TrainExtractorStep = {
-                    textVariations: textVariations
+                    textVariations: textVariations,
+                    type: ExtractorStepType.USER_INPUT
                 }
                 curRound = {
                     extractorStep,
