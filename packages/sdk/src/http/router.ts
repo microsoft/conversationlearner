@@ -139,7 +139,8 @@ export const getRouter = (
     const router = express.Router({ caseSensitive: false })
     router.use(cors())
     router.use(bodyParser.json({
-        limit: '10mb'
+        // Large limit needed for MultiWoz
+        limit: '100mb'
     }))
 
     router.get('/', (req, res, next) => {
