@@ -988,6 +988,9 @@ const initDispatchModel = () => {
         render: async (activityId: string, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
             var output = Results.find(r => r.activityId === activityId)
             Results = Results.filter(r => r.activityId !== activityId)
+
+            console.log(`${activityId} = ${JSON.stringify(Results)}`) // LARS TEMP
+
             return JSON.stringify(output)
         }
     })

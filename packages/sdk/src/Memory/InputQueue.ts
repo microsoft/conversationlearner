@@ -41,17 +41,17 @@ export class InputQueue {
             return
         }
 
-        const id = InputQueue.MakeId(activity.conversation.id, appId);
-        
+        const id = InputQueue.MakeId(activity.conversation.id, appId)
+
         // Add to queue
-        await InputQueue.InputQueueAdd(id, activity.id, callback)
+        await InputQueue.InputQueueAdd(inProcessMessageState, id, activity.id, callback)
 
         // Process queue
         await InputQueue.InputQueueProcessNext(inProcessMessageState, id)
     }
 
     // Add input to queue
-    private static async InputQueueAdd(id: string, activityId: string, callback: Function): Promise<void> {
+    private static async InputQueueAdd(inProcessMessageState: InProcessMessageState, id: string, activityId: string, callback: Function): Promise<void> {
         const now = new Date().getTime()
         const queuedInput: QueuedInput = {
             id,
@@ -64,7 +64,7 @@ export class InputQueue {
             this.inputQueues[id] = []
         }
         this.inputQueues[id].push(queuedInput)
-        this.log(`ADD QUEUE`, id, queuedInput.activityId)
+        this.log(`ADD QUEUE`, id, queuedInput.activityId, inProcessMessageState)
     }
 
     private static hasExpired(queuedInput: QueuedInput): boolean {
@@ -78,6 +78,8 @@ export class InputQueue {
 
         // Get current input being processed (mutex)
         let inputInProcess = await inProcessMessageState.get<QueuedInput>()
+
+        this.log(`CHECK    `, id, inputInProcess ? inputInProcess.activityId.substr(0, 4): "_GO_", inProcessMessageState)
 
         // If input is being processed (mutex is set), check if it has expired
         if (inputInProcess) {
@@ -128,7 +130,7 @@ export class InputQueue {
     // To be called when an input is done being processeed
     public static async MessageHandled(inProcessMessageState: InProcessMessageState, conversationId: string, appId: string | undefined, activity?: BB.Activity): Promise<void> {
 
-        const id = InputQueue.MakeId(conversationId, appId);
+        const id = InputQueue.MakeId(conversationId, appId)
 
         // Remove mutex
         let processedInput = await inProcessMessageState.remove<QueuedInput>()
@@ -156,7 +158,7 @@ export class InputQueue {
         const queue = this.inputQueues[id] ? this.inputQueues[id].map(qi => qi.activityId.substr(0, 4)).join(" ") : "---"
         const activityText = activityId ? activityId.substr(0, 4) : "----"
         const key = inProcessMessageState ? inProcessMessageState.getKey() : "----"
-        const debugString = `${prefix}| K: ${key.substr(0, 4)} C: ${id.substr(id.length - 5)} A: ${activityText} Q: ${queue}`
+        const debugString = `${prefix}| K: ${key/*.substr(0, 4)*/} C: ${id.substr(id.length - 5)} A: ${activityText} Q: ${queue}`
         CLDebug.Log(debugString, DebugType.MessageQueue)
     }
 }
