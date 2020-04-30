@@ -48,6 +48,8 @@ export class CLState {
     }
 
     public async SetAppAsync(app: CLM.AppBase | null): Promise<void> {
+
+        console.log(`CLEAR STATE: ${app?.appId.substr(0, 4)}`)
         const curApp = await this.BotState.GetApp()
         await this.BotState.SetAppAsync(app)
         await this.MessageState.remove()

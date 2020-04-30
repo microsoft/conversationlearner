@@ -507,7 +507,7 @@ export class CLRunner {
                 || (!inEditingUI && this.modelId != app.appId))
         ) {
             // Get app specified by options
-            CLDebug.Log(`Switching to app specified in config: ${this.modelId}`)
+            CLDebug.Log(`Switching to app specified in config: ${this.modelId.substr(0, 4)} from ${app?.appId.substr(0, 4)}`)
             app = await this.clClient.GetApp(this.modelId)
             await state.SetAppAsync(app)
         }
@@ -566,7 +566,7 @@ export class CLRunner {
                 await this.SendMessage(state, error, activity)
                 return null
             }
-            
+
             errorContext = app.appName
 
             let sessionId = await state.BotState.GetSessionIdAndSetConversationId(conversationReference)
@@ -671,6 +671,9 @@ export class CLRunner {
             const userInput: CLM.UserInput = {
                 text: buttonResponse || activity.text.substr(0, Utils.CL_MAX_USER_UTTERANCE) || '  '
             }
+
+            // LARS TEMP
+            CLDebug.Log(`Extract: ${app.appId} : ${userInput.text.substr(0, 10)}`)
 
             const extractResponse = await this.SessionExtract(app.appId, sessionId, userInput)
 
