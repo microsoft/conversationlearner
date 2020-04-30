@@ -21,6 +21,7 @@ import { UIMode } from './Memory/BotState'
 import { EntityState } from './Memory/EntityState'
 import { ILogStorage } from './Memory/ILogStorage'
 import { CLOptions } from './CLOptions'
+import ConversationLearnerFactory from './ConversationLearnerFactory'
 
 interface RunnerLookup {
     [appId: string]: CLRunner
@@ -329,7 +330,7 @@ export class CLRunner {
         // Otherwise I have to queue up messages as user may input them faster than bot responds
         else {
             let addInputPromise = util.promisify(InputQueue.AddInput)
-            let isReady = await addInputPromise(state.MessageState, turnContext.activity)
+            let isReady = await addInputPromise(state.MessageState, turnContext.activity, this.modelId)
 
             if (isReady) {
                 let intents = await this.ProcessInput(turnContext)
@@ -565,6 +566,8 @@ export class CLRunner {
                 await this.SendMessage(state, error, activity)
                 return null
             }
+            
+            errorContext = app.appName
 
             let sessionId = await state.BotState.GetSessionIdAndSetConversationId(conversationReference)
 
@@ -631,7 +634,7 @@ export class CLRunner {
 
             // Handle any other non-message input, filter out empty messages
             if (activity.type !== BB.ActivityTypes.Message || !activity.text || activity.text === "") {
-                await InputQueue.MessageHandled(state.MessageState, activity.conversation.id, activity)
+                await InputQueue.MessageHandled(state.MessageState, activity.conversation.id, app.appId, activity)
                 return null
             }
 
@@ -660,7 +663,7 @@ export class CLRunner {
             let entities: CLM.EntityBase[] = []
 
             // Generate result
-            errorContext = 'Extract Entities'
+            errorContext = `${errorContext}: Extract Entities`
             if (activity.text.length > Utils.CL_MAX_USER_UTTERANCE) {
                 CLDebug.Verbose(`Trimming user input to ${Utils.CL_MAX_USER_UTTERANCE} chars`)
             }
@@ -672,7 +675,7 @@ export class CLRunner {
             const extractResponse = await this.SessionExtract(app.appId, sessionId, userInput)
 
             entities = extractResponse.definitions.entities
-            errorContext = 'Score Actions'
+            errorContext = `${errorContext}: ScoreActions`
             const scoredAction = await this.Score(
                 app.appId,
                 sessionId,
@@ -1061,10 +1064,11 @@ export class CLRunner {
         let filledEntityMap = await clRecognizeResult.state.EntityState.FilledEntityMap()
         filledEntityMap = Utils.addEntitiesById(filledEntityMap)
 
+        const app = await clRecognizeResult.state.BotState.GetApp()
         // If the action was terminal, free up the mutex allowing queued messages to be processed
         // Activity won't be present if running in training as messages aren't queued
         if (clRecognizeResult.scoredAction.isTerminal && clRecognizeResult.activity) {
-            await InputQueue.MessageHandled(clRecognizeResult.state.MessageState, clRecognizeResult.activity.conversation.id, clRecognizeResult.activity)
+            await InputQueue.MessageHandled(clRecognizeResult.state.MessageState, clRecognizeResult.activity.conversation.id, app?.appId, clRecognizeResult.activity)
         }
 
         if (!conversationReference.conversation) {
@@ -1072,7 +1076,6 @@ export class CLRunner {
         }
 
         let actionResult: IActionResult
-        let app: CLM.AppBase | null = null
         let sessionId: string | null = null
         let replayError: CLM.ReplayError | null = null
         const inTeach = uiTrainScorerStep !== null
@@ -1159,7 +1162,6 @@ export class CLRunner {
                     break
                 }
                 case CLM.ActionTypes.END_SESSION: {
-                    app = await clRecognizeResult.state.BotState.GetApp()
                     const sessionAction = new CLM.SessionAction(clRecognizeResult.scoredAction as any)
                     sessionId = await clRecognizeResult.state.BotState.GetSessionIdAndSetConversationId(conversationReference)
                     const response = await this.TakeSessionAction(sessionAction, filledEntityMap, inTeach, clRecognizeResult.state, sessionId, app)
@@ -1191,7 +1193,7 @@ export class CLRunner {
 
                     if (!inTeach) {
                         CLDebug.Log(`Dispatch to Model: ${dispatchAction.modelId} ${dispatchAction.modelName}`, DebugType.Dispatch)
-                        await this.forwardInputToModel(dispatchAction.modelId, clRecognizeResult.state)
+                        await this.forwardInputToModel(dispatchAction.modelId, dispatchAction.modelName, clRecognizeResult.state)
                         // Force response to null to avoid sending message as message will come from next model.
                         actionResult.response = null
                     }
@@ -1199,7 +1201,6 @@ export class CLRunner {
                     break
                 }
                 case CLM.ActionTypes.CHANGE_MODEL: {
-                    app = await clRecognizeResult.state.BotState.GetApp()
                     const changeModelAction = new CLM.ChangeModelAction(clRecognizeResult.scoredAction as any)
                     sessionId = await clRecognizeResult.state.BotState.GetSessionIdAndSetConversationId(conversationReference)
                     actionResult = await this.TakeChangeModelAction(
@@ -1212,7 +1213,7 @@ export class CLRunner {
 
                     if (!inTeach) {
                         CLDebug.Log(`Change to Model: ${changeModelAction.modelId} ${changeModelAction.modelName}`, DebugType.Dispatch)
-                        await this.forwardInputToModel(changeModelAction.modelId, clRecognizeResult.state, true)
+                        await this.forwardInputToModel(changeModelAction.modelId, changeModelAction.modelName, clRecognizeResult.state, true)
                         // Force response to null to avoid sending message as message will come from next model.
                         actionResult.response = null
                     }
@@ -1235,9 +1236,6 @@ export class CLRunner {
 
         // If action wasn't terminal loop through Conversation Learner again after a short delay (unless I'm testing where it's handled by the tester)
         if (!clRecognizeResult.inTeach && !clRecognizeResult.scoredAction.isTerminal && uiMode !== UIMode.TEST) {
-            if (app === null) {
-                app = await clRecognizeResult.state.BotState.GetApp()
-            }
             if (!app) {
                 throw new Error(`Attempted to get current app before app was set.`)
             }
@@ -1276,11 +1274,19 @@ export class CLRunner {
         return actionResult
     }
 
-    private async forwardInputToModel(modelId: string, state: CLState, changeActiveModel: boolean = false) {
+    private async forwardInputToModel(modelId: string, modelName: string, state: CLState, changeActiveModel: boolean = false) {
         if (modelId === this.modelId) {
             throw new Error(`Cannot forward input to model with same ID as active model. This shouldn't be possible open an issue.`)
         }
 
+        // If no model
+        if (modelId == "") {
+            const foundId = ConversationLearnerFactory.modelIdFromName(modelName)
+            if (!foundId) {
+                throw new Error(`Can't find model named ${modelName}`)
+            }
+            modelId = foundId
+        }
         // Reuse model instance from cache or create it
         let model = ConversationLearner.models.find(m => m.clRunner.modelId === modelId)
         if (!model) {
@@ -1303,12 +1309,18 @@ export class CLRunner {
         }
 
         const conversationReference = BB.TurnContext.getConversationReference(turnContext.activity)
+
         // Need to set adapter since we're going around this setup in recognize
         // and can't use recognize for dispatch since want to force which model processes input instead looking for match from conversation again
         model.clRunner.SetAdapter(turnContext.adapter, conversationReference)
-        const recognizerResult = await model.clRunner.ProcessInput(turnContext)
-        if (recognizerResult) {
-            await model.SendResult(recognizerResult)
+        const dispatcherState = this.stateFactory.getFromContext(turnContext, modelId)
+        let addInputPromise = util.promisify(InputQueue.AddInput)
+        let isReady = await addInputPromise(dispatcherState.MessageState, turnContext.activity, modelId)
+        if (isReady) {
+            const recognizerResult = await model.clRunner.ProcessInput(turnContext)
+            if (recognizerResult) {
+                await model.SendResult(recognizerResult)
+            }
         }
     }
 
@@ -1345,7 +1357,8 @@ export class CLRunner {
         if (erroredActivity) {
             const conversationId = await state.BotState.GetConversationId()
             if (conversationId) {
-                await InputQueue.MessageHandled(state.MessageState, conversationId, erroredActivity)
+                let app = await state.BotState.GetApp()
+                await InputQueue.MessageHandled(state.MessageState, conversationId, app?.appId, erroredActivity)
             }
             else {
                 console.debug("Missing ConversationId in SendMessage")
@@ -1628,7 +1641,11 @@ export class CLRunner {
                         logicReturnValue = callbackResult.returnValue
                     }
                     else {
-                        logicReturnValue = await callback.logic(memoryManager, ...renderedLogicArgumentValues)
+                        let args = [...renderedLogicArgumentValues]
+                        if (callback.name == "SendOutput" && state.turnContext?.activity.id) {
+                            args = [state.turnContext.activity.id]
+                        }
+                        logicReturnValue = await callback.logic(memoryManager, ...args)
                     }
 
                     logicResult.logicValue = JSON.stringify(logicReturnValue)

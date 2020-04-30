@@ -12,7 +12,7 @@ export type GetKey = () => string
  */
 export class InProcessMessageState {
     private storage: CLStorage
-    private getKey: GetKey
+    public readonly getKey: GetKey
 
     constructor(storage: CLStorage, getKey: GetKey) {
         this.storage = storage

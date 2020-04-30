@@ -11,6 +11,7 @@ import getRouter from './http/router'
 import CLStateFactory from './Memory/CLStateFactory'
 import { ILogStorage } from './Memory/ILogStorage'
 import { CLModelOptions } from './CLModelOptions'
+import * as CLM from '@conversationlearner/models'
 
 /**
  * Conversation Learner Factory. Produces instances that all use the same storage, client, and options.
@@ -21,6 +22,7 @@ export default class ConversationLearnerFactory {
     private client: CLClient
     private logStorage: ILogStorage | undefined
     private options: CLOptions
+    public static AppsList: CLM.AppList
 
     sdkRouter: express.Router
 
@@ -46,5 +48,18 @@ export default class ConversationLearnerFactory {
             modelOptions,
             this.logStorage
         )
+    }
+
+    static modelIdFromName(appName: string): string | undefined {
+        if (!ConversationLearnerFactory.AppsList) {
+            return undefined;
+        }
+        else {
+            return ConversationLearnerFactory.AppsList.apps.find(a => a.appName === appName)?.appId
+        }
+    }
+
+    static setAppList(appsList: CLM.AppList) {
+        ConversationLearnerFactory.AppsList = appsList
     }
 }

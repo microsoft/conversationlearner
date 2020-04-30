@@ -11,7 +11,7 @@ const MINUTE = 60000
 const MESSAGE_TIMEOUT = MINUTE * 2
 
 export interface QueuedInput {
-    conversationId: string
+    id: string  // conversationId + appId
     activityId: string
     timestamp: number
     callback: Function
@@ -26,40 +26,45 @@ export class InputQueue {
     // In-memory store may result in out of order or dropped messages for a multi-host bot
     private static inputQueues: { [key: string]: QueuedInput[] } = {}
 
+    private static MakeId(conversationId: string, appId: string = "none"): string {
+        return `${conversationId}-${appId}`
+    }
     /**
      * 
      * @param inProcessMessageState Store for mutex
      * @param activity Input that needs to be handled
      * @param callback To be called when input is ready to be handled
      */
-    public static async AddInput(inProcessMessageState: InProcessMessageState, activity: BB.Activity, callback: Function): Promise<void> {
+    public static async AddInput(inProcessMessageState: InProcessMessageState, activity: BB.Activity, appId: string | undefined, callback: Function): Promise<void> {
         if (!activity.id) {
             CLDebug.Error("InputQueue: Activity has no activityId")
             return
         }
 
+        const id = InputQueue.MakeId(activity.conversation.id, appId);
+        
         // Add to queue
-        await InputQueue.InputQueueAdd(activity.conversation.id, activity.id, callback)
+        await InputQueue.InputQueueAdd(id, activity.id, callback)
 
         // Process queue
-        await InputQueue.InputQueueProcessNext(inProcessMessageState, activity.conversation.id)
+        await InputQueue.InputQueueProcessNext(inProcessMessageState, id)
     }
 
     // Add input to queue
-    private static async InputQueueAdd(conversationId: string, activityId: string, callback: Function): Promise<void> {
+    private static async InputQueueAdd(id: string, activityId: string, callback: Function): Promise<void> {
         const now = new Date().getTime()
         const queuedInput: QueuedInput = {
-            conversationId,
+            id,
             activityId,
             timestamp: now,
             callback,
         }
 
-        if (!this.inputQueues[conversationId]) {
-            this.inputQueues[conversationId] = []
+        if (!this.inputQueues[id]) {
+            this.inputQueues[id] = []
         }
-        this.inputQueues[conversationId].push(queuedInput)
-        this.log(`ADD QUEUE`, conversationId, queuedInput.activityId)
+        this.inputQueues[id].push(queuedInput)
+        this.log(`ADD QUEUE`, id, queuedInput.activityId)
     }
 
     private static hasExpired(queuedInput: QueuedInput): boolean {
@@ -69,7 +74,7 @@ export class InputQueue {
     }
 
     // Process next input
-    private static async InputQueueProcessNext(inProcessMessageState: InProcessMessageState, conversationId: string): Promise<void> {
+    private static async InputQueueProcessNext(inProcessMessageState: InProcessMessageState, id: string): Promise<void> {
 
         // Get current input being processed (mutex)
         let inputInProcess = await inProcessMessageState.get<QueuedInput>()
@@ -78,50 +83,52 @@ export class InputQueue {
         if (inputInProcess) {
             if (this.hasExpired(inputInProcess)) {
                 // Item in mutex has expired
-                this.log(`EXPIRED U`, conversationId, inputInProcess.activityId)
+                this.log(`EXPIRED U`, id, inputInProcess.activityId, inProcessMessageState)
 
                 // Clear the input mutex
                 await inProcessMessageState.remove()
 
                 // Process the next input
-                await InputQueue.InputQueueProcessNext(inProcessMessageState, conversationId)
+                await InputQueue.InputQueueProcessNext(inProcessMessageState, id)
             }
         }
         // Otherwise process the next one
-        else if (this.inputQueues[conversationId]) {
-            const inputToProcess = this.inputQueues[conversationId].shift()
+        else if (this.inputQueues[id]) {
+            const inputToProcess = this.inputQueues[id].shift()
 
             if (inputToProcess) {
                 // Skip to the next if it has expired
                 if (this.hasExpired(inputToProcess)) {
                     // Item in queue has expired
-                    this.log(`EXPIRED Q`, conversationId, inputToProcess.activityId)
+                    this.log(`EXPIRED Q`, id, inputToProcess.activityId, inProcessMessageState)
 
                     // Call the callback with failure
                     inputToProcess.callback(false, inputToProcess.activityId)
 
                     // Process the next input
-                    await InputQueue.InputQueueProcessNext(inProcessMessageState, conversationId)
+                    await InputQueue.InputQueueProcessNext(inProcessMessageState, id)
                 }
                 else {
                     // Set the input currently being processed (mutex)
                     await inProcessMessageState.set(inputToProcess)
 
                     // Fire the callback with success to start processing
-                    this.log(`CALLBACK `, conversationId, inputToProcess.activityId)
+                    this.log(`CALLBACK `, id, inputToProcess.activityId, inProcessMessageState)
                     inputToProcess.callback(false, inputToProcess.activityId)
                 }
             }
             else {
                 // Queue is empty
-                this.log(`FIN QUEUE`, conversationId)
-                delete this.inputQueues[conversationId]
+                this.log(`FIN QUEUE`, id, "", inProcessMessageState)
+                delete this.inputQueues[id]
             }
         }
     }
 
     // To be called when an input is done being processeed
-    public static async MessageHandled(inProcessMessageState: InProcessMessageState, conversationId: string, activity?: BB.Activity): Promise<void> {
+    public static async MessageHandled(inProcessMessageState: InProcessMessageState, conversationId: string, appId: string | undefined, activity?: BB.Activity): Promise<void> {
+
+        const id = InputQueue.MakeId(conversationId, appId);
 
         // Remove mutex
         let processedInput = await inProcessMessageState.remove<QueuedInput>()
@@ -132,23 +139,24 @@ export class InputQueue {
         }
         else if (!processedInput) {
             // Handle called when no input being processed
-            this.log(`NO  MUTEX`, conversationId, activity.id)
+            this.log(`NO  MUTEX`, id, activity.id, inProcessMessageState)
         }
         else if (processedInput.activityId !== activity.id) {
             CLDebug.Error("Input Queue: Handle called for different input than one being processed")
         }
         else {
-            this.log(`HANDLED  `, conversationId, processedInput.activityId)
+            this.log(`HANDLED  `, id, processedInput.activityId, inProcessMessageState)
         }
 
         // Process next input in the queue
-        await InputQueue.InputQueueProcessNext(inProcessMessageState, conversationId)
+        await InputQueue.InputQueueProcessNext(inProcessMessageState, id)
     }
 
-    private static log(prefix: string, conversationId: string, activityId?: string): void {
-        const queue = this.inputQueues[conversationId] ? this.inputQueues[conversationId].map(qi => qi.activityId.substr(0, 4)).join(" ") : "---"
+    private static log(prefix: string, id: string, activityId?: string, inProcessMessageState: InProcessMessageState | null = null): void {
+        const queue = this.inputQueues[id] ? this.inputQueues[id].map(qi => qi.activityId.substr(0, 4)).join(" ") : "---"
         const activityText = activityId ? activityId.substr(0, 4) : "----"
-        const debugString = `${prefix}| C: ${conversationId.substr(0, 3)} A: ${activityText} Q: ${queue}`
+        const key = inProcessMessageState ? inProcessMessageState.getKey() : "----"
+        const debugString = `${prefix}| K: ${key.substr(0, 4)} C: ${id.substr(id.length - 5)} A: ${activityText} Q: ${queue}`
         CLDebug.Log(debugString, DebugType.MessageQueue)
     }
 }

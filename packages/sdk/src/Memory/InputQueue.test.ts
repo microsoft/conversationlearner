@@ -36,8 +36,9 @@ function delay(ms: number) {
 // Simulate AddInput function in CLRunner
 async function addInput(state: CLState, message: string, conversationId: string) {
     const activity = makeActivity(message, conversationId)
+    const dummyModelId = "1234"
     const addInputPromise = util.promisify(InputQueue.AddInput)
-    const isReady = await addInputPromise(state.MessageState, activity)
+    const isReady = await addInputPromise(state.MessageState, activity, dummyModelId)
 
     if (isReady) {
         // Handle input with a delay to simulate CLRunner ProcessInput

@@ -33,7 +33,7 @@ export class CLStateFactory {
 
         const botState = new BotState(storage, (datakey) => `${modelUniqueKeyPrefix}_BOTSTATE_${datakey}`)
         const entityState = new EntityState(storage, () => `${modelUniqueKeyPrefix}_ENTITYSTATE`)
-        const messageState = new MessageState(storage, () => `${keyPrefix}_MESSAGE_MUTEX`)
+        const messageState = new MessageState(storage, () => `${modelUniqueKeyPrefix}_MESSAGE_MUTEX`)
         const conversationModelState = new MessageState(storage, () => `${keyPrefix}_CONVERSATION_MODEL`)
         const browserSlotState = new BrowserSlotState(storage, () => `BROWSER_SLOTS`)
 

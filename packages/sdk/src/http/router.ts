@@ -185,18 +185,18 @@ export const getRouter = (
     /** Retrieves information about the running bot */
     router.get('/bot', async (req, res, next) => {
         try {
-            const { browserId, appId } = getQuery(req)
+            const { /* MW HACK browserId,*/ appId } = getQuery(req)
             const clRunner = CLRunner.GetRunnerForUI(appId)
             const validationError = clRunner.clClient.ValidationError()
 
             // TODO: This is code smell, this is using internal knowledge that BrowserState full key is static and will be the same regardless of key
             // It makes BrowserState accessed in consistent way other states. Would be more natural as static object but need to share underlying storage.
-            const state = stateFactory.get('')
+            // MW HACK: const state = stateFactory.get('')
             // Generate id
-            const browserSlotId = await state.BrowserSlotState.get(browserId)
+            // MW HACK: const browserSlotId = await state.BrowserSlotState.get(browserId)
             const key = options.LUIS_AUTHORING_KEY
             const hashedKey = key ? crypto.createHash('sha256').update(key).digest('hex') : ""
-            const id = `${browserSlotId}-${hashedKey}`
+            const id = `MW-${hashedKey}`
 
             // Retrieve any status message
             let banner = await getBanner(statusEndpoint)
