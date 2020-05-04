@@ -4,13 +4,14 @@
  */
 import * as path from 'path'
 import * as express from 'express'
-import { BotFrameworkAdapter } from 'botbuilder'
+import * as BB from 'botbuilder'
 import { ConversationLearner, ConversationLearnerFactory, ClientMemoryManager, ReadOnlyClientMemoryManager, FileStorage, uiRouter } from '@conversationlearner/sdk'
 import chalk from 'chalk'
 import config from './config'
-import { Restaurant, Hotel, Attraction, Taxi, Train, RestaurantSlot, HotelSlot, AttractionSlot, TaxiSlot, TrainSlot, LuisSlot, Domain, DONTCARE, OUTPUT } from './dataTypes'
+import { Restaurant, Hotel, Attraction, Taxi, Train, RestaurantSlot, HotelSlot, AttractionSlot, TaxiSlot, TrainSlot, LuisSlot, Domain, DONTCARE, OUTPUT, NameSubstitutionMap } from './dataTypes'
 import * as fs from 'fs'
 import * as crypto from 'crypto'
+import * as directline from 'botframework-directlinejs'
 
 console.log(`Config:\n`, JSON.stringify(config, null, '  '))
 
@@ -24,7 +25,7 @@ const { bfAppId, bfAppPassword, modelId, ...clOptions } = config
 //==================
 // Create Adapter
 //==================
-const adapter = new BotFrameworkAdapter({ appId: bfAppId, appPassword: bfAppPassword })
+const adapter = new BB.BotFrameworkAdapter({ appId: bfAppId, appPassword: bfAppPassword })
 
 //==================================
 // Storage
@@ -996,7 +997,7 @@ const initDispatchModel = () => {
     })
 }
 
-const domainInit = (model: ConversationLearner, domain: string) => {
+const domainInit = (model: ConversationLearner, domain: string, slotMap: Map<string, string>) => {
 
     model.EntityDetectionCallback = async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
         ApplyEntitySubstitutions(memoryManager)
@@ -1004,6 +1005,22 @@ const domainInit = (model: ConversationLearner, domain: string) => {
     }
 
     model.AddCallback(apiAddOutput)
+
+    //=== "Same" Callbacks ===
+    Object.values(LuisSlot).forEach(entityName => {
+        var slotName = slotMap.get(entityName)
+        if (slotName) {
+            model.AddCallback({
+                name: `same-${entityName}`,
+                logic: async (memoryManager) => {
+                    var price = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING)
+                    if (slotName) {
+                        memoryManager.Set(slotName, price as string)
+                    }
+                }
+            })
+        }
+    })
 
     //=== DontCare Callbacks ===
     model.AddCallback(apiDontCareArea)
@@ -1013,12 +1030,25 @@ const domainInit = (model: ConversationLearner, domain: string) => {
     model.AddCallback(apiDontCareType)
 }
 
+const shortName = (entityName: string): string => {
+    const split = entityName.split('-')
+    let shortName = split[split.length - 1]
+    shortName = NameSubstitutionMap.get(shortName) || shortName
+    return shortName
+}
+
 let clAttraction: ConversationLearner
 const initAttractionModel = () => {
 
     const modelId = ConversationLearnerFactory.modelIdFromName("attraction")
     const model = clFactory.create(modelId)
-    domainInit(model, "attraction")
+
+    const slotMap = new Map()
+    Object.values(AttractionSlot).forEach(entityName => {
+        return slotMap.set(shortName(entityName), entityName)
+    })
+
+    domainInit(model, "attraction", slotMap)
 
     model.AddCallback({
         name: "SendOutput",
@@ -1033,6 +1063,7 @@ const initAttractionModel = () => {
             }
             Results.push(result)
             memoryManager.Delete(OUTPUT)
+            return
         }
     })
 
@@ -1044,7 +1075,13 @@ const initHotelModel = () => {
 
     const modelId = ConversationLearnerFactory.modelIdFromName("hotel")
     const model = clFactory.create(modelId)
-    domainInit(model, "hotel")
+
+    const slotMap = new Map()
+    Object.values(HotelSlot).forEach(entityName => {
+        return slotMap.set(shortName(entityName), entityName)
+    })
+
+    domainInit(model, "hotel", slotMap)
 
     model.AddCallback({
         name: "SendOutput",
@@ -1069,7 +1106,13 @@ const initRestaurantModel = () => {
 
     const modelId = ConversationLearnerFactory.modelIdFromName("restaurant")
     const model = clFactory.create(modelId)
-    domainInit(model, "restaurant")
+
+    const slotMap = new Map()
+    Object.values(RestaurantSlot).forEach(entityName => {
+        return slotMap.set(shortName(entityName), entityName)
+    })
+
+    domainInit(model, "restaurant", slotMap)
 
     model.AddCallback({
         name: "SendOutput",
@@ -1094,7 +1137,13 @@ const initTaxiModel = () => {
 
     const modelId = ConversationLearnerFactory.modelIdFromName("taxi")
     const model = clFactory.create(modelId)
-    domainInit(model, "taxi")
+
+    const slotMap = new Map()
+    Object.values(TaxiSlot).forEach(entityName => {
+        return slotMap.set(shortName(entityName), entityName)
+    })
+
+    domainInit(model, "taxi", slotMap)
 
     model.AddCallback({
         name: "SendOutput",
@@ -1119,7 +1168,13 @@ const initTrainModel = () => {
 
     const modelId = ConversationLearnerFactory.modelIdFromName("train")
     const model = clFactory.create(modelId)
-    domainInit(model, "train")
+
+    const slotMap = new Map()
+    Object.values(TrainSlot).forEach(entityName => {
+        return slotMap.set(shortName(entityName), entityName)
+    })
+
+    domainInit(model, "train", slotMap)
 
     model.AddCallback({
         name: "SendOutput",
@@ -1172,6 +1227,10 @@ server.post('/api/messages', (req, res) => {
             await createModels()
         }
 
+        if (context.activity.text === "update models") {
+            createModels()
+        }
+
         // When running in training UI, ConversationLearner must always have control
         if (await clRestaurant.InTrainingUI(context)) {
             let result = await clRestaurant.recognize(context)
@@ -1202,5 +1261,61 @@ server.post('/api/messages', (req, res) => {
         */
     })
 })
+
+createModels()
+
+const test = () => {
+
+    const adapter = new BB.TestAdapter(async (context) => {
+        await context.sendActivity(`I'd like a hotel`);
+    })
+    
+ 
+}
+
+/*
+const getActivity = (userInput: string): Activity => {
+
+    // LARS transcript name?
+    const testId = generateGUID()
+
+    const conversation: BB.ConversationAccount = {
+        id: generateGUID(),
+        isGroup: false,
+        name: "",
+        tenantId: "",
+        aadObjectId: "",
+        role: BB.RoleTypes.User,
+        conversationType: ""
+    }
+    const fromAccount: BB.ChannelAccount = {
+        name: "cltest", //Utils.CL_DEVELOPER,
+        id: testId,
+        role: BB.RoleTypes.User,
+        aadObjectId: ''
+    }
+
+    const activity = {  //directline.Activity
+        id: generateGUID(),
+        conversation,
+        type: BB.ActivityTypes.Message,
+        text: "This is a test",
+        from: fromAccount,
+        channelData: { clData: { isValidationTest: true } }
+    }
+
+    dl.postActivity(activity as any)
+}
+*/
+
+const generateGUID = (): string => {
+    let d = new Date().getTime()
+    let guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, char => {
+        let r = ((d + Math.random() * 16) % 16) | 0
+        d = Math.floor(d / 16)
+        return (char === 'x' ? r : (r & 0x3) | 0x8).toString(16)
+    })
+    return guid
+}
 
 export default server

@@ -152,3 +152,11 @@ export interface Taxi {
   taxi_types: string[]
   taxi_phone: string[]
 }
+
+export const NameSubstitutionMap = new Map([
+  ["pricerange", "price"],
+  ["destination", "dest"],
+  ["departure", "depart"],
+  ["arriveBy", "arrive"],
+  ["leaveAt", "leave"]
+])

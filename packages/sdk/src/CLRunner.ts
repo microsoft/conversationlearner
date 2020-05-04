@@ -672,9 +672,6 @@ export class CLRunner {
                 text: buttonResponse || activity.text.substr(0, Utils.CL_MAX_USER_UTTERANCE) || '  '
             }
 
-            // LARS TEMP
-            CLDebug.Log(`Extract: ${app.appId} : ${userInput.text.substr(0, 10)}`)
-
             const extractResponse = await this.SessionExtract(app.appId, sessionId, userInput)
 
             entities = extractResponse.definitions.entities

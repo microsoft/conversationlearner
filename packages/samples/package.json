@@ -34,6 +34,7 @@
   "dependencies": {
     "@conversationlearner/sdk": "^0.505.1",
     "botbuilder": "4.7.1",
+    "botframework-directlinejs": "^0.11.6",
     "chalk": "2.4.1",
     "convict": "^4.0.2",
     "dotenv": "^4.0.0",

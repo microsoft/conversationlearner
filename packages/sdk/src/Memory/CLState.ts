@@ -54,7 +54,7 @@ export class CLState {
         await this.ConversationModelState.remove()
 
         if (curApp !== null) {
-            console.log(`CLEAR STATE: ${app?.appId.substr(0, 4)}`)//lars temp
+            // Only clear if a new app, or message mutext will get lost on first turn
             await this.MessageState.remove()
         }
         if (!app || !curApp || curApp.appId !== app.appId) {
