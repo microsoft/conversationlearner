@@ -507,7 +507,7 @@ export class CLRunner {
                 || (!inEditingUI && this.modelId != app.appId))
         ) {
             // Get app specified by options
-            CLDebug.Log(`Switching to app specified in config: ${this.modelId.substr(0, 4)} from ${app?.appId.substr(0, 4)}`)
+            CLDebug.Verbose(`Switching to app specified in config: ${this.modelId.substr(0, 4)} from ${app?.appId.substr(0, 4)}`)
             app = await this.clClient.GetApp(this.modelId)
             await state.SetAppAsync(app)
         }
@@ -1193,6 +1193,12 @@ export class CLRunner {
 
                     if (!inTeach) {
                         CLDebug.Log(`Dispatch to Model: ${dispatchAction.modelId} ${dispatchAction.modelName}`, DebugType.Dispatch)
+
+                        // Multiwoz - note that dispatch has been called
+                        const dispatchCallback = this.callbacks["Dispatch"]
+                        const memoryManager = await this.CreateMemoryManagerAsync(clRecognizeResult.state, clRecognizeResult.clEntities)
+                        await dispatchCallback.logic(memoryManager, clRecognizeResult.state.turnContext!.activity.id!, dispatchAction.modelName)
+
                         await this.forwardInputToModel(dispatchAction.modelId, dispatchAction.modelName, clRecognizeResult.state)
                         // Force response to null to avoid sending message as message will come from next model.
                         actionResult.response = null

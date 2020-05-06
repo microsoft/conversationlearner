@@ -11,7 +11,6 @@ import config from './config'
 import { Restaurant, Hotel, Attraction, Taxi, Train, RestaurantSlot, HotelSlot, AttractionSlot, TaxiSlot, TrainSlot, LuisSlot, Domain, DONTCARE, OUTPUT, NameSubstitutionMap } from './dataTypes'
 import * as fs from 'fs'
 import * as crypto from 'crypto'
-import * as directline from 'botframework-directlinejs'
 
 console.log(`Config:\n`, JSON.stringify(config, null, '  '))
 
@@ -51,16 +50,28 @@ if (includeSdk) {
 server.use(express.static(path.join(__dirname, '..', 'site')))
 
 
-export interface Result {
+export interface ActivityResult {
     // Used to match import utterances
     activityId: string
-    domain: string
-    dialogActs: string[]
-    entities: string[]
+    domainResults: Map<Domain, DomainResult | null>
     creationTime?: number
 }
 
-let Results: Result[] = []
+export interface DomainResult {
+    dialogActs: string[]
+    entities: string[]
+    output: string[][]
+}
+
+export interface TestResult {
+    input: string
+    expected: string
+    actual: string
+    error?: string
+}
+
+let ActivityResults: ActivityResult[] = []
+let TestOutput = new Map<string, string>()
 
 //=================================
 // Add Entity Logic
@@ -261,46 +272,59 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
 
 const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: string): void => {
     if (!domainFilter || domainFilter == "restaurant") {
-        var restaurant = memoryManager.Get(Domain.RESTAURANT, ClientMemoryManager.AS_STRING)
-        if (restaurant !== null && restaurant !== undefined) {
-            var restaurants = RestaurantOptions(memoryManager)
-            memoryManager.Set(RestaurantSlot.CHOICE, restaurants.length)
-            return
-        }
+        //LARSvar restaurant = memoryManager.Get(Domain.RESTAURANT, ClientMemoryManager.AS_STRING)
+        //if (restaurant !== null && restaurant !== undefined) {
+        var restaurants = RestaurantOptions(memoryManager)
+        memoryManager.Set(RestaurantSlot.CHOICE, restaurants.length)
+        //}
     }
     if (!domainFilter || domainFilter == "hotel") {
-        var hotel = memoryManager.Get(Domain.HOTEL, ClientMemoryManager.AS_STRING)
-        if (hotel !== null && hotel !== undefined) {
-            var hotels = HotelOptions(memoryManager)
-            memoryManager.Set(HotelSlot.CHOICE, hotels.length)
-        }
+        //var hotel = memoryManager.Get(Domain.HOTEL, ClientMemoryManager.AS_STRING)
+        //if (hotel !== null && hotel !== undefined) {
+        var hotels = HotelOptions(memoryManager)
+        memoryManager.Set(HotelSlot.CHOICE, hotels.length)
+        //}
     }
     if (!domainFilter || domainFilter == "attraction") {
-        var attraction = memoryManager.Get(Domain.ATTRACTION, ClientMemoryManager.AS_STRING)
-        if (attraction !== null && attraction !== undefined) {
-            var attractions = AttractionOptions(memoryManager)
-            memoryManager.Set(AttractionSlot.CHOICE, attractions.length)
-        }
+        //var attraction = memoryManager.Get(Domain.ATTRACTION, ClientMemoryManager.AS_STRING)
+        //if (attraction !== null && attraction !== undefined) {
+        var attractions = AttractionOptions(memoryManager)
+        memoryManager.Set(AttractionSlot.CHOICE, attractions.length)
+        //}
     }
     if (!domainFilter || domainFilter == "taxi") {
-        var taxi = memoryManager.Get(Domain.TAXI, ClientMemoryManager.AS_STRING)
-        if (taxi !== null && taxi !== undefined) {
-            var taxis = TaxiOptions(memoryManager)
-            memoryManager.Set(TaxiSlot.CHOICE, taxis.length)
-        }
+        //var taxi = memoryManager.Get(Domain.TAXI, ClientMemoryManager.AS_STRING)
+        //if (taxi !== null && taxi !== undefined) {
+        var taxis = TaxiOptions(memoryManager)
+        memoryManager.Set(TaxiSlot.CHOICE, taxis.length)
+        //}
     }
     if (!domainFilter || domainFilter == "train") {
-        var train = memoryManager.Get(Domain.TRAIN, ClientMemoryManager.AS_STRING)
-        if (train !== null && train !== undefined) {
-            var trains = TrainOptions(memoryManager)
-            memoryManager.Set(TrainSlot.CHOICE, trains.length)
-        }
+        //var train = memoryManager.Get(Domain.TRAIN, ClientMemoryManager.AS_STRING)
+        //if (train !== null && train !== undefined) {
+        var trains = TrainOptions(memoryManager)
+        memoryManager.Set(TrainSlot.CHOICE, trains.length)
+        //}
     }
 }
 
 //=================================
 // Domain Get Entities
 //=================================
+const getEntities = (domain: Domain, memoryManager: ClientMemoryManager) => {
+    switch (domain) {
+        case Domain.ATTRACTION:
+            return attractionEntities(memoryManager)
+        case Domain.HOTEL:
+            return hotelEntities(memoryManager)
+        case Domain.RESTAURANT:
+            return restaurantEntities(memoryManager)
+        case Domain.TRAIN:
+            return trainEntities(memoryManager)
+        case Domain.TAXI:
+            return taxiEntities(memoryManager)
+    }
+}
 const trainEntities = (memoryManager: ReadOnlyClientMemoryManager): string[] => {
     let entities: string[] = []
     Object.values(TrainSlot).map(entityName => {
@@ -434,22 +458,27 @@ const apiDontCareType = {
 }
 
 //=================================
-// Database & Lookup
+// Directories
 //=================================
-let DBDirectory = (): string => {
-    //TODO - make this configurable
-    let dbDirectory = path.join(process.cwd(), './mwdb')
+const DBDirectory = 'mwdb'
+const TestDirectory = 'testtranscripts'
+const ResultsDirectory = 'testresults'
+let GetDirectory = (name: string) => {
+    let testDirectory = path.join(process.cwd(), `./${name}`)
 
     // Try up a directory or two as could be in /lib or /dist folder depending on deployment
-    if (!fs.existsSync(dbDirectory)) {
-        dbDirectory = path.join(process.cwd(), '../mwdb')
+    if (!fs.existsSync(testDirectory)) {
+        testDirectory = path.join(process.cwd(), `../${name}`)
     }
-    if (!fs.existsSync(dbDirectory)) {
-        dbDirectory = path.join(process.cwd(), '../../mwdb')
+    if (!fs.existsSync(testDirectory)) {
+        testDirectory = path.join(process.cwd(), `../../${name}`)
     }
-    return dbDirectory
+    return testDirectory
 }
 
+//=================================
+// Options
+//=================================
 var RestaurantOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Restaurant[] => {
 
     var area = memoryManager.Get(RestaurantSlot.AREA, ClientMemoryManager.AS_STRING)
@@ -613,7 +642,7 @@ var EntitySubstitutions = (): { [key: string]: string } => {
 }
 
 var LoadDataBase = (databaseName: string): any => {
-    const filename = path.join(DBDirectory(), `${databaseName}.json`)
+    const filename = path.join(GetDirectory(DBDirectory), `${databaseName}.json`)
     const templateString = fs.readFileSync(filename, 'utf-8')
     const template = JSON.parse(templateString.split('"type":').join('"_type":'))
     return template
@@ -972,32 +1001,73 @@ const initDispatchModel = () => {
     clDispatch = clFactory.create(modelId)
 
     clDispatch.AddCallback({
-        name: "AddOutput",
-        logic: async (memoryManager: ClientMemoryManager, intent: string) => {
-            const domainEntity = `domain-${intent}`
-            memoryManager.Set(OUTPUT, intent)
-            memoryManager.Set(domainEntity, intent)
+        name: "Dispatch",
+        logic: async (memoryManager: ClientMemoryManager, activityId: string, domainString: string) => {
+
+            var domain = domainString as Domain
+            var result = ActivityResults.find(r => r.activityId === activityId)
+            if (!result) {
+                result = {
+                    activityId,
+                    creationTime: new Date().getTime(),
+                    domainResults: new Map<Domain, DomainResult>()
+                }
+                ActivityResults.push(result)
+            }
+            // Add empty entry for this domain
+            result.domainResults.set(domain, null)
         }
     })
 
     clDispatch.AddCallback({
         name: "SendOutput",
         logic: async (memoryManager: ClientMemoryManager, activityId) => {
-            memoryManager.Delete(OUTPUT)
-            return activityId
+            const activityResult = await getActivityResult(activityId)
+            const result = ActivityResultToString(activityResult)
+            TestOutput.set(activityId, result)
+            return result
         },
-        render: async (activityId: string, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
-            var output = Results.find(r => r.activityId === activityId)
-            Results = Results.filter(r => r.activityId !== activityId)
-
-            console.log(`${activityId} = ${JSON.stringify(Results)}`) // LARS TEMP
-
-            return JSON.stringify(output)
+        render: async (activityResult: string, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
+            return activityResult
         }
     })
 }
 
-const domainInit = (model: ConversationLearner, domain: string, slotMap: Map<string, string>) => {
+const ActivityResultToString = (activityResult: ActivityResult): string => {
+    let dialogActs: string[] = []
+    let entities: string[] = []
+    let output: string[][] = []
+    activityResult.domainResults.forEach(dr => {
+        if (dr) {
+            dialogActs = [...dialogActs, ...dr.dialogActs]
+            entities = [...entities, ...dr.entities]
+            output = output.concat(dr.output)
+        }
+    })
+    //return `${dialogActs.join(",")} ${entities.join(",")}`
+    return JSON.stringify(output)
+}
+
+const expandedResults = (dialogActs: string[], entities: string[]): string[][] => {
+    const results: string[][] = []
+    for (var dialogAct of dialogActs) {
+        var parts = dialogAct.split('-')
+        const domain = parts[0]
+        const act = parts[1]
+        const entity = parts[2]
+
+        if (act == "Request") {
+            results.push([act, domain, entity, "?"])
+        }
+        else {
+            const kv = entities.find(e => e.includes(entity.toLowerCase()))
+            const value = kv ? kv.split(": ")[1] : "MISSING"
+            results.push([act, domain, entity, value])
+        }
+    }
+    return results
+}
+const domainInit = (model: ConversationLearner, domain: Domain, slotMap: Map<string, string>) => {
 
     model.EntityDetectionCallback = async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
         ApplyEntitySubstitutions(memoryManager)
@@ -1005,6 +1075,32 @@ const domainInit = (model: ConversationLearner, domain: string, slotMap: Map<str
     }
 
     model.AddCallback(apiAddOutput)
+
+    model.AddCallback({
+        name: "SendOutput",
+        logic: async (memoryManager: ClientMemoryManager, activityId: string) => {
+
+            const activityResult = ActivityResults.find(ar => ar.activityId === activityId)
+            if (!activityId) {
+                throw new Error(`Missing Activity ${activityId}`)
+            }
+            if (!activityResult?.domainResults.has(domain)) {
+                throw new Error(`Expected Domain ${domain}`)
+            }
+            const dialogActs = memoryManager.Get(OUTPUT, ClientMemoryManager.AS_STRING_LIST)
+            const entities = getEntities(domain, memoryManager)
+            const output = expandedResults(dialogActs, entities)
+
+            const result: DomainResult = {
+                dialogActs,
+                entities,
+                output
+            }
+            activityResult.domainResults.set(domain, result)
+            memoryManager.Delete(OUTPUT)
+            return
+        }
+    })
 
     //=== "Same" Callbacks ===
     Object.values(LuisSlot).forEach(entityName => {
@@ -1040,7 +1136,7 @@ const shortName = (entityName: string): string => {
 let clAttraction: ConversationLearner
 const initAttractionModel = () => {
 
-    const modelId = ConversationLearnerFactory.modelIdFromName("attraction")
+    const modelId = ConversationLearnerFactory.modelIdFromName(Domain.ATTRACTION)
     const model = clFactory.create(modelId)
 
     const slotMap = new Map()
@@ -1048,32 +1144,14 @@ const initAttractionModel = () => {
         return slotMap.set(shortName(entityName), entityName)
     })
 
-    domainInit(model, "attraction", slotMap)
-
-    model.AddCallback({
-        name: "SendOutput",
-        logic: async (memoryManager: ClientMemoryManager, activityId: string) => {
-            const dialogActs = memoryManager.Get(OUTPUT, ClientMemoryManager.AS_STRING_LIST)
-            const entities = attractionEntities(memoryManager)
-            const result: Result = {
-                domain: "attraction",
-                activityId,
-                dialogActs,
-                entities
-            }
-            Results.push(result)
-            memoryManager.Delete(OUTPUT)
-            return
-        }
-    })
-
+    domainInit(model, Domain.ATTRACTION, slotMap)
     clAttraction = model
 }
 
 let clHotel: ConversationLearner
 const initHotelModel = () => {
 
-    const modelId = ConversationLearnerFactory.modelIdFromName("hotel")
+    const modelId = ConversationLearnerFactory.modelIdFromName(Domain.HOTEL)
     const model = clFactory.create(modelId)
 
     const slotMap = new Map()
@@ -1081,30 +1159,14 @@ const initHotelModel = () => {
         return slotMap.set(shortName(entityName), entityName)
     })
 
-    domainInit(model, "hotel", slotMap)
-
-    model.AddCallback({
-        name: "SendOutput",
-        logic: async (memoryManager: ClientMemoryManager, activityId: string) => {
-            const dialogActs = memoryManager.Get(OUTPUT, ClientMemoryManager.AS_STRING_LIST)
-            const entities = hotelEntities(memoryManager)
-            const result: Result = {
-                domain: "hotel",
-                activityId,
-                dialogActs,
-                entities
-            }
-            Results.push(result)
-            memoryManager.Delete(OUTPUT)
-        }
-    })
+    domainInit(model, Domain.HOTEL, slotMap)
     clHotel = model
 }
 
 let clRestaurant: ConversationLearner
 const initRestaurantModel = () => {
 
-    const modelId = ConversationLearnerFactory.modelIdFromName("restaurant")
+    const modelId = ConversationLearnerFactory.modelIdFromName(Domain.RESTAURANT)
     const model = clFactory.create(modelId)
 
     const slotMap = new Map()
@@ -1112,30 +1174,14 @@ const initRestaurantModel = () => {
         return slotMap.set(shortName(entityName), entityName)
     })
 
-    domainInit(model, "restaurant", slotMap)
-
-    model.AddCallback({
-        name: "SendOutput",
-        logic: async (memoryManager: ClientMemoryManager, activityId: string) => {
-            const dialogActs = memoryManager.Get(OUTPUT, ClientMemoryManager.AS_STRING_LIST)
-            const entities = restaurantEntities(memoryManager)
-            const result: Result = {
-                domain: "restaurant",
-                activityId,
-                dialogActs,
-                entities
-            }
-            Results.push(result)
-            memoryManager.Delete(OUTPUT)
-        }
-    })
+    domainInit(model, Domain.RESTAURANT, slotMap)
     clRestaurant = model
 }
 
 let clTaxi: ConversationLearner
 const initTaxiModel = () => {
 
-    const modelId = ConversationLearnerFactory.modelIdFromName("taxi")
+    const modelId = ConversationLearnerFactory.modelIdFromName(Domain.TAXI)
     const model = clFactory.create(modelId)
 
     const slotMap = new Map()
@@ -1143,30 +1189,14 @@ const initTaxiModel = () => {
         return slotMap.set(shortName(entityName), entityName)
     })
 
-    domainInit(model, "taxi", slotMap)
-
-    model.AddCallback({
-        name: "SendOutput",
-        logic: async (memoryManager: ClientMemoryManager, activityId: string) => {
-            const dialogActs = memoryManager.Get(OUTPUT, ClientMemoryManager.AS_STRING_LIST)
-            const entities = taxiEntities(memoryManager)
-            const result: Result = {
-                domain: "taxi",
-                activityId,
-                dialogActs,
-                entities
-            }
-            Results.push(result)
-            memoryManager.Delete(OUTPUT)
-        }
-    })
+    domainInit(model, Domain.TAXI, slotMap)
     clTaxi = model
 }
 
 let clTrain: ConversationLearner
 const initTrainModel = () => {
 
-    const modelId = ConversationLearnerFactory.modelIdFromName("train")
+    const modelId = ConversationLearnerFactory.modelIdFromName(Domain.TRAIN)
     const model = clFactory.create(modelId)
 
     const slotMap = new Map()
@@ -1174,24 +1204,7 @@ const initTrainModel = () => {
         return slotMap.set(shortName(entityName), entityName)
     })
 
-    domainInit(model, "train", slotMap)
-
-    model.AddCallback({
-        name: "SendOutput",
-        logic: async (memoryManager: ClientMemoryManager, activityId: string) => {
-            const dialogActs = memoryManager.Get(OUTPUT, ClientMemoryManager.AS_STRING_LIST)
-            const entities = trainEntities(memoryManager)
-            const result: Result = {
-                domain: "train",
-                activityId,
-                dialogActs,
-                entities
-            }
-            Results.push(result)
-            memoryManager.Delete(OUTPUT)
-        }
-    })
-
+    domainInit(model, Domain.TRAIN, slotMap)
     clTrain = model
 }
 
@@ -1228,7 +1241,14 @@ server.post('/api/messages', (req, res) => {
         }
 
         if (context.activity.text === "update models") {
-            createModels()
+            await createModels()
+            context.activity.type = BB.ActivityTypes.ConversationUpdate
+            return
+        }
+
+        if (context.activity.text === "test") {
+            await TestTrascripts()
+            context.activity.type = BB.ActivityTypes.ConversationUpdate
         }
 
         // When running in training UI, ConversationLearner must always have control
@@ -1251,7 +1271,7 @@ server.post('/api/messages', (req, res) => {
         if (result) {
             return clDispatch.SendResult(result)
         }
-
+        return null
         /*
         const result = await cl.recognize(context)
 
@@ -1264,17 +1284,139 @@ server.post('/api/messages', (req, res) => {
 
 createModels()
 
-const test = () => {
+var getActivityResult = (activityId: string) => {
+    var promise = new Promise<ActivityResult>((resolve, reject) => {
+        let startTime = new Date().getTime()
+        const timeout: NodeJS.Timeout = setInterval(
+            () => {
+                var activityResult = ActivityResults.find(r => r.activityId === activityId)
+                if (!activityResult) {
+                    console.log(`Expected activity result ${activityId}`)
+                    let curTime = new Date().getTime()
+                    if (curTime - startTime > 100000) {
+                        console.log(`Expire ${activityId} ${curTime} ${startTime}`)
+                        clearInterval(timeout)
+                    }
+                    return
+                }
+                // LARS check for timeout
+                var isDone = true
+                activityResult.domainResults.forEach((value: DomainResult | null, key: string) => {
+                    if (value == null) {
+                        isDone = false
+                    }
+                })
 
-    const adapter = new BB.TestAdapter(async (context) => {
-        await context.sendActivity(`I'd like a hotel`);
+                if (isDone) {
+                    clearInterval(timeout)
+                    // Clear data
+                    ActivityResults = ActivityResults.filter(r => r.activityId !== activityId)
+                    resolve(activityResult)
+                }
+            }
+            , 1000)
     })
-    
- 
+    return promise
 }
 
+var getTestOutput = (activityId: string) => {
+    var promise = new Promise<string>((resolve, reject) => {
+        let startTime = new Date().getTime()
+        const timeout: NodeJS.Timeout = setInterval(
+            () => {
+                const output = TestOutput.get(activityId)
+                if (!output) {
+                    let curTime = new Date().getTime()
+                    if (curTime - startTime > 100000) {
+                        var message = `Expire ${activityId} ${curTime} ${startTime}`
+                        console.log(message)
+                        clearInterval(timeout)
+                        resolve(message)
+                    }
+                    return
+                }
+                resolve(output)
+                clearInterval(timeout)
+            }
+            , 1000)
+    })
+    return promise
+}
+
+
+const TestTrascripts = () => {
+    var testDirectory = GetDirectory(TestDirectory)
+    var transcriptFileNames = fs.readdirSync(testDirectory)
+
+    for (var fileName of transcriptFileNames) {
+        const transcript = fs.readFileSync(`${testDirectory}\\${fileName}`, 'utf-8')
+        TestTranscript(JSON.parse(transcript), fileName)
+    }
+
+}
+
+
+const TestTranscript = async (transcript: BB.Activity[], fileName: string) => {
+
+    var needInit = true
+    const adapter = new BB.TestAdapter(async (context) => {
+        if (needInit) {
+            clDispatch.StartSession(context)
+            clRestaurant.StartSession(context)
+            clTaxi.StartSession(context)
+            clTrain.StartSession(context)
+            clHotel.StartSession(context)
+            needInit = false
+        }
+        if (context.activity.text != "test") {
+            var result = await clDispatch.recognize(context)
+
+            if (result) {
+                return clDispatch.SendResult(result)
+            }
+        }
+    })
+
+    var testResults: TestResult[] = []
+    for (var i = 0; i < transcript.length; i = i + 2) {
+        var userActivity = transcript[i]
+        var agentActivity = transcript[i + 1]
+        var error = ""
+        if (userActivity.from.role !== BB.RoleTypes.User) {
+            var message = `Unexpected agent turn ${i}`
+            error += message
+            console.log(message)
+        }
+        if (agentActivity.from.role !== BB.RoleTypes.Bot) {
+            var message = `Unexpected user turn ${i}`
+            error += message
+            console.log(message)
+        }
+        else if (userActivity.from.role == BB.RoleTypes.User) {
+            userActivity.id = generateGUID()
+            adapter.send(userActivity)
+            console.log(`< ${userActivity.text}`)
+            console.log(`= ${agentActivity.text}`)
+            var response = await getTestOutput(userActivity.id!)
+            console.log(`> ${response}`)
+
+            var testResult: TestResult =
+            {
+                input: userActivity.text,
+                expected: agentActivity.text,
+                actual: response
+            }
+            if (error != "") {
+                testResult.error = error
+            }
+            testResults.push(testResult)
+
+        }
+    }
+    fs.writeFileSync(`${GetDirectory(ResultsDirectory)}\\${fileName}`, JSON.stringify(testResults))
+}
 /*
-const getActivity = (userInput: string): Activity => {
+const makeActivity = (userInput: string) => {
 
     // LARS transcript name?
     const testId = generateGUID()
@@ -1299,14 +1441,15 @@ const getActivity = (userInput: string): Activity => {
         id: generateGUID(),
         conversation,
         type: BB.ActivityTypes.Message,
-        text: "This is a test",
+        text: userInput,
         from: fromAccount,
         channelData: { clData: { isValidationTest: true } }
     }
 
-    dl.postActivity(activity as any)
+    return activity
 }
 */
+
 
 const generateGUID = (): string => {
     let d = new Date().getTime()
@@ -1317,5 +1460,6 @@ const generateGUID = (): string => {
     })
     return guid
 }
+
 
 export default server

@@ -77,11 +77,11 @@ export enum TaxiSlot {
 }
 
 export enum Domain {
-  TAXI = "domain-taxi",
-  TRAIN = "domain-train",
-  HOTEL = "domain-hotel",
-  ATTRACTION = "domain-attraction",
-  RESTAURANT = "domain-restaurant",
+  TAXI = "taxi",
+  TRAIN = "train",
+  HOTEL = "hotel",
+  ATTRACTION = "attraction",
+  RESTAURANT = "restaurant",
 }
 
 export interface Restaurant {
