@@ -15,5 +15,5 @@ results/
 # Others
 lerna-debug.log
 npm-debug.log
-packages/samples/resulttranscripts/
+packages/samples/testresults/
 packages/samples/testtranscripts/

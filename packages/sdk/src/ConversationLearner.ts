@@ -62,6 +62,15 @@ export class ConversationLearner {
     }
 
     /**
+     * OPTIONAL: 
+     * Results in clearing of existing Entity values, and a call to the OnSessionEndCallback
+     * @param turnContext BotBuilder Context
+     */
+    public async EndSession(turnContext: BB.TurnContext): Promise<void> {
+        await this.clRunner.BotEndSession(turnContext)
+    }
+
+    /**
      * Provide an callback that will be invoked whenever a Session is started
      * @param target Callback of the form (context: BB.TurnContext, memoryManager: ClientMemoryManager) => Promise<void>
      */

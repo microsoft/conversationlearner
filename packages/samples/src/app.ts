@@ -1271,14 +1271,6 @@ server.post('/api/messages', (req, res) => {
         if (result) {
             return clDispatch.SendResult(result)
         }
-        return null
-        /*
-        const result = await cl.recognize(context)
-
-        if (result) {
-            return cl.SendResult(result)
-        }
-        */
     })
 })
 
@@ -1294,7 +1286,7 @@ var getActivityResult = (activityId: string) => {
                     console.log(`Expected activity result ${activityId}`)
                     let curTime = new Date().getTime()
                     if (curTime - startTime > 100000) {
-                        console.log(`Expire ${activityId} ${curTime} ${startTime}`)
+                        console.log(`Expire Activity: ${activityId} ${curTime} ${startTime}`)
                         clearInterval(timeout)
                     }
                     return
@@ -1327,8 +1319,8 @@ var getTestOutput = (activityId: string) => {
                 const output = TestOutput.get(activityId)
                 if (!output) {
                     let curTime = new Date().getTime()
-                    if (curTime - startTime > 100000) {
-                        var message = `Expire ${activityId} ${curTime} ${startTime}`
+                    if (curTime - startTime > 150000) {
+                        var message = `Expire Output: ${activityId} ${curTime} ${startTime}`
                         console.log(message)
                         clearInterval(timeout)
                         resolve(message)
@@ -1361,11 +1353,12 @@ const TestTranscript = async (transcript: BB.Activity[], fileName: string) => {
     var needInit = true
     const adapter = new BB.TestAdapter(async (context) => {
         if (needInit) {
-            clDispatch.StartSession(context)
-            clRestaurant.StartSession(context)
-            clTaxi.StartSession(context)
-            clTrain.StartSession(context)
-            clHotel.StartSession(context)
+            // End any open session before I start
+            clDispatch.EndSession(context)
+            clRestaurant.EndSession(context)
+            clTaxi.EndSession(context)
+            clTrain.EndSession(context)
+            clHotel.EndSession(context)
             needInit = false
         }
         if (context.activity.text != "test") {

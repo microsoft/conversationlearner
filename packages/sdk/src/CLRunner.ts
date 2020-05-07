@@ -296,6 +296,33 @@ export class CLRunner {
         }
     }
 
+    // Allows Bot developer to end a Session (never in Teach)
+    public async BotEndSession(turnContext: BB.TurnContext): Promise<void> {
+
+        // Set adapter / conversation reference even if from field not set
+        let conversationReference = BB.TurnContext.getConversationReference(turnContext.activity)
+        this.SetAdapter(turnContext.adapter, conversationReference)
+ 
+        const activity = turnContext.activity
+        if (activity.from === undefined || activity.id == undefined) {
+            return
+        }
+
+        try {
+            const state = this.stateFactory.getFromContext(turnContext, this.modelId)
+            const sessionId = await state.BotState.GetSessionIdAndSetConversationId(conversationReference)
+            const app = await this.GetRunningApp(state, false)
+
+            if (app && sessionId) {
+                await Utils.EndSessionIfOpen(this.clClient, app.appId, sessionId)
+                this.EndSessionAsync(state, CLM.SessionEndState.COMPLETED)
+            }
+        }
+        catch (error) {
+            CLDebug.Error(error)
+        }
+    }
+    
     public SetAdapter(adapter: BB.BotAdapter, conversationReference: Partial<BB.ConversationReference>) {
         this.adapter = adapter
         CLDebug.InitLogger(adapter, conversationReference)
