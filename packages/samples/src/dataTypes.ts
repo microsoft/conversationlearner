@@ -18,9 +18,11 @@ export enum LuisSlot {
   DESTINATION = "dest",
   LEAVE_AT = "leave",
   STAY = "stay",
-  INTERNET = "internet",
+  INTERNET_NO = "internet-no",
+  INTERNET_YES = "internet-yes",
   NAME = "name",
-  PARKING = "parking",
+  PARKING_NO = "parking-no",
+  PARKING_YES = "parking-yes",
   STARS = "stars",
   TYPE = "type",
 }
@@ -142,9 +144,9 @@ export interface Train {
   departure: string
   destination: string
   duration: string
-  leaveAt: number[]
+  leaveAt: string
   price: string
-  trainId: string
+  trainID: string
 }
 
 export interface Taxi {
@@ -158,5 +160,6 @@ export const NameSubstitutionMap = new Map([
   ["destination", "dest"],
   ["departure", "depart"],
   ["arriveBy", "arrive"],
-  ["leaveAt", "leave"]
+  ["leaveAt", "leave"],
+  ["price", "ticket"]
 ])

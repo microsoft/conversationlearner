@@ -108,9 +108,11 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
     var dest = memoryManager.Get(LuisSlot.DESTINATION, ClientMemoryManager.AS_STRING)
     var leave = memoryManager.Get(LuisSlot.LEAVE_AT, ClientMemoryManager.AS_STRING)
     var stay = memoryManager.Get(LuisSlot.STAY, ClientMemoryManager.AS_STRING)
-    var internet = memoryManager.Get(LuisSlot.INTERNET, ClientMemoryManager.AS_STRING)
+    var internetYes = memoryManager.Get(LuisSlot.INTERNET_YES, ClientMemoryManager.AS_STRING)
+    var internetNo = memoryManager.Get(LuisSlot.INTERNET_NO, ClientMemoryManager.AS_STRING)
     var name = memoryManager.Get(LuisSlot.NAME, ClientMemoryManager.AS_STRING)
-    var parking = memoryManager.Get(LuisSlot.PARKING, ClientMemoryManager.AS_STRING)
+    var parkingYes = memoryManager.Get(LuisSlot.PARKING_YES, ClientMemoryManager.AS_STRING)
+    var parkingNo = memoryManager.Get(LuisSlot.PARKING_NO, ClientMemoryManager.AS_STRING)
     var stars = memoryManager.Get(LuisSlot.STARS, ClientMemoryManager.AS_STRING)
     var type_ = memoryManager.Get(LuisSlot.TYPE, ClientMemoryManager.AS_STRING)
 
@@ -209,17 +211,25 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
             memoryManager.Set(HotelSlot.AREA, area)
             memoryManager.Delete(LuisSlot.AREA)
         }
-        if (internet) {
-            memoryManager.Set(HotelSlot.INTERNET, internet)
-            memoryManager.Delete(LuisSlot.INTERNET)
+        if (internetYes) {
+            memoryManager.Set(HotelSlot.INTERNET, "yes")
+            memoryManager.Delete(LuisSlot.INTERNET_YES)
+        }
+        if (internetNo) {
+            memoryManager.Set(HotelSlot.INTERNET, "no")
+            memoryManager.Delete(LuisSlot.INTERNET_NO)
         }
         if (name) {
             memoryManager.Set(HotelSlot.NAME, name)
             memoryManager.Delete(LuisSlot.NAME)
         }
-        if (parking) {
-            memoryManager.Set(HotelSlot.PARKING, parking)
-            memoryManager.Delete(LuisSlot.PARKING)
+        if (parkingYes) {
+            memoryManager.Set(HotelSlot.PARKING, "yes")
+            memoryManager.Delete(LuisSlot.PARKING_YES)
+        }
+        if (parkingNo) {
+            memoryManager.Set(HotelSlot.PARKING, "no")
+            memoryManager.Delete(LuisSlot.PARKING_NO)
         }
         if (price) {
             memoryManager.Set(HotelSlot.PRICERANGE, price)
@@ -289,6 +299,13 @@ const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: string): vo
         //var attraction = memoryManager.Get(Domain.ATTRACTION, ClientMemoryManager.AS_STRING)
         //if (attraction !== null && attraction !== undefined) {
         var attractions = AttractionOptions(memoryManager)
+
+        // If wasn't set, set from BG
+        if (attractions.length > 0) {
+            if (!memoryManager.Get(AttractionSlot.AREA, ClientMemoryManager.AS_STRING)) {
+                memoryManager.Set(AttractionSlot.AREA, [... new Set(attractions.map(a => a.area))])
+            }
+        }
         memoryManager.Set(AttractionSlot.CHOICE, attractions.length)
         //}
     }
@@ -327,69 +344,94 @@ const getEntities = (domain: Domain, memoryManager: ClientMemoryManager) => {
 }
 const trainEntities = (memoryManager: ReadOnlyClientMemoryManager): string[] => {
     let entities: string[] = []
-    Object.values(TrainSlot).map(entityName => {
-        var value = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING)
-        if (value) {
-            entities.push(`"${entityName}": "${value}"`)
-        }
-    })
+
     var trains = TrainOptions(memoryManager)
     if (trains.length == 1) {
-        entities.push(`"train-id": "${trains[0].trainId}"`)
-        entities.push(`"train-price": "${trains[0].price}"`)
-        entities.push(`"train-duration": "${trains[0].duration}"`)
+        entities.push(`train-id: ${trains[0].trainID}`)
+        entities.push(`train-ticket: ${trains[0].price}`)
+        entities.push(`train-duration: ${trains[0].duration}`)
     }
+
+    Object.values(TrainSlot).map((entityName: string) => {
+        var value = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING)
+        if (value) {
+            entities.push(`${entityName}: ${value}`)
+        }
+        else if (trains.length == 1) {
+            var key = propertyName(entityName) as keyof Train
+            entities.push(`${entityName}: ${trains[0][key]}`)
+        }
+    })
     return entities
 }
 
 const restaurantEntities = (memoryManager: ReadOnlyClientMemoryManager): string[] => {
     let entities: string[] = []
+
+    var restaurants = RestaurantOptions(memoryManager)
+    if (restaurants.length == 1) {
+        entities.push(`restaurant-address: ${restaurants[0].address}`)
+        entities.push(`restaurant-phone: ${restaurants[0].phone}`)
+        entities.push(`restaurant-postcode: ${restaurants[0].postcode}`)
+    }
+
     Object.values(RestaurantSlot).map(entityName => {
         var value = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING)
         if (value) {
-            entities.push(`"${entityName}": "${value}"`)
+            entities.push(`${entityName}: ${value}`)
+        }
+        else if (restaurants.length == 1) {
+            var key = propertyName(entityName) as keyof Restaurant
+            entities.push(`${entityName}: ${restaurants[0][key]}`)
         }
     })
-    var restaurant = RestaurantOptions(memoryManager)
-    if (restaurant.length == 1) {
-        entities.push(`"restaurant-address": "${restaurant[0].address}"`)
-        entities.push(`"restaurant-phone": "${restaurant[0].phone}"`)
-        entities.push(`"restaurant-postcode": "${restaurant[0].postcode}"`)
-    }
     return entities
 }
 
 const hotelEntities = (memoryManager: ReadOnlyClientMemoryManager): string[] => {
     let entities: string[] = []
+
+    var hotels = HotelOptions(memoryManager)
+    if (hotels.length == 1) {
+        entities.push(`hotel-address: ${hotels[0].address}`)
+        entities.push(`hotel-phone: ${hotels[0].phone}`)
+        entities.push(`hotel-postcode: ${hotels[0].postcode}`)
+    }
+
     Object.values(HotelSlot).map(entityName => {
         var value = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING)
         if (value) {
-            entities.push(`"${entityName}": "${value}"`)
+            entities.push(`${entityName}: ${value}`)
+        }
+        else if (hotels.length == 1) {
+            var key = propertyName(entityName) as keyof Hotel
+            entities.push(`${entityName}: ${hotels[0][key]}`)
         }
     })
-    var hotel = HotelOptions(memoryManager)
-    if (hotel.length == 1) {
-        entities.push(`"hotel-address": "${hotel[0].address}"`)
-        entities.push(`"hotel-phone": "${hotel[0].phone}"`)
-        entities.push(`"hotel-postcode": "${hotel[0].postcode}"`)
-    }
+
     return entities
 }
 
 const attractionEntities = (memoryManager: ReadOnlyClientMemoryManager): string[] => {
     let entities: string[] = []
+
+    var attractions = AttractionOptions(memoryManager)
+    if (attractions.length == 1) {
+        entities.push(`attraction-address: ${attractions[0].address}`)
+        entities.push(`attraction-phone: ${attractions[0].phone}`)
+        entities.push(`attraction-postcode: ${attractions[0].postcode}`)
+    }
+
     Object.values(AttractionSlot).map(entityName => {
-        var value = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING)
-        if (value) {
-            entities.push(`"${entityName}": "${value}"`)
+        var values = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING_LIST)
+        if (values) {
+            entities.push(`${entityName}: ${values}`)
+        }
+        else if (attractions.length == 1) {
+            var key = propertyName(entityName) as keyof Attraction
+            entities.push(`${entityName}: ${attractions[0][key]}`)
         }
     })
-    var attraction = AttractionOptions(memoryManager)
-    if (attraction.length == 1) {
-        entities.push(`"attraction-address": "${attraction[0].address}"`)
-        entities.push(`"attraction-phone": "${attraction[0].phone}"`)
-        entities.push(`"attraction-postcode": "${attraction[0].postcode}"`)
-    }
     return entities
 }
 
@@ -398,7 +440,7 @@ const taxiEntities = (memoryManager: ReadOnlyClientMemoryManager): string[] => {
     Object.values(TaxiSlot).map(entityName => {
         var value = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING)
         if (value) {
-            entities.push(`"${entityName}": "${value}"`)
+            entities.push(`${entityName}: ${value}`)
         }
     })
     return entities
@@ -507,21 +549,21 @@ var RestaurantOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemo
 
 var AttractionOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Attraction[] => {
 
-    var area = memoryManager.Get(AttractionSlot.AREA, ClientMemoryManager.AS_STRING)
-    var name = memoryManager.Get(AttractionSlot.NAME, ClientMemoryManager.AS_STRING)
-    var _type = memoryManager.Get(AttractionSlot.TYPE, ClientMemoryManager.AS_STRING)
+    var area = memoryManager.Get(AttractionSlot.AREA, ClientMemoryManager.AS_STRING_LIST)
+    var name = memoryManager.Get(AttractionSlot.NAME, ClientMemoryManager.AS_STRING_LIST)
+    var _type = memoryManager.Get(AttractionSlot.TYPE, ClientMemoryManager.AS_STRING_LIST)
 
     //TODO entracneFree / price /etc no semantics ??
 
     var attraction = AttractionDb()
-    if (area) {
-        attraction = attraction.filter(r => r.area === area)
+    if (area.length > 0) {
+        attraction = attraction.filter(r => area.includes(r.area))
     }
-    if (name) {
-        attraction = attraction.filter(r => r.name === name)
+    if (name.length > 0) {
+        attraction = attraction.filter(r => name.includes(r.name))
     }
-    if (_type) {
-        attraction = attraction.filter(r => r._type === _type)
+    if (_type.length > 0) {
+        attraction = attraction.filter(r => _type.includes(r._type))
     }
     return attraction
 }
@@ -542,11 +584,11 @@ var HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryMan
     if (area) {
         hotels = hotels.filter(r => r.area === area)
     }
-    if (internet) {
-        hotels = hotels.filter(r => r.internet === internet)
+    if (internet == "yes") {
+        hotels = hotels.filter(r => r.internet === "yes")
     }
-    if (parking) {
-        hotels = hotels.filter(r => r.parking === parking)
+    if (parking == "yes") {
+        hotels = hotels.filter(r => r.parking === "yes")
     }
     if (name) {
         hotels = hotels.filter(r => r.name === name)
@@ -573,23 +615,62 @@ var TrainOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryMan
 
     //TODO entracneFree / price /etc no semantics ??
 
-    var train = TrainDb()
-    if (arriveBy) {
-        train = train.filter(r => r.arriveBy === arriveBy)
-    }
+    var trains = TrainDb()
     if (day) {
-        train = train.filter(r => r.day === day)
+        trains = trains.filter(r => r.day.toLowerCase() === day?.toLocaleLowerCase())
     }
     if (departure) {
-        train = train.filter(r => r.departure === departure)
+        trains = trains.filter(r => r.departure.toLowerCase() === departure?.toLowerCase())
     }
     if (destination) {
-        train = train.filter(r => r.destination === destination)
+        trains = trains.filter(r => r.destination.toLowerCase() === destination?.toLowerCase())
     }
     if (leaveAt) {
-        train = train.filter(r => r.destination === leaveAt)
+        const bestTrain = trainLeaveAfter(trains, leaveAt)
+        trains = bestTrain ? [bestTrain] : []
     }
-    return train
+    if (arriveBy) {
+        const bestTrain = trainArriveBefore(trains, arriveBy)
+        trains = bestTrain ? [bestTrain] : []
+    }
+    return trains
+}
+
+var trainArriveBefore = (trains: Train[], arriveBefore: string): Train | null => {
+
+    var arriveBeforeTime = parseTime(arriveBefore)
+    var bestTime = Number.MAX_VALUE
+    var bestTrain: Train | null = null
+    trains.forEach(train => {
+        var trainLeave = parseTime(train.leaveAt)
+        var diff = arriveBeforeTime - trainLeave
+        if (diff > 0 && diff < bestTime) {
+            bestTrain = train
+            bestTime = diff
+        }
+    })
+    return bestTrain
+}
+
+var trainLeaveAfter = (trains: Train[], leaveAfter: string): Train | null => {
+
+    var leaveAfterTime = parseTime(leaveAfter)
+    var bestTime = Number.MAX_VALUE
+    var bestTrain: Train | null = null
+    trains.forEach(train => {
+        var trainLeave = parseTime(train.leaveAt)
+        var diff = trainLeave - leaveAfterTime
+        if (diff > 0 && diff < bestTime) {
+            bestTrain = train
+            bestTime = diff
+        }
+    })
+    return bestTrain
+}
+
+var parseTime = (time: string): number => {
+    var parts = time.split(":")
+    return (parseInt(parts[0]) * 60) + parseInt(parts[1])
 }
 
 var TaxiOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Taxi[] => {
@@ -1048,6 +1129,16 @@ const ActivityResultToString = (activityResult: ActivityResult): string => {
     return JSON.stringify(output)
 }
 
+const makeId = (length: number): string => {
+    var result = ''
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    var charactersLength = characters.length
+    for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength))
+    }
+    return result
+}
+
 const expandedResults = (dialogActs: string[], entities: string[]): string[][] => {
     const results: string[][] = []
     for (var dialogAct of dialogActs) {
@@ -1059,15 +1150,33 @@ const expandedResults = (dialogActs: string[], entities: string[]): string[][] =
         if (act == "Request") {
             results.push([act, domain, entity, "?"])
         }
+        else if (entity == "none") {
+            results.push([act, domain, entity, "none"])
+        }
+        else if (entity == "Ref") {
+            results.push([act, domain, entity, makeId(8)])
+        }
         else {
             const kv = entities.find(e => e.includes(entity.toLowerCase()))
-            const value = kv ? kv.split(": ")[1] : "MISSING"
-            results.push([act, domain, entity, value])
+            // "attraction-semi-area: east,centre,south,west,north"
+            const values = kv ? kv.split(": ")[1].split(",") : ["MISSING"]
+            for (var value of values) {
+                results.push([act, domain, entity, value])
+            }
         }
     }
     return results
 }
-const domainInit = (model: ConversationLearner, domain: Domain, slotMap: Map<string, string>) => {
+const getDomainCL = (domain: Domain): ConversationLearner => {
+
+    const modelId = ConversationLearnerFactory.modelIdFromName(domain)
+    const model = clFactory.create(modelId)
+
+    var slotNames = getSlotNames(domain)
+    const slotMap = new Map()
+    slotNames.forEach((entityName: string) => {
+        return slotMap.set(shortName(entityName), entityName)
+    })
 
     model.EntityDetectionCallback = async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
         ApplyEntitySubstitutions(memoryManager)
@@ -1124,6 +1233,8 @@ const domainInit = (model: ConversationLearner, domain: Domain, slotMap: Map<str
     model.AddCallback(apiDontCareFood)
     model.AddCallback(apiDontCareArrive)
     model.AddCallback(apiDontCareType)
+
+    return model
 }
 
 const shortName = (entityName: string): string => {
@@ -1133,82 +1244,39 @@ const shortName = (entityName: string): string => {
     return shortName
 }
 
+const propertyName = (entityName: string): string => {
+    const split = entityName.split('-')
+    let shortName = split[split.length - 1]
+    NameSubstitutionMap.forEach((value: string, key: string) => {
+        if (value == entityName) {
+            return key
+        }
+    })
+    return shortName
+}
+
+const getSlotNames = (domain: Domain) => {
+    switch (domain) {
+        case Domain.ATTRACTION:
+            return Object.values(AttractionSlot)
+        case Domain.HOTEL:
+            return Object.values(HotelSlot)
+        case Domain.RESTAURANT:
+            return Object.values(RestaurantSlot)
+        case Domain.TAXI:
+            return Object.values(TaxiSlot)
+        case Domain.TRAIN:
+            return Object.values(TrainSlot)
+    }
+}
 let clAttraction: ConversationLearner
-const initAttractionModel = () => {
-
-    const modelId = ConversationLearnerFactory.modelIdFromName(Domain.ATTRACTION)
-    const model = clFactory.create(modelId)
-
-    const slotMap = new Map()
-    Object.values(AttractionSlot).forEach(entityName => {
-        return slotMap.set(shortName(entityName), entityName)
-    })
-
-    domainInit(model, Domain.ATTRACTION, slotMap)
-    clAttraction = model
-}
-
 let clHotel: ConversationLearner
-const initHotelModel = () => {
-
-    const modelId = ConversationLearnerFactory.modelIdFromName(Domain.HOTEL)
-    const model = clFactory.create(modelId)
-
-    const slotMap = new Map()
-    Object.values(HotelSlot).forEach(entityName => {
-        return slotMap.set(shortName(entityName), entityName)
-    })
-
-    domainInit(model, Domain.HOTEL, slotMap)
-    clHotel = model
-}
-
 let clRestaurant: ConversationLearner
-const initRestaurantModel = () => {
-
-    const modelId = ConversationLearnerFactory.modelIdFromName(Domain.RESTAURANT)
-    const model = clFactory.create(modelId)
-
-    const slotMap = new Map()
-    Object.values(RestaurantSlot).forEach(entityName => {
-        return slotMap.set(shortName(entityName), entityName)
-    })
-
-    domainInit(model, Domain.RESTAURANT, slotMap)
-    clRestaurant = model
-}
-
 let clTaxi: ConversationLearner
-const initTaxiModel = () => {
-
-    const modelId = ConversationLearnerFactory.modelIdFromName(Domain.TAXI)
-    const model = clFactory.create(modelId)
-
-    const slotMap = new Map()
-    Object.values(TaxiSlot).forEach(entityName => {
-        return slotMap.set(shortName(entityName), entityName)
-    })
-
-    domainInit(model, Domain.TAXI, slotMap)
-    clTaxi = model
-}
-
 let clTrain: ConversationLearner
-const initTrainModel = () => {
-
-    const modelId = ConversationLearnerFactory.modelIdFromName(Domain.TRAIN)
-    const model = clFactory.create(modelId)
-
-    const slotMap = new Map()
-    Object.values(TrainSlot).forEach(entityName => {
-        return slotMap.set(shortName(entityName), entityName)
-    })
-
-    domainInit(model, Domain.TRAIN, slotMap)
-    clTrain = model
-}
 
 const createModels = async () => {
+    console.log('========= CREATING MODELS ==========')
     let cl = clFactory.create(modelId)
     const key = clOptions.LUIS_AUTHORING_KEY
     const hashedKey = key ? crypto.createHash('sha256').update(key).digest('hex') : ""
@@ -1220,17 +1288,11 @@ const createModels = async () => {
 
     initCombinedModel()
     initDispatchModel()
-    initAttractionModel()
-    initHotelModel()
-    initRestaurantModel()
-    initTaxiModel()
-    initTrainModel()
-
-    console.log(clTrain)
-    console.log(clTaxi)
-    console.log(clHotel)
-    console.log(clAttraction)
-    console.log(clRestaurant)
+    clAttraction = getDomainCL(Domain.ATTRACTION)
+    clHotel = getDomainCL(Domain.HOTEL)
+    clRestaurant = getDomainCL(Domain.RESTAURANT)
+    clTaxi = getDomainCL(Domain.TAXI)
+    clTrain = getDomainCL(Domain.TRAIN)
 }
 
 server.post('/api/messages', (req, res) => {
@@ -1246,8 +1308,13 @@ server.post('/api/messages', (req, res) => {
             return
         }
 
-        if (context.activity.text === "test") {
-            await TestTrascripts()
+        if (context.activity.text && context.activity.text.includes("test")) {
+            await RunTest(context)
+            context.activity.type = BB.ActivityTypes.ConversationUpdate
+        }
+
+        if (context.activity.text === "stop") {
+            await StopTesting(context)
             context.activity.type = BB.ActivityTypes.ConversationUpdate
         }
 
@@ -1276,10 +1343,11 @@ server.post('/api/messages', (req, res) => {
 
 createModels()
 
+var getActivityResultIntervals: NodeJS.Timeout[] = []
 var getActivityResult = (activityId: string) => {
     var promise = new Promise<ActivityResult>((resolve, reject) => {
         let startTime = new Date().getTime()
-        const timeout: NodeJS.Timeout = setInterval(
+        var interval = setInterval(
             () => {
                 var activityResult = ActivityResults.find(r => r.activityId === activityId)
                 if (!activityResult) {
@@ -1287,7 +1355,8 @@ var getActivityResult = (activityId: string) => {
                     let curTime = new Date().getTime()
                     if (curTime - startTime > 100000) {
                         console.log(`Expire Activity: ${activityId} ${curTime} ${startTime}`)
-                        clearInterval(timeout)
+                        getActivityResultIntervals = getActivityResultIntervals.filter(i => i !== interval)
+                        clearInterval(interval)
                     }
                     return
                 }
@@ -1299,8 +1368,9 @@ var getActivityResult = (activityId: string) => {
                     }
                 })
 
-                if (isDone) {
-                    clearInterval(timeout)
+                if (isDone && isTesting) {
+                    getActivityResultIntervals = getActivityResultIntervals.filter(i => i !== interval)
+                    clearInterval(interval)
                     // Clear data
                     ActivityResults = ActivityResults.filter(r => r.activityId !== activityId)
                     resolve(activityResult)
@@ -1311,10 +1381,11 @@ var getActivityResult = (activityId: string) => {
     return promise
 }
 
+var testOutputIntervals: NodeJS.Timeout[] = []
 var getTestOutput = (activityId: string) => {
     var promise = new Promise<string>((resolve, reject) => {
         let startTime = new Date().getTime()
-        const timeout: NodeJS.Timeout = setInterval(
+        var interval = setInterval(
             () => {
                 const output = TestOutput.get(activityId)
                 if (!output) {
@@ -1322,45 +1393,78 @@ var getTestOutput = (activityId: string) => {
                     if (curTime - startTime > 150000) {
                         var message = `Expire Output: ${activityId} ${curTime} ${startTime}`
                         console.log(message)
-                        clearInterval(timeout)
+                        testOutputIntervals = testOutputIntervals.filter(i => i !== interval)
+                        clearInterval(interval)
                         resolve(message)
                     }
                     return
                 }
-                resolve(output)
-                clearInterval(timeout)
+                testOutputIntervals = testOutputIntervals.filter(i => i !== interval)
+                clearInterval(interval)
+                if (isTesting) {
+                    resolve(output)
+                }
             }
             , 1000)
+        testOutputIntervals.push(interval)
     })
     return promise
 }
 
+const RunTest = async (context: BB.TurnContext) => {
+    console.log('========= START TESTING ==========')
 
-const TestTrascripts = () => {
     var testDirectory = GetDirectory(TestDirectory)
     var transcriptFileNames = fs.readdirSync(testDirectory)
 
+    // See if I filter to a single test
+    var commands = context.activity.text.split(" ")
+    if (commands[1]) {
+        transcriptFileNames = transcriptFileNames.filter(fn => fn.includes(commands[1]))
+    }
+
+    if (transcriptFileNames.length === 0) {
+        console.log(`--------- No Matching Dialogs ----------`)
+    }
+    isTesting = true
     for (var fileName of transcriptFileNames) {
         const transcript = fs.readFileSync(`${testDirectory}\\${fileName}`, 'utf-8')
-        TestTranscript(JSON.parse(transcript), fileName)
+        console.log(`--------- ${fileName} ----------`)
+        await TestTranscript(JSON.parse(transcript), fileName)
+        await clDispatch.EndSession(context)
+        await clRestaurant.EndSession(context)
+        await clAttraction.EndSession(context)
+        await clTaxi.EndSession(context)
+        await clTrain.EndSession(context)
+        await clHotel.EndSession(context)
+        if (!isTesting) {
+            break
+        }
     }
 
 }
 
+let isTesting = true
+const StopTesting = async (context: BB.TurnContext) => {
+    for (var interval of getActivityResultIntervals) {
+        clearInterval(interval)
+    }
+    for (var interval of testOutputIntervals) {
+        clearInterval(interval)
+    }
+    await clDispatch.EndSession(context)
+    await clRestaurant.EndSession(context)
+    await clAttraction.EndSession(context)
+    await clTaxi.EndSession(context)
+    await clTrain.EndSession(context)
+    await clHotel.EndSession(context)
+    isTesting = false
+    console.log('========= END TESTING ==========')
+}
 
 const TestTranscript = async (transcript: BB.Activity[], fileName: string) => {
 
-    var needInit = true
     const adapter = new BB.TestAdapter(async (context) => {
-        if (needInit) {
-            // End any open session before I start
-            clDispatch.EndSession(context)
-            clRestaurant.EndSession(context)
-            clTaxi.EndSession(context)
-            clTrain.EndSession(context)
-            clHotel.EndSession(context)
-            needInit = false
-        }
         if (context.activity.text != "test") {
             var result = await clDispatch.recognize(context)
 
@@ -1388,10 +1492,10 @@ const TestTranscript = async (transcript: BB.Activity[], fileName: string) => {
         else if (userActivity.from.role == BB.RoleTypes.User) {
             userActivity.id = generateGUID()
             adapter.send(userActivity)
-            console.log(`< ${userActivity.text}`)
-            console.log(`= ${agentActivity.text}`)
+            console.log(`${userActivity.text}`)
+            console.log(`> ${agentActivity.text}`)
             var response = await getTestOutput(userActivity.id!)
-            console.log(`> ${response}`)
+            console.log(`< ${response}`)
 
             var testResult: TestResult =
             {
@@ -1403,9 +1507,13 @@ const TestTranscript = async (transcript: BB.Activity[], fileName: string) => {
                 testResult.error = error
             }
             testResults.push(testResult)
+        }
 
+        if (!isTesting) {
+            break
         }
     }
+    console.log(`--------- DONE: ${fileName} ----------`)
     fs.writeFileSync(`${GetDirectory(ResultsDirectory)}\\${fileName}`, JSON.stringify(testResults))
 }
 /*

@@ -29,6 +29,11 @@ export class InputQueue {
     private static MakeId(conversationId: string, appId: string = "none"): string {
         return `${conversationId}-${appId}`
     }
+
+    public static ClearInputQueues() {
+        this.inputQueues = {}
+    }
+
     /**
      * 
      * @param inProcessMessageState Store for mutex
