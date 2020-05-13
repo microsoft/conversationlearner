@@ -13,7 +13,7 @@ export enum LuisSlot {
   AREA = "area",
   FOOD = "food",
   PRICE = "price",
-  ARRIVE = "arrive",
+  ARRIVE_BY = "arrive",
   DEPART = "depart",
   DESTINATION = "dest",
   LEAVE_AT = "leave",
@@ -31,7 +31,7 @@ export enum TrainSlot {
   ARRIVE_BY = "train-semi-arriveBy",
   DAY = "train-semi-day",
   PEOPLE = "train-book-people",
-  DEPARTURE = "train-semi-departure",
+  DEPART = "train-semi-departure",
   DESTINATION = "train-semi-destination",
   LEAVE_AT = "train-semi-leaveAt",
   CHOICE = "train-choice",
@@ -44,7 +44,6 @@ export enum RestaurantSlot {
   FOOD = "restaurant-semi-food",
   NAME = "restaurant-semi-name",
   PRICERANGE = "restaurant-semi-pricerange",
-  TYPE = "restaurant-semi-type",
   TIME = "restaurant-book-time",
   CHOICE = "restaurant-choice",
 }
@@ -72,7 +71,7 @@ export enum AttractionSlot {
 
 export enum TaxiSlot {
   ARRIVE_BY = "taxi-semi-arriveBy",
-  DEPARTURE = "taxi-semi-departure",
+  DEPART = "taxi-semi-departure",
   DESTINATION = "taxi-semi-destination",
   LEAVE_AT = "taxi-semi-leaveAt",
   CHOICE = "taxi-choice",

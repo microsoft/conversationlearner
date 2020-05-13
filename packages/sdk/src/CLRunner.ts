@@ -338,7 +338,7 @@ export class CLRunner {
         // ConversationUpdate messages are not processed by ConversationLearner
         // They should be handled in the general bot code
         if (turnContext.activity.type == "conversationUpdate") {
-            if (turnContext.activity.text == "stop") {
+            if (turnContext.activity.text == "clearinputqueue") {
                 InputQueue.ClearInputQueues()
             }
             CLDebug.Verbose(`Ignoring Conversation update...  +${JSON.stringify(turnContext.activity.membersAdded)} -${JSON.stringify(turnContext.activity.membersRemoved)}`)
