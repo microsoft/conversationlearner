@@ -336,8 +336,7 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
 
 const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: string): void => {
     if (domainFilter == "restaurant") {
-        //LARSvar restaurant = memoryManager.Get(Domain.RESTAURANT, ClientMemoryManager.AS_STRING)
-        //if (restaurant !== null && restaurant !== undefined) {
+
         var restaurants = RestaurantOptions(memoryManager)
 
         // If I have a couple ouptions, set from search results
@@ -359,11 +358,9 @@ const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: string): vo
             }
         }
         memoryManager.Set(RestaurantSlot.CHOICE, restaurants.length)
-        //}
     }
     if (domainFilter == "hotel") {
-        //var hotel = memoryManager.Get(Domain.HOTEL, ClientMemoryManager.AS_STRING)
-        //if (hotel !== null && hotel !== undefined) {
+
         var hotels = HotelOptions(memoryManager)
 
         // If I have a couple ouptions, set from search results
@@ -386,11 +383,8 @@ const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: string): vo
         }
 
         memoryManager.Set(HotelSlot.CHOICE, hotels.length)
-        //}
     }
     if (domainFilter == "attraction") {
-        //var attraction = memoryManager.Get(Domain.ATTRACTION, ClientMemoryManager.AS_STRING)
-        //if (attraction !== null && attraction !== undefined) {
         var attractions = AttractionOptions(memoryManager)
 
         // If I have a couple ouptions, set from search results
@@ -406,18 +400,14 @@ const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: string): vo
             }
         }
         memoryManager.Set(AttractionSlot.CHOICE, attractions.length)
-        //}
     }
     if (domainFilter == "taxi") {
-        //var taxi = memoryManager.Get(Domain.TAXI, ClientMemoryManager.AS_STRING)
-        //if (taxi !== null && taxi !== undefined) {
         var taxis = TaxiOptions(memoryManager)
-        memoryManager.Set(TaxiSlot.CHOICE, taxis.length)
-        //}
+        taxis.length
+        // There's always a taxi
+        memoryManager.Set(TaxiSlot.CHOICE, 1)
     }
     if (domainFilter == "train") {
-        //var train = memoryManager.Get(Domain.TRAIN, ClientMemoryManager.AS_STRING)
-        //if (train !== null && train !== undefined) {
         var trains = TrainOptions(memoryManager)
 
         // If I have a couple ouptions, set from search results
@@ -439,7 +429,6 @@ const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: string): vo
             }
         }
         memoryManager.Set(TrainSlot.CHOICE, trains.length)
-        //}
     }
 }
 
@@ -801,6 +790,7 @@ var parseTime = (time: string): number => {
     var parts = time.split(":")
     return (parseInt(parts[0]) * 60) + parseInt(parts[1])
 }
+
 
 var TaxiOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Taxi[] => {
     return TaxiDb()
@@ -1631,7 +1621,8 @@ const TestTranscript = async (transcript: BB.Activity[], fileName: string) => {
             userActivity.conversation.id = conversationId
             adapter.send(userActivity)
             console.log(`${userActivity.text}`)
-            console.log(`> ${agentActivity.text}`)
+            console.log(`${agentActivity.summary}`)
+            console.log(`  ${agentActivity.text}`)
             var response = await getTestOutput(userActivity.id!)
             console.log(`< ${response}`)
 

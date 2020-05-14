@@ -1222,14 +1222,18 @@ export class CLRunner {
                     )
 
                     if (!inTeach) {
-                        CLDebug.Log(`Dispatch to Model: ${dispatchAction.modelId} ${dispatchAction.modelName}`, DebugType.Dispatch)
+                        const modelIds = dispatchAction.modelId.split(",");
+                        const modelNames = dispatchAction.modelName.split(",");
+                        for (let i = 0; i< modelNames.length; i = i + 1) {
+                            CLDebug.Log(`Dispatch to Model: ${modelIds[i]} ${modelNames[i]}`, DebugType.Dispatch)
 
-                        // Multiwoz - note that dispatch has been called
-                        const dispatchCallback = this.callbacks["Dispatch"]
-                        const memoryManager = await this.CreateMemoryManagerAsync(clRecognizeResult.state, clRecognizeResult.clEntities)
-                        await dispatchCallback.logic(memoryManager, clRecognizeResult.state.turnContext!.activity.id!, dispatchAction.modelName)
+                            // Multiwoz - note that dispatch has been called
+                            const dispatchCallback = this.callbacks["Dispatch"]
+                            const memoryManager = await this.CreateMemoryManagerAsync(clRecognizeResult.state, clRecognizeResult.clEntities)
+                            await dispatchCallback.logic(memoryManager, clRecognizeResult.state.turnContext!.activity.id!, dispatchAction.modelName)
 
-                        await this.forwardInputToModel(dispatchAction.modelId, dispatchAction.modelName, clRecognizeResult.state)
+                            await this.forwardInputToModel(modelIds[i], modelNames[i], clRecognizeResult.state)
+                        }
                         // Force response to null to avoid sending message as message will come from next model.
                         actionResult.response = null
                     }
