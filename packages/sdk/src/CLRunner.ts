@@ -1735,7 +1735,7 @@ export class CLRunner {
             })
     }
 
-    public async TakePVAAction(pvaAction: CLM.PVAAction, filledEntityMap: CLM.FilledEntityMap): Promise<Partial<BB.Activity> | string> {
+    public async TakePVAAction(pvaAction: CLM.PVAAction, filledEntityMap: CLM.FilledEntityMap): Promise<string> {
         return Promise.resolve(pvaAction.renderValue(CLM.getEntityDisplayValueMap(filledEntityMap)))
     }
 
@@ -2218,6 +2218,7 @@ export class CLRunner {
         let actions: CLM.ActionBase[] = trainDialog.definitions ? trainDialog.definitions.actions : []
         let entityList: CLM.EntityList = { entities }
         let prevMemories: CLM.Memory[] = []
+        const entiyMap = entities.reduce((m, e) => m.set(e.entityId, `$${e.entityName}`), new Map<string, string>())
 
         if (!trainDialog?.rounds) {
             return null
@@ -2363,7 +2364,11 @@ export class CLRunner {
                             }
                             else if (CLM.ActionBase.isPVAContent(curAction)) {
                                 const pvaAction = new CLM.PVAAction(curAction)
-                                const response = await this.TakePVAAction(pvaAction, filledEntityMap)
+                                let response = await this.TakePVAAction(pvaAction, filledEntityMap)
+                                // replace those {guid} entities that are not in the memory with $entity_name
+                                entiyMap.forEach((value: string, key: string) => {
+                                    response = response.replace(new RegExp(`{${key}}`, 'g'), value)
+                                })
                                 botResponse = {
                                     logicResult: undefined,
                                     response: response

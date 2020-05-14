@@ -102,12 +102,12 @@ export class ActionBase {
   // safety for those places which should require it.
   // TODO: Remove ScoredAction since it doesn't have payload
   static GetPayload(action: ActionBase | ScoredBase, entityValues: Map<string, string>): string {
-    
+
     if (this.isPVAContent(action)) {
       let pvaAction = new PVAAction(action as ActionBase)
       return pvaAction.renderValue(entityValues)
     }
-    
+
     switch (action.actionType) {
       case ActionTypes.TEXT: {
         /**
@@ -166,7 +166,7 @@ export class ActionBase {
     return false
   }
 
-   // Return true if action should be rendered as PVA content
+  // Return true if action should be rendered as PVA content
   static isPVAContent(action: Partial<ActionBase> | undefined): boolean {
     if (!action) {
       return false
@@ -393,7 +393,7 @@ export class SessionAction extends ActionBase {
 }
 
 export class PVAAction extends ActionBase {
-  value: string 
+  value: string
 
   constructor(action: ActionBase) {
     super(action)
@@ -408,9 +408,8 @@ export class PVAAction extends ActionBase {
 
   renderValue(entityValues: Map<string, string>): string {
     let output = this.value
-    entityValues.forEach((value: string, key: string) =>
-    {
-      output = output.replace(`{${key}}`, value)
+    entityValues.forEach((value: string, key: string) => {
+      output = output.replace(new RegExp(`{${key}}`, 'g'), value)
     })
     return output
   }
