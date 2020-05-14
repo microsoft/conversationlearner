@@ -34,7 +34,10 @@ export enum TrainSlot {
   DEPART = "train-semi-departure",
   DESTINATION = "train-semi-destination",
   LEAVE_AT = "train-semi-leaveAt",
-  CHOICE = "train-choice",
+  CHOICE_ONE = "train-choiceone",
+  CHOICE_TWO = "train-choicetwo",
+  CHOICE_MANY = "train-choicemany",
+
 }
 
 export enum RestaurantSlot {
@@ -45,7 +48,9 @@ export enum RestaurantSlot {
   NAME = "restaurant-semi-name",
   PRICERANGE = "restaurant-semi-pricerange",
   TIME = "restaurant-book-time",
-  CHOICE = "restaurant-choice",
+  CHOICE_ONE = "restaurant-choiceone",
+  CHOICE_TWO = "restaurant-choicetwo",
+  CHOICE_MANY = "restaurant-choicemany",
 }
 
 export enum HotelSlot {
@@ -59,14 +64,18 @@ export enum HotelSlot {
   PRICERANGE = "hotel-semi-pricerange",
   STARS = "hotel-semi-stars",
   STAY = "hotel-book-stay",
-  CHOICE = "hotel-choice",
+  CHOICE_ONE = "hotel-choiceone",
+  CHOICE_TWO = "hotel-choicetwo",
+  CHOICE_MANY = "hotel-choicemany",
 }
 
 export enum AttractionSlot {
   AREA = "attraction-semi-area",
   NAME = "attraction-semi-name",
   TYPE = "attraction-semi-type",
-  CHOICE = "attraction-choice",
+  CHOICE_ONE = "attraction-choiceone",
+  CHOICE_TWO = "attraction-choicetwo",
+  CHOICE_MANY = "attraction-choicemany",
 }
 
 export enum TaxiSlot {
@@ -74,7 +83,9 @@ export enum TaxiSlot {
   DEPART = "taxi-semi-departure",
   DESTINATION = "taxi-semi-destination",
   LEAVE_AT = "taxi-semi-leaveAt",
-  CHOICE = "taxi-choice",
+  CHOICE_ONE = "taxi-choiceone",
+  CHOICE_TWO = "taxi-choicetwo",
+  CHOICE_MANY = "taxi-choicemany",
 }
 
 export enum Domain {

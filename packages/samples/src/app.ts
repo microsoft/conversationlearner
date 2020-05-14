@@ -357,7 +357,18 @@ const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: string): vo
                 memoryManager.Set(RestaurantSlot.PRICERANGE, [... new Set(restaurants.map(a => a.pricerange))])
             }
         }
-        memoryManager.Set(RestaurantSlot.CHOICE, restaurants.length)
+        memoryManager.Delete(RestaurantSlot.CHOICE_ONE)
+        memoryManager.Delete(RestaurantSlot.CHOICE_TWO)
+        memoryManager.Delete(RestaurantSlot.CHOICE_MANY)
+        if (restaurants.length == 1) {
+            memoryManager.Set(RestaurantSlot.CHOICE_ONE, true)
+        }
+        else if (restaurants.length == 2) {
+            memoryManager.Set(RestaurantSlot.CHOICE_TWO, true)
+        }
+        else if (restaurants.length > 2) {
+            memoryManager.Set(RestaurantSlot.CHOICE_MANY, true)
+        }
     }
     if (domainFilter == "hotel") {
 
@@ -381,8 +392,18 @@ const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: string): vo
                 memoryManager.Set(HotelSlot.TYPE, [... new Set(hotels.map(a => a._type))])
             }
         }
-
-        memoryManager.Set(HotelSlot.CHOICE, hotels.length)
+        memoryManager.Delete(HotelSlot.CHOICE_ONE)
+        memoryManager.Delete(HotelSlot.CHOICE_TWO)
+        memoryManager.Delete(HotelSlot.CHOICE_MANY)
+        if (hotels.length == 1) {
+            memoryManager.Set(HotelSlot.CHOICE_ONE, true)
+        }
+        else if (hotels.length == 2) {
+            memoryManager.Set(HotelSlot.CHOICE_TWO, true)
+        }
+        else if (hotels.length > 2) {
+            memoryManager.Set(HotelSlot.CHOICE_MANY, true)
+        }
     }
     if (domainFilter == "attraction") {
         var attractions = AttractionOptions(memoryManager)
@@ -399,13 +420,25 @@ const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: string): vo
                 memoryManager.Set(AttractionSlot.TYPE, [... new Set(attractions.map(a => a._type))])
             }
         }
-        memoryManager.Set(AttractionSlot.CHOICE, attractions.length)
+
+        memoryManager.Delete(AttractionSlot.CHOICE_ONE)
+        memoryManager.Delete(AttractionSlot.CHOICE_TWO)
+        memoryManager.Delete(AttractionSlot.CHOICE_MANY)
+        if (attractions.length == 1) {
+            memoryManager.Set(AttractionSlot.CHOICE_ONE, true)
+        }
+        else if (attractions.length == 2) {
+            memoryManager.Set(AttractionSlot.CHOICE_TWO, true)
+        }
+        else if (attractions.length > 2) {
+            memoryManager.Set(AttractionSlot.CHOICE_MANY, true)
+        }
     }
     if (domainFilter == "taxi") {
         var taxis = TaxiOptions(memoryManager)
         taxis.length
         // There's always a taxi
-        memoryManager.Set(TaxiSlot.CHOICE, 1)
+        memoryManager.Set(TaxiSlot.CHOICE_ONE, true)
     }
     if (domainFilter == "train") {
         var trains = TrainOptions(memoryManager)
@@ -428,7 +461,18 @@ const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: string): vo
                 memoryManager.Set(TrainSlot.ARRIVE_BY, [... new Set(trains.map(a => a.arriveBy))])
             }
         }
-        memoryManager.Set(TrainSlot.CHOICE, trains.length)
+        memoryManager.Delete(TrainSlot.CHOICE_ONE)
+        memoryManager.Delete(TrainSlot.CHOICE_TWO)
+        memoryManager.Delete(TrainSlot.CHOICE_MANY)
+        if (trains.length == 1) {
+            memoryManager.Set(TrainSlot.CHOICE_ONE, true)
+        }
+        else if (trains.length == 2) {
+            memoryManager.Set(TrainSlot.CHOICE_TWO, true)
+        }
+        else if (trains.length > 2) {
+            memoryManager.Set(TrainSlot.CHOICE_MANY, true)
+        }
     }
 }
 
@@ -480,6 +524,7 @@ const restaurantEntities = (memoryManager: ReadOnlyClientMemoryManager): string[
         entities.push(`restaurant-address: ${restaurants[0].address}`)
         entities.push(`restaurant-phone: ${restaurants[0].phone}`)
         entities.push(`restaurant-postcode: ${restaurants[0].postcode}`)
+        entities.push(`restaurant-ref: ${makeId(8)}`)
     }
 
     Object.values(RestaurantSlot).map(entityName => {
@@ -503,6 +548,7 @@ const hotelEntities = (memoryManager: ReadOnlyClientMemoryManager): string[] => 
         entities.push(`hotel-address: ${hotels[0].address}`)
         entities.push(`hotel-phone: ${hotels[0].phone}`)
         entities.push(`hotel-postcode: ${hotels[0].postcode}`)
+        entities.push(`hotel-ref: ${makeId(8)}`)
     }
 
     Object.values(HotelSlot).map(entityName => {
@@ -528,6 +574,7 @@ const attractionEntities = (memoryManager: ReadOnlyClientMemoryManager): string[
         entities.push(`attraction-phone: ${attractions[0].phone}`)
         entities.push(`attraction-postcode: ${attractions[0].postcode}`)
         entities.push(`attraction-fee: ${attractions[0].entrancefee}`)
+        entities.push(`attraction-pricerange: ${attractions[0].pricerange}`)
     }
 
     Object.values(AttractionSlot).map(entityName => {
@@ -637,121 +684,15 @@ let GetDirectory = (name: string) => {
 //=================================
 // Options
 //=================================
-var RestaurantOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Restaurant[] => {
-
-    var area = memoryManager.Get(RestaurantSlot.AREA, ClientMemoryManager.AS_STRING_LIST).map(i => i.toLowerCase())
-    var food = memoryManager.Get(RestaurantSlot.FOOD, ClientMemoryManager.AS_STRING_LIST).map(i => i.toLowerCase())
-    var name = memoryManager.Get(RestaurantSlot.NAME, ClientMemoryManager.AS_STRING_LIST).map(i => BaseString(i))
-    var pricerange = memoryManager.Get(RestaurantSlot.PRICERANGE, ClientMemoryManager.AS_STRING_LIST).map(i => i.toLowerCase())
-
-    var restaurants = RestaurantDb()
-    if (area.length > 0) {
-        restaurants = restaurants.filter(r => area.includes(r.area))
-    }
-    if (food.length > 0) {
-        restaurants = restaurants.filter(r => food.includes(r.food))
-    }
-    if (name.length > 0) {
-        restaurants = restaurants.filter(r => name.includes(BaseString(r.name)))
-    }
-    if (pricerange.length > 0) {
-        restaurants = restaurants.filter(r => pricerange.includes(r.pricerange))
-    }
-    return restaurants
-}
-
 // Return version of string with no puncuation or space and lowercase
 var BaseString = (text: string): string => {
     return text.replace(/[^\w\s]|_/g, "").replace(/\s/g, "").toLowerCase()
 }
 
-var AttractionOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Attraction[] => {
-
-    var area = memoryManager.Get(AttractionSlot.AREA, ClientMemoryManager.AS_STRING_LIST).map(i => i.toLowerCase())
-    var name = memoryManager.Get(AttractionSlot.NAME, ClientMemoryManager.AS_STRING_LIST).map(i => BaseString(i))
-    var _type = memoryManager.Get(AttractionSlot.TYPE, ClientMemoryManager.AS_STRING_LIST).map(i => i.toLowerCase())
-
-    //TODO entracneFree / price /etc no semantics ??
-
-    var attraction = AttractionDb()
-    if (area.length > 0) {
-        attraction = attraction.filter(r => area.includes(r.area))
-    }
-    if (name.length > 0) {
-        attraction = attraction.filter(r => name.includes(BaseString(r.name)))
-    }
-    if (_type.length > 0) {
-        attraction = attraction.filter(r => _type.includes(r._type))
-    }
-    return attraction
-}
-
-var HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Hotel[] => {
-
-    var area = memoryManager.Get(HotelSlot.AREA, ClientMemoryManager.AS_STRING_LIST).map(i => i.toLowerCase())
-    var internet = memoryManager.Get(HotelSlot.INTERNET, ClientMemoryManager.AS_STRING_LIST).map(i => i.toLowerCase())
-    var parking = memoryManager.Get(HotelSlot.PARKING, ClientMemoryManager.AS_STRING_LIST).map(i => i.toLowerCase())
-    var name = memoryManager.Get(HotelSlot.NAME, ClientMemoryManager.AS_STRING_LIST).map(i => BaseString(i))
-    var pricerange = memoryManager.Get(HotelSlot.PRICERANGE, ClientMemoryManager.AS_STRING_LIST).map(i => i.toLowerCase())
-    var stars = memoryManager.Get(HotelSlot.STARS, ClientMemoryManager.AS_STRING_LIST).map(i => i.toLowerCase())
-    var _type = memoryManager.Get(HotelSlot.TYPE, ClientMemoryManager.AS_STRING_LIST).map(i => i.toLowerCase())
-
-    //TODO takesbookings ??
-
-    var hotels = HotelDb()
-    if (area.length > 0) {
-        hotels = hotels.filter(r => area.includes(r.area))
-    }
-    if (internet.includes("yes")) {
-        hotels = hotels.filter(r => r.internet === "yes")
-    }
-    if (parking.includes("yes")) {
-        hotels = hotels.filter(r => r.parking === "yes")
-    }
-    if (name.length > 0) {
-        hotels = hotels.filter(r => name.includes(BaseString(r.name)))
-    }
-    if (pricerange.length > 0) {
-        hotels = hotels.filter(r => pricerange.includes(r.pricerange))
-    }
-    if (stars.length > 0) {
-        hotels = hotels.filter(r => stars.includes(r.stars))
-    }
-    if (_type.length > 0) {
-        hotels = hotels.filter(r => _type.includes(r._type))
-    }
-    return hotels
-}
-
-var TrainOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Train[] => {
-
-    var arriveBy = memoryManager.Get(TrainSlot.ARRIVE_BY, ClientMemoryManager.AS_STRING_LIST).map(i => i.toLowerCase())
-    var day = memoryManager.Get(TrainSlot.DAY, ClientMemoryManager.AS_STRING_LIST).map(i => i.toLowerCase())
-    var departure = memoryManager.Get(TrainSlot.DEPART, ClientMemoryManager.AS_STRING_LIST).map(i => i.toLowerCase())
-    var destination = memoryManager.Get(TrainSlot.DESTINATION, ClientMemoryManager.AS_STRING_LIST).map(i => i.toLowerCase())
-    var leaveAt = memoryManager.Get(TrainSlot.LEAVE_AT, ClientMemoryManager.AS_STRING_LIST).map(i => i.toLowerCase())
-
-    //TODO entracneFree / price /etc no semantics ??
-
-    var trains = TrainDb()
-    if (day.length > 0) {
-        trains = trains.filter(r => day.includes(r.day.toLowerCase()))
-    }
-    if (departure.length > 0) {
-        trains = trains.filter(r => departure.includes(r.departure.toLowerCase()))
-    }
-    if (destination.length > 0) {
-        trains = trains.filter(r => destination.includes(r.destination.toLowerCase()))
-    }
-    if (leaveAt.length > 0) {
-        const bestTrain = trainLeaveAfter(trains, leaveAt[0])
-        trains = bestTrain ? [bestTrain] : []
-    }
-    if (arriveBy.length > 0) {
-        const bestTrain = trainArriveBefore(trains, arriveBy[0])
-        trains = bestTrain ? [bestTrain] : []
-    }
-    return trains
+var MemoryValues = (slot: any, memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): string[] => {
+    return memoryManager.Get(slot, ClientMemoryManager.AS_STRING_LIST)
+        .map(i => BaseString(i))
+        .filter(i => i != "none" && i != "dontcare")
 }
 
 var trainArriveBefore = (trains: Train[], arriveBefore: string): Train | null => {
@@ -791,6 +732,117 @@ var parseTime = (time: string): number => {
     return (parseInt(parts[0]) * 60) + parseInt(parts[1])
 }
 
+var RestaurantOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Restaurant[] => {
+
+    var area = MemoryValues(RestaurantSlot.AREA, memoryManager)
+    var food = MemoryValues(RestaurantSlot.FOOD, memoryManager)
+    var name = MemoryValues(RestaurantSlot.NAME, memoryManager)
+    var pricerange = MemoryValues(RestaurantSlot.PRICERANGE, memoryManager)
+
+    var restaurants = RestaurantDb()
+    if (area.length > 0) {
+        restaurants = restaurants.filter(r => area.includes(BaseString(r.area)))
+    }
+    if (food.length > 0) {
+        restaurants = restaurants.filter(r => food.includes(BaseString(r.food)))
+    }
+    if (name.length > 0) {
+        restaurants = restaurants.filter(r => name.includes(BaseString(r.name)))
+    }
+    if (pricerange.length > 0) {
+        restaurants = restaurants.filter(r => pricerange.includes(BaseString(r.pricerange)))
+    }
+    return restaurants
+}
+
+var AttractionOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Attraction[] => {
+
+    var area = MemoryValues(AttractionSlot.AREA, memoryManager)
+    var name = MemoryValues(AttractionSlot.NAME, memoryManager)
+    var _type = MemoryValues(AttractionSlot.TYPE, memoryManager)
+
+    //TODO entracneFree / price /etc no semantics ??
+
+    var attraction = AttractionDb()
+    if (area.length > 0) {
+        attraction = attraction.filter(r => area.includes(BaseString(r.area)))
+    }
+    if (name.length > 0) {
+        attraction = attraction.filter(r => name.includes(BaseString(r.name)))
+    }
+    if (_type.length > 0) {
+        attraction = attraction.filter(r => _type.includes(BaseString(r._type)))
+    }
+    return attraction
+}
+
+var HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Hotel[] => {
+
+    var area = MemoryValues(HotelSlot.AREA, memoryManager)
+    var internet = MemoryValues(HotelSlot.INTERNET, memoryManager)
+    var parking = MemoryValues(HotelSlot.PARKING, memoryManager)
+    var name = MemoryValues(HotelSlot.NAME, memoryManager)
+    var pricerange = MemoryValues(HotelSlot.PRICERANGE, memoryManager)
+    var stars = MemoryValues(HotelSlot.STARS, memoryManager)
+    var _type = MemoryValues(HotelSlot.TYPE, memoryManager)
+
+    //TODO takesbookings ??
+
+    var hotels = HotelDb()
+    if (area.length > 0) {
+        hotels = hotels.filter(r => area.includes(BaseString(r.area)))
+    }
+    if (internet.includes("yes")) {
+        hotels = hotels.filter(r => r.internet === "yes")
+    }
+    if (parking.includes("yes")) {
+        hotels = hotels.filter(r => r.parking === "yes")
+    }
+    if (name.length > 0) {
+        hotels = hotels.filter(r => name.includes(BaseString(r.name)))
+    }
+    if (pricerange.length > 0) {
+        hotels = hotels.filter(r => pricerange.includes(BaseString(r.pricerange)))
+    }
+    if (stars.length > 0) {
+        hotels = hotels.filter(r => stars.includes(BaseString(r.stars)))
+    }
+    if (_type.length > 0) {
+        hotels = hotels.filter(r => _type.includes(BaseString(r._type)))
+    }
+    return hotels
+}
+
+var TrainOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Train[] => {
+
+    var arriveBy = MemoryValues(TrainSlot.ARRIVE_BY, memoryManager)
+    var day = MemoryValues(TrainSlot.DAY, memoryManager)
+    var departure = MemoryValues(TrainSlot.DEPART, memoryManager)
+    var destination = MemoryValues(TrainSlot.DESTINATION, memoryManager)
+    var leaveAt = MemoryValues(TrainSlot.LEAVE_AT, memoryManager)
+
+    //TODO entracneFree / price /etc no semantics ??
+
+    var trains = TrainDb()
+    if (day.length > 0) {
+        trains = trains.filter(r => day.includes(BaseString(r.day)))
+    }
+    if (departure.length > 0) {
+        trains = trains.filter(r => departure.includes(BaseString(r.departure)))
+    }
+    if (destination.length > 0) {
+        trains = trains.filter(r => destination.includes(BaseString(r.destination)))
+    }
+    if (leaveAt.length > 0 && !isNaN(parseTime(leaveAt[0]))) {
+        const bestTrain = trainLeaveAfter(trains, leaveAt[0])
+        trains = bestTrain ? [bestTrain] : []
+    }
+    if (arriveBy.length > 0 && !isNaN(parseTime(arriveBy[0]))) {
+        const bestTrain = trainArriveBefore(trains, arriveBy[0])
+        trains = bestTrain ? [bestTrain] : []
+    }
+    return trains
+}
 
 var TaxiOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Taxi[] => {
     return TaxiDb()
