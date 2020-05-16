@@ -5,6 +5,7 @@
 import * as React from 'react'
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
+import * as Util from '../../Utils/util'
 import AppsListComponent from './AppsListComponent'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
@@ -58,6 +59,14 @@ class AppsList extends React.Component<Props, ComponentState> {
         })
     }
 
+    @autobind
+    onClickImportManyApp() {
+        this.setState({
+            isAppCreateModalOpen: true,
+            appCreatorType: AppCreatorType.IMPORT_MANY
+        })
+    }
+
     //------------------
     // Import Tutorials
     //------------------
@@ -92,12 +101,9 @@ class AppsList extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onSubmitAppCreateModal(app: Partial<CLM.AppBase>, source: CLM.AppDefinition | null = null) {
-        this.setState({
-            isAppCreateModalOpen: false
-        }, () => {
-            this.props.onCreateApp(app, source)
-        })
+    async onSubmitAppCreateModal(app: Partial<CLM.AppBase>, source: CLM.AppDefinition |  null = null, open: boolean = true) {
+        await Util.setStateAsync(this, {isAppCreateModalOpen: false})
+        await this.props.onCreateApp(app, source, open)
     }
 
     @autobind
@@ -139,7 +145,7 @@ class AppsList extends React.Component<Props, ComponentState> {
     async onSubmitImportOBI(app: CLM.AppBase, obiImportData: OBIImportData): Promise<void> {
         this.setState({
             isAppCreateModalOpen: false
-        }, () => this.props.onCreateApp(app, null, obiImportData))
+        }, () => this.props.onCreateApp(app, null, false, obiImportData))
     }
 
     @autobind
@@ -180,6 +186,7 @@ class AppsList extends React.Component<Props, ComponentState> {
 
             onClickCreateNewApp={this.onClickCreateNewApp}
             onClickImportApp={this.onClickImportApp}
+            onClickImportManyApp={this.onClickImportManyApp}
             onClickImportDemoApps={this.onClickImportDemoApps}
             onClickCreateNewDispatcherModel={this.onClickCreateNewDispatcherModel}
 
@@ -213,7 +220,7 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     apps: CLM.AppBase[]
-    onCreateApp: (app: Partial<CLM.AppBase>, source: CLM.AppDefinition | null, obiImportData?: OBIImportData) => void
+    onCreateApp: (app: Partial<CLM.AppBase>, source: CLM.AppDefinition | null, open: boolean, obiImportData?: OBIImportData) => Promise<void>
     onClickDeleteApp: (app: CLM.AppBase) => void
     onImportTutorial: (tutorial: CLM.AppBase) => void
     onCreateDispatchModel: (model: Partial<CLM.AppBase>, models: CLM.AppBase[], algorithmType: DispatcherAlgorithmType) => void

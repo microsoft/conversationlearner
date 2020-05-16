@@ -22,7 +22,7 @@ interface ComponentState {
     appNameVal: string
     localeVal: string
     localeOptions: OF.IDropdownOption[]
-    clFile: File | null
+    clFile: File[] | null
     obiFiles: File[] | null
     autoCreate: boolean
     autoMerge: boolean
@@ -118,9 +118,9 @@ class AppCreator extends React.Component<Props, ComponentState> {
         this.props.onCancel()
     }
 
-    getAppInput(): Partial<CLM.AppBase> {
+    getAppInput(name: string | null = null): Partial<CLM.AppBase> {
         return {
-            appName: this.state.appNameVal.trim(),
+            appName: name || this.state.appNameVal.trim(),
             locale: this.state.localeVal,
             metadata: {
                 botFrameworkApps: [],
@@ -210,32 +210,42 @@ class AppCreator extends React.Component<Props, ComponentState> {
 
     onChangeImportFile = (files: any) => {
         this.setState({
-            clFile: files[0]
+            clFile: files
         })
     }
 
-    onClickImport = () => {
+    onClickImport = async () => {
         if (!this.state.clFile) {
             console.warn(`You clicked import before a file was selected. This should not be possible. Contact support`)
             return
         }
 
+        const files = Array.from(this.state.clFile);
+        var fileIndex = 0;
+        const multiFile = files.length > 0
         const reader = new FileReader()
-        reader.onload = (e: Event) => {
+        reader.onload = async (e: Event) => {
             try {
                 if (typeof reader.result !== 'string') {
                     throw new Error("String Expected")
                 }
                 const source = JSON.parse(reader.result) as CLM.AppDefinition
-                const appInput = this.getAppInput()
-                this.props.onSubmit(appInput, source)
+                const appName = multiFile ? files[fileIndex].name.split(".")[0].toLowerCase() : null
+                const appInput = this.getAppInput(appName)
+                await this.props.onSubmit(appInput, source, !multiFile)
+
+                fileIndex++;
+                if (files.length > fileIndex) {
+                    reader.readAsText(files[fileIndex])
+                }
             }
             catch (e) {
                 const error = e as Error
                 this.props.setErrorDisplay(ErrorType.Error, error.message, "Invalid file contents", AT.CREATE_APPLICATION_ASYNC)
             }
         }
-        reader.readAsText(this.state.clFile)
+
+        reader.readAsText(files[fileIndex])
     }
 
     getTitle(): React.ReactNode {
@@ -244,6 +254,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 return (
                     <FormattedMessageId id={FM.APPCREATOR_TITLE} />)
             case AppCreatorType.IMPORT:
+            case AppCreatorType.IMPORT_MANY:
                 return (
                     <FormattedMessageId id={FM.APPCREATOR_IMPORT_TITLE} />)
             case AppCreatorType.COPY:
@@ -265,15 +276,20 @@ class AppCreator extends React.Component<Props, ComponentState> {
     }
 
     isSubmitDisabled(): boolean {
-        const invalidName = this.onGetNameErrorMessage(this.state.appNameVal) !== ""
-        if (invalidName) {
-            return true
+        // Check name unless importing many
+        if (this.props.creatorType !== AppCreatorType.IMPORT_MANY) {
+            const invalidName = this.onGetNameErrorMessage(this.state.appNameVal) !== ""
+            if (invalidName) {
+                return true
+            }
         }
 
         switch (this.props.creatorType) {
             case AppCreatorType.OBI:
                 return this.state.obiFiles === null
             case AppCreatorType.IMPORT:
+                return this.state.clFile === null
+            case AppCreatorType.IMPORT_MANY:
                 return this.state.clFile === null
             default:
                 return false
@@ -294,15 +310,17 @@ class AppCreator extends React.Component<Props, ComponentState> {
                     </span>
                 </div>
                 <div className="cl-action-creator-fieldset">
-                    <OF.TextField
-                        data-testid="model-creator-input-name"
-                        onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
-                        onChange={this.onChangeName}
-                        label={this.getLabel(intl)}
-                        placeholder={Util.formatMessageId(intl, FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER)}
-                        onKeyDown={key => this.onKeyDown(key)}
-                        value={this.state.appNameVal}
-                    />
+                    {this.props.creatorType !== AppCreatorType.IMPORT_MANY &&
+                        <OF.TextField
+                            data-testid="model-creator-input-name"
+                            onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
+                            onChange={this.onChangeName}
+                            label={this.getLabel(intl)}
+                            placeholder={Util.formatMessageId(intl, FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER)}
+                            onKeyDown={key => this.onKeyDown(key)}
+                            value={this.state.appNameVal}
+                        />
+                    }
                     {this.props.creatorType === AppCreatorType.NEW &&
                         <OF.Dropdown
                             ariaLabel={Util.formatMessageId(intl, FM.APPCREATOR_FIELDS_LOCALE_LABEL)}
@@ -314,7 +332,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                         // Disabled until trainer can support more than english
                         />
                     }
-                    {this.props.creatorType === AppCreatorType.IMPORT &&
+                    {(this.props.creatorType === AppCreatorType.IMPORT || this.props.creatorType === AppCreatorType.IMPORT_MANY) &&
                         <div data-testid="model-creator-import-file-picker">
                             <OF.Label>Import File</OF.Label>
                             <input
@@ -322,7 +340,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                 style={{ display: 'none' }}
                                 onChange={(event) => this.onChangeImportFile(event.target.files)}
                                 ref={ele => (this.fileInput = ele)}
-                                multiple={false}
+                                multiple={this.props.creatorType === AppCreatorType.IMPORT_MANY}
                             />
                             <div className="cl-file-picker">
                                 <OF.PrimaryButton
@@ -336,7 +354,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                 <OF.TextField
                                     disabled={true}
                                     value={this.state.clFile
-                                        ? this.state.clFile.name
+                                        ? Array.from(this.state.clFile).map(f => f.name).join(",")
                                         : ''}
                                 />
                             </div>
@@ -392,7 +410,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                     <div className="cl-modal-buttons">
                         <div className="cl-modal-buttons_secondary" />
                         <div className="cl-modal-buttons_primary">
-                            {this.props.creatorType === AppCreatorType.IMPORT &&
+                            {(this.props.creatorType === AppCreatorType.IMPORT || this.props.creatorType === AppCreatorType.IMPORT_MANY) &&
                                 <OF.PrimaryButton
                                     disabled={this.isSubmitDisabled()}
                                     data-testid="model-creator-submit-button"
@@ -461,7 +479,7 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     open: boolean
     creatorType: AppCreatorType
-    onSubmit: (app: Partial<CLM.AppBase>, source?: CLM.AppDefinition) => void
+    onSubmit: (app: Partial<CLM.AppBase>, source?: CLM.AppDefinition, open?: boolean) => Promise<void>
     onSubmitOBI?: (app: Partial<CLM.AppBase>, obiImportData: OBIImportData) => void
     onCancel: () => void
 }

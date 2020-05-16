@@ -54,17 +54,28 @@ class AppsIndex extends React.Component<Props> {
         this.props.deleteApplicationThunkAsync(appToDelete.appId)
     }
 
-    onCreateApp = async (appToCreate: CLM.AppBase, source: CLM.AppDefinition | null = null, obiImportData?: OBIImportData) => {
+    onCreateApp = async (appToCreate: CLM.AppBase, source: CLM.AppDefinition | null = null, open: boolean, obiImportData?: OBIImportData) => {
+
         if (source) {
             const errors = Util.appDefinitionValidationErrors(source)
             if (errors.length > 0) {
                 this.props.setErrorDisplay(ErrorType.Error, "Invalid .cl File", errors)
                 return
             }
+
+            // Delete app if it already exists
+            const oldApp = this.props.apps.find(a => a.appName == appToCreate.appName); 
+            if (oldApp) {
+                await (this.props.deleteApplicationThunkAsync(oldApp.appId) as any as Promise<CLM.AppBase>)
+            }
+
+            const app = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source, obiImportData) as any as Promise<CLM.AppBase>)
+
+            if (open) {
+                const { match, history } = this.props
+                history.push(`${match.url}/${app.appId}${obiImportData ? "/trainDialogs" : ""}`, { app })
+            }
         }
-        const app = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source, obiImportData) as any as Promise<CLM.AppBase>)
-        const { match, history } = this.props
-        history.push(`${match.url}/${app.appId}${obiImportData ? "/trainDialogs" : ""}`, { app })
     }
 
     onCreateDispatchModel = async (appToCreate: CLM.AppBase, childrenModels: CLM.AppBase[], algorithmType: DispatcherAlgorithmType) => {

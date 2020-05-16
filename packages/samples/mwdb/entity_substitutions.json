@@ -35,6 +35,7 @@
     "southern": "south",
     "eastern": "east",
     "western": "west",
+    "east side": "east",
     "zero": "0",
     "one": "1",
     "two": "2",
@@ -78,9 +79,13 @@
     "pools": "pool",
     "guesthouses": "guesthouse",
     "center": "centre",
+    "the city centre": "centre",
     "boating": "boat",
     "moderately": "moderate",
     "london kings crossing": "london kings cross",
     "scudamores punting company": "Scudamores Punting Co",
-    "cheaply": "cheap"
+    "cheaply": "cheap",
+    "inexpensive": "cheap",
+    "inexpensively - priced": "cheap",
+    "epensive": "expensive"
 }

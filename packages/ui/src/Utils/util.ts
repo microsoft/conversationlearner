@@ -371,21 +371,37 @@ export function appDefinitionValidationErrors(source: CLM.AppDefinition): string
     // Gather up all the entity and action references
     let entityIds: string[] = []
     let actionIds: string[] = []
+    const errors: string[] = []
     source.trainDialogs.forEach(td => {
         let filledEntityIds = td.initialFilledEntities.map(ife => ife.entityId!)
         entityIds.push(...filledEntityIds)
+        if (td.rounds == null) {
+            td.rounds = []
+        }
         td.rounds.forEach(round => {
-            round.extractorStep.textVariations.forEach(tv => {
-                const labeledEntitiId = tv.labelEntities.map(le => le.entityId)
-                entityIds.push(...labeledEntitiId)
-            })
-            round.scorerSteps.forEach(ss => {
-                filledEntityIds = ss.input.filledEntities.map(fe => fe.entityId!)
-                entityIds.push(...filledEntityIds)
-                actionIds.push(ss.labelAction!)
-                filledEntityIds = ss.logicResult?.changedFilledEntities.map(cfe => cfe.entityId!) || []
-                entityIds.push(...filledEntityIds)
-            })
+            if (!round) {
+                errors.push(`${td.tags} Missing Round`)
+            } else {
+                if (!round.extractorStep) {
+                    errors.push(`${td.tags} Missing Extractor Step`)
+                } else {
+                    round.extractorStep.textVariations.forEach(tv => {
+                        const labeledEntitiId = tv.labelEntities.map(le => le.entityId)
+                        entityIds.push(...labeledEntitiId)
+                    })
+                }
+                if (!round.scorerSteps || round.scorerSteps.length === 0) {
+                    errors.push(`${td.tags} Missing Scorer Steps`)
+                } else {
+                    round.scorerSteps.forEach(ss => {
+                        filledEntityIds = ss.input.filledEntities.map(fe => fe.entityId!)
+                        entityIds.push(...filledEntityIds)
+                        actionIds.push(ss.labelAction!)
+                        filledEntityIds = ss.logicResult?.changedFilledEntities.map(cfe => cfe.entityId!) || []
+                        entityIds.push(...filledEntityIds)
+                    })
+                }
+            }
         })
     })
     source.actions.forEach(a => {
@@ -402,7 +418,6 @@ export function appDefinitionValidationErrors(source: CLM.AppDefinition): string
     actionIds = [...new Set(actionIds)]
 
     // Make sure that each one exists
-    const errors: string[] = []
     entityIds.forEach(eid => {
         if (!source.entities.find(e => e.entityId === eid)) {
             errors.push(`Entity ${eid} is not defined`)

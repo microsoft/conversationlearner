@@ -10,6 +10,7 @@ export enum ErrorType {
 export enum AppCreatorType {
     NEW = "NEW",
     IMPORT = "IMPORT",
+    IMPORT_MANY = "IMPORT_MANY",
     COPY = "COPY",
     OBI = "OBI",
 }

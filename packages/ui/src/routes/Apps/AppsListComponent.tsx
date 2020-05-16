@@ -125,12 +125,13 @@ interface Props extends InjectedIntlProps {
 
     isDispatcherCreateModalOpen: boolean
     isAppCreateModalOpen: boolean
-    onSubmitAppCreateModal: (app: CLM.AppBase, source: CLM.AppDefinition | undefined) => void
+    onSubmitAppCreateModal: (app: CLM.AppBase, sources: CLM.AppDefinition | undefined, open: boolean) => Promise<void>
     onCancelAppCreateModal: () => void
     appCreatorType: AppCreatorType
 
     onClickCreateNewApp: () => void
     onClickImportApp: () => void
+    onClickImportManyApp: () => void
     onClickImportDemoApps: () => void
     onClickCreateNewDispatcherModel: () => void
 
@@ -229,7 +230,13 @@ export class Component extends React.Component<Props, ComponentState> {
                             text={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTAPP_BUTTONTEXT)}
                             iconProps={{ iconName: 'DownloadDocument' }}
                         />
-
+                        <OF.DefaultButton
+                            data-testid="model-list-import-model-button"
+                            onClick={props.onClickImportManyApp}
+                            ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTAPP_BUTTONARIADESCRIPTION)}
+                            text={"Import Many"}
+                            iconProps={{ iconName: 'DownloadDocument' }}
+                        />
                         {!Util.isDemoAccount(props.user.id) &&
                             <OF.DefaultButton
                                 data-testid="model-list-import-tutorials-button"

@@ -833,13 +833,16 @@ var TrainOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryMan
     if (destination.length > 0) {
         trains = trains.filter(r => destination.includes(BaseString(r.destination)))
     }
-    if (leaveAt.length > 0 && !isNaN(parseTime(leaveAt[0]))) {
-        const bestTrain = trainLeaveAfter(trains, leaveAt[0])
-        trains = bestTrain ? [bestTrain] : []
-    }
-    if (arriveBy.length > 0 && !isNaN(parseTime(arriveBy[0]))) {
-        const bestTrain = trainArriveBefore(trains, arriveBy[0])
-        trains = bestTrain ? [bestTrain] : []
+    // Don't filter on times until I have a route and day
+    if (departure.length > 0 && destination.length > 0 && day.length > 0) {
+        if (leaveAt.length > 0 && !isNaN(parseTime(leaveAt[0]))) {
+            const bestTrain = trainLeaveAfter(trains, leaveAt[0])
+            trains = bestTrain ? [bestTrain] : []
+        }
+        if (arriveBy.length > 0 && !isNaN(parseTime(arriveBy[0]))) {
+            const bestTrain = trainArriveBefore(trains, arriveBy[0])
+            trains = bestTrain ? [bestTrain] : []
+        }
     }
     return trains
 }
