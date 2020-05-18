@@ -96,7 +96,14 @@ export const createApplicationThunkAsync = (userId: string, application: CLM.App
             const newApp = await clClient.appsCreate(userId, appToSend)
 
             if (source) {
-                await clClient.sourcepost(newApp.appId, source)
+                try {
+                    await clClient.sourcepost(newApp.appId, source)
+                }
+                catch (e) {
+                    // Delete the app and re-throw
+                    await clClient.appsDelete(newApp.appId)
+                    throw (e)
+                }
             }
             if (obiImportData) {
                 obiImportData.appId = newApp.appId

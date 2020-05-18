@@ -232,11 +232,17 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 const source = JSON.parse(reader.result) as CLM.AppDefinition
                 const appName = multiFile ? files[fileIndex].name.split(".")[0].toLowerCase() : null
                 const appInput = this.getAppInput(appName)
-                await this.props.onSubmit(appInput, source, !multiFile)
 
-                fileIndex++;
-                if (files.length > fileIndex) {
-                    reader.readAsText(files[fileIndex])
+                try {
+                    await this.props.onSubmit(appInput, source, !multiFile)
+    
+                    fileIndex++;
+                    if (files.length > fileIndex) {
+                        reader.readAsText(files[fileIndex])
+                    }
+                }
+                catch (e) {
+                    // Stop import, but error display handled in onSubmit
                 }
             }
             catch (e) {

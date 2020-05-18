@@ -59,7 +59,7 @@ class AppsIndex extends React.Component<Props> {
         if (source) {
             const errors = Util.appDefinitionValidationErrors(source)
             if (errors.length > 0) {
-                this.props.setErrorDisplay(ErrorType.Error, "Invalid .cl File", errors)
+                this.props.setErrorDisplay(ErrorType.Error, `Invalid File: ${appToCreate.appName}`, errors)
                 return
             }
 
