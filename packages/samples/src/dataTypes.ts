@@ -4,7 +4,6 @@
  */
 
 export var DONTCARE = "dontcare"
-export var OUTPUT = "OUTPUT"
 
 export enum LuisSlot {
   DAY = "day",
@@ -28,15 +27,16 @@ export enum LuisSlot {
 }
 
 export enum TrainSlot {
-  ARRIVE_BY = "train-semi-arriveBy",
+  ARRIVE_BY = "train-semi-arriveby",
   DAY = "train-semi-day",
   PEOPLE = "train-book-people",
   DEPART = "train-semi-departure",
   DESTINATION = "train-semi-destination",
-  LEAVE_AT = "train-semi-leaveAt",
-  CHOICE_ONE = "train-choiceone",
-  CHOICE_TWO = "train-choicetwo",
-  CHOICE_MANY = "train-choicemany",
+  LEAVE_AT = "train-semi-leaveat",
+  CHOICE = "train-choice",
+  CHOICE_NONE = "train-choice0",
+  CHOICE_TWO = "train-choice2",
+  CHOICE_MANY = "train-choiceM",
 
 }
 
@@ -48,9 +48,10 @@ export enum RestaurantSlot {
   NAME = "restaurant-semi-name",
   PRICERANGE = "restaurant-semi-pricerange",
   TIME = "restaurant-book-time",
-  CHOICE_ONE = "restaurant-choiceone",
-  CHOICE_TWO = "restaurant-choicetwo",
-  CHOICE_MANY = "restaurant-choicemany",
+  CHOICE = "restaurant-choice",
+  CHOICE_NONE = "restaurant-choice0",
+  CHOICE_TWO = "restaurant-choice2",
+  CHOICE_MANY = "restaurant-choiceM",
 }
 
 export enum HotelSlot {
@@ -64,28 +65,31 @@ export enum HotelSlot {
   PRICERANGE = "hotel-semi-pricerange",
   STARS = "hotel-semi-stars",
   STAY = "hotel-book-stay",
-  CHOICE_ONE = "hotel-choiceone",
-  CHOICE_TWO = "hotel-choicetwo",
-  CHOICE_MANY = "hotel-choicemany",
+  CHOICE = "hotel-choice",
+  CHOICE_NONE = "hotel-choice0",
+  CHOICE_TWO = "hotel-choice2",
+  CHOICE_MANY = "hotel-choiceM",
 }
 
 export enum AttractionSlot {
   AREA = "attraction-semi-area",
   NAME = "attraction-semi-name",
   TYPE = "attraction-semi-type",
-  CHOICE_ONE = "attraction-choiceone",
-  CHOICE_TWO = "attraction-choicetwo",
-  CHOICE_MANY = "attraction-choicemany",
+  CHOICE = "attraction-choice",
+  CHOICE_NONE = "attraction-choice0",
+  CHOICE_TWO = "attraction-choice2",
+  CHOICE_MANY = "attraction-choiceM",
 }
 
 export enum TaxiSlot {
-  ARRIVE_BY = "taxi-semi-arriveBy",
+  ARRIVE_BY = "taxi-semi-arriveby",
   DEPART = "taxi-semi-departure",
   DESTINATION = "taxi-semi-destination",
-  LEAVE_AT = "taxi-semi-leaveAt",
-  CHOICE_ONE = "taxi-choiceone",
-  CHOICE_TWO = "taxi-choicetwo",
-  CHOICE_MANY = "taxi-choicemany",
+  LEAVE_AT = "taxi-semi-leaveat",
+  CHOICE = "taxi-choice",
+  CHOICE_NONE = "taxi-choice0",
+  CHOICE_TWO = "taxi-choice2",
+  CHOICE_MANY = "taxi-choiceM",
 }
 
 export enum Domain {
@@ -169,7 +173,7 @@ export const NameSubstitutionMap = new Map([
   ["pricerange", "price"],
   ["destination", "dest"],
   ["departure", "depart"],
-  ["arriveBy", "arrive"],
-  ["leaveAt", "leave"],
+  ["arriveby", "arrive"],
+  ["leaveat", "leave"],
   ["price", "ticket"]
 ])

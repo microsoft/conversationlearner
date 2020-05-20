@@ -3,14 +3,25 @@
  * Licensed under the MIT License.
  */
 import { ConversationLearner, ConversationLearnerFactory, ClientMemoryManager, ReadOnlyClientMemoryManager } from '@conversationlearner/sdk'
-import { RestaurantSlot, HotelSlot, AttractionSlot, TaxiSlot, TrainSlot, Domain, OUTPUT } from './dataTypes'
+import { RestaurantSlot, HotelSlot, AttractionSlot, TaxiSlot, TrainSlot, Domain } from './dataTypes'
 import * as Utils from './utils'
 import * as App from './app'
 import * as DB from './database'
 
 //=================================
-// Initialize Models
+// Initialize Combined Model
 //=================================
+export var OUTPUT = "OUTPUT"
+
+
+const apiAddOutput = {
+    name: "AddOutput",
+    logic: async (memoryManager: ClientMemoryManager, intent: string) => {
+        memoryManager.Set(OUTPUT, intent)
+    }
+}
+
+
 let clCombined: ConversationLearner
 export const initCombinedModel = (clFactory: ConversationLearnerFactory) => {
     const modelId = ConversationLearnerFactory.modelIdFromName("combined")
@@ -21,7 +32,7 @@ export const initCombinedModel = (clFactory: ConversationLearnerFactory) => {
         DB.UpdateEntities(memoryManager)
     }
 
-    clCombined.AddCallback(App.apiAddOutput)
+    clCombined.AddCallback(apiAddOutput)
 
     clCombined.AddCallback({
         name: "SendOutput",

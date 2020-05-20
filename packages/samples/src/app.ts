@@ -8,7 +8,7 @@ import * as BB from 'botbuilder'
 import { ConversationLearner, ConversationLearnerFactory, ClientMemoryManager, ReadOnlyClientMemoryManager, FileStorage, uiRouter } from '@conversationlearner/sdk'
 import chalk from 'chalk'
 import config from './config'
-import { LuisSlot, Domain, DONTCARE, OUTPUT } from './dataTypes'
+import { LuisSlot, Domain, DONTCARE } from './dataTypes'
 import * as fs from 'fs'
 import * as crypto from 'crypto'
 import * as DB from './database'
@@ -52,23 +52,8 @@ if (includeSdk) {
 // Serve default bot summary page. Should be customized by customer.
 server.use(express.static(path.join(__dirname, '..', 'site')))
 
-
-let ActivityResults: DB.ActivityResult[] = []
+let ActivityResultsQueue: DB.ActivityResult[] = []
 let TestOutput = new Map<string, string>()
-
-//=================================
-// Add Entity Logic
-//=================================
-
-//=================================
-// Output
-//=================================
-export const apiAddOutput = {
-    name: "AddOutput",
-    logic: async (memoryManager: ClientMemoryManager, intent: string) => {
-        memoryManager.Set(OUTPUT, intent)
-    }
-}
 
 //=================================
 // dontcare
@@ -132,94 +117,47 @@ const initDispatchModel = () => {
 
     clDispatch.AddCallback({
         name: "Dispatch",
-        logic: async (memoryManager: ClientMemoryManager, activityId: string, domainString: string) => {
+        logic: async (memoryManager: ClientMemoryManager, activityId: string, domainNameString: string) => {
 
-            var domain = domainString as Domain
-            var result = ActivityResults.find(r => r.activityId === activityId)
-            if (!result) {
-                result = {
+            var domainNames = domainNameString.split(",")
+
+            // Add domain to queue
+            var activityResult = ActivityResultsQueue.find(r => r.activityId === activityId)
+            if (!activityResult) {
+                activityResult = {
                     activityId,
                     creationTime: new Date().getTime(),
-                    domainResults: new Map<Domain, DB.DomainResult>()
+                    modelResults: new Map<string, DB.DomainResult>()
                 }
-                ActivityResults.push(result)
+                ActivityResultsQueue.push(activityResult)
             }
-            // Add empty entry for this domain
-            result.domainResults.set(domain, null)
-        }
-    })
 
-    clDispatch.AddCallback({
-        name: "SendOutput",
-        logic: async (memoryManager: ClientMemoryManager, activityId) => {
-            const activityResult = await getActivityResult(activityId)
-            const result = ActivityResultToString(activityResult)
+            // Add empty entry for each domain
+            for (var domainName of domainNames) {
+                activityResult.modelResults.set(domainName, null)
+            }
+
+            // DEBUG
+            //debugActivityResultsQueue("DISPATCH");
+
+            // Now await the result
+            const result = await getActivityResultString(activityId)
             TestOutput.set(activityId, result)
             return result
         },
-        render: async (activityResult: string, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
-            return activityResult
+        render: async (result: string, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
+            return result
         }
     })
 }
 
-const ActivityResultToString = (activityResult: DB.ActivityResult): string => {
-    let dialogActs: string[] = []
-    let entities: string[] = []
-    let output: string[][] = []
-    activityResult.domainResults.forEach(dr => {
-        if (dr) {
-            dialogActs = [...dialogActs, ...dr.dialogActs]
-            entities = [...entities, ...dr.entities]
-            output = output.concat(dr.output)
-        }
-    })
-    //return `${dialogActs.join(",")} ${entities.join(",")}`
-    return JSON.stringify(output)
-}
-
-const makeId = (length: number): string => {
-    var result = ''
-    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-    var charactersLength = characters.length
-    for (var i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength))
-    }
-    return result
-}
-
-const expandedResults = (dialogActs: string[], entities: string[]): string[][] => {
-    const results: string[][] = []
-    for (var dialogAct of dialogActs) {
-        var parts = dialogAct.split('-')
-        const domain = parts[0]
-        const act = parts[1]
-        const entity = parts[2]
-
-        if (act == "Request") {
-            results.push([act, domain, entity, "?"])
-        }
-        else if (entity == "none") {
-            results.push([act, domain, entity, "none"])
-        }
-        else if (entity == "Ref") {
-            results.push([act, domain, entity, makeId(8)])
-        }
-        else {
-            const kv = entities.find(e => e.includes(entity.toLowerCase()))
-            // "attraction-semi-area: east,centre,south,west,north"
-            const values = kv ? kv.split(": ")[1].split(",") : ["MISSING"]
-            for (var value of values) {
-                results.push([act, domain, entity, value])
-            }
-        }
-    }
-    return results
-}
-const getDomainCL = (domain: Domain): ConversationLearner => {
+const getDomainDispatchCL = (domain: Domain): ConversationLearner => {
 
     const modelId = ConversationLearnerFactory.modelIdFromName(domain)
-    const model = clFactory.create(modelId)
+    if (!modelId) {
+        throw new Error(`Can't find model named ${domain}`)
+    }
+    const domainDispatchModel = clFactory.create(modelId)
 
     var slotNames = Utils.getSlotNames(domain)
     const slotMap = new Map()
@@ -227,44 +165,47 @@ const getDomainCL = (domain: Domain): ConversationLearner => {
         return slotMap.set(Utils.shortName(entityName), entityName)
     })
 
-    model.EntityDetectionCallback = async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
+    domainDispatchModel.EntityDetectionCallback = async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
         Utils.ApplyEntitySubstitutions(memoryManager)
         DB.UpdateEntities(memoryManager, domain)
     }
 
-    model.AddCallback(apiAddOutput)
+    domainDispatchModel.AddCallback({
+        name: "Dispatch",
+        logic: async (memoryManager: ClientMemoryManager, activityId: string, dialogActNameString: string) => {
 
-    model.AddCallback({
-        name: "SendOutput",
-        logic: async (memoryManager: ClientMemoryManager, activityId: string) => {
+            var dialogActNames = dialogActNameString.split(",")
 
-            const activityResult = ActivityResults.find(ar => ar.activityId === activityId)
-            if (!activityId) {
-                throw new Error(`Missing Activity ${activityId}`)
-            }
-            if (!activityResult?.domainResults.has(domain)) {
-                throw new Error(`Expected Domain ${domain}`)
-            }
-            const dialogActs = memoryManager.Get(OUTPUT, ClientMemoryManager.AS_STRING_LIST)
-            const entities = DB.getEntities(domain, memoryManager)
-            const output = expandedResults(dialogActs, entities)
+            // Get queue item
+            var activityResult = ActivityResultsQueue.find(r => r.activityId === activityId)
 
-            const result: DB.DomainResult = {
-                dialogActs,
-                entities,
-                output
+            if (!activityResult) {
+                throw new Error("Missing activity result!")
             }
-            activityResult.domainResults.set(domain, result)
-            memoryManager.Delete(OUTPUT)
-            return
-        }
+
+            // Add empty slot for each dialog act
+            for (var dialogActName of dialogActNames) {
+                activityResult.modelResults.set(dialogActName, null)
+
+                // Remove domain slot
+                var domainName = Utils.domainNameFromDialogAct(dialogActName)
+                activityResult.modelResults.delete(domainName)
+            }
+
+            // DEBUG
+            //debugActivityResultsQueue("MODEL");
+
+        }/*,
+        render: async (result: string, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
+            return result
+        }*/
     })
 
     //=== "Same" Callbacks ===
     Object.values(LuisSlot).forEach(entityName => {
         var slotName = slotMap.get(entityName)
         if (slotName) {
-            model.AddCallback({
+            domainDispatchModel.AddCallback({
                 name: `same-${entityName}`,
                 logic: async (memoryManager) => {
                     var price = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING)
@@ -277,14 +218,83 @@ const getDomainCL = (domain: Domain): ConversationLearner => {
     })
 
     //=== DontCare Callbacks ===
-    model.AddCallback(apiDontCareArea)
-    model.AddCallback(apiDontCarePrice)
-    model.AddCallback(apiDontCareFood)
-    model.AddCallback(apiDontCareArrive)
-    model.AddCallback(apiDontCareType)
-    model.AddCallback(apiDontCareName)
+    domainDispatchModel.AddCallback(apiDontCareArea)
+    domainDispatchModel.AddCallback(apiDontCarePrice)
+    domainDispatchModel.AddCallback(apiDontCareFood)
+    domainDispatchModel.AddCallback(apiDontCareArrive)
+    domainDispatchModel.AddCallback(apiDontCareType)
+    domainDispatchModel.AddCallback(apiDontCareName)
 
-    return model
+    return domainDispatchModel
+}
+
+/* DEBUG
+const debugActivityResultsQueue = (label: string) => {
+    for (var ar of ActivityResultsQueue) {
+        var outText = `${label}-${ar.activityId}`
+        ar.modelResults.forEach((domainResult: DB.DomainResult | null, key: string) => {
+            var output = domainResult ? JSON.stringify(domainResult.output) : "-"
+            outText = outText + ` ${key}: ${output}`
+        });
+        console.log(outText)
+    }
+}
+*/
+
+const getDialogActCL = (dialogActName: string): ConversationLearner | null => {
+
+    const modelId = ConversationLearnerFactory.modelIdFromName(dialogActName)
+
+    if (!modelId) {
+        console.log(`No model named ${dialogActName}`)
+        return null
+    }
+    const dialogActModel = clFactory.create(modelId)
+    const domain = Utils.domainNameFromDialogAct(dialogActName)
+
+    /* DEBUG
+    dialogActModel.EntityDetectionCallback = async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
+       console.log(JSON.stringify(memoryManager.curMemories));//LARS TEMP
+    }
+    */
+
+    dialogActModel.AddCallback({
+        name: "SendResult",
+        logic: async (memoryManager: ClientMemoryManager, activityId: string, intent: string) => {
+
+            const activityResult = ActivityResultsQueue.find(ar => ar.activityId === activityId)
+            if (!activityId) {
+                throw new Error(`Missing Activity ${activityId}`)
+            }
+            if (!activityResult?.modelResults.has(dialogActName)) {
+                throw new Error(`Expected DialogAct ${dialogActName}`)
+            }
+
+            //LARS const dialogActs = memoryManager.Get(OUTPUT, ClientMemoryManager.AS_STRING_LIST)
+            if (intent) {
+                const dialogActs = intent.split(",")
+                const entities = DB.getEntities(domain as Domain, memoryManager)
+                const output = Utils.expandedResults(dialogActs, entities)
+
+                const result: DB.DomainResult = {
+                    dialogActs,
+                    entities,
+                    output
+                }
+                activityResult.modelResults.set(dialogActName, result)
+                return dialogActs.join(",")
+            }
+            // No action is possible to required entities
+            else {
+                activityResult.modelResults.delete(dialogActName)
+                return ""
+            }
+        },
+        render: async (result: string, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
+            return result
+        }
+    })
+    return dialogActModel
 }
 
 let clAttraction: ConversationLearner
@@ -292,6 +302,7 @@ let clHotel: ConversationLearner
 let clRestaurant: ConversationLearner
 let clTaxi: ConversationLearner
 let clTrain: ConversationLearner
+const clDialogActsMap = new Map<string, ConversationLearner>()
 
 const createModels = async () => {
     console.log('========= CREATING MODELS ==========')
@@ -306,11 +317,19 @@ const createModels = async () => {
 
     Combined.initCombinedModel(clFactory)
     initDispatchModel()
-    clAttraction = getDomainCL(Domain.ATTRACTION)
-    clHotel = getDomainCL(Domain.HOTEL)
-    clRestaurant = getDomainCL(Domain.RESTAURANT)
-    clTaxi = getDomainCL(Domain.TAXI)
-    clTrain = getDomainCL(Domain.TRAIN)
+    clAttraction = getDomainDispatchCL(Domain.ATTRACTION)
+    clHotel = getDomainDispatchCL(Domain.HOTEL)
+    clRestaurant = getDomainDispatchCL(Domain.RESTAURANT)
+    clTaxi = getDomainDispatchCL(Domain.TAXI)
+    clTrain = getDomainDispatchCL(Domain.TRAIN)
+
+    var dacts = DB.DialogActs()
+    for (var dialogAct of dacts) {
+        var daModel = getDialogActCL(dialogAct)
+        if (daModel) {
+            clDialogActsMap.set(dialogAct, daModel)
+        }
+    }
 }
 
 server.post('/api/messages', (req, res) => {
@@ -320,21 +339,19 @@ server.post('/api/messages', (req, res) => {
             await createModels()
         }
 
-        if (context.activity.text === "update models") {
-            await createModels()
-            context.activity.text = "clearinputqueue"
-            context.activity.type = BB.ActivityTypes.ConversationUpdate
-            return
-        }
+        if (context.activity.text && context.activity.text.startsWith("::")) {
+            if (context.activity.text === "::update") {
+                await createModels()
+            }
 
-        if (context.activity.text && context.activity.text.includes("test")) {
-            await RunTest(context)
-            context.activity.text = "clearinputqueue"
-            context.activity.type = BB.ActivityTypes.ConversationUpdate
-        }
+            if (context.activity.text.includes("::test")) {
+                await RunTest(context)
+            }
 
-        if (context.activity.text === "stop") {
-            await StopTesting(context)
+            if (context.activity.text === "::stop") {
+                await StopTesting(context)
+            }
+
             context.activity.text = "clearinputqueue"
             context.activity.type = BB.ActivityTypes.ConversationUpdate
         }
@@ -365,14 +382,16 @@ server.post('/api/messages', (req, res) => {
 createModels()
 
 var getActivityResultIntervals: NodeJS.Timeout[] = []
-var getActivityResult = (activityId: string) => {
-    var promise = new Promise<DB.ActivityResult>((resolve, reject) => {
+var getActivityResultString = (activityId: string) => {
+    var promise = new Promise<string>((resolve, reject) => {
         let startTime = new Date().getTime()
         var interval = setInterval(
             () => {
-                var activityResult = ActivityResults.find(r => r.activityId === activityId)
+                var activityResult = ActivityResultsQueue.find(r => r.activityId === activityId)
                 if (!activityResult) {
                     console.log(`Expected activity result ${activityId}`)
+
+                    // Check from timeout
                     let curTime = new Date().getTime()
                     if (curTime - startTime > 100000) {
                         console.log(`Expire Activity: ${activityId} ${curTime} ${startTime}`)
@@ -381,9 +400,8 @@ var getActivityResult = (activityId: string) => {
                     }
                     return
                 }
-                // LARS check for timeout
                 var isDone = true
-                activityResult.domainResults.forEach((value: DB.DomainResult | null, key: string) => {
+                activityResult.modelResults.forEach((value: DB.DomainResult | null, key: string) => {
                     if (value == null) {
                         isDone = false
                     }
@@ -393,11 +411,14 @@ var getActivityResult = (activityId: string) => {
                     getActivityResultIntervals = getActivityResultIntervals.filter(i => i !== interval)
                     clearInterval(interval)
                     // Clear data
-                    ActivityResults = ActivityResults.filter(r => r.activityId !== activityId)
-                    resolve(activityResult)
+                    ActivityResultsQueue = ActivityResultsQueue.filter(r => r.activityId !== activityId)
+
+                    const result = Utils.ActivityResultToString(activityResult)
+                    resolve(result)
                 }
             }
             , 1000)
+        getActivityResultIntervals.push(interval)
     })
     return promise
 }
@@ -422,6 +443,8 @@ var getTestOutput = (activityId: string) => {
                 }
                 testOutputIntervals = testOutputIntervals.filter(i => i !== interval)
                 clearInterval(interval)
+                // Clear data
+                TestOutput.delete(activityId)
                 if (isTesting) {
                     resolve(output)
                 }
@@ -473,6 +496,10 @@ const StopTesting = async (context: BB.TurnContext) => {
     for (var interval of testOutputIntervals) {
         clearInterval(interval)
     }
+    for (var activityResult of ActivityResultsQueue) {
+        activityResult.modelResults = new Map<string, DB.DomainResult>()
+    }
+
     await clDispatch.EndSession(context)
     await clRestaurant.EndSession(context)
     await clAttraction.EndSession(context)
@@ -486,7 +513,7 @@ const StopTesting = async (context: BB.TurnContext) => {
 const TestTranscript = async (transcript: BB.Activity[], fileName: string) => {
 
     const adapter = new BB.TestAdapter(async (context) => {
-        if (context.activity.text != "test") {
+        if (!context.activity.text.includes("::")) {
             var result = await clDispatch.recognize(context)
 
             if (result) {
@@ -516,12 +543,14 @@ const TestTranscript = async (transcript: BB.Activity[], fileName: string) => {
             userActivity.id = generateGUID()
             userActivity.conversation.id = conversationId
             adapter.send(userActivity)
+
+            // Log
             console.log(`${userActivity.text}`)
-            console.log(`${agentActivity.summary}`)
             console.log(`  ${agentActivity.text}`)
             var response = await getTestOutput(userActivity.id!)
-            console.log(`< ${response}`)
-
+            console.log(`  ${response}`)
+            console.log(`  ${agentActivity.summary}`)
+            console.log(`  -------------------------`)
             var testResult: DB.TestResult =
             {
                 input: userActivity.text,

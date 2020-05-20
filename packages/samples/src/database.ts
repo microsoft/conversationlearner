@@ -4,16 +4,14 @@
  */
 import * as path from 'path'
 import { ClientMemoryManager, ReadOnlyClientMemoryManager } from '@conversationlearner/sdk'
-import config from './config'
 import { Restaurant, Hotel, Attraction, Taxi, Train, LuisSlot, RestaurantSlot, HotelSlot, AttractionSlot, TaxiSlot, TrainSlot, Domain } from './dataTypes'
 import * as fs from 'fs'
 import * as Utils from './utils'
 
-console.log(`Config:\n`, JSON.stringify(config, null, '  '))
-
 const DBDirectory = 'mwdb'
 export const TestDirectory = 'testtranscripts'
 export const ResultsDirectory = 'testresults'
+
 export let GetDirectory = (name: string) => {
     let testDirectory = path.join(process.cwd(), `./${name}`)
 
@@ -25,6 +23,20 @@ export let GetDirectory = (name: string) => {
         testDirectory = path.join(process.cwd(), `../../${name}`)
     }
     return testDirectory
+}
+
+export var EntitySubstitutions = (): { [key: string]: string } => {
+    if (!_entitySubstitutions) {
+        _entitySubstitutions = LoadDataBase("entity_substitutions")
+    }
+    return _entitySubstitutions
+}
+
+export var DialogActs = (): string[] => {
+    if (!_dialogActs) {
+        _dialogActs = LoadDataBase("dialog_acts")
+    }
+    return _dialogActs
 }
 
 export const UpdateEntities = (memoryManager: ClientMemoryManager, domainFilter?: string): void => {
@@ -276,11 +288,13 @@ const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: string): vo
                 memoryManager.Set(RestaurantSlot.PRICERANGE, [... new Set(restaurants.map(a => a.pricerange))])
             }
         }
-        memoryManager.Delete(RestaurantSlot.CHOICE_ONE)
+        memoryManager.Delete(RestaurantSlot.CHOICE_NONE)
         memoryManager.Delete(RestaurantSlot.CHOICE_TWO)
         memoryManager.Delete(RestaurantSlot.CHOICE_MANY)
-        if (restaurants.length == 1) {
-            memoryManager.Set(RestaurantSlot.CHOICE_ONE, true)
+
+        memoryManager.Set(RestaurantSlot.CHOICE, restaurants.length)
+        if (restaurants.length == 0) {
+            memoryManager.Set(RestaurantSlot.CHOICE_NONE, true)
         }
         else if (restaurants.length == 2) {
             memoryManager.Set(RestaurantSlot.CHOICE_TWO, true)
@@ -311,11 +325,13 @@ const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: string): vo
                 memoryManager.Set(HotelSlot.TYPE, [... new Set(hotels.map(a => a._type))])
             }
         }
-        memoryManager.Delete(HotelSlot.CHOICE_ONE)
+        memoryManager.Delete(HotelSlot.CHOICE_NONE)
         memoryManager.Delete(HotelSlot.CHOICE_TWO)
         memoryManager.Delete(HotelSlot.CHOICE_MANY)
-        if (hotels.length == 1) {
-            memoryManager.Set(HotelSlot.CHOICE_ONE, true)
+
+        memoryManager.Set(HotelSlot.CHOICE, hotels.length)
+        if (hotels.length == 0) {
+            memoryManager.Set(HotelSlot.CHOICE_NONE, true)
         }
         else if (hotels.length == 2) {
             memoryManager.Set(HotelSlot.CHOICE_TWO, true)
@@ -340,11 +356,13 @@ const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: string): vo
             }
         }
 
-        memoryManager.Delete(AttractionSlot.CHOICE_ONE)
+        memoryManager.Delete(AttractionSlot.CHOICE_NONE)
         memoryManager.Delete(AttractionSlot.CHOICE_TWO)
         memoryManager.Delete(AttractionSlot.CHOICE_MANY)
-        if (attractions.length == 1) {
-            memoryManager.Set(AttractionSlot.CHOICE_ONE, true)
+
+        memoryManager.Set(AttractionSlot.CHOICE, attractions.length)
+        if (attractions.length == 0) {
+            memoryManager.Set(AttractionSlot.CHOICE_NONE, true)
         }
         else if (attractions.length == 2) {
             memoryManager.Set(AttractionSlot.CHOICE_TWO, true)
@@ -357,7 +375,8 @@ const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: string): vo
         var taxis = TaxiOptions(memoryManager)
         taxis.length
         // There's always a taxi
-        memoryManager.Set(TaxiSlot.CHOICE_ONE, true)
+        memoryManager.Set(TaxiSlot.CHOICE, 1)
+        memoryManager.Set(TaxiSlot.CHOICE_NONE, true)
     }
     if (domainFilter == "train") {
         var trains = TrainOptions(memoryManager)
@@ -380,11 +399,13 @@ const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: string): vo
                 memoryManager.Set(TrainSlot.ARRIVE_BY, [... new Set(trains.map(a => a.arriveBy))])
             }
         }
-        memoryManager.Delete(TrainSlot.CHOICE_ONE)
+        memoryManager.Delete(TrainSlot.CHOICE_NONE)
         memoryManager.Delete(TrainSlot.CHOICE_TWO)
         memoryManager.Delete(TrainSlot.CHOICE_MANY)
-        if (trains.length == 1) {
-            memoryManager.Set(TrainSlot.CHOICE_ONE, true)
+
+        memoryManager.Set(TrainSlot.CHOICE, trains.length)
+        if (trains.length == 0) {
+            memoryManager.Set(TrainSlot.CHOICE_NONE, true)
         }
         else if (trains.length == 2) {
             memoryManager.Set(TrainSlot.CHOICE_TWO, true)
@@ -537,7 +558,7 @@ export interface TestResult {
 export interface ActivityResult {
     // Used to match import utterances
     activityId: string
-    domainResults: Map<Domain, DomainResult | null>
+    modelResults: Map<string, DomainResult | null>
     creationTime?: number
 }
 
@@ -685,7 +706,7 @@ var HotelDb = (): Hotel[] => {
     }
     return _hotelDb
 }
-export var TaxiDb = (): Taxi[] => {
+var TaxiDb = (): Taxi[] => {
     if (_taxiDb.length == 0) {
         _taxiDb = LoadDataBase("taxi_db")
     }
@@ -696,20 +717,6 @@ var TrainDb = (): Train[] => {
         _trainDb = LoadDataBase("train_db")
     }
     return _trainDb
-}
-
-export var EntitySubstitutions = (): { [key: string]: string } => {
-    if (!_entitySubstitutions) {
-        _entitySubstitutions = LoadDataBase("entity_substitutions")
-    }
-    return _entitySubstitutions
-}
-
-export var DialogActs = (): string[] => {
-    if (!_dialogActs) {
-        _dialogActs = LoadDataBase("dialog_acts")
-    }
-    return _dialogActs
 }
 
 var LoadDataBase = (databaseName: string): any => {

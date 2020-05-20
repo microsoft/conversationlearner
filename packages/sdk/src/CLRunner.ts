@@ -302,7 +302,7 @@ export class CLRunner {
         // Set adapter / conversation reference even if from field not set
         let conversationReference = BB.TurnContext.getConversationReference(turnContext.activity)
         this.SetAdapter(turnContext.adapter, conversationReference)
- 
+
         const activity = turnContext.activity
         if (activity.from === undefined || activity.id == undefined) {
             return
@@ -322,7 +322,7 @@ export class CLRunner {
             CLDebug.Error(error)
         }
     }
-    
+
     public SetAdapter(adapter: BB.BotAdapter, conversationReference: Partial<BB.ConversationReference>) {
         this.adapter = adapter
         CLDebug.InitLogger(adapter, conversationReference)
@@ -561,7 +561,7 @@ export class CLRunner {
     }
 
     // Process user input
-    private async ProcessInput(turnContext: BB.TurnContext): Promise<CLRecognizerResult | null> {
+    private async ProcessInput(turnContext: BB.TurnContext, initialMemory: ClientMemoryManager | null = null): Promise<CLRecognizerResult | null> {
         let errorContext = 'ProcessInput'
         const activity = turnContext.activity
         const conversationReference = BB.TurnContext.getConversationReference(activity)
@@ -685,6 +685,10 @@ export class CLRunner {
                 let sessionStartFlags = uiMode === UIMode.TEST ? SessionStartFlags.IN_TEST : SessionStartFlags.NONE
                 let session = await this.CreateSessionAsync(state, BB.TurnContext.getConversationReference(activity), app.appId, sessionStartFlags, sessionCreateParams) as CLM.Session
                 sessionId = session.sessionId
+
+                if (initialMemory) {
+                    await state.EntityState.RestoreFromMemoryManagerAsync(initialMemory)
+                }
             }
 
             // Process any form data
@@ -1222,17 +1226,18 @@ export class CLRunner {
                     )
 
                     if (!inTeach) {
-                        const modelIds = dispatchAction.modelId.split(",");
-                        const modelNames = dispatchAction.modelName.split(",");
-                        for (let i = 0; i< modelNames.length; i = i + 1) {
+                        const modelIds = dispatchAction.modelId.split(",")
+                        const modelNames = dispatchAction.modelName.split(",")
+
+                        const dispatchCallback = this.callbacks["Dispatch"]
+                        const memoryManager = await this.CreateMemoryManagerAsync(clRecognizeResult.state, clRecognizeResult.clEntities)
+
+                        // Do not await for MultiWoz.  Logic will block on sub-model response
+                        dispatchCallback.logic(memoryManager, clRecognizeResult.state.turnContext!.activity.id!, dispatchAction.modelName)
+
+                        for (let i = 0; i < modelNames.length; i = i + 1) {
                             CLDebug.Log(`Dispatch to Model: ${modelIds[i]} ${modelNames[i]}`, DebugType.Dispatch)
-
-                            // Multiwoz - note that dispatch has been called
-                            const dispatchCallback = this.callbacks["Dispatch"]
-                            const memoryManager = await this.CreateMemoryManagerAsync(clRecognizeResult.state, clRecognizeResult.clEntities)
-                            await dispatchCallback.logic(memoryManager, clRecognizeResult.state.turnContext!.activity.id!, dispatchAction.modelName)
-
-                            await this.forwardInputToModel(modelIds[i], modelNames[i], clRecognizeResult.state)
+                            await this.forwardInputToModel(modelIds[i], modelNames[i], clRecognizeResult.state, memoryManager)
                         }
                         // Force response to null to avoid sending message as message will come from next model.
                         actionResult.response = null
@@ -1253,7 +1258,7 @@ export class CLRunner {
 
                     if (!inTeach) {
                         CLDebug.Log(`Change to Model: ${changeModelAction.modelId} ${changeModelAction.modelName}`, DebugType.Dispatch)
-                        await this.forwardInputToModel(changeModelAction.modelId, changeModelAction.modelName, clRecognizeResult.state, true)
+                        await this.forwardInputToModel(changeModelAction.modelId, changeModelAction.modelName, clRecognizeResult.state, null, true)
                         // Force response to null to avoid sending message as message will come from next model.
                         actionResult.response = null
                     }
@@ -1314,13 +1319,13 @@ export class CLRunner {
         return actionResult
     }
 
-    private async forwardInputToModel(modelId: string, modelName: string, state: CLState, changeActiveModel: boolean = false) {
+    private async forwardInputToModel(modelId: string, modelName: string, state: CLState, memoryManager: ClientMemoryManager | null = null, changeActiveModel: boolean = false) {
         if (modelId === this.modelId) {
             throw new Error(`Cannot forward input to model with same ID as active model. This shouldn't be possible open an issue.`)
         }
 
         // If no model
-        if (modelId == "") {
+        if (!modelId) {
             const foundId = ConversationLearnerFactory.modelIdFromName(modelName)
             if (!foundId) {
                 throw new Error(`Can't find model named ${modelName}`)
@@ -1354,10 +1359,11 @@ export class CLRunner {
         // and can't use recognize for dispatch since want to force which model processes input instead looking for match from conversation again
         model.clRunner.SetAdapter(turnContext.adapter, conversationReference)
         const dispatcherState = this.stateFactory.getFromContext(turnContext, modelId)
+
         let addInputPromise = util.promisify(InputQueue.AddInput)
         let isReady = await addInputPromise(dispatcherState.MessageState, turnContext.activity, modelId)
         if (isReady) {
-            const recognizerResult = await model.clRunner.ProcessInput(turnContext)
+            const recognizerResult = await model.clRunner.ProcessInput(turnContext, memoryManager)
             if (recognizerResult) {
                 await model.SendResult(recognizerResult)
             }
@@ -1682,8 +1688,9 @@ export class CLRunner {
                     }
                     else {
                         let args = [...renderedLogicArgumentValues]
-                        if (callback.name == "SendOutput" && state.turnContext?.activity.id) {
-                            args = [state.turnContext.activity.id]
+                        // Need to calculate activtyId dynamically
+                        if (callback.name == "SendResult" && state.turnContext?.activity.id) {
+                            args = [state.turnContext.activity.id, renderedLogicArgumentValues[1]]
                         }
                         logicReturnValue = await callback.logic(memoryManager, ...args)
                     }

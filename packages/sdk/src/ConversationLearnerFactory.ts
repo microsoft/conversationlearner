@@ -55,7 +55,7 @@ export default class ConversationLearnerFactory {
             return undefined;
         }
         else {
-            return ConversationLearnerFactory.AppsList.apps.find(a => a.appName === appName)?.appId
+            return ConversationLearnerFactory.AppsList.apps.find(a => a.appName.toLowerCase() === appName.toLowerCase())?.appId
         }
     }
 

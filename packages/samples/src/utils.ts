@@ -86,7 +86,7 @@ export const ActivityResultToString = (activityResult: DB.ActivityResult): strin
     let dialogActs: string[] = []
     let entities: string[] = []
     let output: string[][] = []
-    activityResult.domainResults.forEach(dr => {
+    activityResult.modelResults.forEach(dr => {
         if (dr) {
             dialogActs = [...dialogActs, ...dr.dialogActs]
             entities = [...entities, ...dr.entities]
@@ -115,7 +115,7 @@ export const expandedResults = (dialogActs: string[], entities: string[]): strin
         const act = parts[1]
         const entity = parts[2]
 
-        if (act == "Request") {
+        if (act == "request") {
             results.push([act, domain, entity, "?"])
         }
         else if (entity == "none") {
@@ -134,6 +134,10 @@ export const expandedResults = (dialogActs: string[], entities: string[]): strin
         }
     }
     return results
+}
+
+export const domainNameFromDialogAct = (dialogActName: string): string => {
+    return dialogActName.split("-")[0].split("2")[0]
 }
 
 export const shortName = (entityName: string): string => {
