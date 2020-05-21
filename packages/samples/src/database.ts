@@ -4,7 +4,7 @@
  */
 import * as path from 'path'
 import { ClientMemoryManager, ReadOnlyClientMemoryManager } from '@conversationlearner/sdk'
-import { Restaurant, Hotel, Attraction, Taxi, Train, LuisSlot, RestaurantSlot, HotelSlot, AttractionSlot, TaxiSlot, TrainSlot, Domain } from './dataTypes'
+import { Restaurant, Hotel, Attraction, Taxi, Train, LuisSlot, RestaurantSlot, HotelSlot, AttractionSlot, TaxiSlot, TrainSlot, Domain, PICK_ONE } from './dataTypes'
 import * as fs from 'fs'
 import * as Utils from './utils'
 
@@ -90,11 +90,13 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
         }
     }
     if (domainFilter === "restaurant") {
+        /* LARS needed??
         if (day) {
             memoryManager.Delete(RestaurantSlot.DAY)
             memoryManager.Set(RestaurantSlot.DAY, day)
             memoryManager.Delete(LuisSlot.DAY)
         }
+        */
         if (people) {
             memoryManager.Delete(RestaurantSlot.PEOPLE)
             memoryManager.Set(RestaurantSlot.PEOPLE, people)
@@ -265,29 +267,48 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
     }
 }
 
-const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: string): void => {
+const SetEntities = (items: string[], luisSlotName: any, slotName: any, countSlotName: any, memoryManager: ClientMemoryManager) => {
+
+    // If LUIS hasn't already filled this entity, don't use database value
+    if (!luisSlotName || !memoryManager.Get(luisSlotName, ClientMemoryManager.AS_STRING)) {
+
+        memoryManager.Delete(slotName)
+        memoryManager.Set(slotName, items.slice(0, 3))
+        if (items.length > 1) {
+            memoryManager.Set(countSlotName, items.length)
+        }
+        else {
+            memoryManager.Delete(countSlotName)
+        }
+    }
+}
+
+export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: string): void => {
     if (domainFilter == "restaurant") {
 
         var restaurants = RestaurantOptions(memoryManager)
 
-        // If I have a couple ouptions, set from search results
-        if (restaurants.length <= 2) {
-            if (!memoryManager.Get(RestaurantSlot.AREA, ClientMemoryManager.AS_STRING)) {
-                memoryManager.Set(RestaurantSlot.AREA, [... new Set(restaurants.map(a => a.area))])
-            }
-            if (!memoryManager.Get(RestaurantSlot.FOOD, ClientMemoryManager.AS_STRING)) {
-                memoryManager.Set(RestaurantSlot.FOOD, [... new Set(restaurants.map(a => a.food))])
-            }
-            if (!memoryManager.Get(RestaurantSlot.NAME, ClientMemoryManager.AS_STRING)) {
-                memoryManager.Set(RestaurantSlot.NAME, [... new Set(restaurants.map(a => a.name))])
-            }
-            if (!memoryManager.Get(RestaurantSlot.PRICERANGE, ClientMemoryManager.AS_STRING)) {
-                memoryManager.Set(RestaurantSlot.PRICERANGE, [... new Set(restaurants.map(a => a.pricerange))])
-            }
-            if (!memoryManager.Get(RestaurantSlot.PRICERANGE, ClientMemoryManager.AS_STRING)) {
-                memoryManager.Set(RestaurantSlot.PRICERANGE, [... new Set(restaurants.map(a => a.pricerange))])
-            }
-        }
+        var addresss = [... new Set(restaurants.map(a => a.address))]
+        SetEntities(addresss, null, RestaurantSlot.ADDRESS, RestaurantSlot.ADDRESS_COUNT, memoryManager)
+
+        var areas = [... new Set(restaurants.map(a => a.area))]
+        SetEntities(areas, LuisSlot.AREA, RestaurantSlot.AREA, RestaurantSlot.AREA_COUNT, memoryManager)
+
+        var foods = [... new Set(restaurants.map(a => a.food))]
+        SetEntities(foods, LuisSlot.FOOD, RestaurantSlot.FOOD, RestaurantSlot.FOOD_COUNT, memoryManager)
+
+        var names = [... new Set(restaurants.map(a => a.name))]
+        SetEntities(names, LuisSlot.NAME, RestaurantSlot.NAME, RestaurantSlot.NAME_COUNT, memoryManager)
+
+        var phones = [... new Set(restaurants.map(a => a.phone))]
+        SetEntities(phones, null, RestaurantSlot.PHONE, RestaurantSlot.PHONE_COUNT, memoryManager)
+
+        var postcodes = [... new Set(restaurants.map(a => a.postcode))]
+        SetEntities(postcodes, null, RestaurantSlot.POSTCODE, RestaurantSlot.POSTCODE_COUNT, memoryManager)
+
+        var priceranges = [... new Set(restaurants.map(a => a.pricerange))]
+        SetEntities(priceranges, LuisSlot.PRICE, RestaurantSlot.PRICERANGE, RestaurantSlot.PRICERANGE_COUNT, memoryManager)
+
         memoryManager.Delete(RestaurantSlot.CHOICE_NONE)
         memoryManager.Delete(RestaurantSlot.CHOICE_TWO)
         memoryManager.Delete(RestaurantSlot.CHOICE_MANY)
@@ -307,24 +328,38 @@ const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: string): vo
 
         var hotels = HotelOptions(memoryManager)
 
-        // If I have a couple ouptions, set from search results
-        if (hotels.length <= 2) {
-            if (!memoryManager.Get(HotelSlot.AREA, ClientMemoryManager.AS_STRING)) {
-                memoryManager.Set(HotelSlot.AREA, [... new Set(hotels.map(a => a.area))])
-            }
-            if (!memoryManager.Get(HotelSlot.NAME, ClientMemoryManager.AS_STRING)) {
-                memoryManager.Set(HotelSlot.NAME, [... new Set(hotels.map(a => a.name))])
-            }
-            if (!memoryManager.Get(HotelSlot.PRICERANGE, ClientMemoryManager.AS_STRING)) {
-                memoryManager.Set(HotelSlot.PRICERANGE, [... new Set(hotels.map(a => a.pricerange))])
-            }
-            if (!memoryManager.Get(HotelSlot.STARS, ClientMemoryManager.AS_STRING)) {
-                memoryManager.Set(HotelSlot.STARS, [... new Set(hotels.map(a => a.stars))])
-            }
-            if (!memoryManager.Get(HotelSlot.TYPE, ClientMemoryManager.AS_STRING)) {
-                memoryManager.Set(HotelSlot.TYPE, [... new Set(hotels.map(a => a._type))])
-            }
-        }
+        var addresss = [... new Set(hotels.map(a => a.address))]
+        SetEntities(addresss, null, HotelSlot.ADDRESS, HotelSlot.ADDRESS_COUNT, memoryManager)
+
+        var areas = [... new Set(hotels.map(a => a.area))]
+        SetEntities(areas, LuisSlot.AREA, HotelSlot.AREA, HotelSlot.AREA_COUNT, memoryManager)
+
+        // LARS TODO. better handle internet
+        var internets = [... new Set(hotels.map(a => a.internet))]
+        SetEntities(internets, LuisSlot.INTERNET_YES, HotelSlot.INTERNET, HotelSlot.INTERNET_COUNT, memoryManager)
+
+        // LARS TODO. better handle paring
+        var parkings = [... new Set(hotels.map(a => a.parking))]
+        SetEntities(parkings, LuisSlot.PARKING_YES, HotelSlot.PARKING, HotelSlot.PARKING_COUNT, memoryManager)
+
+        var names = [... new Set(hotels.map(a => a.name))]
+        SetEntities(names, LuisSlot.NAME, HotelSlot.NAME, HotelSlot.NAME_COUNT, memoryManager)
+
+        var phones = [... new Set(hotels.map(a => a.phone))]
+        SetEntities(phones, null, HotelSlot.PHONE, HotelSlot.PHONE_COUNT, memoryManager)
+
+        var postcodes = [... new Set(hotels.map(a => a.postcode))]
+        SetEntities(postcodes, null, HotelSlot.POSTCODE, HotelSlot.POSTCODE_COUNT, memoryManager)
+
+        var priceranges = [... new Set(hotels.map(a => a.pricerange))]
+        SetEntities(priceranges, LuisSlot.PRICE, HotelSlot.PRICERANGE, HotelSlot.PRICERANGE_COUNT, memoryManager)
+
+        var starss = [... new Set(hotels.map(a => a.stars))]
+        SetEntities(starss, LuisSlot.PRICE, HotelSlot.STARS, HotelSlot.STARS_COUNT, memoryManager)
+
+        var types = [... new Set(hotels.map(a => a._type))]
+        SetEntities(types, LuisSlot.TYPE, HotelSlot.TYPE, HotelSlot.TYPE_COUNT, memoryManager)
+
         memoryManager.Delete(HotelSlot.CHOICE_NONE)
         memoryManager.Delete(HotelSlot.CHOICE_TWO)
         memoryManager.Delete(HotelSlot.CHOICE_MANY)
@@ -343,18 +378,34 @@ const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: string): vo
     if (domainFilter == "attraction") {
         var attractions = AttractionOptions(memoryManager)
 
-        // If I have a couple ouptions, set from search results
-        if (attractions.length <= 2) {
-            if (!memoryManager.Get(AttractionSlot.AREA, ClientMemoryManager.AS_STRING)) {
-                memoryManager.Set(AttractionSlot.AREA, [... new Set(attractions.map(a => a.area))])
-            }
-            if (!memoryManager.Get(AttractionSlot.NAME, ClientMemoryManager.AS_STRING)) {
-                memoryManager.Set(AttractionSlot.NAME, [... new Set(attractions.map(a => a.name))])
-            }
-            if (!memoryManager.Get(AttractionSlot.TYPE, ClientMemoryManager.AS_STRING)) {
-                memoryManager.Set(AttractionSlot.TYPE, [... new Set(attractions.map(a => a._type))])
-            }
-        }
+        memoryManager.Delete(AttractionSlot.AREA_COUNT)
+
+        var addresss = [... new Set(attractions.map(a => a.address))]
+        SetEntities(addresss, null, AttractionSlot.ADDRESS, AttractionSlot.ADDRESS_COUNT, memoryManager)
+
+        var areas = [... new Set(attractions.map(a => a.area))]
+        SetEntities(areas, LuisSlot.AREA, AttractionSlot.AREA, AttractionSlot.AREA_COUNT, memoryManager)
+
+        var entrancefees = [... new Set(attractions.map(a => a.entrancefee))]
+        SetEntities(entrancefees, null, AttractionSlot.FEE, AttractionSlot.FEE_COUNT, memoryManager)
+
+        var names = [... new Set(attractions.map(a => a.name))]
+        SetEntities(names, LuisSlot.NAME, AttractionSlot.NAME, AttractionSlot.NAME_COUNT, memoryManager)
+
+        var openhourss = [... new Set(attractions.map(a => a.openhours))]
+        SetEntities(openhourss, null, AttractionSlot.OPEN, AttractionSlot.OPEN_COUNT, memoryManager)
+
+        var phones = [... new Set(attractions.map(a => a.phone))]
+        SetEntities(phones, null, AttractionSlot.PHONE, AttractionSlot.PHONE_COUNT, memoryManager)
+
+        var postcodes = [... new Set(attractions.map(a => a.postcode))]
+        SetEntities(postcodes, null, AttractionSlot.POSTCODE, AttractionSlot.POSTCODE_COUNT, memoryManager)
+
+        var priceranges = [... new Set(attractions.map(a => a.pricerange))]
+        SetEntities(priceranges, LuisSlot.PRICE, AttractionSlot.PRICERANGE, AttractionSlot.PRICERANGE_COUNT, memoryManager)
+
+        var types = [... new Set(attractions.map(a => a._type))]
+        SetEntities(types, LuisSlot.TYPE, AttractionSlot.TYPE, AttractionSlot.TYPE_COUNT, memoryManager)
 
         memoryManager.Delete(AttractionSlot.CHOICE_NONE)
         memoryManager.Delete(AttractionSlot.CHOICE_TWO)
@@ -381,24 +432,30 @@ const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: string): vo
     if (domainFilter == "train") {
         var trains = TrainOptions(memoryManager)
 
-        // If I have a couple ouptions, set from search results
-        if (trains.length <= 2) {
-            if (!memoryManager.Get(TrainSlot.DAY, ClientMemoryManager.AS_STRING)) {
-                memoryManager.Set(TrainSlot.DAY, [... new Set(trains.map(a => a.day))])
-            }
-            if (!memoryManager.Get(TrainSlot.DEPART, ClientMemoryManager.AS_STRING)) {
-                memoryManager.Set(TrainSlot.DEPART, [... new Set(trains.map(a => a.departure))])
-            }
-            if (!memoryManager.Get(TrainSlot.DESTINATION, ClientMemoryManager.AS_STRING)) {
-                memoryManager.Set(TrainSlot.DESTINATION, [... new Set(trains.map(a => a.destination))])
-            }
-            if (!memoryManager.Get(TrainSlot.LEAVE_AT, ClientMemoryManager.AS_STRING)) {
-                memoryManager.Set(TrainSlot.LEAVE_AT, [... new Set(trains.map(a => a.leaveAt))])
-            }
-            if (!memoryManager.Get(TrainSlot.ARRIVE_BY, ClientMemoryManager.AS_STRING)) {
-                memoryManager.Set(TrainSlot.ARRIVE_BY, [... new Set(trains.map(a => a.arriveBy))])
-            }
-        }
+        var arriveBys = [... new Set(trains.map(a => a.arriveBy))]
+        SetEntities(arriveBys, LuisSlot.ARRIVE_BY, TrainSlot.ARRIVE_BY, TrainSlot.ARRIVE_BY_COUNT, memoryManager)
+
+        var days = [... new Set(trains.map(a => a.day))]
+        SetEntities(days, null, TrainSlot.DAY, TrainSlot.DAY_COUNT, memoryManager)
+
+        var departures = [... new Set(trains.map(a => a.departure))]
+        SetEntities(departures, LuisSlot.DESTINATION, TrainSlot.DEPART, TrainSlot.DEPART_COUNT, memoryManager)
+
+        var destinations = [... new Set(trains.map(a => a.destination))]
+        SetEntities(destinations, LuisSlot.DESTINATION, TrainSlot.DESTINATION, TrainSlot.DESTINATION_COUNT, memoryManager)
+
+        var durations = [... new Set(trains.map(a => a.duration))]
+        SetEntities(durations, null, TrainSlot.DURATION, TrainSlot.DURATION_COUNT, memoryManager)
+
+        var leaveAts = [... new Set(trains.map(a => a.leaveAt))]
+        SetEntities(leaveAts, LuisSlot.LEAVE_AT, TrainSlot.LEAVE_AT, TrainSlot.LEAVE_AT_COUNT, memoryManager)
+
+        var prices = [... new Set(trains.map(a => a.price))]
+        SetEntities(prices, null, TrainSlot.TICKET, TrainSlot.TICKET_COUNT, memoryManager)
+
+        var trainIDs = [... new Set(trains.map(a => a.trainID))]
+        SetEntities(trainIDs, null, TrainSlot.ID, TrainSlot.ID_COUNT, memoryManager)
+
         memoryManager.Delete(TrainSlot.CHOICE_NONE)
         memoryManager.Delete(TrainSlot.CHOICE_TWO)
         memoryManager.Delete(TrainSlot.CHOICE_MANY)
@@ -439,9 +496,10 @@ const trainEntities = (memoryManager: ReadOnlyClientMemoryManager): string[] => 
 
     var trains = TrainOptions(memoryManager)
     if (trains.length == 1) {
-        entities.push(`train-id: ${trains[0].trainID}`)
-        entities.push(`train-ticket: ${trains[0].price}`)
-        entities.push(`train-duration: ${trains[0].duration}`)
+        // LARS
+        //entities.push(`train-id: ${trains[0].trainID}`)
+        //entities.push(`train-ticket: ${trains[0].price}`)
+        //entities.push(`train-duration: ${trains[0].duration}`)
     }
 
     Object.values(TrainSlot).map((entityName: string) => {
@@ -462,9 +520,9 @@ const restaurantEntities = (memoryManager: ReadOnlyClientMemoryManager): string[
 
     var restaurants = RestaurantOptions(memoryManager)
     if (restaurants.length == 1) {
-        entities.push(`restaurant-address: ${restaurants[0].address}`)
-        entities.push(`restaurant-phone: ${restaurants[0].phone}`)
-        entities.push(`restaurant-postcode: ${restaurants[0].postcode}`)
+        //  LARS entities.push(`restaurant-address: ${restaurants[0].address}`)
+        //   entities.push(`restaurant-phone: ${restaurants[0].phone}`)
+        //   entities.push(`restaurant-postcode: ${restaurants[0].postcode}`)
         entities.push(`restaurant-ref: ${Utils.makeId(8)}`)
     }
 
@@ -486,9 +544,10 @@ const hotelEntities = (memoryManager: ReadOnlyClientMemoryManager): string[] => 
 
     var hotels = HotelOptions(memoryManager)
     if (hotels.length == 1) {
-        entities.push(`hotel-address: ${hotels[0].address}`)
-        entities.push(`hotel-phone: ${hotels[0].phone}`)
-        entities.push(`hotel-postcode: ${hotels[0].postcode}`)
+        // LARS TEMP TEST IF CAN REMOVE
+        //entities.push(`hotel-address: ${hotels[0].address}`)
+        ///entities.push(`hotel-phone: ${hotels[0].phone}`)
+        //entities.push(`hotel-postcode: ${hotels[0].postcode}`)
         entities.push(`hotel-ref: ${Utils.makeId(8)}`)
     }
 
@@ -511,11 +570,11 @@ const attractionEntities = (memoryManager: ReadOnlyClientMemoryManager): string[
 
     var attractions = AttractionOptions(memoryManager)
     if (attractions.length == 1) {
-        entities.push(`attraction-address: ${attractions[0].address}`)
-        entities.push(`attraction-phone: ${attractions[0].phone}`)
-        entities.push(`attraction-postcode: ${attractions[0].postcode}`)
-        entities.push(`attraction-fee: ${attractions[0].entrancefee}`)
-        entities.push(`attraction-pricerange: ${attractions[0].pricerange}`)
+        // entities.push(`attraction-address: ${attractions[0].address}`)
+        //entities.push(`attraction-phone: ${attractions[0].phone}`)
+        // entities.push(`attraction-postcode: ${attractions[0].postcode}`)
+        //entities.push(`attraction-fee: ${attractions[0].entrancefee}`)
+        // entities.push(`attraction-pricerange: ${attractions[0].pricerange}`)
     }
 
     Object.values(AttractionSlot).map(entityName => {
@@ -568,6 +627,7 @@ var RestaurantOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemo
     var food = Utils.MemoryValues(RestaurantSlot.FOOD, memoryManager)
     var name = Utils.MemoryValues(RestaurantSlot.NAME, memoryManager)
     var pricerange = Utils.MemoryValues(RestaurantSlot.PRICERANGE, memoryManager)
+    var pickone = memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)
 
     var restaurants = RestaurantDb()
     if (area.length > 0) {
@@ -582,7 +642,7 @@ var RestaurantOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemo
     if (pricerange.length > 0) {
         restaurants = restaurants.filter(r => pricerange.includes(Utils.BaseString(r.pricerange)))
     }
-    return restaurants
+    return pickone ? restaurants.slice(0, 1) : restaurants
 }
 
 var AttractionOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Attraction[] => {
@@ -590,7 +650,7 @@ var AttractionOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemo
     var area = Utils.MemoryValues(AttractionSlot.AREA, memoryManager)
     var name = Utils.MemoryValues(AttractionSlot.NAME, memoryManager)
     var _type = Utils.MemoryValues(AttractionSlot.TYPE, memoryManager)
-
+    var pickone = memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)
     //TODO entracneFree / price /etc no semantics ??
 
     var attraction = AttractionDb()
@@ -603,8 +663,9 @@ var AttractionOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemo
     if (_type.length > 0) {
         attraction = attraction.filter(r => _type.includes(Utils.BaseString(r._type)))
     }
-    return attraction
+    return pickone ? attraction.slice(0, 1) : attraction
 }
+
 var HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Hotel[] => {
 
     var area = Utils.MemoryValues(HotelSlot.AREA, memoryManager)
@@ -614,7 +675,7 @@ var HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryMan
     var pricerange = Utils.MemoryValues(HotelSlot.PRICERANGE, memoryManager)
     var stars = Utils.MemoryValues(HotelSlot.STARS, memoryManager)
     var _type = Utils.MemoryValues(HotelSlot.TYPE, memoryManager)
-
+    var pickone = memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)
     //TODO takesbookings ??
 
     var hotels = HotelDb()
@@ -639,7 +700,7 @@ var HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryMan
     if (_type.length > 0) {
         hotels = hotels.filter(r => _type.includes(Utils.BaseString(r._type)))
     }
-    return hotels
+    return pickone ? hotels.slice(0, 1) : hotels
 }
 
 var TrainOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Train[] => {
@@ -649,7 +710,7 @@ var TrainOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryMan
     var departure = Utils.MemoryValues(TrainSlot.DEPART, memoryManager)
     var destination = Utils.MemoryValues(TrainSlot.DESTINATION, memoryManager)
     var leaveAt = Utils.MemoryValues(TrainSlot.LEAVE_AT, memoryManager)
-
+    var pickone = memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)
     //TODO entracneFree / price /etc no semantics ??
 
     var trains = TrainDb()
@@ -673,7 +734,7 @@ var TrainOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryMan
             trains = bestTrain ? [bestTrain] : []
         }
     }
-    return trains
+    return pickone ? trains.slice(0, 1) : trains
 }
 
 var TaxiOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Taxi[] => {
@@ -722,7 +783,9 @@ var TrainDb = (): Train[] => {
 var LoadDataBase = (databaseName: string): any => {
     const filename = path.join(GetDirectory(DBDirectory), `${databaseName}.json`)
     const templateString = fs.readFileSync(filename, 'utf-8')
-    const template = JSON.parse(templateString.split('"type":').join('"_type":'))
+    const template = JSON.parse(templateString
+        .split('"type":').join('"_type":')
+        .split('"entrance fee":').join('"entrancefee":'))
     return template
 }
 

@@ -337,23 +337,17 @@ export const initCombinedModel = (clFactory: ConversationLearnerFactory) => {
 
             var tday = memoryManager.Get(TrainSlot.DAY, ClientMemoryManager.AS_STRING)
             var hday = memoryManager.Get(HotelSlot.DAY, ClientMemoryManager.AS_STRING)
-            var rday = memoryManager.Get(RestaurantSlot.DAY, ClientMemoryManager.AS_STRING)
 
-            var restaurant = memoryManager.Get(Domain.RESTAURANT, ClientMemoryManager.AS_STRING)
-            if (restaurant !== null && restaurant !== undefined && (tday || hday)) {
-                memoryManager.Set(RestaurantSlot.DAY, tday || hday as string)
-                return
-            }
 
             var train = memoryManager.Get(Domain.TRAIN, ClientMemoryManager.AS_STRING)
-            if (train !== null && train !== undefined && (rday || hday)) {
-                memoryManager.Set(TrainSlot.DAY, rday || hday as string)
+            if (train !== null && train !== undefined && hday) {
+                memoryManager.Set(TrainSlot.DAY, hday as string)
                 return
             }
 
             var hotel = memoryManager.Get(Domain.HOTEL, ClientMemoryManager.AS_STRING)
-            if (hotel !== null && hotel !== undefined && (rday || tday)) {
-                memoryManager.Set(HotelSlot.DAY, rday || tday as string)
+            if (hotel !== null && hotel !== undefined && tday) {
+                memoryManager.Set(HotelSlot.DAY, tday as string)
                 return
             }
         }

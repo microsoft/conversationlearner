@@ -8,7 +8,7 @@ import * as BB from 'botbuilder'
 import { ConversationLearner, ConversationLearnerFactory, ClientMemoryManager, ReadOnlyClientMemoryManager, FileStorage, uiRouter } from '@conversationlearner/sdk'
 import chalk from 'chalk'
 import config from './config'
-import { LuisSlot, Domain, DONTCARE } from './dataTypes'
+import { LuisSlot, Domain, DONTCARE, PICK_ONE } from './dataTypes'
 import * as fs from 'fs'
 import * as crypto from 'crypto'
 import * as DB from './database'
@@ -169,6 +169,15 @@ const getDomainDispatchCL = (domain: Domain): ConversationLearner => {
         Utils.ApplyEntitySubstitutions(memoryManager)
         DB.UpdateEntities(memoryManager, domain)
     }
+
+    // Add callback for agent picking a database entry
+    domainDispatchModel.AddCallback({
+        name: "PickOne",
+        logic: async (memoryManager: ClientMemoryManager) => {
+            memoryManager.Set(PICK_ONE, "true")
+            DB.UpdateDB(memoryManager, domain)
+        }
+    })
 
     domainDispatchModel.AddCallback({
         name: "Dispatch",
@@ -344,12 +353,12 @@ server.post('/api/messages', (req, res) => {
                 await createModels()
             }
 
-            if (context.activity.text.includes("::test")) {
-                await RunTest(context)
+            else if (context.activity.text === "::stop") {
+                await StopTesting(context)
             }
 
-            if (context.activity.text === "::stop") {
-                await StopTesting(context)
+            else {
+                await RunTest(context)
             }
 
             context.activity.text = "clearinputqueue"
@@ -462,9 +471,9 @@ const RunTest = async (context: BB.TurnContext) => {
     var transcriptFileNames = fs.readdirSync(testDirectory)
 
     // See if I filter to a single test
-    var commands = context.activity.text.split(" ")
-    if (commands[1]) {
-        transcriptFileNames = transcriptFileNames.filter(fn => fn.includes(commands[1]))
+    var commands = context.activity.text.replace("::", "")
+    if (commands) {
+        transcriptFileNames = transcriptFileNames.filter(fn => fn.includes(commands))
     }
 
     if (transcriptFileNames.length === 0) {
