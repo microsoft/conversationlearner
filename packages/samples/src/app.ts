@@ -90,6 +90,14 @@ export const apiDontCareArrive = {
     }
 }
 
+export const apiDontCareLeave = {
+    name: "dontcare-leave",
+    logic: async (memoryManager: ClientMemoryManager) => {
+        memoryManager.Set(LuisSlot.LEAVE_AT, DONTCARE)
+        DB.UpdateEntities(memoryManager)
+    }
+}
+
 export const apiDontCareType = {
     name: "dontcare-type",
     logic: async (memoryManager: ClientMemoryManager) => {
@@ -226,15 +234,39 @@ const getDomainDispatchCL = (domain: Domain): ConversationLearner => {
         }
     })
 
-    //=== DontCare Callbacks ===
-    domainDispatchModel.AddCallback(apiDontCareArea)
-    domainDispatchModel.AddCallback(apiDontCarePrice)
-    domainDispatchModel.AddCallback(apiDontCareFood)
-    domainDispatchModel.AddCallback(apiDontCareArrive)
-    domainDispatchModel.AddCallback(apiDontCareType)
-    domainDispatchModel.AddCallback(apiDontCareName)
+    AddDontCare(domainDispatchModel, domain);
 
     return domainDispatchModel
+}
+
+const AddDontCare = (domainDispatchModel: ConversationLearner, domain: string): void => {
+
+    if (domain === "restaurant") {
+        domainDispatchModel.AddCallback(apiDontCareArea)
+        domainDispatchModel.AddCallback(apiDontCarePrice)
+        domainDispatchModel.AddCallback(apiDontCareFood)
+        domainDispatchModel.AddCallback(apiDontCareType)
+        domainDispatchModel.AddCallback(apiDontCareName)        
+    }
+    else if (domain === "train") {
+        domainDispatchModel.AddCallback(apiDontCareArrive)
+        domainDispatchModel.AddCallback(apiDontCareLeave)
+    }
+    else if (domain === "hotel") {
+        domainDispatchModel.AddCallback(apiDontCareArea)
+        domainDispatchModel.AddCallback(apiDontCarePrice)
+        domainDispatchModel.AddCallback(apiDontCareType)
+        domainDispatchModel.AddCallback(apiDontCareName)   
+    }
+    else if (domain === "taxi") {
+        // NONE
+    }
+    else if (domain === "attraction") {
+        domainDispatchModel.AddCallback(apiDontCareArea)
+        domainDispatchModel.AddCallback(apiDontCarePrice)
+        domainDispatchModel.AddCallback(apiDontCareType)
+        domainDispatchModel.AddCallback(apiDontCareName)   
+    }
 }
 
 /* DEBUG

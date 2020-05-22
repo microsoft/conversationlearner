@@ -12,6 +12,9 @@ export const ApplyEntitySubstitutions = (memoryManager: ClientMemoryManager): vo
                 memoryManager.Set(entityName, substitution)
                 return substitution
             }
+            if (value.startsWith("the ")) {
+                value.substring("the ".length)
+            }
         }
     })
 }
