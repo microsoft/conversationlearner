@@ -273,9 +273,10 @@ const SetEntities = (items: string[], luisSlotName: any, slotName: any, countSlo
     if (!luisSlotName || !memoryManager.Get(luisSlotName, ClientMemoryManager.AS_STRING)) {
 
         memoryManager.Delete(slotName)
-        memoryManager.Set(slotName, items.slice(0, 3))
-        if (items.length > 1) {
-            memoryManager.Set(countSlotName, items.length)
+        var values = items.filter(i => i !== "?" && i !== "")
+        memoryManager.Set(slotName, values.slice(0, 3))
+        if (values.length > 1) {
+            memoryManager.Set(countSlotName, values.length)
         }
         else {
             memoryManager.Delete(countSlotName)
