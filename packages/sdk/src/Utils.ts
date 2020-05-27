@@ -308,7 +308,7 @@ const findNumberFromFilledEntity = (filledEntity: CLM.FilledEntity, isMultivalue
     const valueString: string | undefined = (filledEntity?.values?.[0]?.resolution as any)?.value
 
     const value = valueString
-        ? parseInt(valueString, 10)
+        ? parseFloat(valueString)
         : undefined
 
     return value
