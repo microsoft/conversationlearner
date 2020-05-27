@@ -103,7 +103,7 @@ export const findNumberFromMemory = (memory: CLM.Memory, isMultivalue: boolean):
     const valueString: string | undefined = (memory?.entityValues?.[0]?.resolution as any).value
 
     return valueString
-        ? parseInt(valueString, 10)
+        ? parseFloat(valueString)
         : undefined
 }
 
