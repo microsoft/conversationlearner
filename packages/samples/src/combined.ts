@@ -5,7 +5,7 @@
 import { ConversationLearner, ConversationLearnerFactory, ClientMemoryManager, ReadOnlyClientMemoryManager } from '@conversationlearner/sdk'
 import { RestaurantSlot, HotelSlot, AttractionSlot, TaxiSlot, TrainSlot, Domain } from './dataTypes'
 import * as Utils from './utils'
-import * as App from './app'
+import * as Models from './models'
 import * as DB from './database'
 
 //=================================
@@ -354,9 +354,9 @@ export const initCombinedModel = (clFactory: ConversationLearnerFactory) => {
     })
 
     //=== DontCare Callbacks ===
-    clCombined.AddCallback(App.apiDontCareArea)
-    clCombined.AddCallback(App.apiDontCarePrice)
-    clCombined.AddCallback(App.apiDontCareFood)
-    clCombined.AddCallback(App.apiDontCareArrive)
-    clCombined.AddCallback(App.apiDontCareType)
+    clCombined.AddCallback(Models.apiDontCareArea)
+    clCombined.AddCallback(Models.apiDontCarePrice)
+    clCombined.AddCallback(Models.apiDontCareFood)
+    clCombined.AddCallback(Models.apiDontCareArrive)
+    clCombined.AddCallback(Models.apiDontCareType)
 }

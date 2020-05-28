@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-
+import * as BB from 'botbuilder'
 export var DONTCARE = "dontcare"
 export var PICK_ONE = "pickone"
 
@@ -243,3 +243,25 @@ export const NameSubstitutionMap = new Map([
   ["leaveat", "leave"],
   ["price", "ticket"]
 ])
+
+export interface ActivityLog extends BB.Transcript {
+  goal: Goal
+}
+
+export interface Goal {
+  taxi: DomainGoal
+  police: DomainGoal
+  hospital: DomainGoal
+  hotel: DomainGoal
+  attraction: DomainGoal
+  train: DomainGoal
+  restaurant: DomainGoal
+  message: any
+}
+
+export interface DomainGoal {
+  info: any
+  reqt: any
+  fail_info: Map<string, string>
+  fail_book: Map<string, string>
+}

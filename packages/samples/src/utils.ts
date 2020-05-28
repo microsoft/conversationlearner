@@ -175,3 +175,49 @@ export const getSlotNames = (domain: Domain) => {
             return Object.values(TrainSlot)
     }
 }
+
+export const generateGUID = (): string => {
+    let d = new Date().getTime()
+    let guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, char => {
+        let r = ((d + Math.random() * 16) % 16) | 0
+        d = Math.floor(d / 16)
+        return (char === 'x' ? r : (r & 0x3) | 0x8).toString(16)
+    })
+    return guid
+}
+
+/*
+const makeActivity = (userInput: string) => {
+
+    // LARS transcript name?
+    const testId = generateGUID()
+
+    const conversation: BB.ConversationAccount = {
+        id: generateGUID(),
+        isGroup: false,
+        name: "",
+        tenantId: "",
+        aadObjectId: "",
+        role: BB.RoleTypes.User,
+        conversationType: ""
+    }
+    const fromAccount: BB.ChannelAccount = {
+        name: "cltest", //Utils.CL_DEVELOPER,
+        id: testId,
+        role: BB.RoleTypes.User,
+        aadObjectId: ''
+    }
+
+    const activity = {  //directline.Activity
+        id: generateGUID(),
+        conversation,
+        type: BB.ActivityTypes.Message,
+        text: userInput,
+        from: fromAccount,
+        channelData: { clData: { isValidationTest: true } }
+    }
+
+    return activity
+}
+*/
+

@@ -7,6 +7,7 @@ import { ClientMemoryManager, ReadOnlyClientMemoryManager } from '@conversationl
 import { Restaurant, Hotel, Attraction, Taxi, Train, LuisSlot, RestaurantSlot, HotelSlot, AttractionSlot, TaxiSlot, TrainSlot, Domain, PICK_ONE } from './dataTypes'
 import * as fs from 'fs'
 import * as Utils from './utils'
+import * as Test from './test'
 
 const DBDirectory = 'mwdb'
 export const TestDirectory = 'testtranscripts'
@@ -285,9 +286,11 @@ const SetEntities = (items: string[], luisSlotName: any, slotName: any, countSlo
 }
 
 export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: string): void => {
+
     if (domainFilter == "restaurant") {
 
-        var restaurants = RestaurantOptions(memoryManager)
+        var failInfo = Test.TestGoal ? new Map([...Test.TestGoal.restaurant.fail_book, ...Test.TestGoal.restaurant.fail_info]) : undefined
+        var restaurants = RestaurantOptions(memoryManager, failInfo)
 
         var addresss = [... new Set(restaurants.map(a => a.address))]
         SetEntities(addresss, null, RestaurantSlot.ADDRESS, RestaurantSlot.ADDRESS_COUNT, memoryManager)
@@ -327,7 +330,8 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
     }
     if (domainFilter == "hotel") {
 
-        var hotels = HotelOptions(memoryManager)
+        var failInfo = Test.TestGoal ? new Map([...Test.TestGoal.hotel.fail_book, ...Test.TestGoal.hotel.fail_info]) : undefined
+        var hotels = HotelOptions(memoryManager, failInfo)
 
         var addresss = [... new Set(hotels.map(a => a.address))]
         SetEntities(addresss, null, HotelSlot.ADDRESS, HotelSlot.ADDRESS_COUNT, memoryManager)
@@ -377,7 +381,9 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
         }
     }
     if (domainFilter == "attraction") {
-        var attractions = AttractionOptions(memoryManager)
+
+        var failInfo = Test.TestGoal ? new Map([...Test.TestGoal.attraction.fail_book, ...Test.TestGoal.attraction.fail_info]) : undefined
+        var attractions = AttractionOptions(memoryManager, failInfo)
 
         memoryManager.Delete(AttractionSlot.AREA_COUNT)
 
@@ -424,14 +430,30 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
         }
     }
     if (domainFilter == "taxi") {
-        var taxis = TaxiOptions(memoryManager)
+
+        var failInfo = Test.TestGoal ? new Map([...Test.TestGoal.taxi.fail_book, ...Test.TestGoal.taxi.fail_info]) : undefined
+        var taxis = TaxiOptions(memoryManager, failInfo)
         taxis.length
         // There's always a taxi
         memoryManager.Set(TaxiSlot.CHOICE, 1)
         memoryManager.Set(TaxiSlot.CHOICE_NONE, true)
+        /*
+                var colors = taxis[0].taxi_colors
+                var types = taxis[0].taxi_types
+                var phones = taxis[0].taxi_phone
+                
+                        var color = colors[Math.floor(Math.random() * colors.length)];
+                        var type = types[Math.floor(Math.random() * types.length)];
+                        var phone = phones[Math.floor(Math.random() * phone.length)];
+                
+                        memoryManager.Set(TaxiSlot.COL, 1)
+                        entityValueList.AddValue(domainName, "taxi-car", $"{color} {type}");        
+                        entityValueList.AddValue(domainName, "taxi-phone", "555-5555");*/
     }
     if (domainFilter == "train") {
-        var trains = TrainOptions(memoryManager)
+
+        var failInfo = Test.TestGoal ? new Map([...Test.TestGoal.train.fail_book, ...Test.TestGoal.train.fail_info]) : undefined
+        var trains = TrainOptions(memoryManager, failInfo)
 
         var arriveBys = [... new Set(trains.map(a => a.arriveBy))]
         SetEntities(arriveBys, LuisSlot.ARRIVE_BY, TrainSlot.ARRIVE_BY, TrainSlot.ARRIVE_BY_COUNT, memoryManager)
@@ -622,12 +644,13 @@ export interface ActivityResult {
     creationTime?: number
 }
 
-var RestaurantOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Restaurant[] => {
+var RestaurantOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: Map<string, string>): Restaurant[] => {
 
     var area = Utils.MemoryValues(RestaurantSlot.AREA, memoryManager)
     var food = Utils.MemoryValues(RestaurantSlot.FOOD, memoryManager)
     var name = Utils.MemoryValues(RestaurantSlot.NAME, memoryManager)
     var pricerange = Utils.MemoryValues(RestaurantSlot.PRICERANGE, memoryManager)
+    var time = Utils.MemoryValues(RestaurantSlot.TIME, memoryManager)
     var pickone = memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)
 
     var restaurants = RestaurantDb()
@@ -643,10 +666,22 @@ var RestaurantOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemo
     if (pricerange.length > 0) {
         restaurants = restaurants.filter(r => pricerange.includes(Utils.BaseString(r.pricerange)))
     }
+
+    if (failInfo != undefined) {
+        const failChecks = new Map<string, string[]>([
+            ["area", area],
+            ["food", food],
+            ["name", name],
+            ["pricerange", pricerange],
+            ["time", time]
+        ])
+        restaurants = FilterFails(restaurants, failInfo, failChecks)
+    }
+
     return pickone ? restaurants.slice(0, 1) : restaurants
 }
 
-var AttractionOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Attraction[] => {
+var AttractionOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: Map<string, string>): Attraction[] => {
 
     var area = Utils.MemoryValues(AttractionSlot.AREA, memoryManager)
     var name = Utils.MemoryValues(AttractionSlot.NAME, memoryManager)
@@ -654,20 +689,30 @@ var AttractionOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemo
     var pickone = memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)
     //TODO entracneFree / price /etc no semantics ??
 
-    var attraction = AttractionDb()
+    var attractions = AttractionDb()
     if (area.length > 0) {
-        attraction = attraction.filter(r => area.includes(Utils.BaseString(r.area)))
+        attractions = attractions.filter(r => area.includes(Utils.BaseString(r.area)))
     }
     if (name.length > 0) {
-        attraction = attraction.filter(r => name.includes(Utils.BaseString(r.name)))
+        attractions = attractions.filter(r => name.includes(Utils.BaseString(r.name)))
     }
     if (_type.length > 0) {
-        attraction = attraction.filter(r => _type.includes(Utils.BaseString(r._type)))
+        attractions = attractions.filter(r => _type.includes(Utils.BaseString(r._type)))
     }
-    return pickone ? attraction.slice(0, 1) : attraction
+
+    if (failInfo != undefined) {
+        const failChecks = new Map<string, string[]>([
+            ["area", area],
+            ["name", name],
+            ["type", _type],
+        ])
+        attractions = FilterFails(attractions, failInfo, failChecks)
+    }
+
+    return pickone ? attractions.slice(0, 1) : attractions
 }
 
-var HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Hotel[] => {
+var HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: Map<string, string>): Hotel[] => {
 
     var area = Utils.MemoryValues(HotelSlot.AREA, memoryManager)
     var internet = Utils.MemoryValues(HotelSlot.INTERNET, memoryManager)
@@ -676,6 +721,9 @@ var HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryMan
     var pricerange = Utils.MemoryValues(HotelSlot.PRICERANGE, memoryManager)
     var stars = Utils.MemoryValues(HotelSlot.STARS, memoryManager)
     var _type = Utils.MemoryValues(HotelSlot.TYPE, memoryManager)
+    var people = Utils.MemoryValues(HotelSlot.PEOPLE, memoryManager)
+    var day = Utils.MemoryValues(HotelSlot.DAY, memoryManager)
+    var stay = Utils.MemoryValues(HotelSlot.STAY, memoryManager)
     var pickone = memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)
     //TODO takesbookings ??
 
@@ -701,10 +749,27 @@ var HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryMan
     if (_type.length > 0) {
         hotels = hotels.filter(r => _type.includes(Utils.BaseString(r._type)))
     }
+
+    if (failInfo != undefined) {
+        const failChecks = new Map<string, string[]>([
+            ["area", area],
+            ["internet", internet],
+            ["parking", parking],
+            ["name", name],
+            ["pricerange", pricerange],
+            ["stars", stars],
+            ["type", _type],
+            ["people", people],
+            ["day", day],
+            ["stay", stay]
+        ])
+        hotels = FilterFails(hotels, failInfo, failChecks)
+    }
+
     return pickone ? hotels.slice(0, 1) : hotels
 }
 
-var TrainOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Train[] => {
+var TrainOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: Map<string, string>): Train[] => {
 
     var arriveBy = Utils.MemoryValues(TrainSlot.ARRIVE_BY, memoryManager)
     var day = Utils.MemoryValues(TrainSlot.DAY, memoryManager)
@@ -738,8 +803,33 @@ var TrainOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryMan
     return pickone ? trains.slice(0, 1) : trains
 }
 
-var TaxiOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Taxi[] => {
+const TaxiOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: Map<string, string>): Taxi[] => {
     return TaxiDb()
+}
+
+const FilterFails = (items: any[], failInfo: Map<string, string>, checks: Map<string, string[]>) => {
+    if (failInfo.keys.length == 0) {
+        return items
+    }
+
+    var matchCount = 0
+    checks.forEach((value: string[], key: string) => {
+        let failKey = failInfo.get(key)
+        // Is there a fail info for this key 
+        if (failKey) {
+            // If there is, check if I match it and count
+            if (value.includes(failKey)) {
+                matchCount++
+            }
+        }
+    })
+    // If I matched all conditions, Fail filter has triggered
+    if (matchCount == failInfo.keys.length) {
+        return []
+    }
+
+    return items
+
 }
 
 var _restaurantDb: Restaurant[] = []
