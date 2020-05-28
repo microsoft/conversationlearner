@@ -11,7 +11,7 @@ import * as Utils from './utils'
 import { Goal } from './dataTypes'
 
 // Assumes only one test is run concurrently
-export let TestGoal: Goal
+export let TestGoal: Goal | undefined
 
 export const RunTest = async (context: BB.TurnContext) => {
     console.log('========= START TESTING ==========')
@@ -49,7 +49,7 @@ export const RunTest = async (context: BB.TurnContext) => {
 export let isTesting = true
 export const StopTesting = async (context: BB.TurnContext) => {
     Models.StopActivity()
-
+    TestGoal = undefined
     await Models.clDispatch.EndSession(context)
     await Models.clRestaurant.EndSession(context)
     await Models.clAttraction.EndSession(context)
@@ -123,5 +123,6 @@ const TestTranscript = async (activityLog: ActivityLog, fileName: string) => {
         }
     }
     console.log(`--------- DONE: ${fileName} ----------`)
+    TestGoal = undefined
     fs.writeFileSync(`${DB.GetDirectory(DB.ResultsDirectory)}\\${fileName}`, JSON.stringify(testResults))
 }

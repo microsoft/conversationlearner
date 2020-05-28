@@ -151,6 +151,8 @@ export enum TaxiSlot {
   TICKET_COUNT = "taxi-ticket-count",
   ID = "taxi-id",
   ID_COUNT = "taxi-id-count",
+  CAR = "taxi-car",
+  PHONE = "taxi-phone",
   CHOICE = "taxi-choice",
   CHOICE_NONE = "taxi-choice0",
   CHOICE_TWO = "taxi-choice2",
@@ -262,6 +264,6 @@ export interface Goal {
 export interface DomainGoal {
   info: any
   reqt: any
-  fail_info: Map<string, string>
-  fail_book: Map<string, string>
+  fail_info: { [id: string]: string }
+  fail_book: { [id: string]: string }
 }

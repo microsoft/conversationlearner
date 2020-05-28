@@ -66,6 +66,10 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
     var stars = memoryManager.Get(LuisSlot.STARS, ClientMemoryManager.AS_STRING)
     var type_ = memoryManager.Get(LuisSlot.TYPE, ClientMemoryManager.AS_STRING)
 
+    if (name !== null) {
+        console.log(name)
+    }
+
     if (time) {
         time = Utils.ProcessTime(time)
     }
@@ -289,7 +293,11 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
 
     if (domainFilter == "restaurant") {
 
-        var failInfo = Test.TestGoal ? new Map([...Test.TestGoal.restaurant.fail_book, ...Test.TestGoal.restaurant.fail_info]) : undefined
+        var failInfo: { [id: string]: string } = {}
+        if (Test.TestGoal) {
+            failInfo = { ...Test.TestGoal.restaurant.fail_book, ...Test.TestGoal.restaurant.fail_info }
+        }
+
         var restaurants = RestaurantOptions(memoryManager, failInfo)
 
         var addresss = [... new Set(restaurants.map(a => a.address))]
@@ -330,7 +338,11 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
     }
     if (domainFilter == "hotel") {
 
-        var failInfo = Test.TestGoal ? new Map([...Test.TestGoal.hotel.fail_book, ...Test.TestGoal.hotel.fail_info]) : undefined
+        var failInfo: { [id: string]: string } = {}
+        if (Test.TestGoal) {
+            failInfo = { ...Test.TestGoal.hotel.fail_book, ...Test.TestGoal.hotel.fail_info }
+        }
+
         var hotels = HotelOptions(memoryManager, failInfo)
 
         var addresss = [... new Set(hotels.map(a => a.address))]
@@ -382,7 +394,11 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
     }
     if (domainFilter == "attraction") {
 
-        var failInfo = Test.TestGoal ? new Map([...Test.TestGoal.attraction.fail_book, ...Test.TestGoal.attraction.fail_info]) : undefined
+        var failInfo: { [id: string]: string } = {}
+        if (Test.TestGoal) {
+            failInfo = { ...Test.TestGoal.attraction.fail_book, ...Test.TestGoal.attraction.fail_info }
+        }
+
         var attractions = AttractionOptions(memoryManager, failInfo)
 
         memoryManager.Delete(AttractionSlot.AREA_COUNT)
@@ -431,28 +447,36 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
     }
     if (domainFilter == "taxi") {
 
-        var failInfo = Test.TestGoal ? new Map([...Test.TestGoal.taxi.fail_book, ...Test.TestGoal.taxi.fail_info]) : undefined
+        var failInfo: { [id: string]: string } = {}
+        if (Test.TestGoal) {
+            failInfo = { ...Test.TestGoal.taxi.fail_book, ...Test.TestGoal.taxi.fail_info }
+        }
+
         var taxis = TaxiOptions(memoryManager, failInfo)
         taxis.length
         // There's always a taxi
         memoryManager.Set(TaxiSlot.CHOICE, 1)
         memoryManager.Set(TaxiSlot.CHOICE_NONE, true)
-        /*
-                var colors = taxis[0].taxi_colors
-                var types = taxis[0].taxi_types
-                var phones = taxis[0].taxi_phone
-                
-                        var color = colors[Math.floor(Math.random() * colors.length)];
-                        var type = types[Math.floor(Math.random() * types.length)];
-                        var phone = phones[Math.floor(Math.random() * phone.length)];
-                
-                        memoryManager.Set(TaxiSlot.COL, 1)
-                        entityValueList.AddValue(domainName, "taxi-car", $"{color} {type}");        
-                        entityValueList.AddValue(domainName, "taxi-phone", "555-5555");*/
+
+        var colors = taxis[0].taxi_colors
+        var types = taxis[0].taxi_types
+        //var phones = taxis[0].taxi_phone
+
+        var color = colors[Math.floor(Math.random() * colors.length)]
+        var type = types[Math.floor(Math.random() * types.length)]
+        //var phone = phones[Math.floor(Math.random() * phone.length)];
+
+        memoryManager.Set(TaxiSlot.CAR, `${color} ${type}`)
+        memoryManager.Set(TaxiSlot.PHONE, "555-5555")
     }
+
     if (domainFilter == "train") {
 
-        var failInfo = Test.TestGoal ? new Map([...Test.TestGoal.train.fail_book, ...Test.TestGoal.train.fail_info]) : undefined
+        var failInfo: { [id: string]: string } = {}
+        if (Test.TestGoal) {
+            failInfo = { ...Test.TestGoal.train.fail_book, ...Test.TestGoal.train.fail_info }
+        }
+
         var trains = TrainOptions(memoryManager, failInfo)
 
         var arriveBys = [... new Set(trains.map(a => a.arriveBy))]
@@ -644,13 +668,13 @@ export interface ActivityResult {
     creationTime?: number
 }
 
-var RestaurantOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: Map<string, string>): Restaurant[] => {
+var RestaurantOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: { [id: string]: string }): Restaurant[] => {
 
     var area = Utils.MemoryValues(RestaurantSlot.AREA, memoryManager)
     var food = Utils.MemoryValues(RestaurantSlot.FOOD, memoryManager)
     var name = Utils.MemoryValues(RestaurantSlot.NAME, memoryManager)
     var pricerange = Utils.MemoryValues(RestaurantSlot.PRICERANGE, memoryManager)
-    var time = Utils.MemoryValues(RestaurantSlot.TIME, memoryManager)
+    var time = memoryManager.Get(RestaurantSlot.TIME, ClientMemoryManager.AS_STRING_LIST)
     var pickone = memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)
 
     var restaurants = RestaurantDb()
@@ -681,7 +705,7 @@ var RestaurantOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemo
     return pickone ? restaurants.slice(0, 1) : restaurants
 }
 
-var AttractionOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: Map<string, string>): Attraction[] => {
+var AttractionOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: { [id: string]: string }): Attraction[] => {
 
     var area = Utils.MemoryValues(AttractionSlot.AREA, memoryManager)
     var name = Utils.MemoryValues(AttractionSlot.NAME, memoryManager)
@@ -712,7 +736,7 @@ var AttractionOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemo
     return pickone ? attractions.slice(0, 1) : attractions
 }
 
-var HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: Map<string, string>): Hotel[] => {
+var HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: { [id: string]: string }): Hotel[] => {
 
     var area = Utils.MemoryValues(HotelSlot.AREA, memoryManager)
     var internet = Utils.MemoryValues(HotelSlot.INTERNET, memoryManager)
@@ -769,7 +793,7 @@ var HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryMan
     return pickone ? hotels.slice(0, 1) : hotels
 }
 
-var TrainOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: Map<string, string>): Train[] => {
+var TrainOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: { [id: string]: string }): Train[] => {
 
     var arriveBy = Utils.MemoryValues(TrainSlot.ARRIVE_BY, memoryManager)
     var day = Utils.MemoryValues(TrainSlot.DAY, memoryManager)
@@ -803,18 +827,18 @@ var TrainOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryMan
     return pickone ? trains.slice(0, 1) : trains
 }
 
-const TaxiOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: Map<string, string>): Taxi[] => {
+const TaxiOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: { [id: string]: string }): Taxi[] => {
     return TaxiDb()
 }
 
-const FilterFails = (items: any[], failInfo: Map<string, string>, checks: Map<string, string[]>) => {
-    if (failInfo.keys.length == 0) {
+const FilterFails = (items: any[], failInfo: { [id: string]: string }, checks: Map<string, string[]>) => {
+    if (Object.keys(failInfo).length == 0) {
         return items
     }
 
     var matchCount = 0
     checks.forEach((value: string[], key: string) => {
-        let failKey = failInfo.get(key)
+        let failKey = failInfo[key]
         // Is there a fail info for this key 
         if (failKey) {
             // If there is, check if I match it and count
@@ -824,7 +848,7 @@ const FilterFails = (items: any[], failInfo: Map<string, string>, checks: Map<st
         }
     })
     // If I matched all conditions, Fail filter has triggered
-    if (matchCount == failInfo.keys.length) {
+    if (matchCount == Object.keys(failInfo).length) {
         return []
     }
 
@@ -862,7 +886,7 @@ var TaxiDb = (): Taxi[] => {
     if (_taxiDb.length == 0) {
         _taxiDb = LoadDataBase("taxi_db")
     }
-    return _taxiDb
+    return [_taxiDb as any]
 }
 var TrainDb = (): Train[] => {
     if (_trainDb.length == 0) {
