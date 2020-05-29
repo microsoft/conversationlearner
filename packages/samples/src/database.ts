@@ -47,6 +47,9 @@ export const UpdateEntities = (memoryManager: ClientMemoryManager, domainFilter?
 
 // Move items from general to domain specific and then clear general
 const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string): void => {
+
+    Utils.ApplyEntitySubstitutions(memoryManager)
+
     var day = memoryManager.Get(LuisSlot.DAY, ClientMemoryManager.AS_STRING)
     var people = memoryManager.Get(LuisSlot.PEOPLE, ClientMemoryManager.AS_STRING)
     var time = memoryManager.Get(LuisSlot.TIME, ClientMemoryManager.AS_STRING)

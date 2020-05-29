@@ -81,6 +81,10 @@ const initDispatchModel = (clFactory: ConversationLearnerFactory) => {
     const modelId = ConversationLearnerFactory.modelIdFromName("dispatch")
     clDispatch = clFactory.create(modelId)
 
+    clDispatch.EntityDetectionCallback = async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
+        Utils.ApplyEntitySubstitutions(memoryManager)
+    }
+
     clDispatch.AddCallback({
         name: "Dispatch",
         logic: async (memoryManager: ClientMemoryManager, activityId: string, domainNameString: string) => {
@@ -132,7 +136,6 @@ const getDomainDispatchCL = (domain: Domain, clFactory: ConversationLearnerFacto
     })
 
     domainDispatchModel.EntityDetectionCallback = async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
-        Utils.ApplyEntitySubstitutions(memoryManager)
         DB.UpdateEntities(memoryManager, domain)
     }
 

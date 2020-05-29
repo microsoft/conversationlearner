@@ -4,7 +4,6 @@
  */
 import { ConversationLearner, ConversationLearnerFactory, ClientMemoryManager, ReadOnlyClientMemoryManager } from '@conversationlearner/sdk'
 import { RestaurantSlot, HotelSlot, AttractionSlot, TaxiSlot, TrainSlot, Domain } from './dataTypes'
-import * as Utils from './utils'
 import * as Models from './models'
 import * as DB from './database'
 
@@ -28,7 +27,6 @@ export const initCombinedModel = (clFactory: ConversationLearnerFactory) => {
     clCombined = clFactory.create(modelId)
 
     clCombined.EntityDetectionCallback = async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
-        Utils.ApplyEntitySubstitutions(memoryManager)
         DB.UpdateEntities(memoryManager)
     }
 
