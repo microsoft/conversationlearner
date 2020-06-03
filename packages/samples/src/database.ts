@@ -10,8 +10,47 @@ import * as Utils from './utils'
 import * as Test from './test'
 
 const DBDirectory = 'mwdb'
+const SIMILARITY_THRESHOLD = 7
 export const TestDirectory = 'testtranscripts'
 export const ResultsDirectory = 'testresults'
+let _slotTypes: Map<string, string[]>
+
+const SlotTypes = () => {
+    if (_slotTypes == null) {
+        ExractAllowedValues()
+    }
+    return _slotTypes
+}
+
+const ExractAllowedValues = () => {
+    let attractionTypes = []
+    let priceTypes = []
+    let areaTypes = []
+    let foodTypes = []
+    for (var attraction of AttractionDb()) {
+        attractionTypes.push(attraction._type)
+        if (attraction.pricerange != "?") {
+            priceTypes.push(attraction.pricerange)
+        }
+        areaTypes.push(attraction.area)
+    }
+    for (var restaurant of RestaurantDb()) {
+        foodTypes.push(restaurant.food)
+    }
+
+    // Make unique
+    attractionTypes = [...new Set(attractionTypes)]
+    priceTypes = [...new Set(priceTypes)]
+    areaTypes = [...new Set(areaTypes)]
+    foodTypes = [...new Set(foodTypes)]
+
+    _slotTypes = new Map<string, string[]>()
+    _slotTypes.set("attractiontype", attractionTypes)
+    _slotTypes.set("pricerange", priceTypes)
+    _slotTypes.set("area", areaTypes)
+    _slotTypes.set("food", foodTypes)
+}
+
 
 export let GetDirectory = (name: string) => {
     let testDirectory = path.join(process.cwd(), `./${name}`)
@@ -40,6 +79,146 @@ export var DialogActs = (): string[] => {
     return _dialogActs
 }
 
+export var ResolveEntityValue = (entityValue: string, entityName: string, domainName: string) => {
+    // Remove extra space added before apostrophe
+    var cleanValue = entityValue.replace(" '", "'")
+
+    if (entityName == "name") {
+        if (domainName == "hotel") {
+            return ResolveName(cleanValue, HotelDb(), "the", "hotel")
+        }
+        else if (domainName == "restaurant") {
+            return ResolveName(cleanValue, RestaurantDb(), "the", "restaurant")
+        }
+        else if (domainName == "attraction") {
+            return ResolveName(cleanValue, AttractionDb(), "the", "attraction")
+        }
+    }
+    else if (entityName == "type") {
+        if (domainName == "attraction") {
+            return ResolveItem(cleanValue, SlotTypes().get("attractiontype")!)
+        }
+    }
+    else if (entityName == "pricerange" && cleanValue != "?") {
+        return ResolveItem(cleanValue, SlotTypes().get("pricerange")!)
+    }
+    else if (entityName == "area") {
+        return ResolveItem(cleanValue, SlotTypes().get("area")!)
+    }
+    else if (entityName == "food") {
+        return ResolveItem(cleanValue, SlotTypes().get("food")!)
+    }
+    return cleanValue
+}
+
+export var ResolveItem = (name: string, values: string[]) => {
+
+    if (name == "dontcare") {
+        return name
+    }
+
+    // Try contains operator
+    var match = values.find(h => h.indexOf(name) > 0)
+    if (match != null) {
+        return match
+    }
+
+    // Try phrase similarity
+    let best = null
+    let bestDist = 100
+    for (var value of values) {
+        for (var word in name.split(" ")) {
+            if (word.indexOf(value) >= 0 || value.indexOf(word) > 0) {
+                best = value
+                break
+            }
+        }
+        var dist = Utils.levenshtein(name, value)
+        if (dist < bestDist) {
+            best = value
+            bestDist = dist
+        }
+    }
+    if (best != null) {
+        return best
+    }
+    else {
+        return name
+    }
+}
+
+const ResolveName = (name: string, items: any[], preString: string, postString: string) => {
+    let before = `${preString} `
+    let after = ` ${postString}`
+
+    // First check raw name
+    if (items.find(h => h.name == name)) {
+        return name
+    }
+
+    // i.e. " hotel"
+    if (name.indexOf(after) >= 0) {
+        var shortName = name.replace(after, "")
+        if (items.find(h => h.name == shortName)) {
+            return shortName
+        }
+    }
+    else {
+        // Otherwise try adding " hotel"
+        var longName = `{name}{after}`
+        if (HotelDb().find(h => h.name == longName)) {
+            return longName
+        }
+    }
+
+    // i.e. "the "
+    if (name.indexOf(before) >= 0) {
+        var shortName = name.replace(before, "")
+        if (items.find(h => h.name == shortName)) {
+            return shortName
+        }
+    }
+    else {
+        // Otherwise try adding "the "
+        var longName = `{before}{name}`
+        if (items.find(h => h.name == longName)) {
+            return longName
+        }
+    }
+
+    // Try without either
+    if (name.indexOf(before) >= 0 && name.indexOf(after) >= 0) {
+        var shortName = name.replace(before, "")
+        shortName = shortName.replace(after, "")
+        if (items.find(h => h.name == shortName)) {
+            return shortName
+        }
+    }
+
+    // Try contains operator
+    var match = items.find(h => h.name.Contains(name))
+    if (match != null) {
+        return match.name
+    }
+
+    // Try phrase similarity
+    let best: string | undefined = undefined
+    let bestDist: number = SIMILARITY_THRESHOLD
+    for (var a of items) {
+        var dist = Utils.levenshtein(name, a.name)
+        if (dist < bestDist) {
+            best = a.name
+            bestDist = dist
+        }
+    }
+    if (best) {
+        return best
+    }
+    else {
+        return name
+    }
+}
+
 export const UpdateEntities = (memoryManager: ClientMemoryManager, domainFilter?: string): void => {
     UpdateDomain(memoryManager, domainFilter)
     UpdateDB(memoryManager, domainFilter)
@@ -48,7 +227,7 @@ export const UpdateEntities = (memoryManager: ClientMemoryManager, domainFilter?
 // Move items from general to domain specific and then clear general
 const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string): void => {
 
-    Utils.ApplyEntitySubstitutions(memoryManager)
+    Utils.ApplyEntitySubstitutions(memoryManager, domainFilter)
 
     var day = memoryManager.Get(LuisSlot.DAY, ClientMemoryManager.AS_STRING)
     var people = memoryManager.Get(LuisSlot.PEOPLE, ClientMemoryManager.AS_STRING)
@@ -98,13 +277,11 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
         }
     }
     if (domainFilter === "restaurant") {
-        /* LARS needed??
         if (day) {
             memoryManager.Delete(RestaurantSlot.DAY)
             memoryManager.Set(RestaurantSlot.DAY, day)
             memoryManager.Delete(LuisSlot.DAY)
         }
-        */
         if (people) {
             memoryManager.Delete(RestaurantSlot.PEOPLE)
             memoryManager.Set(RestaurantSlot.PEOPLE, people)

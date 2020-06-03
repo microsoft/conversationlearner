@@ -69,6 +69,7 @@ export enum RestaurantSlot {
   PRICERANGE = "restaurant-semi-pricerange",
   PRICERANGE_COUNT = "restaurant-pricerange-count",
   TIME = "restaurant-book-time",
+  DAY = "restaurant-book-day",
   CHOICE = "restaurant-choice",
   CHOICE_NONE = "restaurant-choice0",
   CHOICE_TWO = "restaurant-choice2",

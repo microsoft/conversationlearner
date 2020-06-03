@@ -3,7 +3,7 @@ import { Train, RestaurantSlot, HotelSlot, AttractionSlot, TaxiSlot, TrainSlot, 
 import * as DB from './database'
 
 // Apply substitutions (i.e. "0-star" = "0")
-export const ApplyEntitySubstitutions = (memoryManager: ClientMemoryManager): void => {
+export const ApplyEntitySubstitutions = (memoryManager: ClientMemoryManager, domainFilter?: string): void => {
     Object.values(LuisSlot).map(entityName => {
         var value = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING)
         if (value) {
@@ -11,6 +11,13 @@ export const ApplyEntitySubstitutions = (memoryManager: ClientMemoryManager): vo
             if (substitution) {
                 memoryManager.Set(entityName, substitution)
                 return substitution
+            }
+            else if (domainFilter) {
+                var newValue = DB.ResolveEntityValue(value, entityName, domainFilter)
+                if (newValue != value) {
+                    memoryManager.Set(entityName, substitution)
+                    return substitution
+                }
             }
             if (value.startsWith("the ")) {
                 value.substring("the ".length)
@@ -185,6 +192,41 @@ export const generateGUID = (): string => {
     })
     return guid
 }
+
+export function levenshtein(a: string, b: string): number {
+    const an = a ? a.length : 0
+    const bn = b ? b.length : 0
+    if (an === 0) {
+        return bn
+    }
+    if (bn === 0) {
+        return an
+    }
+    const matrix = new Array<number[]>(bn + 1)
+    for (let i = 0; i <= bn; ++i) {
+        let row = matrix[i] = new Array<number>(an + 1)
+        row[0] = i
+    }
+    const firstRow = matrix[0]
+    for (let j = 1; j <= an; ++j) {
+        firstRow[j] = j
+    }
+    for (let i = 1; i <= bn; ++i) {
+        for (let j = 1; j <= an; ++j) {
+            if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                matrix[i][j] = matrix[i - 1][j - 1]
+            }
+            else {
+                matrix[i][j] = Math.min(
+                    matrix[i - 1][j - 1], // substitution
+                    matrix[i][j - 1], // insertion
+                    matrix[i - 1][j] // deletion
+                ) + 1
+            }
+        }
+    }
+    return matrix[bn][an]
+};
 
 /*
 const makeActivity = (userInput: string) => {
