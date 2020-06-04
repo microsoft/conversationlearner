@@ -246,7 +246,7 @@ const getDialogActCL = (dialogActName: string, clFactory: ConversationLearnerFac
 
     /* DEBUG
     dialogActModel.EntityDetectionCallback = async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
-       console.log(JSON.stringify(memoryManager.curMemories));//LARS TEMP
+    console.log(JSON.stringify(memoryManager.curMemories));//LARS TEMP
     }
     */
 
