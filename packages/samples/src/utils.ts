@@ -1,6 +1,7 @@
 import { ClientMemoryManager, ReadOnlyClientMemoryManager } from '@conversationlearner/sdk'
 import { Train, RestaurantSlot, HotelSlot, AttractionSlot, TaxiSlot, TrainSlot, LuisSlot, Domain, NameSubstitutionMap } from './dataTypes'
 import * as DB from './database'
+import * as BB from 'botbuilder'
 
 // Apply substitutions (i.e. "0-star" = "0")
 export const ApplyEntitySubstitutions = (memoryManager: ClientMemoryManager, domainFilter?: string): void => {
@@ -183,7 +184,7 @@ export const getSlotNames = (domain: Domain) => {
     }
 }
 
-export const generateGUID = (): string => {
+export const GenerateGUID = (): string => {
     let d = new Date().getTime()
     let guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, char => {
         let r = ((d + Math.random() * 16) % 16) | 0
@@ -228,14 +229,14 @@ export function levenshtein(a: string, b: string): number {
     return matrix[bn][an]
 };
 
-/*
-const makeActivity = (userInput: string) => {
+
+export const MakeUserActivity = (userInput: string, conversationId: string) => {
 
     // LARS transcript name?
-    const testId = generateGUID()
+    const testId = GenerateGUID()
 
     const conversation: BB.ConversationAccount = {
-        id: generateGUID(),
+        id: conversationId,
         isGroup: false,
         name: "",
         tenantId: "",
@@ -251,15 +252,15 @@ const makeActivity = (userInput: string) => {
     }
 
     const activity = {  //directline.Activity
-        id: generateGUID(),
+        id: GenerateGUID(),
         conversation,
         type: BB.ActivityTypes.Message,
         text: userInput,
         from: fromAccount,
-        channelData: { clData: { isValidationTest: true } }
+        channelData: {}
     }
 
     return activity
 }
-*/
+
 

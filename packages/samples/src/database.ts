@@ -118,7 +118,7 @@ export var ResolveItem = (name: string, values: string[]) => {
     }
 
     // Try contains operator
-    var match = values.find(h => h.indexOf(name) > 0)
+    var match = values.find(h => h.indexOf(name) >= 0)
     if (match != null) {
         return match
     }
@@ -128,7 +128,7 @@ export var ResolveItem = (name: string, values: string[]) => {
     let bestDist = 100
     for (var value of values) {
         for (var word in name.split(" ")) {
-            if (word.indexOf(value) >= 0 || value.indexOf(word) > 0) {
+            if (word.indexOf(value) >= 0 || value.indexOf(word) >= 0) {
                 best = value
                 break
             }

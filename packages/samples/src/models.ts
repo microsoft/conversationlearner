@@ -2,16 +2,15 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import { ConversationLearner, ConversationLearnerFactory, ClientMemoryManager, ReadOnlyClientMemoryManager } from '@conversationlearner/sdk'
+import { ConversationLearner, ConversationLearnerFactory, ClientMemoryManager } from '@conversationlearner/sdk'
 import { LuisSlot, Domain, DONTCARE, PICK_ONE } from './dataTypes'
-import * as Test from './test'
 import * as crypto from 'crypto'
 import * as DB from './database'
 import * as Utils from './utils'
 import * as Combined from './combined'
 
 let ActivityResultsQueue: DB.ActivityResult[] = []
-let TestOutput = new Map<string, string>()
+let OutputMap = new Map<string, string>()
 
 //=================================
 // dontcare
@@ -112,11 +111,7 @@ const initDispatchModel = (clFactory: ConversationLearnerFactory) => {
 
             // Now await the result
             const result = await getActivityResultString(activityId)
-            TestOutput.set(activityId, result)
-            return result
-        },
-        render: async (result: string, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
-            return result
+            OutputMap.set(activityId, result)
         }
     })
 }
@@ -169,14 +164,9 @@ const getDomainDispatchCL = (domain: Domain, clFactory: ConversationLearnerFacto
                 var domainName = Utils.domainNameFromDialogAct(dialogActName)
                 activityResult.modelResults.delete(domainName)
             }
-
             // DEBUG
             //debugActivityResultsQueue("MODEL");
-
-        }/*,
-        render: async (result: string, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
-            return result
-        }*/
+        }
     })
 
     //=== "Same" Callbacks ===
@@ -284,16 +274,11 @@ const getDialogActCL = (dialogActName: string, clFactory: ConversationLearnerFac
                     output
                 }
                 activityResult.modelResults.set(dialogActName, result)
-                return dialogActs.join(",")
             }
             // No action is possible to required entities
             else {
                 activityResult.modelResults.delete(dialogActName)
-                return ""
             }
-        },
-        render: async (result: string, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
-            return result
         }
     })
     return dialogActModel
@@ -337,7 +322,7 @@ export const StopActivity = () => {
     for (var interval of getActivityResultIntervals) {
         clearInterval(interval)
     }
-    for (var interval of testOutputIntervals) {
+    for (var interval of outputIntervals) {
         clearInterval(interval)
     }
     for (var activityResult of ActivityResultsQueue) {
@@ -371,7 +356,7 @@ var getActivityResultString = (activityId: string) => {
                     }
                 })
 
-                if (isDone && Test.isTesting) {
+                if (isDone) {
                     getActivityResultIntervals = getActivityResultIntervals.filter(i => i !== interval)
                     clearInterval(interval)
                     // Clear data
@@ -387,34 +372,32 @@ var getActivityResultString = (activityId: string) => {
     return promise
 }
 
-var testOutputIntervals: NodeJS.Timeout[] = []
-export const getTestOutput = (activityId: string) => {
+var outputIntervals: NodeJS.Timeout[] = []
+export const GetOutput = (activityId: string) => {
     var promise = new Promise<string>((resolve, reject) => {
         let startTime = new Date().getTime()
         var interval = setInterval(
             () => {
-                const output = TestOutput.get(activityId)
+                const output = OutputMap.get(activityId)
                 if (!output) {
                     let curTime = new Date().getTime()
                     if (curTime - startTime > 150000) {
                         var message = `Expire Output: ${activityId} ${curTime} ${startTime}`
                         console.log(message)
-                        testOutputIntervals = testOutputIntervals.filter(i => i !== interval)
+                        outputIntervals = outputIntervals.filter(i => i !== interval)
                         clearInterval(interval)
                         resolve(message)
                     }
                     return
                 }
-                testOutputIntervals = testOutputIntervals.filter(i => i !== interval)
+                outputIntervals = outputIntervals.filter(i => i !== interval)
                 clearInterval(interval)
                 // Clear data
-                TestOutput.delete(activityId)
-                if (Test.isTesting) {
-                    resolve(output)
-                }
+                OutputMap.delete(activityId)
+                resolve(output)
             }
             , 1000)
-        testOutputIntervals.push(interval)
+        outputIntervals.push(interval)
     })
     return promise
 }

@@ -46,7 +46,7 @@ export const RunTest = async (context: BB.TurnContext) => {
 
 }
 
-export let isTesting = true
+let isTesting = false
 export const StopTesting = async (context: BB.TurnContext) => {
     Models.StopActivity()
     TestGoal = undefined
@@ -75,7 +75,7 @@ const TestTranscript = async (activityLog: ActivityLog, fileName: string) => {
 
     var testResults: DB.TestResult[] = []
     // Need a new conversation ID 
-    var conversationId = Utils.generateGUID()
+    var conversationId = Utils.GenerateGUID()
 
     // Add goals to map so can impliment DB fail cases
     TestGoal = activityLog.goal
@@ -95,14 +95,14 @@ const TestTranscript = async (activityLog: ActivityLog, fileName: string) => {
             console.log(message)
         }
         else if (userActivity.from.role == BB.RoleTypes.User) {
-            userActivity.id = Utils.generateGUID()
+            userActivity.id = Utils.GenerateGUID()
             userActivity.conversation.id = conversationId
             adapter.send(userActivity)
 
             // Log
             console.log(`${userActivity.text}`)
             console.log(`  ${agentActivity.text}`)
-            var response = await Models.getTestOutput(userActivity.id!)
+            var response = await Models.GetOutput(userActivity.id!)
             console.log(`  ${response}`)
             console.log(`  ${agentActivity.summary}`)
             console.log(`  -------------------------`)

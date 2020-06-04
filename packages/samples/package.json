@@ -33,6 +33,7 @@
   "license": "MIT",
   "dependencies": {
     "@conversationlearner/sdk": "^0.505.1",
+    "body-parser": "^1.19.0",
     "botbuilder": "4.7.1",
     "botframework-directlinejs": "^0.11.6",
     "chalk": "2.4.1",

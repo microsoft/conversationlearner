@@ -10,6 +10,8 @@ import chalk from 'chalk'
 import config from './config'
 import * as Models from './models'
 import * as Test from './test'
+import * as bodyParser from 'body-parser'
+import { MakeUserActivity } from './utils'
 
 console.log(`Config:\n`, JSON.stringify(config, null, '  '))
 
@@ -17,6 +19,7 @@ console.log(`Config:\n`, JSON.stringify(config, null, '  '))
 // Create Bot server
 //===================
 const server = express()
+server.use(bodyParser.json())
 
 const { bfAppId, bfAppPassword, modelId, ...clOptions } = config
 
@@ -49,6 +52,37 @@ Models.createModels(clFactory, modelId, clOptions.LUIS_AUTHORING_KEY)
 
 // Serve default bot summary page. Should be customized by customer.
 server.use(express.static(path.join(__dirname, '..', 'site')))
+
+const testAdapter = new BB.TestAdapter(async (context) => {
+    if (!context.activity.text.includes("::")) {
+        var result = await Models.clDispatch.recognize(context)
+
+        if (result) {
+            return Models.clDispatch.SendResult(result)
+        }
+    }
+})
+
+server.post('/api/multiwoz', bodyParser.json(), async (req, res) => {
+
+    if (!req.body) {
+        res.sendStatus(400)
+        return
+    }
+    const userInput = req.body.input
+    const conversationId = req.body.id
+
+    if (!userInput || !conversationId) {
+        res.sendStatus(400)
+        return
+    }
+    const userActivity = MakeUserActivity(userInput, conversationId)
+    testAdapter.send(userActivity)
+
+    var response = await Models.GetOutput(userActivity.id!)
+    console.log(response)
+    res.send(JSON.parse(response))
+})
 
 server.post('/api/messages', (req, res) => {
     adapter.processActivity(req, res, async context => {
