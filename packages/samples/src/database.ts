@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as path from 'path'
-import { ClientMemoryManager, ReadOnlyClientMemoryManager } from '@conversationlearner/sdk'
+import { ClientMemoryManager, ReadOnlyClientMemoryManager } from 'clwoz-sdk'
 import { Restaurant, Hotel, Attraction, Taxi, Train, LuisSlot, RestaurantSlot, HotelSlot, AttractionSlot, TaxiSlot, TrainSlot, Domain, PICK_ONE } from './dataTypes'
 import * as fs from 'fs'
 import * as Utils from './utils'

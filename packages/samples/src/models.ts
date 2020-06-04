@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import { ConversationLearner, ConversationLearnerFactory, ClientMemoryManager } from '@conversationlearner/sdk'
+import { ConversationLearner, ConversationLearnerFactory, ClientMemoryManager } from 'clwoz-sdk'
 import { LuisSlot, Domain, DONTCARE, PICK_ONE } from './dataTypes'
 import * as crypto from 'crypto'
 import * as DB from './database'

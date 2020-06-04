@@ -5,7 +5,7 @@
 import * as path from 'path'
 import * as express from 'express'
 import { BotFrameworkAdapter, ConversationState, AutoSaveStateMiddleware } from 'botbuilder'
-import { ConversationLearnerFactory, ClientMemoryManager, ReadOnlyClientMemoryManager, FileStorage, uiRouter } from '@conversationlearner/sdk'
+import { ConversationLearnerFactory, ClientMemoryManager, ReadOnlyClientMemoryManager, FileStorage, uiRouter } from 'clwoz-sdk'
 import chalk from 'chalk'
 import config from '../config'
 import getDolRouter from '../dol'
@@ -59,7 +59,7 @@ var isInStock = function (topping: string) {
     return (inStock.indexOf(topping.toLowerCase()) > -1)
 }
 
-let clPizza = clFactory.create("2d9884f4-75a3-4f63-8b1e-d885ac02663e");
+let clPizza = clFactory.create("2d9884f4-75a3-4f63-8b1e-d885ac02663e")
 clPizza.EntityDetectionCallback = async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
 
     // Clear OutOfStock List
@@ -112,7 +112,7 @@ var resolveApps = function (appName: string) {
     return apps.filter(n => n.includes(appName))
 }
 
-let clVr = clFactory.create("997dc1e2-c0c0-4812-9429-446e31cfdf99");
+let clVr = clFactory.create("997dc1e2-c0c0-4812-9429-446e31cfdf99")
 clVr.EntityDetectionCallback = async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
 
     // Clear disambigApps

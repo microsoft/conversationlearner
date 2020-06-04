@@ -11,7 +11,7 @@ import getRouter from './http/router'
 import CLStateFactory from './Memory/CLStateFactory'
 import { ILogStorage } from './Memory/ILogStorage'
 import { CLModelOptions } from './CLModelOptions'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 
 /**
  * Conversation Learner Factory. Produces instances that all use the same storage, client, and options.

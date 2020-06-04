@@ -4,7 +4,7 @@
  */
 import { CLStorage } from './CLStorage'
 import { CLDebug } from '../CLDebug'
-import { Memory, FilledEntity, MemoryValue, FilledEntityMap } from '@conversationlearner/models'
+import { Memory, FilledEntity, MemoryValue, FilledEntityMap } from 'clwoz-models'
 import { ClientMemoryManager } from './ClientMemoryManager'
 
 const NEGATIVE_PREFIX = '~'

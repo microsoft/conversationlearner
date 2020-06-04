@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as upgrade from './upgrade'
-import * as models from '@conversationlearner/models'
+import * as models from 'clwoz-models'
 import { CallbackMap } from './CLRunner'
 
 describe('upgrade', () => {

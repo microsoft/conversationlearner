@@ -1,7 +1,7 @@
 {
-  "name": "@conversationlearner/sdk",
-  "version": "0.505.1",
-  "description": "Node SDK for Conversation Learner",
+  "name": "clwoz-sdk",
+  "version": "0.600.0",
+  "description": "One off Node SDK for Conversation Learner Multi-Woz",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "scripts": {
@@ -39,12 +39,12 @@
   "license": "MIT",
   "dependencies": {
     "@azure/cosmos": "^3.3.6",
-    "@conversationlearner/models": "^0.505.0",
-    "@conversationlearner/ui": "^0.505.1",
+    "@conversationlearner/ui": "^0.505.2",
     "@types/supertest": "2.0.4",
     "async-file": "^2.0.2",
     "body-parser": "1.18.3",
     "botbuilder": "4.7.1",
+    "clwoz-models": "^0.505.0",
     "cors": "2.8.4",
     "express": "4.16.3",
     "filenamify": "^2.0.0",

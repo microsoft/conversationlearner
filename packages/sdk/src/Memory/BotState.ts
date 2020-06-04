@@ -4,7 +4,7 @@
  */
 import * as BB from 'botbuilder'
 import { CLStorage } from './CLStorage'
-import { AppBase } from '@conversationlearner/models'
+import { AppBase } from 'clwoz-models'
 import { SessionStartFlags } from '../CLRunner'
 
 export interface ConversationSession {

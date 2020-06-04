@@ -5,7 +5,7 @@
 import * as path from 'path'
 import * as express from 'express'
 import { BotFrameworkAdapter } from 'botbuilder'
-import { ConversationLearnerFactory, FileStorage, uiRouter } from '@conversationlearner/sdk'
+import { ConversationLearnerFactory, FileStorage, uiRouter } from 'clwoz-sdk'
 import chalk from 'chalk'
 import config from '../config'
 import getDolRouter from '../dol'
@@ -51,7 +51,7 @@ if (isDevelopment) {
     console.log(chalk.cyanBright(`Adding /sdk routes`))
     server.use('/sdk', clFactory.sdkRouter)
 }
-let cl = clFactory.create(modelId);
+let cl = clFactory.create(modelId)
 
 //=================================
 // Add Entity Logic

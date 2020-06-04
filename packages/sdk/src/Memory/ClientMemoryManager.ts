@@ -4,7 +4,7 @@
  */
 import { SessionInfo } from '../Memory/BotState'
 import { CLStrings } from '../CLStrings'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 
 export type MemoryManagerReturnType<T> = T extends CLM.MemoryValue[] | CLM.MemoryValue ? T extends CLM.MemoryValue[] ? CLM.MemoryValue[] : CLM.MemoryValue : T
 

@@ -4,7 +4,7 @@
  */
 import * as util from 'util'
 import * as BB from 'botbuilder'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import * as Utils from './Utils'
 import * as ModelOptions from './CLModelOptions'
 import { CLState } from './Memory/CLState'

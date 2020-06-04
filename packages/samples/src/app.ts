@@ -5,7 +5,7 @@
 import * as path from 'path'
 import * as express from 'express'
 import * as BB from 'botbuilder'
-import { ConversationLearnerFactory, FileStorage, uiRouter } from '@conversationlearner/sdk'
+import { ConversationLearnerFactory, FileStorage, uiRouter } from 'clwoz-sdk'
 import chalk from 'chalk'
 import config from './config'
 import * as Models from './models'

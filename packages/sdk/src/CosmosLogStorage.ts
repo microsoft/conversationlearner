@@ -5,7 +5,7 @@
 import * as Cosmos from '@azure/cosmos'
 import { CLDebug } from './CLDebug'
 import { ILogStorage, LogQueryResult } from './Memory/ILogStorage'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 
 const DATABASE_ID = "LOG_DIALOGS"
 const COLLECTION_ID = "LOG_DIALOGS"

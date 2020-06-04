@@ -4,7 +4,7 @@
  */
 import * as path from 'path'
 import * as express from 'express'
-import { ConversationLearnerFactory, ClientMemoryManager, FileStorage, ReadOnlyClientMemoryManager, uiRouter } from '@conversationlearner/sdk'
+import { ConversationLearnerFactory, ClientMemoryManager, FileStorage, ReadOnlyClientMemoryManager, uiRouter } from 'clwoz-sdk'
 import chalk from 'chalk'
 import config from '../config'
 import * as request from 'request'

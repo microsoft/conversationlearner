@@ -4,7 +4,7 @@
  */
 import { Utils } from './Utils'
 import * as BB from 'botbuilder'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 
 export enum DebugType {
     Client = 1 << 0,

@@ -8,7 +8,7 @@ import * as semver from 'semver'
 import * as fs from 'fs-extra'
 import * as path from 'path'
 import * as crypto from 'crypto'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import * as HttpStatus from 'http-status-codes'
 import { CLClient } from './CLClient'
 

@@ -1,4 +1,4 @@
-import { ClientMemoryManager, ReadOnlyClientMemoryManager } from '@conversationlearner/sdk'
+import { ClientMemoryManager, ReadOnlyClientMemoryManager } from 'clwoz-sdk'
 import { Train, RestaurantSlot, HotelSlot, AttractionSlot, TaxiSlot, TrainSlot, LuisSlot, Domain, NameSubstitutionMap } from './dataTypes'
 import * as DB from './database'
 import * as BB from 'botbuilder'

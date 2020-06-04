@@ -4,7 +4,7 @@
  */
 import * as express from 'express'
 import { BotFrameworkAdapter } from 'botbuilder'
-import { ConversationLearnerFactory, RedisStorage, uiRouter } from '@conversationlearner/sdk'
+import { ConversationLearnerFactory, RedisStorage, uiRouter } from 'clwoz-sdk'
 import chalk from 'chalk'
 import config from '../config'
 import getDolRouter from '../dol'

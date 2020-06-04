@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as BB from 'botbuilder'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import { EntityState } from './EntityState'
 import { BotState } from './BotState'
 import { InProcessMessageState as MessageState } from './InProcessMessageState'

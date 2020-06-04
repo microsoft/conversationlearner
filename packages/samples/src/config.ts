@@ -4,7 +4,7 @@
  */
 import * as dotenv from 'dotenv'
 import * as convict from 'convict'
-import { CLOptions } from '@conversationlearner/sdk'
+import { CLOptions } from 'clwoz-sdk'
 
 const result = dotenv.config()
 if (result.error) {
