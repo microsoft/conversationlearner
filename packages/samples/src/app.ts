@@ -19,7 +19,10 @@ console.log(`Config:\n`, JSON.stringify(config, null, '  '))
 // Create Bot server
 //===================
 const server = express()
-server.use(bodyParser.json())
+server.use(bodyParser.json({
+    // Large limit needed for MultiWoz
+    limit: '100mb'
+}))
 
 const { bfAppId, bfAppPassword, modelId, ...clOptions } = config
 

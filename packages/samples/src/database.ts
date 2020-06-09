@@ -280,37 +280,37 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
         if (day) {
             memoryManager.Delete(RestaurantSlot.DAY)
             memoryManager.Set(RestaurantSlot.DAY, day)
-            memoryManager.Delete(LuisSlot.DAY)
+            //LARSmemoryManager.Delete(LuisSlot.DAY)
         }
         if (people) {
             memoryManager.Delete(RestaurantSlot.PEOPLE)
             memoryManager.Set(RestaurantSlot.PEOPLE, people)
-            memoryManager.Delete(LuisSlot.PEOPLE)
+            //LARSmemoryManager.Delete(LuisSlot.PEOPLE)
         }
         if (time) {
             memoryManager.Delete(RestaurantSlot.TIME)
             memoryManager.Set(RestaurantSlot.TIME, time)
-            memoryManager.Delete(LuisSlot.TIME)
+           //LARS memoryManager.Delete(LuisSlot.TIME)
         }
         if (area) {
             memoryManager.Delete(RestaurantSlot.AREA)
             memoryManager.Set(RestaurantSlot.AREA, area)
-            memoryManager.Delete(LuisSlot.AREA)
+            //LARSmemoryManager.Delete(LuisSlot.AREA)
         }
         if (food) {
             memoryManager.Delete(RestaurantSlot.FOOD)
             memoryManager.Set(RestaurantSlot.FOOD, food)
-            memoryManager.Delete(LuisSlot.FOOD)
+            //LARSmemoryManager.Delete(LuisSlot.FOOD)
         }
         if (name) {
             memoryManager.Delete(RestaurantSlot.NAME)
             memoryManager.Set(RestaurantSlot.NAME, name)
-            memoryManager.Delete(LuisSlot.NAME)
+            //LARSmemoryManager.Delete(LuisSlot.NAME)
         }
         if (price) {
             memoryManager.Delete(RestaurantSlot.PRICERANGE)
             memoryManager.Set(RestaurantSlot.PRICERANGE, price)
-            memoryManager.Delete(LuisSlot.PRICE)
+            //LARSmemoryManager.Delete(LuisSlot.PRICE)
         }
         return
     }
@@ -318,32 +318,32 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
         if (people) {
             memoryManager.Delete(TrainSlot.PEOPLE)
             memoryManager.Set(TrainSlot.PEOPLE, people)
-            memoryManager.Delete(LuisSlot.PEOPLE)
+            //LARSmemoryManager.Delete(LuisSlot.PEOPLE)
         }
         if (arrive) {
             memoryManager.Delete(TrainSlot.ARRIVE_BY)
             memoryManager.Set(TrainSlot.ARRIVE_BY, arrive)
-            memoryManager.Delete(LuisSlot.ARRIVE_BY)
+            //LARSmemoryManager.Delete(LuisSlot.ARRIVE_BY)
         }
         if (day) {
             memoryManager.Delete(TrainSlot.DAY)
             memoryManager.Set(TrainSlot.DAY, day)
-            memoryManager.Delete(LuisSlot.DAY)
+            //LARSmemoryManager.Delete(LuisSlot.DAY)
         }
         if (depart) {
             memoryManager.Delete(TrainSlot.DEPART)
             memoryManager.Set(TrainSlot.DEPART, depart)
-            memoryManager.Delete(LuisSlot.DEPART)
+            //LARSmemoryManager.Delete(LuisSlot.DEPART)
         }
         if (dest) {
             memoryManager.Delete(TrainSlot.DESTINATION)
             memoryManager.Set(TrainSlot.DESTINATION, dest)
-            memoryManager.Delete(LuisSlot.DESTINATION)
+            //LARSmemoryManager.Delete(LuisSlot.DESTINATION)
         }
         if (leave) {
             memoryManager.Delete(TrainSlot.LEAVE_AT)
             memoryManager.Set(TrainSlot.LEAVE_AT, leave)
-            memoryManager.Delete(LuisSlot.LEAVE_AT)
+            //LARSmemoryManager.Delete(LuisSlot.LEAVE_AT)
         }
         return
     }
@@ -351,84 +351,84 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
         if (day) {
             memoryManager.Delete(HotelSlot.DAY)
             memoryManager.Set(HotelSlot.DAY, day)
-            memoryManager.Delete(LuisSlot.DAY)
+            //LARSmemoryManager.Delete(LuisSlot.DAY)
         }
         if (people) {
             memoryManager.Delete(HotelSlot.PEOPLE)
             memoryManager.Set(HotelSlot.PEOPLE, people)
-            memoryManager.Delete(LuisSlot.PEOPLE)
+            //LARSmemoryManager.Delete(LuisSlot.PEOPLE)
         }
         if (stay) {
             memoryManager.Delete(HotelSlot.STAY)
             memoryManager.Set(HotelSlot.STAY, stay)
-            memoryManager.Delete(LuisSlot.STAY)
+            //LARSmemoryManager.Delete(LuisSlot.STAY)
         }
         if (area) {
             memoryManager.Delete(HotelSlot.AREA)
             memoryManager.Set(HotelSlot.AREA, area)
-            memoryManager.Delete(LuisSlot.AREA)
+            //LARSmemoryManager.Delete(LuisSlot.AREA)
         }
         if (internetYes) {
             memoryManager.Delete(HotelSlot.INTERNET)
             memoryManager.Set(HotelSlot.INTERNET, "yes")
-            memoryManager.Delete(LuisSlot.INTERNET_YES)
+            //LARSmemoryManager.Delete(LuisSlot.INTERNET_YES)
         }
         if (internetNo) {
             memoryManager.Delete(HotelSlot.INTERNET)
             memoryManager.Set(HotelSlot.INTERNET, "no")
-            memoryManager.Delete(LuisSlot.INTERNET_NO)
+            //LARSmemoryManager.Delete(LuisSlot.INTERNET_NO)
         }
         if (name) {
             memoryManager.Delete(HotelSlot.NAME)
             memoryManager.Set(HotelSlot.NAME, name)
-            memoryManager.Delete(LuisSlot.NAME)
+            //LARSmemoryManager.Delete(LuisSlot.NAME)
         }
         if (parkingYes) {
             memoryManager.Delete(HotelSlot.PARKING)
             memoryManager.Set(HotelSlot.PARKING, "yes")
-            memoryManager.Delete(LuisSlot.PARKING_YES)
+            //LARSmemoryManager.Delete(LuisSlot.PARKING_YES)
         }
         if (parkingNo) {
             memoryManager.Delete(HotelSlot.PARKING)
             memoryManager.Set(HotelSlot.PARKING, "no")
-            memoryManager.Delete(LuisSlot.PARKING_NO)
+            //LARSmemoryManager.Delete(LuisSlot.PARKING_NO)
         }
         if (price) {
             memoryManager.Delete(HotelSlot.PRICERANGE)
             memoryManager.Set(HotelSlot.PRICERANGE, price)
-            memoryManager.Delete(LuisSlot.PRICE)
+            //LARSmemoryManager.Delete(LuisSlot.PRICE)
         }
         if (stars) {
             memoryManager.Delete(HotelSlot.STARS)
             memoryManager.Set(HotelSlot.STARS, stars)
-            memoryManager.Delete(LuisSlot.STARS)
+            //LARSmemoryManager.Delete(LuisSlot.STARS)
         }
         if (type_) {
             memoryManager.Delete(HotelSlot.TYPE)
             memoryManager.Set(HotelSlot.TYPE, type_)
-            memoryManager.Delete(LuisSlot.TYPE)
+            //LARSmemoryManager.Delete(LuisSlot.TYPE)
         }
     }
     if (domainFilter === "taxi") {
         if (arrive) {
             memoryManager.Delete(TaxiSlot.ARRIVE_BY)
             memoryManager.Set(TaxiSlot.ARRIVE_BY, arrive)
-            memoryManager.Delete(LuisSlot.ARRIVE_BY)
+            //LARSmemoryManager.Delete(LuisSlot.ARRIVE_BY)
         }
         if (depart) {
             memoryManager.Delete(TaxiSlot.DEPART)
             memoryManager.Set(TaxiSlot.DEPART, depart)
-            memoryManager.Delete(LuisSlot.DEPART)
+            //LARSmemoryManager.Delete(LuisSlot.DEPART)
         }
         if (dest) {
             memoryManager.Delete(TaxiSlot.DESTINATION)
             memoryManager.Set(TaxiSlot.DESTINATION, dest)
-            memoryManager.Delete(LuisSlot.DESTINATION)
+           //LARS memoryManager.Delete(LuisSlot.DESTINATION)
         }
         if (leave) {
             memoryManager.Delete(TaxiSlot.LEAVE_AT)
             memoryManager.Set(TaxiSlot.LEAVE_AT, leave)
-            memoryManager.Delete(LuisSlot.LEAVE_AT)
+            //LARSmemoryManager.Delete(LuisSlot.LEAVE_AT)
         }
         return
     }
@@ -436,17 +436,17 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
         if (area) {
             memoryManager.Delete(AttractionSlot.AREA)
             memoryManager.Set(AttractionSlot.AREA, area)
-            memoryManager.Delete(LuisSlot.AREA)
+            //LARSmemoryManager.Delete(LuisSlot.AREA)
         }
         if (name) {
             memoryManager.Delete(AttractionSlot.NAME)
             memoryManager.Set(AttractionSlot.NAME, name)
-            memoryManager.Delete(LuisSlot.NAME)
+            //LARSmemoryManager.Delete(LuisSlot.NAME)
         }
         if (type_) {
             memoryManager.Delete(AttractionSlot.TYPE)
             memoryManager.Set(AttractionSlot.TYPE, type_)
-            memoryManager.Delete(LuisSlot.TYPE)
+            //LARSmemoryManager.Delete(LuisSlot.TYPE)
         }
         return
     }
@@ -459,13 +459,16 @@ const SetEntities = (items: string[], luisSlotName: any, slotName: any, countSlo
 
         memoryManager.Delete(slotName)
         var values = items.filter(i => i !== "?" && i !== "")
-        memoryManager.Set(slotName, values.slice(0, 3))
+        memoryManager.Set(slotName, values.slice(0, Utils.MAX_MULTI_VALUE))
         if (values.length > 1) {
             memoryManager.Set(countSlotName, values.length)
         }
         else {
             memoryManager.Delete(countSlotName)
         }
+    }
+    else {
+        memoryManager.Delete(countSlotName)
     }
 }
 
@@ -535,7 +538,7 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
         var internets = [... new Set(hotels.map(a => a.internet))]
         SetEntities(internets, LuisSlot.INTERNET_YES, HotelSlot.INTERNET, HotelSlot.INTERNET_COUNT, memoryManager)
 
-        // LARS TODO. better handle paring
+        // LARS TODO. better handle parking
         var parkings = [... new Set(hotels.map(a => a.parking))]
         SetEntities(parkings, LuisSlot.PARKING_YES, HotelSlot.PARKING, HotelSlot.PARKING_COUNT, memoryManager)
 
@@ -552,7 +555,7 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
         SetEntities(priceranges, LuisSlot.PRICE, HotelSlot.PRICERANGE, HotelSlot.PRICERANGE_COUNT, memoryManager)
 
         var starss = [... new Set(hotels.map(a => a.stars))]
-        SetEntities(starss, LuisSlot.PRICE, HotelSlot.STARS, HotelSlot.STARS_COUNT, memoryManager)
+        SetEntities(starss, LuisSlot.STARS, HotelSlot.STARS, HotelSlot.STARS_COUNT, memoryManager)
 
         var types = [... new Set(hotels.map(a => a._type))]
         SetEntities(types, LuisSlot.TYPE, HotelSlot.TYPE, HotelSlot.TYPE_COUNT, memoryManager)
@@ -850,10 +853,10 @@ export interface ActivityResult {
 
 var RestaurantOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: { [id: string]: string }): Restaurant[] => {
 
-    var area = Utils.MemoryValues(RestaurantSlot.AREA, memoryManager)
-    var food = Utils.MemoryValues(RestaurantSlot.FOOD, memoryManager)
-    var name = Utils.MemoryValues(RestaurantSlot.NAME, memoryManager)
-    var pricerange = Utils.MemoryValues(RestaurantSlot.PRICERANGE, memoryManager)
+    var area = Utils.MemoryValues(RestaurantSlot.AREA, RestaurantSlot.AREA_COUNT, memoryManager)
+    var food = Utils.MemoryValues(RestaurantSlot.FOOD, RestaurantSlot.FOOD_COUNT, memoryManager)
+    var name = Utils.MemoryValues(RestaurantSlot.NAME, RestaurantSlot.NAME_COUNT, memoryManager)
+    var pricerange = Utils.MemoryValues(RestaurantSlot.PRICERANGE, RestaurantSlot.PRICERANGE_COUNT, memoryManager)
     var time = memoryManager.Get(RestaurantSlot.TIME, ClientMemoryManager.AS_STRING_LIST)
     var pickone = memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)
 
@@ -864,7 +867,7 @@ var RestaurantOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemo
     if (food.length > 0) {
         restaurants = restaurants.filter(r => food.includes(Utils.BaseString(r.food)))
     }
-    if (name.length > 0) {
+    if (name.length == 1) {
         restaurants = restaurants.filter(r => name.includes(Utils.BaseString(r.name)))
     }
     if (pricerange.length > 0) {
@@ -887,9 +890,9 @@ var RestaurantOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemo
 
 var AttractionOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: { [id: string]: string }): Attraction[] => {
 
-    var area = Utils.MemoryValues(AttractionSlot.AREA, memoryManager)
-    var name = Utils.MemoryValues(AttractionSlot.NAME, memoryManager)
-    var _type = Utils.MemoryValues(AttractionSlot.TYPE, memoryManager)
+    var area = Utils.MemoryValues(AttractionSlot.AREA, AttractionSlot.AREA_COUNT, memoryManager)
+    var name = Utils.MemoryValues(AttractionSlot.NAME, AttractionSlot.NAME_COUNT, memoryManager)
+    var _type = Utils.MemoryValues(AttractionSlot.TYPE, AttractionSlot.TYPE_COUNT, memoryManager)
     var pickone = memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)
     //TODO entracneFree / price /etc no semantics ??
 
@@ -897,7 +900,7 @@ var AttractionOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemo
     if (area.length > 0) {
         attractions = attractions.filter(r => area.includes(Utils.BaseString(r.area)))
     }
-    if (name.length > 0) {
+    if (name.length == 1) {
         attractions = attractions.filter(r => name.includes(Utils.BaseString(r.name)))
     }
     if (_type.length > 0) {
@@ -918,16 +921,16 @@ var AttractionOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemo
 
 var HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: { [id: string]: string }): Hotel[] => {
 
-    var area = Utils.MemoryValues(HotelSlot.AREA, memoryManager)
-    var internet = Utils.MemoryValues(HotelSlot.INTERNET, memoryManager)
-    var parking = Utils.MemoryValues(HotelSlot.PARKING, memoryManager)
-    var name = Utils.MemoryValues(HotelSlot.NAME, memoryManager)
-    var pricerange = Utils.MemoryValues(HotelSlot.PRICERANGE, memoryManager)
-    var stars = Utils.MemoryValues(HotelSlot.STARS, memoryManager)
-    var _type = Utils.MemoryValues(HotelSlot.TYPE, memoryManager)
-    var people = Utils.MemoryValues(HotelSlot.PEOPLE, memoryManager)
-    var day = Utils.MemoryValues(HotelSlot.DAY, memoryManager)
-    var stay = Utils.MemoryValues(HotelSlot.STAY, memoryManager)
+    var area = Utils.MemoryValues(HotelSlot.AREA, HotelSlot.AREA_COUNT, memoryManager)
+    var internet = Utils.MemoryValues(HotelSlot.INTERNET, HotelSlot.INTERNET_COUNT, memoryManager)
+    var parking = Utils.MemoryValues(HotelSlot.PARKING, HotelSlot.PARKING_COUNT, memoryManager)
+    var name = Utils.MemoryValues(HotelSlot.NAME, HotelSlot.NAME_COUNT, memoryManager)
+    var pricerange = Utils.MemoryValues(HotelSlot.PRICERANGE, HotelSlot.PRICERANGE_COUNT, memoryManager)
+    var stars = Utils.MemoryValues(HotelSlot.STARS, HotelSlot.STARS_COUNT, memoryManager)
+    var _type = Utils.MemoryValues(HotelSlot.TYPE, HotelSlot.TYPE_COUNT, memoryManager)
+    var people = Utils.MemoryValues(HotelSlot.PEOPLE, null, memoryManager)
+    var day = Utils.MemoryValues(HotelSlot.DAY, null, memoryManager)
+    var stay = Utils.MemoryValues(HotelSlot.STAY, null, memoryManager)
     var pickone = memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)
     //TODO takesbookings ??
 
@@ -935,13 +938,13 @@ var HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryMan
     if (area.length > 0) {
         hotels = hotels.filter(r => area.includes(Utils.BaseString(r.area)))
     }
-    if (internet.includes("yes")) {
+    if (internet.includes("yes") && !internet.includes("no")) {
         hotels = hotels.filter(r => r.internet === "yes")
     }
-    if (parking.includes("yes")) {
+    if (parking.includes("yes") && !parking.includes("no")) {
         hotels = hotels.filter(r => r.parking === "yes")
     }
-    if (name.length > 0) {
+    if (name.length == 1) {
         hotels = hotels.filter(r => name.includes(Utils.BaseString(r.name)))
     }
     if (pricerange.length > 0) {
@@ -975,11 +978,11 @@ var HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryMan
 
 var TrainOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: { [id: string]: string }): Train[] => {
 
-    var arriveBy = Utils.MemoryValues(TrainSlot.ARRIVE_BY, memoryManager)
-    var day = Utils.MemoryValues(TrainSlot.DAY, memoryManager)
-    var departure = Utils.MemoryValues(TrainSlot.DEPART, memoryManager)
-    var destination = Utils.MemoryValues(TrainSlot.DESTINATION, memoryManager)
-    var leaveAt = Utils.MemoryValues(TrainSlot.LEAVE_AT, memoryManager)
+    var arriveBy = Utils.MemoryValues(TrainSlot.ARRIVE_BY, TrainSlot.ARRIVE_BY_COUNT, memoryManager)
+    var day = Utils.MemoryValues(TrainSlot.DAY, TrainSlot.DAY_COUNT, memoryManager)
+    var departure = Utils.MemoryValues(TrainSlot.DEPART, TrainSlot.DEPART_COUNT, memoryManager)
+    var destination = Utils.MemoryValues(TrainSlot.DESTINATION, TrainSlot.DESTINATION_COUNT, memoryManager)
+    var leaveAt = Utils.MemoryValues(TrainSlot.LEAVE_AT, TrainSlot.LEAVE_AT_COUNT, memoryManager)
     var pickone = memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)
     //TODO entracneFree / price /etc no semantics ??
 

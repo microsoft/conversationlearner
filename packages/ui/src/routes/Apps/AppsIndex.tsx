@@ -64,7 +64,7 @@ class AppsIndex extends React.Component<Props> {
             }
 
             // Delete app if it already exists
-            const oldApp = this.props.apps.find(a => a.appName == appToCreate.appName); 
+            const oldApp = this.props.apps.find(a => a.appName === appToCreate.appName); 
             if (oldApp) {
                 await (this.props.deleteApplicationThunkAsync(oldApp.appId) as any as Promise<CLM.AppBase>)
             }

@@ -7,7 +7,7 @@ import { LuisSlot, Domain, DONTCARE, PICK_ONE } from './dataTypes'
 import * as crypto from 'crypto'
 import * as DB from './database'
 import * as Utils from './utils'
-import * as Combined from './combined'
+//import * as Combined from './combined'
 
 let ActivityResultsQueue: DB.ActivityResult[] = []
 let OutputMap = new Map<string, string>()
@@ -67,6 +67,14 @@ export const apiDontCareName = {
     name: "dontcare-name",
     logic: async (memoryManager: ClientMemoryManager) => {
         memoryManager.Set(LuisSlot.NAME, DONTCARE)
+        DB.UpdateEntities(memoryManager)
+    }
+}
+
+export const apiDontCareStars = {
+    name: "dontcare-stars",
+    logic: async (memoryManager: ClientMemoryManager) => {
+        memoryManager.Set(LuisSlot.STARS, DONTCARE)
         DB.UpdateEntities(memoryManager)
     }
 }
@@ -198,6 +206,7 @@ const AddDontCare = (domainDispatchModel: ConversationLearner, domain: string): 
         domainDispatchModel.AddCallback(apiDontCareFood)
         domainDispatchModel.AddCallback(apiDontCareType)
         domainDispatchModel.AddCallback(apiDontCareName)
+        domainDispatchModel.AddCallback(apiDontCareStars)
     }
     else if (domain === "train") {
         domainDispatchModel.AddCallback(apiDontCareArrive)
@@ -208,6 +217,7 @@ const AddDontCare = (domainDispatchModel: ConversationLearner, domain: string): 
         domainDispatchModel.AddCallback(apiDontCarePrice)
         domainDispatchModel.AddCallback(apiDontCareType)
         domainDispatchModel.AddCallback(apiDontCareName)
+        domainDispatchModel.AddCallback(apiDontCareStars)
     }
     else if (domain === "taxi") {
         // NONE
@@ -301,21 +311,27 @@ export const createModels = async (clFactory: ConversationLearnerFactory, modelI
 
     ConversationLearnerFactory.setAppList(appList)
 
-    Combined.initCombinedModel(clFactory)
-    initDispatchModel(clFactory)
-    clAttraction = getDomainDispatchCL(Domain.ATTRACTION, clFactory)
-    clHotel = getDomainDispatchCL(Domain.HOTEL, clFactory)
-    clRestaurant = getDomainDispatchCL(Domain.RESTAURANT, clFactory)
-    clTaxi = getDomainDispatchCL(Domain.TAXI, clFactory)
-    clTrain = getDomainDispatchCL(Domain.TRAIN, clFactory)
+    //Combined.initCombinedModel(clFactory)
+    try {
+        initDispatchModel(clFactory)
+        clAttraction = getDomainDispatchCL(Domain.ATTRACTION, clFactory)
+        clHotel = getDomainDispatchCL(Domain.HOTEL, clFactory)
+        clRestaurant = getDomainDispatchCL(Domain.RESTAURANT, clFactory)
+        clTaxi = getDomainDispatchCL(Domain.TAXI, clFactory)
+        clTrain = getDomainDispatchCL(Domain.TRAIN, clFactory)
 
-    var dacts = DB.DialogActs()
-    for (var dialogAct of dacts) {
-        var daModel = getDialogActCL(dialogAct, clFactory)
-        if (daModel) {
-            clDialogActsMap.set(dialogAct, daModel)
+        var dacts = DB.DialogActs()
+        for (var dialogAct of dacts) {
+            var daModel = getDialogActCL(dialogAct, clFactory)
+            if (daModel) {
+                clDialogActsMap.set(dialogAct, daModel)
+            }
         }
     }
+    catch (e) {
+        console.log(e)
+    }
+
 }
 
 export const StopActivity = () => {

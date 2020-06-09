@@ -561,7 +561,7 @@ export class CLRunner {
     }
 
     // Process user input
-    private async ProcessInput(turnContext: BB.TurnContext, initialMemory: ClientMemoryManager | null = null): Promise<CLRecognizerResult | null> {
+    private async ProcessInput(turnContext: BB.TurnContext, parentMemory: ClientMemoryManager | null = null, replaceMemory: boolean = false): Promise<CLRecognizerResult | null> {
         let errorContext = 'ProcessInput'
         const activity = turnContext.activity
         const conversationReference = BB.TurnContext.getConversationReference(activity)
@@ -685,9 +685,14 @@ export class CLRunner {
                 let sessionStartFlags = uiMode === UIMode.TEST ? SessionStartFlags.IN_TEST : SessionStartFlags.NONE
                 let session = await this.CreateSessionAsync(state, BB.TurnContext.getConversationReference(activity), app.appId, sessionStartFlags, sessionCreateParams) as CLM.Session
                 sessionId = session.sessionId
+            }
 
-                if (initialMemory) {
-                    await state.EntityState.RestoreFromMemoryManagerAsync(initialMemory)
+            if (parentMemory) {
+                if (replaceMemory) {
+                    await state.EntityState.RestoreFromMemoryManagerAsync(parentMemory)
+                }
+                else {
+                    await state.EntityState.UpdateFromMemoryManagerAsync(parentMemory)
                 }
             }
 
@@ -1235,9 +1240,11 @@ export class CLRunner {
                         // Do not await for MultiWoz.  Logic will block on sub-model response
                         dispatchCallback.logic(memoryManager, clRecognizeResult.state.turnContext!.activity.id!, dispatchAction.modelName)
 
+                        // Dispatch level only augments memory, all other replace memory
+                        let replaceMemory = app?.appName != "dispatch"
                         for (let i = 0; i < modelNames.length; i = i + 1) {
                             CLDebug.Log(`Dispatch to Model: ${modelIds[i]} ${modelNames[i]}`, DebugType.Dispatch)
-                            await this.forwardInputToModel(modelIds[i], modelNames[i], clRecognizeResult.state, memoryManager)
+                            await this.forwardInputToModel(modelIds[i], modelNames[i], clRecognizeResult.state, memoryManager, replaceMemory)
                         }
                         // Force response to null to avoid sending message as message will come from next model.
                         actionResult.response = null
@@ -1258,7 +1265,7 @@ export class CLRunner {
 
                     if (!inTeach) {
                         CLDebug.Log(`Change to Model: ${changeModelAction.modelId} ${changeModelAction.modelName}`, DebugType.Dispatch)
-                        await this.forwardInputToModel(changeModelAction.modelId, changeModelAction.modelName, clRecognizeResult.state, null, true)
+                        await this.forwardInputToModel(changeModelAction.modelId, changeModelAction.modelName, clRecognizeResult.state, null, false, true)
                         // Force response to null to avoid sending message as message will come from next model.
                         actionResult.response = null
                     }
@@ -1319,7 +1326,7 @@ export class CLRunner {
         return actionResult
     }
 
-    private async forwardInputToModel(modelId: string, modelName: string, state: CLState, memoryManager: ClientMemoryManager | null = null, changeActiveModel: boolean = false) {
+    private async forwardInputToModel(modelId: string, modelName: string, state: CLState, memoryManager: ClientMemoryManager | null = null, replaceMemory: boolean = false, changeActiveModel: boolean = false) {
         if (modelId === this.modelId) {
             throw new Error(`Cannot forward input to model with same ID as active model. This shouldn't be possible open an issue.`)
         }
@@ -1363,7 +1370,7 @@ export class CLRunner {
         let addInputPromise = util.promisify(InputQueue.AddInput)
         let isReady = await addInputPromise(dispatcherState.MessageState, turnContext.activity, modelId)
         if (isReady) {
-            const recognizerResult = await model.clRunner.ProcessInput(turnContext, memoryManager)
+            const recognizerResult = await model.clRunner.ProcessInput(turnContext, memoryManager, replaceMemory)
             if (recognizerResult) {
                 await model.SendResult(recognizerResult)
             }

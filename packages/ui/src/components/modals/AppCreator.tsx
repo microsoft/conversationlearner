@@ -162,7 +162,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
             switch (this.props.creatorType) {
                 case AppCreatorType.IMPORT:
                     if (this.state.clFile) {
-                        this.onClickImport()
+                        this.onClickImport(false)
                     }
                     break
                 case AppCreatorType.OBI:
@@ -214,15 +214,14 @@ class AppCreator extends React.Component<Props, ComponentState> {
         })
     }
 
-    onClickImport = async () => {
+    onClickImport = async (multiFile: boolean) => {
         if (!this.state.clFile) {
             console.warn(`You clicked import before a file was selected. This should not be possible. Contact support`)
             return
         }
 
         const files = Array.from(this.state.clFile);
-        var fileIndex = 0;
-        const multiFile = files.length > 0
+        let fileIndex = 0;
         const reader = new FileReader()
         reader.onload = async (e: Event) => {
             try {
@@ -236,7 +235,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 try {
                     await this.props.onSubmit(appInput, source, !multiFile)
     
-                    fileIndex++;
+                    fileIndex = fileIndex + 1;
                     if (files.length > fileIndex) {
                         reader.readAsText(files[fileIndex])
                     }
@@ -420,7 +419,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                 <OF.PrimaryButton
                                     disabled={this.isSubmitDisabled()}
                                     data-testid="model-creator-submit-button"
-                                    onClick={this.onClickImport}
+                                    onClick={() => this.onClickImport(this.props.creatorType === AppCreatorType.IMPORT_MANY)}
                                     ariaDescription={Util.formatMessageId(this.props.intl, FM.APPCREATOR_IMPORT_BUTTON_ARIADESCRIPTION)}
                                     text={Util.formatMessageId(this.props.intl, FM.APPCREATOR_IMPORT_BUTTON_TEXT)}
                                     iconProps={{ iconName: 'Accept' }}

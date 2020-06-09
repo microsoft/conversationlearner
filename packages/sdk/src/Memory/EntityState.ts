@@ -68,6 +68,15 @@ export class EntityState {
         await this.Set()
     }
 
+    public async UpdateFromMemoryManagerAsync(memoryManager: ClientMemoryManager): Promise<void> {
+
+        await this.FilledEntityMap()
+        Object.keys(memoryManager.curMemories.map).forEach(key => {
+            this.filledEntityMap.map[key] = memoryManager.curMemories.map[key]
+        })
+        await this.Set()
+    }
+
     // Clear memory values not in saveList
     public async ClearAsync(saveList?: string[] | void): Promise<void> {
         if (!saveList) {

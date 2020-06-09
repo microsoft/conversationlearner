@@ -103,7 +103,7 @@ export const createApplicationThunkAsync = (userId: string, application: CLM.App
                     // Delete the app and re-throw
                     await clClient.appsDelete(newApp.appId)
                     // Insert app name for convenience
-                    if (e.response["data"]["errorMessages"]) {
+                    if (e.response && e.response["data"] && e.response["data"]["errorMessages"]) {
                         e.response["data"]["errorMessages"].unshift(appToSend.appName)
                     }
                     throw (e)

@@ -3,6 +3,9 @@ import { Train, RestaurantSlot, HotelSlot, AttractionSlot, TaxiSlot, TrainSlot, 
 import * as DB from './database'
 import * as BB from 'botbuilder'
 
+// Max number of items allowed to set in multi-value
+export const MAX_MULTI_VALUE = 3
+
 // Apply substitutions (i.e. "0-star" = "0")
 export const ApplyEntitySubstitutions = (memoryManager: ClientMemoryManager, domainFilter?: string): void => {
     Object.values(LuisSlot).map(entityName => {
@@ -50,8 +53,16 @@ export var BaseString = (text: string): string => {
     return text.replace(/[^\w\s]|_/g, "").replace(/\s/g, "").toLowerCase()
 }
 
-export var MemoryValues = (slot: any, memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): string[] => {
-    return memoryManager.Get(slot, ClientMemoryManager.AS_STRING_LIST)
+export var MemoryValues = (slot: any, countSlot: any, memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): string[] => {
+    var count = countSlot ? memoryManager.Get(countSlot, ClientMemoryManager.AS_NUMBER) : null
+    var values = memoryManager.Get(slot, ClientMemoryManager.AS_STRING_LIST)
+
+    // If I maxed out the multi-value but more results actually exist
+    // I shoud filter by this
+    if (count && values.length == MAX_MULTI_VALUE && values.length < count) {
+        return []
+    }
+    return values
         .map(i => BaseString(i))
         .filter(i => i != "none" && i != "dontcare")
 }
