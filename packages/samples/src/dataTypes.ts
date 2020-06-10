@@ -244,7 +244,9 @@ export const NameSubstitutionMap = new Map([
   ["departure", "depart"],
   ["arriveby", "arrive"],
   ["leaveat", "leave"],
-  ["price", "ticket"]
+  ["duration", "time"],
+  ["address", "addr"],
+  ["postcode", "post"]
 ])
 
 export interface ActivityLog extends BB.Transcript {

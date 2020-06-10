@@ -9,53 +9,58 @@ export const MAX_MULTI_VALUE = 3
 // Apply substitutions (i.e. "0-star" = "0")
 export const ApplyEntitySubstitutions = (memoryManager: ClientMemoryManager, domainFilter?: string): void => {
     Object.values(LuisSlot).map(entityName => {
-        var value = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING)
-        if (value) {
-            var substitution = DB.EntitySubstitutions()[value]
-            if (substitution) {
-                memoryManager.Set(entityName, substitution)
-                return substitution
-            }
-            else if (domainFilter) {
-                var newValue = DB.ResolveEntityValue(value, entityName, domainFilter)
-                if (newValue != value) {
+        try {
+            const value = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING)
+            if (value) {
+                const substitution = DB.EntitySubstitutions()[value]
+                if (substitution) {
                     memoryManager.Set(entityName, substitution)
                     return substitution
                 }
+                else if (domainFilter) {
+                    const newValue = DB.ResolveEntityValue(value, entityName, domainFilter)
+                    if (newValue && newValue != value) {
+                        memoryManager.Set(entityName, newValue)
+                        return substitution
+                    }
+                }
+                if (value.startsWith("the ")) {
+                    value.substring("the ".length)
+                }
             }
-            if (value.startsWith("the ")) {
-                value.substring("the ".length)
-            }
+        }
+        catch (e) {
+            return "ERROR";  // LARS TEMP
         }
     })
 }
 
 export const ExpandTime = (time: string, addHours: number = 0): string => {
-    var parts = time.split(":")
-    var hour = +parts[0] + addHours
-    var min = parts[1] ? parts[1] : "00"
+    const parts = time.split(":")
+    const hour = +parts[0] + addHours
+    const min = parts[1] ? parts[1] : "00"
     return `${hour}:${min}`
 }
 export const ProcessTime = (time: string): string => {
     if (time.endsWith("PM") || time.endsWith("pm")) {
-        var cleanTime = time.substr(0, time.length - 2)
+        const cleanTime = time.substr(0, time.length - 2)
         return ExpandTime(cleanTime, 12)
     }
     if (time.endsWith("AM") || time.endsWith("am")) {
-        var cleanTime = time.substr(0, time.length - 2)
+        const cleanTime = time.substr(0, time.length - 2)
         return ExpandTime(cleanTime, 12)
     }
     return ExpandTime(time)
 }
 
-// Return version of string with no puncuation or space and lowercase
-export var BaseString = (text: string): string => {
-    return text.replace(/[^\w\s]|_/g, "").replace(/\s/g, "").toLowerCase()
+// Return version of string with no puncuation or space and lowercase (apart from : for time)
+export const BaseString = (text: string): string => {
+    return text.replace(/[^\w\s:]|_/g, "").replace(/\s/g, "").toLowerCase()
 }
 
-export var MemoryValues = (slot: any, countSlot: any, memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): string[] => {
-    var count = countSlot ? memoryManager.Get(countSlot, ClientMemoryManager.AS_NUMBER) : null
-    var values = memoryManager.Get(slot, ClientMemoryManager.AS_STRING_LIST)
+export const MemoryValues = (slot: any, countSlot: any, memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): string[] => {
+    const count = countSlot ? memoryManager.Get(countSlot, ClientMemoryManager.AS_NUMBER) : null
+    const values = memoryManager.Get(slot, ClientMemoryManager.AS_STRING_LIST)
 
     // If I maxed out the multi-value but more results actually exist
     // I shoud filter by this
@@ -67,14 +72,14 @@ export var MemoryValues = (slot: any, countSlot: any, memoryManager: ClientMemor
         .filter(i => i != "none" && i != "dontcare")
 }
 
-export var trainArriveBefore = (trains: Train[], arriveBefore: string): Train | null => {
+export const trainArriveBefore = (trains: Train[], arriveBefore: string): Train | null => {
 
-    var arriveBeforeTime = parseTime(arriveBefore)
-    var bestTime = Number.MAX_VALUE
-    var bestTrain: Train | null = null
+    const arriveBeforeTime = parseTime(arriveBefore)
+    let bestTime = Number.MAX_VALUE
+    let bestTrain: Train | null = null
     trains.forEach(train => {
-        var trainLeave = parseTime(train.leaveAt)
-        var diff = arriveBeforeTime - trainLeave
+        const trainLeave = parseTime(train.leaveAt)
+        const diff = arriveBeforeTime - trainLeave
         if (diff > 0 && diff < bestTime) {
             bestTrain = train
             bestTime = diff
@@ -83,14 +88,14 @@ export var trainArriveBefore = (trains: Train[], arriveBefore: string): Train | 
     return bestTrain
 }
 
-export var trainLeaveAfter = (trains: Train[], leaveAfter: string): Train | null => {
+export const trainLeaveAfter = (trains: Train[], leaveAfter: string): Train | null => {
 
-    var leaveAfterTime = parseTime(leaveAfter)
-    var bestTime = Number.MAX_VALUE
-    var bestTrain: Train | null = null
+    const leaveAfterTime = parseTime(leaveAfter)
+    let bestTime = Number.MAX_VALUE
+    let bestTrain: Train | null = null
     trains.forEach(train => {
-        var trainLeave = parseTime(train.leaveAt)
-        var diff = trainLeave - leaveAfterTime
+        const trainLeave = parseTime(train.leaveAt)
+        const diff = trainLeave - leaveAfterTime
         if (diff > 0 && diff < bestTime) {
             bestTrain = train
             bestTime = diff
@@ -99,8 +104,8 @@ export var trainLeaveAfter = (trains: Train[], leaveAfter: string): Train | null
     return bestTrain
 }
 
-export var parseTime = (time: string): number => {
-    var parts = time.split(":")
+export const parseTime = (time: string): number => {
+    const parts = time.split(":")
     return (parseInt(parts[0]) * 60) + parseInt(parts[1])
 }
 
@@ -120,19 +125,54 @@ export const ActivityResultToString = (activityResult: DB.ActivityResult): strin
 }
 
 export const makeId = (length: number): string => {
-    var result = ''
-    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-    var charactersLength = characters.length
-    for (var i = 0; i < length; i++) {
+    let result = ''
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    const charactersLength = characters.length
+    for (let i = 0; i < length; i++) {
         result += characters.charAt(Math.floor(Math.random() * charactersLength))
     }
     return result
 }
 
+const findEntity = (domainName: string, shortName: string, entities: string[]) => {
+
+    // Switch from short name to property name
+    const pName = propertyName(shortName);
+
+    // Look for semi entity
+    let fullEntityName = `${domainName}-semi-${pName}`
+    let foundEntity = entities.find(e => e.split(":")[0] == fullEntityName)
+    if (foundEntity == null)
+    {
+        fullEntityName = `${domainName}-book-${pName}`
+        foundEntity = entities.find(e => e.split(":")[0] == fullEntityName)
+    }
+    if (foundEntity == null)
+    {
+        fullEntityName = `${domainName}-inform-${pName}`
+        foundEntity = entities.find(e => e.split(":")[0] == fullEntityName)
+    }
+    if (foundEntity == null)
+    {
+        fullEntityName = `${domainName}-${pName}`
+        foundEntity = entities.find(e => e.split(":")[0] == fullEntityName)
+    }
+    if (foundEntity == null)
+    {
+        fullEntityName = `${pName}`;
+        foundEntity = entities.find(e => e.split(":")[0] == fullEntityName)
+    }
+    if (foundEntity == null)
+    {
+        console.log(`!! Can't find entity: ${domainName} ${shortName}`)
+    }
+    return foundEntity;
+}
+
 export const expandedResults = (dialogActs: string[], entities: string[]): string[][] => {
     const results: string[][] = []
-    for (var dialogAct of dialogActs) {
-        var parts = dialogAct.split('-')
+    for (let dialogAct of dialogActs) {
+        const parts = dialogAct.split('-')
         const domain = parts[0]
         const act = parts[1]
         const entity = parts[2]
@@ -143,14 +183,14 @@ export const expandedResults = (dialogActs: string[], entities: string[]): strin
         else if (entity == "none") {
             results.push([act, domain, entity, "none"])
         }
-        else if (entity == "Ref") {
+        else if (entity == "ref") {
             results.push([act, domain, entity, makeId(8)])
         }
         else {
-            const kv = entities.find(e => e.includes(entity.toLowerCase()))
+            const kv = findEntity(domain, entity, entities)
             // "attraction-semi-area: east,centre,south,west,north"
             const values = kv ? kv.split(": ")[1].split(",") : ["MISSING"]
-            for (var value of values) {
+            for (const value of values) {
                 results.push([act, domain, entity, value])
             }
         }
@@ -174,7 +214,7 @@ export const propertyName = (entityName: string): string => {
     let shortName = split[split.length - 1]
     NameSubstitutionMap.forEach((value: string, key: string) => {
         if (value == entityName) {
-            return key
+            shortName = key
         }
     })
     return shortName
