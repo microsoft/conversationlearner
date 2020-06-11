@@ -87,6 +87,13 @@ server.post('/api/multiwoz', bodyParser.json(), async (req, res) => {
     res.send(JSON.parse(response))
 })
 
+
+server.post('/api/reload', bodyParser.json(), async (req, res) => {
+
+    await Models.createModels(clFactory, modelId, clOptions.LUIS_AUTHORING_KEY)
+    res.sendStatus(200)
+})
+
 server.post('/api/messages', (req, res) => {
     adapter.processActivity(req, res, async context => {
 

@@ -139,6 +139,10 @@ const findEntity = (domainName: string, shortName: string, entities: string[]) =
     // Switch from short name to property name
     const pName = propertyName(shortName);
 
+    // If booking domain, look up from entities
+    if (domainName == "booking") {
+        domainName = entities[0].split('-')[0];
+    }
     // Look for semi entity
     let fullEntityName = `${domainName}-semi-${pName}`
     let foundEntity = entities.find(e => e.split(":")[0] == fullEntityName)

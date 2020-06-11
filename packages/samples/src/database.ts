@@ -137,7 +137,7 @@ export const ResolveItem = (name: string, values: string[]) => {
         return name
     }
 
-    // Try contains operator
+    // Try containment
     const match = values.find(h => h.indexOf(name) >= 0)
     if (match != null) {
         return match
@@ -215,8 +215,8 @@ const ResolveName = (name: string, items: any[], preString: string, postString: 
         }
     }
 
-    // Try contains operator
-    const match = items.find(h => h.name.Contains(name))
+    // Try containment
+    const match = items.find(h => h.name.indexOf(name) >= 0)
     if (match != null) {
         return match.name
     }
