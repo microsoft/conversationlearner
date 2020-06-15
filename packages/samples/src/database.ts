@@ -811,13 +811,6 @@ export interface DomainResult {
     output: string[][]
 }
 
-export interface TestResult {
-    input: string
-    expected: string
-    actual: string
-    error?: string
-}
-
 export interface ActivityResult {
     // Used to match import utterances
     activityId: string
@@ -827,12 +820,18 @@ export interface ActivityResult {
 
 const RestaurantOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: { [id: string]: string }): Restaurant[] => {
 
-    const area = Utils.MemoryValues(RestaurantSlot.AREA, RestaurantSlot.AREA_COUNT, memoryManager)
-    const food = Utils.MemoryValues(RestaurantSlot.FOOD, RestaurantSlot.FOOD_COUNT, memoryManager)
-    const name = Utils.MemoryValues(RestaurantSlot.NAME, RestaurantSlot.NAME_COUNT, memoryManager)
-    const pricerange = Utils.MemoryValues(RestaurantSlot.PRICERANGE, RestaurantSlot.PRICERANGE_COUNT, memoryManager)
-    const time = memoryManager.Get(RestaurantSlot.TIME, ClientMemoryManager.AS_STRING_LIST)
     const pickone = memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)
+    const name = Utils.MemoryValues(RestaurantSlot.NAME, RestaurantSlot.NAME_COUNT, memoryManager)
+    const luisName = memoryManager.Get(LuisSlot.NAME, ClientMemoryManager.AS_STRING)
+    const picked = luisName || (name.length == 1 && pickone)
+
+    // If I've pickone, only filter by name
+    const area = picked ? [] : Utils.MemoryValues(RestaurantSlot.AREA, RestaurantSlot.AREA_COUNT, memoryManager)
+    const food = picked ? [] : Utils.MemoryValues(RestaurantSlot.FOOD, RestaurantSlot.FOOD_COUNT, memoryManager)
+    const pricerange = picked ? [] : Utils.MemoryValues(RestaurantSlot.PRICERANGE, RestaurantSlot.PRICERANGE_COUNT, memoryManager)
+    
+    // Non-filtered value
+    const time = memoryManager.Get(RestaurantSlot.TIME, ClientMemoryManager.AS_STRING_LIST)
 
     let restaurants = RestaurantDb()
     if (area.length > 0) {
@@ -864,11 +863,14 @@ const RestaurantOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMe
 
 const AttractionOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: { [id: string]: string }): Attraction[] => {
 
-    const area = Utils.MemoryValues(AttractionSlot.AREA, AttractionSlot.AREA_COUNT, memoryManager)
-    const name = Utils.MemoryValues(AttractionSlot.NAME, AttractionSlot.NAME_COUNT, memoryManager)
-    const _type = Utils.MemoryValues(AttractionSlot.TYPE, AttractionSlot.TYPE_COUNT, memoryManager)
     const pickone = memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)
-    //TODO entracneFree / price /etc no semantics ??
+    const name = Utils.MemoryValues(AttractionSlot.NAME, AttractionSlot.NAME_COUNT, memoryManager)
+    const luisName = memoryManager.Get(LuisSlot.NAME, ClientMemoryManager.AS_STRING)  
+    const picked = luisName || (name.length == 1 && pickone)
+
+    // If I've pickone, only filter by name
+    const area = picked ? [] : Utils.MemoryValues(AttractionSlot.AREA, AttractionSlot.AREA_COUNT, memoryManager)
+    const _type = picked ? [] : Utils.MemoryValues(AttractionSlot.TYPE, AttractionSlot.TYPE_COUNT, memoryManager)
 
     let attractions = AttractionDb()
     if (area.length > 0) {
@@ -904,18 +906,24 @@ const AttractionOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMe
 
 const HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: { [id: string]: string }): Hotel[] => {
 
-    const area = Utils.MemoryValues(HotelSlot.AREA, HotelSlot.AREA_COUNT, memoryManager)
-    const internet = Utils.MemoryValues(HotelSlot.INTERNET, HotelSlot.INTERNET_COUNT, memoryManager)
-    const parking = Utils.MemoryValues(HotelSlot.PARKING, HotelSlot.PARKING_COUNT, memoryManager)
+    const pickone = memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)
     const name = Utils.MemoryValues(HotelSlot.NAME, HotelSlot.NAME_COUNT, memoryManager)
-    const pricerange = Utils.MemoryValues(HotelSlot.PRICERANGE, HotelSlot.PRICERANGE_COUNT, memoryManager)
-    const stars = Utils.MemoryValues(HotelSlot.STARS, HotelSlot.STARS_COUNT, memoryManager)
-    const _type = Utils.MemoryValues(HotelSlot.TYPE, HotelSlot.TYPE_COUNT, memoryManager)
+    const luisName = memoryManager.Get(LuisSlot.NAME, ClientMemoryManager.AS_STRING)
+    const picked = luisName || (name.length == 1 && pickone)
+
+    // If I've pickone, only filter by name
+    const area = picked ? [] : Utils.MemoryValues(HotelSlot.AREA, HotelSlot.AREA_COUNT, memoryManager)
+    const internet = picked ? [] : Utils.MemoryValues(HotelSlot.INTERNET, HotelSlot.INTERNET_COUNT, memoryManager)
+    const parking = picked ? [] : Utils.MemoryValues(HotelSlot.PARKING, HotelSlot.PARKING_COUNT, memoryManager)
+    const pricerange = picked ? [] : Utils.MemoryValues(HotelSlot.PRICERANGE, HotelSlot.PRICERANGE_COUNT, memoryManager)
+    const stars = picked ? [] : Utils.MemoryValues(HotelSlot.STARS, HotelSlot.STARS_COUNT, memoryManager)
+    const _type = picked ? [] : Utils.MemoryValues(HotelSlot.TYPE, HotelSlot.TYPE_COUNT, memoryManager)
+
+    // Non-filtered options
     const people = Utils.MemoryValues(HotelSlot.PEOPLE, null, memoryManager)
     const day = Utils.MemoryValues(HotelSlot.DAY, null, memoryManager)
     const stay = Utils.MemoryValues(HotelSlot.STAY, null, memoryManager)
-    const pickone = memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)
-    //TODO takesbookings ??
+    //takesbookings - unused
 
     let hotels = HotelDb()
     if (area.length > 0) {

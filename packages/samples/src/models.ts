@@ -184,10 +184,9 @@ const getDomainDispatchCL = (domain: Domain, clFactory: ConversationLearnerFacto
             domainDispatchModel.AddCallback({
                 name: `same-${entityName}`,
                 logic: async (memoryManager: ClientMemoryManager) => {
-                    var price = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING)
-                    if (slotName) {
-                        memoryManager.Set(slotName, price as string)
-                    }
+                    var price = memoryManager.Get(`global-${entityName}`, ClientMemoryManager.AS_STRING)
+                    memoryManager.Set(entityName, price as string)
+                    DB.UpdateEntities(memoryManager, domain)
                 }
             })
         }
@@ -358,7 +357,7 @@ var getActivityResultString = (activityId: string) => {
 
                     // Check from timeout
                     let curTime = new Date().getTime()
-                    if (curTime - startTime > 100000) {
+                    if (curTime - startTime > 200000) {
                         console.log(`Expire Activity: ${activityId} ${curTime} ${startTime}`)
                         getActivityResultIntervals = getActivityResultIntervals.filter(i => i !== interval)
                         clearInterval(interval)
@@ -397,7 +396,7 @@ export const GetOutput = (activityId: string) => {
                 const output = OutputMap.get(activityId)
                 if (!output) {
                     let curTime = new Date().getTime()
-                    if (curTime - startTime > 150000) {
+                    if (curTime - startTime > 500000) {
                         var message = `Expire Output: ${activityId} ${curTime} ${startTime}`
                         console.log(message)
                         outputIntervals = outputIntervals.filter(i => i !== interval)
