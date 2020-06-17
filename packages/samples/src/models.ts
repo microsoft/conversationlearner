@@ -94,7 +94,7 @@ const initDispatchModel = (clFactory: ConversationLearnerFactory) => {
 
     clDispatch.AddCallback({
         name: "Dispatch",
-        logic: async (memoryManager: ClientMemoryManager, activityId: string, domainNameString: string) => {
+        logicWithSet: async (memoryManager: ClientMemoryManager, setGlobalCallback: (entityName: string, value: string) => void, activityId: string, domainNameString: string) => {
 
             var domainNames = domainNameString.split(",")
 
@@ -119,6 +119,23 @@ const initDispatchModel = (clFactory: ConversationLearnerFactory) => {
 
             // Now await the result
             const result = await getActivityResultString(activityId)
+
+            // Extract any globals
+            const resultObj: string[][] = JSON.parse(result)
+            const hotelName = resultObj.find(r => r[1] == "hotel" && r[2] == "name")
+            if (hotelName) {
+                setGlobalCallback(`global-hotel`, hotelName[3])
+            }
+            const restaurantName = resultObj.find(r => r[1] == "restaurant" && r[2] == "name")
+            if (restaurantName) {
+                setGlobalCallback(`global-restaurant`, restaurantName[3])
+            }
+            const attractionName = resultObj.find(r => r[1] == "attraction" && r[2] == "name")
+            if (attractionName) {
+                setGlobalCallback(`global-attraction`, attractionName[3])
+            }
+
+
             OutputMap.set(activityId, result)
         }
     })
@@ -181,20 +198,41 @@ const getDomainDispatchCL = (domain: Domain, clFactory: ConversationLearnerFacto
     Object.values(LuisSlot).forEach(entityName => {
         var slotName = slotMap.get(entityName)
         if (slotName) {
+            const e = entityName
             domainDispatchModel.AddCallback({
                 name: `same-${entityName}`,
                 logic: async (memoryManager: ClientMemoryManager) => {
-                    var price = memoryManager.Get(`global-${entityName}`, ClientMemoryManager.AS_STRING)
-                    memoryManager.Set(entityName, price as string)
+                    var price = memoryManager.Get(`global-${e}`, ClientMemoryManager.AS_STRING)
+                    memoryManager.Set(e, price as string)
                     DB.UpdateEntities(memoryManager, domain)
                 }
             })
         }
     })
-
+    AddSameName(domainDispatchModel, domain)
     AddDontCare(domainDispatchModel, domain)
 
     return domainDispatchModel
+}
+
+const AddSameName = (domainDispatchModel: ConversationLearner, domain: string): void => {
+
+    if (domain === "taxi" || domain === "train") {
+        ["restaurant", "attraction", "hotel"].forEach(source => {
+            ["dest", "depart"].forEach(endpoint => {
+                const s = source
+                const e = endpoint
+                domainDispatchModel.AddCallback({
+                    name: `same-${e}-${s}`,
+                    logic: async (memoryManager: ClientMemoryManager) => {
+                        var place = memoryManager.Get(`global-${s}`, ClientMemoryManager.AS_STRING)
+                        memoryManager.Set(e, place as string)
+                        DB.UpdateEntities(memoryManager, domain)
+                    }
+                })
+            })
+        })
+    }
 }
 
 const AddDontCare = (domainDispatchModel: ConversationLearner, domain: string): void => {

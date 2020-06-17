@@ -137,7 +137,7 @@ export const makeId = (length: number): string => {
 const findEntity = (domainName: string, shortName: string, entities: string[]) => {
 
     // Switch from short name to property name
-    const pName = propertyName(shortName);
+    const pName = propertyName(shortName, domainName);
 
     // If booking domain, look up from entities
     if (domainName == "booking") {
@@ -213,11 +213,11 @@ export const shortName = (entityName: string): string => {
     return shortName
 }
 
-export const propertyName = (entityName: string): string => {
+export const propertyName = (entityName: string, domainName: string): string => {
     const split = entityName.split('-')
     let shortName = split[split.length - 1]
     NameSubstitutionMap.forEach((value: string, key: string) => {
-        if (value == entityName) {
+        if (value == entityName && !(shortName == "time" && domainName == "restaurant")) {
             shortName = key
         }
     })

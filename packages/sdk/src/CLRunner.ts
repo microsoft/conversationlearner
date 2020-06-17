@@ -93,7 +93,10 @@ export type OnSessionEndCallback = (context: BB.TurnContext, memoryManager: Clie
  * Called when the associated action in your bot is sent.
  * Common use cases are to call external APIs to gather data and save into entities for usage later.
  */
+export type LogicSetCallback<T> = (memoryManager: ClientMemoryManager, setGlobalCallback: ((entityName: string, entityValue: string) => Promise<void>), ...args: string[]) => Promise<T | void>
+
 export type LogicCallback<T> = (memoryManager: ClientMemoryManager, ...args: string[]) => Promise<T | void>
+
 // tslint:disable-next-line:no-empty
 export const defaultLogicCallback = async () => { }
 /**
@@ -105,13 +108,15 @@ export type RenderCallback<T> = (logicResult: T, memoryManager: ReadOnlyClientMe
 export interface ICallbackInput<T> {
     name: string
     logic?: LogicCallback<T>
-    render?: RenderCallback<T>
+    logicWithSet?: LogicSetCallback<T>
+    render?: RenderCallback<T> 
     mockResults?: CLM.CallbackResult[]
 }
 
 interface ICallback<T> {
     name: string
-    logic: LogicCallback<T>
+    logic?: LogicCallback<T>
+    logicWithSet?: LogicSetCallback<T>
     render: RenderCallback<T> | undefined
 }
 
@@ -836,13 +841,14 @@ export class CLRunner {
             throw new Error(`You attempted to add callback but did not provide a valid name. Name must be non-empty string.`)
         }
 
-        if (!callbackInput.logic && !callbackInput.render) {
+        if (!callbackInput.logic && !callbackInput.logicWithSet && !callbackInput.render) {
             throw new Error(`You attempted to add callback by name: ${callbackInput.name} but did not provide a logic or render function. You must provide at least one of them.`)
         }
 
         const callback: InternalCallback<T> = {
             name: callbackInput.name,
             logic: defaultLogicCallback,
+            logicWithSet: undefined,
             logicArguments: [],
             isLogicFunctionProvided: false,
             render: undefined,
@@ -854,6 +860,12 @@ export class CLRunner {
         if (callbackInput.logic) {
             callback.logic = callbackInput.logic
             callback.logicArguments = this.GetArguments(callbackInput.logic, 1)
+            callback.isLogicFunctionProvided = true
+        }
+
+        if (callbackInput.logicWithSet) {
+            callback.logicWithSet = callbackInput.logicWithSet
+            callback.logicArguments = this.GetArguments(callbackInput.logicWithSet, 1)
             callback.isLogicFunctionProvided = true
         }
 
@@ -1238,7 +1250,18 @@ export class CLRunner {
                         const memoryManager = await this.CreateMemoryManagerAsync(clRecognizeResult.state, clRecognizeResult.clEntities)
 
                         // Do not await for MultiWoz.  Logic will block on sub-model response
-                        dispatchCallback.logic(memoryManager, clRecognizeResult.state.turnContext!.activity.id!, dispatchAction.modelName)
+                        if (dispatchCallback.logicWithSet) {
+                            dispatchCallback.logicWithSet(memoryManager,
+                                async (entityName: string, entityValue: string) => {
+                                    const setMemoryManager = await this.CreateMemoryManagerAsync(clRecognizeResult.state, clRecognizeResult.clEntities)
+                                    setMemoryManager.Set(entityName, entityValue)
+                                    await clRecognizeResult.state.EntityState.RestoreFromMemoryManagerAsync(setMemoryManager)
+                                },
+                                clRecognizeResult.state.turnContext!.activity.id!, dispatchAction.modelName)
+                        }
+                        else if (dispatchCallback.logic) {
+                            dispatchCallback.logic(memoryManager, clRecognizeResult.state.turnContext!.activity.id!, dispatchAction.modelName)
+                        }
 
                         // Dispatch level only augments memory, all other replace memory
                         let replaceMemory = app?.appName != "dispatch"
@@ -1699,7 +1722,7 @@ export class CLRunner {
                         if (callback.name == "SendResult" && state.turnContext?.activity.id) {
                             args = [state.turnContext.activity.id, renderedLogicArgumentValues[1]]
                         }
-                        logicReturnValue = await callback.logic(memoryManager, ...args)
+                        logicReturnValue = await callback.logic!(memoryManager, ...args)
                     }
 
                     logicResult.logicValue = JSON.stringify(logicReturnValue)

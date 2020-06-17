@@ -726,7 +726,7 @@ const trainEntities = (memoryManager: ReadOnlyClientMemoryManager): string[] => 
             entities.push(`${entityName}: ${value}`)
         }
         else if (trains.length == 1) {
-            const key = Utils.propertyName(entityName) as keyof Train
+            const key = Utils.propertyName(entityName, Domain.TRAIN) as keyof Train
             entities.push(`${entityName}: ${trains[0][key]}`)
         }
     })
@@ -747,7 +747,7 @@ const restaurantEntities = (memoryManager: ReadOnlyClientMemoryManager): string[
             entities.push(`${entityName}: ${value}`)
         }
         else if (restaurants.length == 1) {
-            const key = Utils.propertyName(entityName) as keyof Restaurant
+            const key = Utils.propertyName(entityName, Domain.RESTAURANT) as keyof Restaurant
             entities.push(`${entityName}: ${restaurants[0][key]}`)
         }
     })
@@ -768,7 +768,7 @@ const hotelEntities = (memoryManager: ReadOnlyClientMemoryManager): string[] => 
             entities.push(`${entityName}: ${value}`)
         }
         else if (hotels.length == 1) {
-            const key = Utils.propertyName(entityName) as keyof Hotel
+            const key = Utils.propertyName(entityName, Domain.HOTEL) as keyof Hotel
             entities.push(`${entityName}: ${hotels[0][key]}`)
         }
     })
@@ -787,7 +787,7 @@ const attractionEntities = (memoryManager: ReadOnlyClientMemoryManager): string[
             entities.push(`${entityName}: ${values}`)
         }
         else if (attractions.length == 1) {
-            const key = Utils.propertyName(entityName) as keyof Attraction
+            const key = Utils.propertyName(entityName, Domain.ATTRACTION) as keyof Attraction
             entities.push(`${entityName}: ${attractions[0][key]}`)
         }
     })
@@ -847,7 +847,7 @@ const RestaurantOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMe
         restaurants = restaurants.filter(r => pricerange.includes(Utils.BaseString(r.pricerange)))
     }
 
-    if (failInfo != undefined) {
+    if (failInfo != undefined && restaurants.length === 1) {
         const failChecks = new Map<string, string[]>([
             ["area", area],
             ["food", food],
@@ -883,7 +883,7 @@ const AttractionOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMe
         attractions = attractions.filter(r => _type.includes(Utils.BaseString(r._type)))
     }
 
-    if (failInfo != undefined) {
+    if (failInfo != undefined && attractions.length == 1) {
         const failChecks = new Map<string, string[]>([
             ["area", area],
             ["name", name],
@@ -911,7 +911,7 @@ const HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryM
     const luisName = memoryManager.Get(LuisSlot.NAME, ClientMemoryManager.AS_STRING)
     const picked = luisName || (name.length == 1 && pickone)
 
-    // If I've pickone, only filter by name
+    // If I've picked one, only filter by name
     const area = picked ? [] : Utils.MemoryValues(HotelSlot.AREA, HotelSlot.AREA_COUNT, memoryManager)
     const internet = picked ? [] : Utils.MemoryValues(HotelSlot.INTERNET, HotelSlot.INTERNET_COUNT, memoryManager)
     const parking = picked ? [] : Utils.MemoryValues(HotelSlot.PARKING, HotelSlot.PARKING_COUNT, memoryManager)
@@ -948,7 +948,7 @@ const HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryM
         hotels = hotels.filter(r => _type.includes(Utils.BaseString(r._type)))
     }
 
-    if (failInfo != undefined) {
+    if (failInfo != undefined && hotelEntities.length === 1) {
         const failChecks = new Map<string, string[]>([
             ["area", area],
             ["internet", internet],
