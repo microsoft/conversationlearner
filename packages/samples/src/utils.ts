@@ -55,21 +55,19 @@ export const ProcessTime = (time: string): string => {
 
 // Return version of string with no puncuation or space and lowercase (apart from : for time)
 export const BaseString = (text: string): string => {
+    if (!text) {
+        return text;
+    }
     return text.replace(/[^\w\s:]|_/g, "").replace(/\s/g, "").toLowerCase()
 }
 
-export const MemoryValues = (slot: any, countSlot: any, memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): string[] => {
-    const count = countSlot ? memoryManager.Get(countSlot, ClientMemoryManager.AS_NUMBER) : null
-    const values = memoryManager.Get(slot, ClientMemoryManager.AS_STRING_LIST)
+export const MemoryValue = (slot: any, memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): string | null => {
+    const value = memoryManager.Get(slot, ClientMemoryManager.AS_STRING)
 
-    // If I maxed out the multi-value but more results actually exist
-    // I shoud filter by this
-    if (count && values.length == MAX_MULTI_VALUE && values.length < count) {
-        return []
+    if (value !== "none" && value !== "dontcare" && value != null) {
+        return BaseString(value)
     }
-    return values
-        .map(i => BaseString(i))
-        .filter(i => i != "none" && i != "dontcare")
+    return null
 }
 
 export const trainArriveBefore = (trains: Train[], arriveBefore: string): Train | null => {
@@ -134,15 +132,14 @@ export const makeId = (length: number): string => {
     return result
 }
 
-const findEntity = (domainName: string, shortName: string, entities: string[]) => {
-
+const findEntity = (domain: string, shortName: string, entities: string[]) => {
+    
+    // If booking domain, look up from entities
+    const domainName = (domain == "booking") ? entities[0].split('-')[0] : domain
+    
     // Switch from short name to property name
     const pName = propertyName(shortName, domainName);
 
-    // If booking domain, look up from entities
-    if (domainName == "booking") {
-        domainName = entities[0].split('-')[0];
-    }
     // Look for semi entity
     let fullEntityName = `${domainName}-semi-${pName}`
     let foundEntity = entities.find(e => e.split(":")[0] == fullEntityName)

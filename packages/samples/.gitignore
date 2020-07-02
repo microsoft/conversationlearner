@@ -9,3 +9,7 @@ node_modules
 # testing
 /coverage
 /results
+
+# data
+/test_results
+/test_transcripts

@@ -11,8 +11,6 @@ import * as Test from './test'
 
 const DBDirectory = 'mwdb'
 const SIMILARITY_THRESHOLD = 7
-export const TestDirectory = 'testtranscripts'
-export const ResultsDirectory = 'testresults'
 let _slotTypes: Map<string, string[]>
 
 const SlotTypes = () => {
@@ -473,7 +471,17 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
             failInfo = { ...Test.TestGoal.restaurant.fail_book, ...Test.TestGoal.restaurant.fail_info }
         }
 
-        const restaurants = RestaurantOptions(memoryManager, failInfo)
+        let restaurants = RestaurantOptions(memoryManager, failInfo)
+        // If new conditions don't meet bot choice, clear bot choice as conditions might have changed
+        if (restaurants.length == 0 && memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)) {
+            memoryManager.Delete(RestaurantSlot.NAME)
+            restaurants = RestaurantOptions(memoryManager, failInfo)
+        }
+        // If new conditions still aren't met bot choice, clear bot choice
+        if (restaurants.length == 0 && memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)) {
+            memoryManager.Delete(PICK_ONE)
+            restaurants = RestaurantOptions(memoryManager, failInfo)
+        }
 
         const addresss = [... new Set(restaurants.map(a => a.address))]
         SetEntities(addresss, null, RestaurantSlot.ADDRESS, RestaurantSlot.ADDRESS_COUNT, memoryManager)
@@ -518,8 +526,17 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
             failInfo = { ...Test.TestGoal.hotel.fail_book, ...Test.TestGoal.hotel.fail_info }
         }
 
-        const hotels = HotelOptions(memoryManager, failInfo)
-
+        let hotels = HotelOptions(memoryManager, failInfo)
+        // If new conditions don't meet bot choice, clear bot choice as conditions might have changed
+        if (hotels.length == 0 && memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)) {
+            memoryManager.Delete(HotelSlot.NAME)
+            hotels = HotelOptions(memoryManager, failInfo)
+        }
+        // If new conditions still don't meet bot choice, clear bot choice
+        if (hotels.length == 0 && memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)) {
+            memoryManager.Delete(PICK_ONE)
+            hotels = HotelOptions(memoryManager, failInfo)
+        }
         const addresss = [... new Set(hotels.map(a => a.address))]
         SetEntities(addresss, null, HotelSlot.ADDRESS, HotelSlot.ADDRESS_COUNT, memoryManager)
 
@@ -574,7 +591,17 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
             failInfo = { ...Test.TestGoal.attraction.fail_book, ...Test.TestGoal.attraction.fail_info }
         }
 
-        const attractions = AttractionOptions(memoryManager, failInfo)
+        var attractions = AttractionOptions(memoryManager, failInfo)
+        // If new conditions don't meet bot choice, clear bot choice as conditions might have changed
+        if (attractions.length == 0 && memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)) {
+            memoryManager.Delete(AttractionSlot.NAME)
+            attractions = AttractionOptions(memoryManager, failInfo)
+        }
+        // If new conditions still aren't met bot choice, clear bot choice
+        if (attractions.length == 0 && memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)) {
+            memoryManager.Delete(PICK_ONE)
+            attractions = AttractionOptions(memoryManager, failInfo)
+        }
 
         memoryManager.Delete(AttractionSlot.AREA_COUNT)
 
@@ -641,6 +668,8 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
         const _type = types[Math.floor(Math.random() * types.length)]
         //const phone = phones[Math.floor(Math.random() * phone.length)];
 
+        memoryManager.Delete(TaxiSlot.CAR)
+        memoryManager.Delete(TaxiSlot.PHONE)
         memoryManager.Set(TaxiSlot.CAR, `${color} ${_type}`)
         memoryManager.Set(TaxiSlot.PHONE, "555-5555")
     }
@@ -652,7 +681,17 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
             failInfo = { ...Test.TestGoal.train.fail_book, ...Test.TestGoal.train.fail_info }
         }
 
-        const trains = TrainOptions(memoryManager, failInfo)
+        let trains = TrainOptions(memoryManager, failInfo)
+        // If new conditions don't meet bot choice, clear bot choice as conditions might have changed
+        if (trains.length == 0 && memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)) {
+            memoryManager.Delete(TrainSlot.ID)
+            trains = TrainOptions(memoryManager, failInfo)
+        }
+        // If new conditions still aren't met bot choice, clear bot choice
+        if (trains.length == 0 && memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)) {
+            memoryManager.Delete(PICK_ONE)
+            trains = TrainOptions(memoryManager, failInfo)
+        }
 
         const arriveBys = [... new Set(trains.map(a => a.arriveBy))]
         // Null LUIS slot as times are diff
@@ -821,34 +860,36 @@ export interface ActivityResult {
 const RestaurantOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: { [id: string]: string }): Restaurant[] => {
 
     const pickone = memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)
-    const name = Utils.MemoryValues(RestaurantSlot.NAME, RestaurantSlot.NAME_COUNT, memoryManager)
-    const luisName = memoryManager.Get(LuisSlot.NAME, ClientMemoryManager.AS_STRING)
-    const picked = luisName || (name.length == 1 && pickone)
+    const pickedname = memoryManager.Get(RestaurantSlot.NAME, ClientMemoryManager.AS_STRING_LIST)
 
-    // If I've pickone, only filter by name
-    const area = picked ? [] : Utils.MemoryValues(RestaurantSlot.AREA, RestaurantSlot.AREA_COUNT, memoryManager)
-    const food = picked ? [] : Utils.MemoryValues(RestaurantSlot.FOOD, RestaurantSlot.FOOD_COUNT, memoryManager)
-    const pricerange = picked ? [] : Utils.MemoryValues(RestaurantSlot.PRICERANGE, RestaurantSlot.PRICERANGE_COUNT, memoryManager)
-    
+    const area = Utils.MemoryValue(LuisSlot.AREA, memoryManager)
+    const food = Utils.MemoryValue(LuisSlot.FOOD, memoryManager)
+    const name = Utils.MemoryValue(LuisSlot.NAME, memoryManager)
+    const pricerange =  Utils.MemoryValue(LuisSlot.PRICE, memoryManager)
+
     // Non-filtered value
-    const time = memoryManager.Get(RestaurantSlot.TIME, ClientMemoryManager.AS_STRING_LIST)
+    const time = Utils.MemoryValue(LuisSlot.TIME, memoryManager)
 
     let restaurants = RestaurantDb()
-    if (area.length > 0) {
-        restaurants = restaurants.filter(r => area.includes(Utils.BaseString(r.area)))
+    if (pickone && pickedname?.length == 1) {
+        var pickbase = Utils.BaseString(pickedname[0])
+        restaurants = restaurants.filter(r => pickbase === Utils.BaseString(r.name))
     }
-    if (food.length > 0) {
-        restaurants = restaurants.filter(r => food.includes(Utils.BaseString(r.food)))
+    if (area) {
+        restaurants = restaurants.filter(r => area === Utils.BaseString(r.area))
     }
-    if (name.length == 1) {
-        restaurants = restaurants.filter(r => name.includes(Utils.BaseString(r.name)))
+    if (food) {
+        restaurants = restaurants.filter(r => food=== Utils.BaseString(r.food))
     }
-    if (pricerange.length > 0) {
-        restaurants = restaurants.filter(r => pricerange.includes(Utils.BaseString(r.pricerange)))
+    if (name) {
+        restaurants = restaurants.filter(r => name === Utils.BaseString(r.name))
+    }
+    if (pricerange) {
+        restaurants = restaurants.filter(r => pricerange === Utils.BaseString(r.pricerange))
     }
 
     if (failInfo != undefined && restaurants.length === 1) {
-        const failChecks = new Map<string, string[]>([
+        const failChecks = new Map<string, string | null>([
             ["area", area],
             ["food", food],
             ["name", name],
@@ -864,27 +905,29 @@ const RestaurantOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMe
 const AttractionOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: { [id: string]: string }): Attraction[] => {
 
     const pickone = memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)
-    const name = Utils.MemoryValues(AttractionSlot.NAME, AttractionSlot.NAME_COUNT, memoryManager)
-    const luisName = memoryManager.Get(LuisSlot.NAME, ClientMemoryManager.AS_STRING)  
-    const picked = luisName || (name.length == 1 && pickone)
+    const pickedname = memoryManager.Get(AttractionSlot.NAME, ClientMemoryManager.AS_STRING_LIST)
 
-    // If I've pickone, only filter by name
-    const area = picked ? [] : Utils.MemoryValues(AttractionSlot.AREA, AttractionSlot.AREA_COUNT, memoryManager)
-    const _type = picked ? [] : Utils.MemoryValues(AttractionSlot.TYPE, AttractionSlot.TYPE_COUNT, memoryManager)
+    const area = Utils.MemoryValue(LuisSlot.AREA, memoryManager)
+    const name = Utils.MemoryValue(LuisSlot.NAME, memoryManager)
+    const _type = Utils.MemoryValue(LuisSlot.TYPE, memoryManager)
 
     let attractions = AttractionDb()
-    if (area.length > 0) {
-        attractions = attractions.filter(r => area.includes(Utils.BaseString(r.area)))
+    if (pickone && pickedname?.length == 1) {
+        var pickbase = Utils.BaseString(pickedname[0])
+        attractions = attractions.filter(r => pickbase === Utils.BaseString(r.name))
     }
-    if (name.length == 1) {
-        attractions = attractions.filter(r => name.includes(Utils.BaseString(r.name)))
+    if (area) {
+        attractions = attractions.filter(r => area === Utils.BaseString(r.area))
     }
-    if (_type.length > 0) {
-        attractions = attractions.filter(r => _type.includes(Utils.BaseString(r._type)))
+    if (name) {
+        attractions = attractions.filter(r => name === Utils.BaseString(r.name))
+    }
+    if (_type) {
+        attractions = attractions.filter(r => _type === Utils.BaseString(r._type))
     }
 
     if (failInfo != undefined && attractions.length == 1) {
-        const failChecks = new Map<string, string[]>([
+        const failChecks = new Map<string, string | null>([
             ["area", area],
             ["name", name],
             ["type", _type],
@@ -907,52 +950,56 @@ const AttractionOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMe
 const HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: { [id: string]: string }): Hotel[] => {
 
     const pickone = memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)
-    const name = Utils.MemoryValues(HotelSlot.NAME, HotelSlot.NAME_COUNT, memoryManager)
-    const luisName = memoryManager.Get(LuisSlot.NAME, ClientMemoryManager.AS_STRING)
-    const picked = luisName || (name.length == 1 && pickone)
+    const pickedname = memoryManager.Get(HotelSlot.NAME, ClientMemoryManager.AS_STRING_LIST)
 
-    // If I've picked one, only filter by name
-    const area = picked ? [] : Utils.MemoryValues(HotelSlot.AREA, HotelSlot.AREA_COUNT, memoryManager)
-    const internet = picked ? [] : Utils.MemoryValues(HotelSlot.INTERNET, HotelSlot.INTERNET_COUNT, memoryManager)
-    const parking = picked ? [] : Utils.MemoryValues(HotelSlot.PARKING, HotelSlot.PARKING_COUNT, memoryManager)
-    const pricerange = picked ? [] : Utils.MemoryValues(HotelSlot.PRICERANGE, HotelSlot.PRICERANGE_COUNT, memoryManager)
-    const stars = picked ? [] : Utils.MemoryValues(HotelSlot.STARS, HotelSlot.STARS_COUNT, memoryManager)
-    const _type = picked ? [] : Utils.MemoryValues(HotelSlot.TYPE, HotelSlot.TYPE_COUNT, memoryManager)
+    const name = Utils.MemoryValue(LuisSlot.NAME, memoryManager)
+    const area = Utils.MemoryValue(LuisSlot.AREA, memoryManager)
+    const internet_yes =  Utils.MemoryValue(LuisSlot.INTERNET_YES, memoryManager)
+    //const internet_no =  Utils.MemoryValue(LuisSlot.INTERNET_NO,  memoryManager)
+    const parking_yes =  Utils.MemoryValue(LuisSlot.PARKING_YES,  memoryManager)
+    //const parking_no =  Utils.MemoryValue(LuisSlot.PARKING_NO,  memoryManager)
+    const pricerange = Utils.MemoryValue(LuisSlot.PRICE,  memoryManager)
+    const stars = Utils.MemoryValue(LuisSlot.STARS,  memoryManager)
+    const _type = Utils.MemoryValue(LuisSlot.TYPE,  memoryManager)
 
     // Non-filtered options
-    const people = Utils.MemoryValues(HotelSlot.PEOPLE, null, memoryManager)
-    const day = Utils.MemoryValues(HotelSlot.DAY, null, memoryManager)
-    const stay = Utils.MemoryValues(HotelSlot.STAY, null, memoryManager)
+    const people = Utils.MemoryValue(LuisSlot.PEOPLE, memoryManager)
+    const day = Utils.MemoryValue(LuisSlot.DAY, memoryManager)
+    const stay = Utils.MemoryValue(LuisSlot.STAY, memoryManager)
     //takesbookings - unused
 
     let hotels = HotelDb()
-    if (area.length > 0) {
-        hotels = hotels.filter(r => area.includes(Utils.BaseString(r.area)))
+    if (pickone && pickedname?.length == 1) {
+        var pickbase = Utils.BaseString(pickedname[0])
+        hotels = hotels.filter(r => pickbase === Utils.BaseString(r.name))
     }
-    if (internet.includes("yes") && !internet.includes("no")) {
+    if (area) {
+        hotels = hotels.filter(r => area == Utils.BaseString(r.area))
+    }
+    if (internet_yes) {
         hotels = hotels.filter(r => r.internet === "yes")
     }
-    if (parking.includes("yes") && !parking.includes("no")) {
+    if (parking_yes) {
         hotels = hotels.filter(r => r.parking === "yes")
     }
-    if (name.length == 1) {
-        hotels = hotels.filter(r => name.includes(Utils.BaseString(r.name)))
+    if (name) {
+        hotels = hotels.filter(r => name === Utils.BaseString(r.name))
     }
-    if (pricerange.length > 0) {
-        hotels = hotels.filter(r => pricerange.includes(Utils.BaseString(r.pricerange)))
+    if (pricerange) {
+        hotels = hotels.filter(r => pricerange === Utils.BaseString(r.pricerange))
     }
-    if (stars.length > 0) {
-        hotels = hotels.filter(r => stars.includes(Utils.BaseString(r.stars)))
+    if (stars) {
+        hotels = hotels.filter(r => stars === Utils.BaseString(r.stars))
     }
-    if (_type.length > 0) {
-        hotels = hotels.filter(r => _type.includes(Utils.BaseString(r._type)))
+    if (_type) {
+        hotels = hotels.filter(r => _type === Utils.BaseString(r._type))
     }
 
     if (failInfo != undefined && hotelEntities.length === 1) {
-        const failChecks = new Map<string, string[]>([
+        const failChecks = new Map<string, string | null>([
             ["area", area],
-            ["internet", internet],
-            ["parking", parking],
+            ["internet", internet_yes],
+            ["parking", parking_yes],
             ["name", name],
             ["pricerange", pricerange],
             ["stars", stars],
@@ -969,24 +1016,31 @@ const HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryM
 
 const TrainOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager, failInfo?: { [id: string]: string }): Train[] => {
 
-    const day = Utils.MemoryValues(TrainSlot.DAY, TrainSlot.DAY_COUNT, memoryManager)
-    const departure = Utils.MemoryValues(TrainSlot.DEPART, TrainSlot.DEPART_COUNT, memoryManager)
-    const destination = Utils.MemoryValues(TrainSlot.DESTINATION, TrainSlot.DESTINATION_COUNT, memoryManager)
     const pickone = memoryManager.Get(PICK_ONE, ClientMemoryManager.AS_STRING)
+    const pickedname = memoryManager.Get(TrainSlot.ID, ClientMemoryManager.AS_STRING_LIST)
+
+    const day = Utils.MemoryValue(LuisSlot.DAY, memoryManager)
+    const departure = Utils.MemoryValue(LuisSlot.DEPART, memoryManager)
+    const destination =  Utils.MemoryValue(LuisSlot.DESTINATION, memoryManager)
+
     //TODO entracneFree / price /etc no semantics ??
 
     let trains = TrainDb()
-    if (day.length > 0) {
-        trains = trains.filter(r => day.includes(Utils.BaseString(r.day)))
+    if (pickone && pickedname?.length == 1) {
+        var pickbase = Utils.BaseString(pickedname[0])
+        trains = trains.filter(r => pickbase=== r.trainID)
     }
-    if (departure.length > 0) {
-        trains = trains.filter(r => departure.includes(Utils.BaseString(r.departure)))
+    if (day) {
+        trains = trains.filter(r => day === Utils.BaseString(r.day))
     }
-    if (destination.length > 0) {
-        trains = trains.filter(r => destination.includes(Utils.BaseString(r.destination)))
+    if (departure) {
+        trains = trains.filter(r => departure === Utils.BaseString(r.departure))
+    }
+    if (destination) {
+        trains = trains.filter(r => destination === Utils.BaseString(r.destination))
     }
     // Filter on times based on LUIS slot is set (because not exact match)
-    if (departure.length > 0 && destination.length > 0 && day.length > 0) {
+    if (departure && destination && day) {
         const leaveAt = memoryManager.Get(LuisSlot.LEAVE_AT, ClientMemoryManager.AS_STRING)
         if (leaveAt && !isNaN(Utils.parseTime(leaveAt))) {
             const bestTrain = Utils.trainLeaveAfter(trains, leaveAt)
@@ -1005,19 +1059,19 @@ const TaxiOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryMa
     return TaxiDb()
 }
 
-const FilterFails = (items: any[], failInfo: { [id: string]: string }, checks: Map<string, string[]>) => {
+const FilterFails = (items: any[], failInfo: { [id: string]: string }, checks: Map<string, string | null>) => {
     if (Object.keys(failInfo).length == 0) {
         return items
     }
 
     let matchCount = 0
-    checks.forEach((value: string[], key: string) => {
-        let failKey = failInfo[key]
+    checks.forEach((value: string | null, key: string) => {
+        let failKey = Utils.BaseString(failInfo[key])
         // Is there a fail info for this key 
         if (failKey) {
             // If there is, check if I match it and count
-            if (value.includes(failKey)) {
-                matchCount++
+            if (value == failKey) {
+                matchCount++ 
             }
         }
     })
@@ -1047,6 +1101,12 @@ const RestaurantDb = (): Restaurant[] => {
 const AttractionDb = (): Attraction[] => {
     if (_attractionDb.length == 0) {
         _attractionDb = LoadDataBase("attraction_db")
+
+        for (var attraction of _attractionDb) {
+            if (attraction.entrancefee == "?") {
+                attraction.entrancefee = "unknown"
+            }
+        }
     }
     return _attractionDb
 }

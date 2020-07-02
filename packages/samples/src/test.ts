@@ -13,35 +13,205 @@ import { Goal } from './dataTypes'
 // Assumes only one test is run concurrently
 export let TestGoal: Goal | undefined
 
-var testCountMismatch = 0
-var testTotalCount = 0
-var testItemMismatch = 0
-var testTotalItem = 0
-var testValueMismatch = 0
+const TestDirectory = 'test_transcripts'
+const ResultsDirectory = 'test_results'
+
+export class TestResult {
+
+    public static testCountMismatch = 0
+    public static testNameMismatch = 0
+    public static testTotalCount = 0
+    public static testItemMismatch = 0
+    public static testTotalItem = 0
+    public static testValueMismatch = 0
+    public static testResults : TestResult[] = []
+
+    public fileName: string
+    public turnResults: TurnResult[] = []
+
+    public countMismatch = 0;
+    public nameMismatch = 0;
+    public totalCount: number = 0
+
+    public itemMismatch: number = 0
+    public valueMismatch: number = 0
+    public totalItem: number = 0
+
+    public expired = false;
+    public missingDA = false;
+    // % of turns that have different number of dialog acts
+    public percentCount: string = ""
+
+    // % of turns that have different number of selected items from DB
+    public percentName: string = ""
+
+    // % of dialogs acts that are different in a turn
+    public percentItem: string = ""
+
+    // % of dialogs acts that have different values
+    public percentValue: string = ""
+
+    public constructor(fileName: string) {
+        this.fileName = TestResult.ShortName(fileName)
+        TestResult.testResults.push(this)
+    }
+
+    public static StartTestRun() {
+        this.testCountMismatch = 0
+        this.testNameMismatch = 0
+        this.testTotalCount = 0
+        this.testItemMismatch = 0
+        this.testTotalItem = 0
+        this.testValueMismatch = 0
+        this.testResults = []
+    }
+
+    private CalculateResults() {
+        this.countMismatch = 0
+        this.nameMismatch = 0
+        this.totalCount = 0
+        this.itemMismatch = 0
+        this.totalItem = 0
+        this.valueMismatch = 0
+        this.expired = false;
+        this.missingDA = false;
+
+        for (var testResult of this.turnResults) {
+            if (testResult.error) {
+                this.expired = true
+                break
+            }
+    
+            this.totalCount++;
+            if (testResult.expect.length != testResult.actual.length) {
+                this.countMismatch++
+            }
+            if (testResult.expect.length == 0) {
+                this.missingDA = true;
+            }
+
+            var expectedNameCount = testResult.expect.filter(e => e[2] == "name")?.length
+            var actualNameCount = testResult.actual.filter(e => e[2] == "name")?.length
+            if (expectedNameCount != actualNameCount) {
+                this.nameMismatch++;
+            }
+    
+            for (var expectedItem of testResult.expect) 
+            {
+                this.totalItem++;
+                var actualItem = testResult.actual.find(a => a[0] == expectedItem[0] && a[1] == expectedItem[1] && a[2] == expectedItem[2])
+                if (!actualItem) {
+                    this.itemMismatch++
+                }
+                else {
+                    var domain = expectedItem[1]
+                    var entity = expectedItem[2]
+                    var actualValue = TestResult.CleanValue(actualItem[3], entity, domain)
+                    var expectedValue = TestResult.CleanValue(expectedItem[3], entity, domain)
+                    if (actualValue != expectedValue) {
+                        this.valueMismatch++
+                    }
+                }
+            }
+        }
+        TestResult.testCountMismatch += this.countMismatch
+        TestResult.testNameMismatch += this.nameMismatch
+        TestResult.testTotalCount += this.totalCount
+        TestResult.testItemMismatch += this.itemMismatch
+        TestResult.testTotalItem += this.totalItem
+        TestResult.testValueMismatch += this.valueMismatch
+
+        this.percentName = TestResult.ZeroPad(Math.round(100 * this.nameMismatch/this.totalCount))
+        this.percentCount = TestResult.ZeroPad(Math.round(100 * this.countMismatch/this.totalCount))
+        this.percentItem = TestResult.ZeroPad(Math.round(100 * this.itemMismatch/this.totalItem))
+        this.percentValue = TestResult.ZeroPad(Math.round(100 * this.valueMismatch/this.totalItem))
+    }
+ 
+    public static ShortName(fileName: string): string 
+    {
+        return fileName.trimLeft().substring(0, fileName.length - 6);
+    }
+
+    public SaveName(): string {
+        if (this.expired) {
+            return `${this.fileName} EXPIRED  ` 
+        }
+        else if (this.missingDA) {
+            return `${this.fileName}  ${this.percentName} ${this.percentCount} ${this.percentItem} ${this.percentValue}  (DA)`
+        }
+        else {
+            return `${this.fileName}  ${this.percentName} ${this.percentCount} ${this.percentItem} ${this.percentValue}  `
+        }
+    }
+
+    public SaveResult() {
+        this.CalculateResults()
+
+        fs.writeFileSync(`${DB.GetDirectory(ResultsDirectory)}\\${this.SaveName()}.json`, TurnResult.ToPrint(this.turnResults))
+
+        // Update overall summary
+        TestResult.SaveRunResults()
+    }
+
+    private static CleanValue(text: string, entity: string, domain: string) {
+        const lower = text.toLowerCase()
+        const substitution = DB.EntitySubstitutions()[lower]
+        if (substitution) {
+            return substitution
+        }
+        return DB.ResolveEntityValue(lower, entity, domain)
+    }
+    
+    private static ZeroPad(num: number) { 
+        return String(num).padStart(2, '0') 
+    }
+    
+    private static SaveRunResults() {
+        var percentName = this.ZeroPad(Math.round(100 * this.testNameMismatch/this.testTotalCount))
+        var percentCount = this.ZeroPad(Math.round(100 * this.testCountMismatch/this.testTotalCount))
+        var percentItem = this.ZeroPad(Math.round(100 * this.testItemMismatch/this.testTotalItem))
+        var percentValue = this.ZeroPad(Math.round(100 * this.testValueMismatch/this.testTotalItem))
+        var summary = `${percentName}-${percentCount}-${percentItem}-${percentValue} / ${this.testResults.length}\n`
+        summary += `=========================================\n`
+        for (var testResult of this.testResults) {
+            summary += `${testResult.SaveName()}\n`
+        }
+        fs.writeFileSync(`${DB.GetDirectory(ResultsDirectory)}\\_TOTALS_.txt`, summary)
+    }
+}
+
 export const RunTest = async (context: BB.TurnContext) => {
     console.log('========= START TESTING ==========')
 
-    testCountMismatch = 0
-    testTotalCount = 0
-    testItemMismatch = 0
-    testTotalItem = 0
-    testValueMismatch = 0
+    TestResult.StartTestRun()
 
-    var testDirectory = DB.GetDirectory(DB.TestDirectory)
+    var testDirectory = DB.GetDirectory(TestDirectory)
     var transcriptFileNames = fs.readdirSync(testDirectory)
 
-    // See if I filter to a single test
+    // See if I filter to a single test. If so alwasy test even if have results
+    var retest = true;// LARS TEMP
     var commands = context.activity.text.replace("::", "")
     if (commands) {
         transcriptFileNames = transcriptFileNames.filter(fn => fn.includes(commands))
+        retest = true;
     }
 
     if (transcriptFileNames.length === 0) {
         console.log(`--------- No Matching Dialogs ----------`)
     }
     isTesting = true
-    var itemCount = 0;
+
+    // Get list of test already existing
+    var existingFiles = fs.readdirSync(ResultsDirectory);
+    
     for (var fileName of transcriptFileNames) {
+        var shortName = TestResult.ShortName(fileName);
+        // If file already exist.  Only re-test if fixed
+        var existingFile = existingFiles.find(ef => ef.indexOf(shortName) >= 0 )
+        if (!retest && existingFile && existingFile.indexOf("fixed") == -1 && existingFile.indexOf("EXPIRED") == -1) {
+            console.log(`--------- SKIP ${fileName} ----------`)
+            continue;
+        }
         const transcript = fs.readFileSync(`${testDirectory}\\${fileName}`, 'utf-8')
         console.log(`--------- ${fileName} ----------`)
         await TestTranscript(JSON.parse(transcript), fileName)
@@ -51,8 +221,6 @@ export const RunTest = async (context: BB.TurnContext) => {
         await Models.clTaxi.EndSession(context)
         await Models.clTrain.EndSession(context)
         await Models.clHotel.EndSession(context)
-        itemCount++
-        WriteResults(itemCount);
         if (!isTesting) {
             break
         }
@@ -75,7 +243,7 @@ export const StopTesting = async (context: BB.TurnContext) => {
 }
 
 
-export class TestResult {
+export class TurnResult {
     public input?: string
     public output?: string
     public expect: string[][] = []
@@ -84,7 +252,7 @@ export class TestResult {
     public actualRaw: string = ""
     public error?: string = undefined
 
-    static ToPrint(testResults: TestResult[]): string {
+    static ToPrint(testResults: TurnResult[]): string {
         return JSON.stringify(testResults.map(tr => 
             {
                 delete tr.actual
@@ -155,7 +323,7 @@ const TestTranscript = async (activityLog: ActivityLog, fileName: string) => {
         }
     })
 
-    var testResults: TestResult[] = []
+    var testResult = new TestResult(fileName)
     // Need a new conversation ID 
     var conversationId = Utils.GenerateGUID()
 
@@ -184,23 +352,23 @@ const TestTranscript = async (activityLog: ActivityLog, fileName: string) => {
             // Log
             console.log(`${userActivity.text}`)
 
-            var testResult = new TestResult(userActivity.text)
-            testResult.SetExpect(agentActivity.text);
-            console.log(`  ${testResult.expectRaw}`)
+            var turnResult = new TurnResult(userActivity.text)
+            turnResult.SetExpect(agentActivity.text);
+            console.log(`  ${turnResult.expectRaw}`)
 
             var response = await Models.GetOutput(userActivity.id!)
 
-            testResult.SetActual(response)
-            testResult.output = agentActivity.summary
+            turnResult.SetActual(response)
+            turnResult.output = agentActivity.summary
 
-            console.log(`  ${testResult.actualRaw}`)
+            console.log(`  ${turnResult.actualRaw}`)
             console.log(`  ${agentActivity.summary}`)
             console.log(`  -------------------------`)
 
             if (error != "") {
-                testResult.error = error
+                turnResult.error = error
             }
-            testResults.push(testResult)
+            testResult.turnResults.push(turnResult)
         }
 
         if (!isTesting) {
@@ -209,10 +377,10 @@ const TestTranscript = async (activityLog: ActivityLog, fileName: string) => {
     }
     console.log(`--------- DONE: ${fileName} ----------`)
     TestGoal = undefined
-    SaveTestResult(fileName, testResults)
+    testResult.SaveResult()
 }
-
-const SaveTestResult = async (fileName: string, testResults: TestResult[]) => {
+/*
+const SaveTestResult = async (fileName: string, testResult: TestResult) => {
     var countMismatch = 0
     var totalCount = 0
     var itemMismatch = 0
@@ -220,7 +388,7 @@ const SaveTestResult = async (fileName: string, testResults: TestResult[]) => {
     var valueMismatch = 0
     var expired = false;
     
-    for (var testResult of testResults) {
+    for (var testResult of turnResults) {
         if (testResult.error) {
             expired = true;
             break;
@@ -257,33 +425,15 @@ const SaveTestResult = async (fileName: string, testResults: TestResult[]) => {
 
     if (expired) {
         var saveName = `EXPIRED  ${fileName}`
-        fs.writeFileSync(`${DB.GetDirectory(DB.ResultsDirectory)}\\${saveName}`, TestResult.ToPrint(testResults))
+        fs.writeFileSync(`${DB.GetDirectory(DB.ResultsDirectory)}\\${saveName}`, TurnResult.ToPrint(turnResults))
     }
     else {
         var percentCount = zeroPad(Math.round(100 * countMismatch/totalCount))
         var percentItem = zeroPad(Math.round(100 * itemMismatch/totalItem))
         var percentValue = zeroPad(Math.round(100 * valueMismatch/totalItem))
         var saveName = `${percentCount}-${percentItem}-${percentValue}  ${fileName}`
-        fs.writeFileSync(`${DB.GetDirectory(DB.ResultsDirectory)}\\${saveName}`, TestResult.ToPrint(testResults))
+        fs.writeFileSync(`${DB.GetDirectory(DB.ResultsDirectory)}\\${saveName}`, TurnResult.ToPrint(turnResults))
     }
 }
-
-const CleanValue = (text: string, entity: string, domain: string) => {
-    const lower = text.toLowerCase()
-    const substitution = DB.EntitySubstitutions()[lower]
-    if (substitution) {
-        return substitution
-    }
-    return DB.ResolveEntityValue(lower, entity, domain)
-}
-
-const WriteResults = (itemCount: number) => {
-
-    var percentCount = zeroPad(Math.round(100 * testCountMismatch/testTotalCount))
-    var percentItem = zeroPad(Math.round(100 * testItemMismatch/testTotalItem))
-    var percentValue = zeroPad(Math.round(100 * testValueMismatch/testTotalItem))
-    var saveName = `_ ${percentCount}-${percentItem}-${percentValue} / ${itemCount}`
-    fs.writeFileSync(`${DB.GetDirectory(DB.ResultsDirectory)}\\_RESULTS`, saveName)
-}
-const zeroPad = (num: number) => String(num).padStart(2, '0')
+*/
 

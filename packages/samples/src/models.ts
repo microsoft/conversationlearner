@@ -202,8 +202,8 @@ const getDomainDispatchCL = (domain: Domain, clFactory: ConversationLearnerFacto
             domainDispatchModel.AddCallback({
                 name: `same-${entityName}`,
                 logic: async (memoryManager: ClientMemoryManager) => {
-                    var price = memoryManager.Get(`global-${e}`, ClientMemoryManager.AS_STRING)
-                    memoryManager.Set(e, price as string)
+                    var value = memoryManager.Get(`global-${e}`, ClientMemoryManager.AS_STRING)
+                    memoryManager.Set(e, value as string)
                     DB.UpdateEntities(memoryManager, domain)
                 }
             })
@@ -303,10 +303,23 @@ const getDialogActCL = (dialogActName: string, clFactory: ConversationLearnerFac
 
             const activityResult = ActivityResultsQueue.find(ar => ar.activityId === activityId)
             if (!activityId) {
-                throw new Error(`Missing Activity ${activityId}`)
+                console.log(`Missing Activity ${activityId}`)
+                return
+                //throw new Error(`Missing Activity ${activityId}`)
             }
             if (!activityResult?.modelResults.has(dialogActName)) {
-                throw new Error(`Expected DialogAct ${dialogActName}`)
+                if (activityResult) {
+                    const result: DB.DomainResult = {
+                        dialogActs : [],
+                        entities : [],
+                        output : [["Expired Missing Activity"]]
+                    }
+                    activityResult.modelResults.set(dialogActName, result)
+                }
+                console.log(`Expected DialogAct ${dialogActName}`)
+                 //throw new Error(`Expected DialogAct ${dialogActName}`)
+                return
+
             }
 
             //LARS const dialogActs = memoryManager.Get(OUTPUT, ClientMemoryManager.AS_STRING_LIST)
@@ -425,6 +438,19 @@ var getActivityResultString = (activityId: string) => {
     return promise
 }
 
+// Remove any duplicates
+const CleanOutput = (output: string): string => {
+    var outputObj: string[][] = JSON.parse(output)
+    var cleanedObj: string[][] = []
+    outputObj.forEach(o =>
+    {
+        if (!cleanedObj.find(e => e[0]==o[0] && e[1]==o[1] && e[2]==o[2] && e[3] == o[3])) {
+            cleanedObj.push(o)
+        }
+    })
+    return JSON.stringify(cleanedObj);
+}
+
 var outputIntervals: NodeJS.Timeout[] = []
 export const GetOutput = (activityId: string) => {
     var promise = new Promise<string>((resolve, reject) => {
@@ -447,7 +473,8 @@ export const GetOutput = (activityId: string) => {
                 clearInterval(interval)
                 // Clear data
                 OutputMap.delete(activityId)
-                resolve(output)
+                var cleaned = CleanOutput(output)
+                resolve(cleaned)
             }
             , 1000)
         outputIntervals.push(interval)
