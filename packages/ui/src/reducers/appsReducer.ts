@@ -6,7 +6,7 @@ import { AppsState, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
 import { replace } from '../Utils/util'
-import { TrainingStatusCode } from '@conversationlearner/models'
+import { TrainingStatusCode } from 'clwoz-models'
 import { App } from '../types/models'
 import produce from 'immer'
 

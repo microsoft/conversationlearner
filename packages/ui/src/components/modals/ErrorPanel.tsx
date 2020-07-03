@@ -13,7 +13,7 @@ import { injectIntl, InjectedIntlProps, InjectedIntl, FormattedMessage } from 'r
 import { AT } from '../../types/ActionTypes'
 import { FM } from '../../react-intl-messages'
 import { getTip, TipType } from '../ToolTips/ToolTips'
-import { ErrorCode } from '@conversationlearner/models'
+import { ErrorCode } from 'clwoz-models'
 import * as Util from '../../Utils/util'
 
 interface ComponentState {

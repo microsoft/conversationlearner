@@ -5,7 +5,7 @@
 import * as Util from '../Utils/util'
 import * as BB from 'botbuilder'
 import * as OBIUtils from '../Utils/obiUtils'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 
 export enum ComparisonResultType {
     ALL = 'ALL',

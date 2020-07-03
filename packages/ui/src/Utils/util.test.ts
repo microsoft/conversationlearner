@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import { replace, equal, isActionUnique, deepCopy } from './util'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 
 describe('util', () => {
 

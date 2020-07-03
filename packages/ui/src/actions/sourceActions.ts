@@ -4,7 +4,7 @@
  */
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
-import { AppDefinitionChange, AppDefinition } from '@conversationlearner/models'
+import { AppDefinitionChange, AppDefinition } from 'clwoz-models'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory'

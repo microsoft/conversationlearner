@@ -8,7 +8,7 @@ import { FM } from '../react-intl-messages'
 import HelpIcon from '../components/HelpIcon'
 import { TipType } from '../components/ToolTips/ToolTips'
 import FormattedMessageId from '../components/FormattedMessageId'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 
 export function renderReplayError(replayError: CLM.ReplayError): React.ReactNode {
     switch (replayError.type) {

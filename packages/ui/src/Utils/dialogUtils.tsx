@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../Utils/util'

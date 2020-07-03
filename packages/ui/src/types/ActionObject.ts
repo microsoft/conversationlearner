@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import { OBIImportData } from '../Utils/obiUtils'
 import { PartialTrainDialog } from '../types/models'
 import { TipType } from '../components/ToolTips/ToolTips'

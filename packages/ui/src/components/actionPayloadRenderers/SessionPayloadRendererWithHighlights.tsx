@@ -4,7 +4,7 @@
  */
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import { usePayloadRenderer } from './payloadRendererHooks'
 import PayloadRendererWithHighlights from './PayloadRendererWithHighlights'
 import './SessionPayloadRendererWithHighlights.css'

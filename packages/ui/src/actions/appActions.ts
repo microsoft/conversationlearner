@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import * as ClientFactory from '../services/clientFactory'
 import { OBIImportData } from '../Utils/obiUtils'
 import { Dispatch } from 'redux'

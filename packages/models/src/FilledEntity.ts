@@ -100,6 +100,17 @@ export class FilledEntityMap {
     }
   }
 
+  // Replace filled entities (ignoring ones that aren't in entity list)
+  public ReplaceFilledEntities(filledEntities: FilledEntity[], entities: EntityBase[]) {
+    this.map = {}
+    for (let filledEntity of filledEntities) {
+      let entity = entities.find(e => e.entityId === filledEntity.entityId)
+      if (entity) {
+        this.map[entity.entityName] = filledEntity
+      }
+    }
+  }
+
   public ToMemory(): Memory[] {
     let memory: Memory[] = []
     for (let entityName in this.map) {

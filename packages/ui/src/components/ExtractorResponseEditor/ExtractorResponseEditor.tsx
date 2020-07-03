@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import Plain from 'slate-plain-serializer'
 import CustomEntityNode from './CustomEntityNode'
 import PreBuiltEntityNode from './PreBuiltEntityNode'

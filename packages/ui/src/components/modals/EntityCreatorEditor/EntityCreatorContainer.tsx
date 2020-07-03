@@ -5,7 +5,7 @@
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../../Utils/util'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import actions from '../../../actions'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'

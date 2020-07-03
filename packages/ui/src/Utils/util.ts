@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import * as IntlMessages from '../react-intl-messages'
 import * as Const from '../types/const'
 import * as moment from 'moment'

@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import * as Util from '../../../Utils/util'
 import * as DialogUtils from '../../../Utils/dialogUtils'
 import * as OF from 'office-ui-fabric-react'

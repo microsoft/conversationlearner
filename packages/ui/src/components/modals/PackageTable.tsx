@@ -7,7 +7,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
 import * as OF from 'office-ui-fabric-react'
-import { AppBase, PackageReference } from '@conversationlearner/models'
+import { AppBase, PackageReference } from 'clwoz-models'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import * as util from '../../Utils/util'
 

@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import { PartialTrainDialog } from '../types/models'
 import { REPROMPT_SELF } from '../types/const'
 import Axios, { AxiosRequestConfig, AxiosResponse } from 'axios'

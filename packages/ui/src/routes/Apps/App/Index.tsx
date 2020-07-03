@@ -5,7 +5,7 @@
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as ValidityUtils from '../../../Utils/validityUtils'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import * as Util from '../../../Utils/util'
 import Entities from './Entities'
 import TrainDialogs from './TrainDialogs'

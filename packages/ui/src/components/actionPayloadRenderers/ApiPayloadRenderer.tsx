@@ -5,7 +5,7 @@
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import './ApiPayloadRenderer.css'
-import { RenderedActionArgument } from '@conversationlearner/models'
+import { RenderedActionArgument } from 'clwoz-models'
 
 interface ICombinedActionArgument {
     original: RenderedActionArgument

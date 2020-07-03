@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as ClientFactory from '../services/clientFactory'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Dispatch } from 'redux'

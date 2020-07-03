@@ -1,4 +1,4 @@
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import { SourceAndModelPair } from "../types/models"
 import * as uuid from 'uuid/v4'
 import * as Util from './util'

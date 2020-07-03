@@ -1,5 +1,5 @@
 import * as OF from 'office-ui-fabric-react'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import { MockResultWithSource, MockResultsWithSource } from '../types'
 
 export function assignSourcesToMockResults(...mockResultsWithSourceList: MockResultsWithSource[]): MockResultWithSource[] {

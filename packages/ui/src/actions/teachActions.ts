@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import * as ClientFactory from '../services/clientFactory'
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'

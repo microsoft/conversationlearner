@@ -5,7 +5,7 @@
 import { ActionObject, BotState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import produce from 'immer'
 
 const initialState: BotState = {

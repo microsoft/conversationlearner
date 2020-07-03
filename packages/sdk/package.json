@@ -1,6 +1,6 @@
 {
   "name": "clwoz-sdk",
-  "version": "0.600.617",
+  "version": "0.600.0703",
   "description": "One off Node SDK for Conversation Learner Multi-Woz",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -44,7 +44,7 @@
     "async-file": "^2.0.2",
     "body-parser": "1.18.3",
     "botbuilder": "4.7.1",
-    "clwoz-models": "^0.505.0",
+    "clwoz-models": "^0.600.0703",
     "cors": "2.8.4",
     "express": "4.16.3",
     "filenamify": "^2.0.0",

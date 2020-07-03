@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as Util from '../../Utils/util'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import SlateTransformer from '../modals/ActionPayloadEditor/slateTransformer'
 import SlateSerializer from '../modals/ActionPayloadEditor/slateSerializer'
 import { Value } from 'slate'

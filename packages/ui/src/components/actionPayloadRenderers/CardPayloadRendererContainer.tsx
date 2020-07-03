@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { CardAction, EntityBase, Memory } from '@conversationlearner/models'
+import { CardAction, EntityBase, Memory } from 'clwoz-models'
 import * as Util from '../../Utils/util'
 import CardPayloadRenderer from './CardPayloadRenderer'
 

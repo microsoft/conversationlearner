@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import { AT } from '../types/ActionTypes'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 
 export interface ErrorCallback {
     actionType: AT

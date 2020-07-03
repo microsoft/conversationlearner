@@ -181,6 +181,11 @@ export class ClientMemoryManager extends ReadOnlyClientMemoryManager {
         return this
     }
 
+    // Filter memories by list of entities
+    public Filter(entities: CLM.EntityBase[]) {
+        this.curMemories.ReplaceFilledEntities(this.curMemories.FilledEntities(), entities);
+    }
+
     public Set(entityName: string, value: string | number | boolean | object | string[] | number[] | boolean[] | object[]): void {
         if (this.__expired) {
             throw new Error(`ClientMemoryManager: RememberEntity "${entityName}" ${CLStrings.MEMORY_MANAGER_EXPIRED_EXCEPTION}`)

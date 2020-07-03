@@ -4,7 +4,7 @@
  */
 import * as React from 'react'
 import * as BotChat from '@conversationlearner/webchat'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import * as BB from 'botbuilder'
 import actions from '../actions'
 import { bindActionCreators } from 'redux'

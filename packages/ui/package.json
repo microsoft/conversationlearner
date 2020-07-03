@@ -22,7 +22,7 @@
   },
   "private": false,
   "dependencies": {
-    "@conversationlearner/models": "^0.505.0",
+    "clwoz-models": "^0.505.0",
     "@conversationlearner/webchat": "^0.505.0",
     "@cypress/webpack-preprocessor": "4.0.3",
     "@types/klaw-sync": "^6.0.0",

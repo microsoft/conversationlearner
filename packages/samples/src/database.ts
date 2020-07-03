@@ -326,11 +326,6 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
             memoryManager.Delete(TrainSlot.PEOPLE)
             memoryManager.Set(TrainSlot.PEOPLE, people)
         }
-    /*  LARS   if (arrive) {
-            memoryManager.Delete(TrainSlot.ARRIVE_BY)
-            // DO NOT SET: ArriveBy is different from train arrival time
-            // memoryManager.Set(TrainSlot.ARRIVE_BY, arrive)
-        }*/
         if (day) {
             memoryManager.Delete(TrainSlot.DAY)
             memoryManager.Set(TrainSlot.DAY, day)
@@ -342,12 +337,7 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
         if (dest) {
             memoryManager.Delete(TrainSlot.DESTINATION)
             memoryManager.Set(TrainSlot.DESTINATION, dest)
-        }/* LARS
-        if (leave) {
-            memoryManager.Delete(TrainSlot.LEAVE_AT)
-            // DO NOT SET: LeaveAt is different from train leave time
-            //memoryManager.Set(TrainSlot.LEAVE_AT, leave)
-        }*/
+        }
         return
     }
     if (domainFilter === "hotel") {

@@ -1,4 +1,4 @@
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import { MockResultSource } from '../types'
 import * as MockResultUtil from './mockResults'
 

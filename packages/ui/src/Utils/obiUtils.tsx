@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as BB from 'botbuilder'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import * as DialogEditing from './dialogEditing'
 import * as DialogUtils from './dialogUtils'
 import * as Util from './util'
@@ -12,7 +12,7 @@ import { REPROMPT_SELF } from '../types/const'
 import { ImportedAction } from '../types/models'
 import { Case } from '../types/obiTypes'
 import { User } from '../types'
-import { ExtractorStepType } from '@conversationlearner/models'
+import { ExtractorStepType } from 'clwoz-models'
 
 export async function toTranscripts(
     appDefinition: CLM.AppDefinition,

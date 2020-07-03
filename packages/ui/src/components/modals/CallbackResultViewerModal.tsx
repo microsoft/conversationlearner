@@ -1,5 +1,5 @@
 import * as React from 'react'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import * as OF from 'office-ui-fabric-react'
 import * as ToolTips from '../ToolTips/ToolTips'
 import * as Util from '../../Utils/util'

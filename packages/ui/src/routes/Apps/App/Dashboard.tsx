@@ -5,7 +5,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { State } from '../../../types'
-import { AppBase, AppDefinition } from '@conversationlearner/models'
+import { AppBase, AppDefinition } from 'clwoz-models'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import { bindActionCreators } from 'redux'
 import * as OF from 'office-ui-fabric-react'

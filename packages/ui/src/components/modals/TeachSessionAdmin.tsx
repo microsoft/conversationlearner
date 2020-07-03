@@ -5,7 +5,7 @@
 import * as React from 'react'
 import * as DialogUtils from '../../Utils/dialogUtils'
 import * as OF from 'office-ui-fabric-react'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import actions from '../../actions'
 import DialogMetadata from './DialogMetadata'
 import ActionScorer from './ActionScorer'

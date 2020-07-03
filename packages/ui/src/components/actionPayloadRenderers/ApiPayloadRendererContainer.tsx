@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { ApiAction, EntityBase, Memory, Callback } from '@conversationlearner/models'
+import { ApiAction, EntityBase, Memory, Callback } from 'clwoz-models'
 import * as Util from '../../Utils/util'
 import ApiPayloadRenderer from './ApiPayloadRenderer'
 

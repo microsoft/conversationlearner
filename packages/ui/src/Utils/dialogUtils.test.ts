@@ -4,7 +4,7 @@
  */
 import { doesTrainDialogMatch, findMatchingTrainDialog, isPrimaryTrainDialog, mergeTrainDialogs, mergeTrainDialogTags, hasInternalLabelConflict, isConflictingTextVariation, isIncompatibleTextVariation, getCorrectedDialogs } from './dialogUtils'
 import { deepCopy } from './util'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import * as uuid from 'uuid/v4'
 import { fromLogTag } from '../types'
 

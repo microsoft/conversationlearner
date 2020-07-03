@@ -8,7 +8,7 @@ import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory'
 import { AxiosError } from 'axios'
-import { BotInfo } from '@conversationlearner/models'
+import { BotInfo } from 'clwoz-models'
 
 const fetchBotInfoAsync = (browserId: string, appId?: string): ActionObject => {
     return {

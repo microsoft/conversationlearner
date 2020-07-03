@@ -5,7 +5,7 @@
 import * as React from 'react'
 import * as Util from '../../Utils/util'
 import * as DispatchUtils from '../../Utils/dispatchUtils'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import actions from '../../actions'
 import AppIndex from './App/Index'
 import AppsList from './AppsList'

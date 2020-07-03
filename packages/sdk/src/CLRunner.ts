@@ -692,19 +692,8 @@ export class CLRunner {
                 sessionId = session.sessionId
             }
 
-            if (parentMemory) {
-                if (replaceMemory) {
-                    await state.EntityState.RestoreFromMemoryManagerAsync(parentMemory)
-                }
-                else {
-                    await state.EntityState.UpdateFromMemoryManagerAsync(parentMemory)
-                }
-            }
-
             // Process any form data
             let buttonResponse = await this.ProcessFormData(activity, state, app.appId)
-
-            let entities: CLM.EntityBase[] = []
 
             // Generate result
             errorContext = `${errorContext}: Extract Entities`
@@ -717,8 +706,20 @@ export class CLRunner {
             }
 
             const extractResponse = await this.SessionExtract(app.appId, sessionId, userInput)
+            const entities = extractResponse.definitions.entities
 
-            entities = extractResponse.definitions.entities
+            if (parentMemory) {
+                // Filter to entities that only exist on the dispatch model (this one)
+                parentMemory?.Filter(entities);
+                if (replaceMemory) {
+                    await state.EntityState.RestoreFromMemoryManagerAsync(parentMemory)
+                }
+                else {
+                    await state.EntityState.UpdateFromMemoryManagerAsync(parentMemory)
+                }
+            }
+
+
             errorContext = `${errorContext}: ScoreActions`
             const scoredAction = await this.Score(
                 app.appId,

@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import { convertExtractorResponseToEditorModels, convertGenericEntityToPredictedEntity } from './utilities'
 import { IGenericEntity, IGenericEntityData, IEditorProps } from './models'
 

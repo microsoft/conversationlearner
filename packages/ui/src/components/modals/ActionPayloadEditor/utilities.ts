@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import { IOption, NodeTypes } from "./APEModels"
-import { TextVariation, EntityBase, LabeledEntity } from '@conversationlearner/models'
+import { TextVariation, EntityBase, LabeledEntity } from 'clwoz-models'
 import { convertEntitiesAndTextToEditorValue } from '../../ExtractorResponseEditor/utilities'
 import { IGenericEntity, IGenericEntityData } from "../../ExtractorResponseEditor/models"
 

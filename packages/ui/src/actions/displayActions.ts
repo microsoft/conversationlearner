@@ -5,7 +5,7 @@
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { ErrorType } from '../types/const'
-import { AppBase, Banner } from '@conversationlearner/models'
+import { AppBase, Banner } from 'clwoz-models'
 import { TipType } from '../components/ToolTips/ToolTips'
 import * as ClientFactory from '../services/clientFactory'
 import { Dispatch } from 'redux'

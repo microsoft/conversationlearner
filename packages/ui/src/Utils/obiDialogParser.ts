@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import * as CLM from '@conversationlearner/models'
+import * as CLM from 'clwoz-models'
 import * as DialogEditing from './dialogEditing'
 import * as OBITypes from '../types/obiTypes'
 import * as OBIUtils from './obiUtils'
@@ -10,7 +10,7 @@ import * as Util from './util'
 import * as fspath from 'path'
 import * as stripJsonComments from 'strip-json-comments'
 import { NONE_RESOLVER_KEY } from '../types/const'
-import { ExtractorStepType } from '@conversationlearner/models'
+import { ExtractorStepType } from 'clwoz-models'
 
 enum OBIStepType {
     BEGIN_DIALOG = "Microsoft.BeginDialog",
