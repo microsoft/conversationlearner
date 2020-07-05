@@ -81,7 +81,7 @@ export enum HotelSlot {
   ADDRESS = "hotel-address",
   ADDRESS_COUNT = "hotel-address-count",
   DAY = "hotel-book-day",
-  DAY_COUNT = "hotel--day-count",
+  DAY_COUNT = "hotel-day-count",
   PEOPLE = "hotel-book-people",
   AREA = "hotel-semi-area",
   AREA_COUNT = "hotel-area-count",

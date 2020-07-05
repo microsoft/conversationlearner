@@ -55,6 +55,14 @@ export const apiDontCareLeave = {
     }
 }
 
+export const apiDontCarePeople = {
+    name: "dontcare-people",
+    logic: async (memoryManager: ClientMemoryManager) => {
+        memoryManager.Set(LuisSlot.PEOPLE, DONTCARE)
+        DB.UpdateEntities(memoryManager)
+    }
+}
+
 export const apiDontCareType = {
     name: "dontcare-type",
     logic: async (memoryManager: ClientMemoryManager) => {
@@ -76,6 +84,21 @@ export const apiDontCareStars = {
     logic: async (memoryManager: ClientMemoryManager) => {
         memoryManager.Set(LuisSlot.STARS, DONTCARE)
         DB.UpdateEntities(memoryManager)
+    }
+}
+
+export const apiDontCareDay = {
+    name: "dontcare-day",
+    logic: async (memoryManager: ClientMemoryManager) => {
+        memoryManager.Set(LuisSlot.DAY, DONTCARE)
+        DB.UpdateEntities(memoryManager)
+    }
+}
+
+// Do nothing. Handle bad label
+export const apiDontCareAddr = {
+    name: "dontcare-addr",
+    logic: async (memoryManager: ClientMemoryManager) => {
     }
 }
 
@@ -244,10 +267,13 @@ const AddDontCare = (domainDispatchModel: ConversationLearner, domain: string): 
         domainDispatchModel.AddCallback(apiDontCareType)
         domainDispatchModel.AddCallback(apiDontCareName)
         domainDispatchModel.AddCallback(apiDontCareStars)
+        domainDispatchModel.AddCallback(apiDontCareDay)
+        domainDispatchModel.AddCallback(apiDontCareAddr)
     }
     else if (domain === "train") {
         domainDispatchModel.AddCallback(apiDontCareArrive)
         domainDispatchModel.AddCallback(apiDontCareLeave)
+        domainDispatchModel.AddCallback(apiDontCarePeople)
     }
     else if (domain === "hotel") {
         domainDispatchModel.AddCallback(apiDontCareArea)
@@ -255,9 +281,11 @@ const AddDontCare = (domainDispatchModel: ConversationLearner, domain: string): 
         domainDispatchModel.AddCallback(apiDontCareType)
         domainDispatchModel.AddCallback(apiDontCareName)
         domainDispatchModel.AddCallback(apiDontCareStars)
+        domainDispatchModel.AddCallback(apiDontCareDay)
     }
     else if (domain === "taxi") {
-        // NONE
+        domainDispatchModel.AddCallback(apiDontCareArrive)
+        domainDispatchModel.AddCallback(apiDontCareLeave)
     }
     else if (domain === "attraction") {
         domainDispatchModel.AddCallback(apiDontCareArea)
