@@ -1,6 +1,6 @@
 {
   "name": "clwoz-sdk",
-  "version": "0.600.0703",
+  "version": "0.600.0708",
   "description": "One off Node SDK for Conversation Learner Multi-Woz",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",

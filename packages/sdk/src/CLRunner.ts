@@ -1265,7 +1265,7 @@ export class CLRunner {
                         }
 
                         // Dispatch level only augments memory, all other replace memory
-                        let replaceMemory = app?.appName != "dispatch"
+                        let replaceMemory = app?.appName.toLowerCase() != "dispatch"
                         for (let i = 0; i < modelNames.length; i = i + 1) {
                             CLDebug.Log(`Dispatch to Model: ${modelIds[i]} ${modelNames[i]}`, DebugType.Dispatch)
                             await this.forwardInputToModel(modelIds[i], modelNames[i], clRecognizeResult.state, memoryManager, replaceMemory)
