@@ -490,7 +490,7 @@ class Container extends React.Component<Props, ComponentState> {
             return Util.formatMessageId(intl, FM.FIELDERROR_MAX_30)
         }
 
-        if (!/^[a-zA-Z0-9-]+$/.test(value)) {
+        if (!/^[a-zA-Z0-9-_]+$/.test(value)) {
             return Util.formatMessageId(intl, FM.FIELDERROR_ALPHANUMERIC)
         }
 
