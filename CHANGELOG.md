@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.505.2](https://github.com/microsoft/conversationlearner/compare/v0.505.1...v0.505.2) (2020-05-27)
+
+
+### Bug Fixes
+
+* float conditions are not calculated properly ([#51](https://github.com/microsoft/conversationlearner/issues/51)) ([2870eda](https://github.com/microsoft/conversationlearner/commit/2870edaceb553858e5b7bfc7c769eebc951a6e4f))
+
+
+
+
+
 ## [0.505.1](https://github.com/microsoft/conversationlearner/compare/v0.505.0...v0.505.1) (2020-03-17)
 
 
