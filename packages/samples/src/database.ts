@@ -661,7 +661,7 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
         memoryManager.Delete(TaxiSlot.CAR)
         memoryManager.Delete(TaxiSlot.PHONE)
         memoryManager.Set(TaxiSlot.CAR, `${color} ${_type}`)
-        memoryManager.Set(TaxiSlot.PHONE, "555-5555")
+        memoryManager.Set(TaxiSlot.PHONE, "07936397340")
     }
 
     if (domainFilter == "train") {
@@ -981,8 +981,13 @@ const HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryM
     if (stars) {
         hotels = hotels.filter(r => stars === Utils.BaseString(r.stars))
     }
-    if (_type) {
-        hotels = hotels.filter(r => _type === Utils.BaseString(r._type))
+    // "hotel" can be interpreted as "hotel" + "guesthouse" or as a filter so try both
+    if (_type) { 
+        // Only use as filter if it doesn't zero out possibilities
+        let hotelsOnly = hotels.filter(r => _type === Utils.BaseString(r._type))
+        if (hotelsOnly.length > 0) {
+            hotels = hotelsOnly;
+        }
     }
 
     if (failInfo != undefined && hotelEntities.length === 1) {

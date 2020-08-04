@@ -76,7 +76,7 @@ export const trainArriveBefore = (trains: Train[], arriveBefore: string): Train 
     let bestTime = Number.MAX_VALUE
     let bestTrain: Train | null = null
     trains.forEach(train => {
-        const trainLeave = parseTime(train.leaveAt)
+        const trainLeave = parseTime(train.arriveBy)
         const diff = arriveBeforeTime - trainLeave
         if (diff > 0 && diff < bestTime) {
             bestTrain = train
