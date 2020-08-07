@@ -57,7 +57,7 @@ Models.createModels(clFactory, modelId, clOptions.LUIS_AUTHORING_KEY)
 server.use(express.static(path.join(__dirname, '..', 'site')))
 
 const testAdapter = new BB.TestAdapter(async (context) => {
-    if (!context.activity.text.includes("::")) {
+    if (context.activity.text && !context.activity.text.includes("::")) {
         var result = await Models.clDispatch.recognize(context)
 
         if (result) {
@@ -92,6 +92,18 @@ server.post('/api/reload', bodyParser.json(), async (req, res) => {
 
     await Models.createModels(clFactory, modelId, clOptions.LUIS_AUTHORING_KEY)
     res.sendStatus(200)
+})
+
+server.post('/api/wozmessages', (req, res) => {
+    adapter.processActivity(req, res, async context => {
+        if (context.activity.type == 'message') {
+            testAdapter.send(context.activity)
+            var response = await Models.GetOutput(context.activity.id!)
+            await context.sendActivity(response)
+        } else {
+            res.sendStatus(200)
+        }
+    })
 })
 
 server.post('/api/messages', (req, res) => {
