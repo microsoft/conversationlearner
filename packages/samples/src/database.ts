@@ -648,7 +648,6 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
         taxis.length
         // There's always a taxi
         memoryManager.Set(TaxiSlot.CHOICE, 1)
-        memoryManager.Set(TaxiSlot.CHOICE_NONE, true)
 
         const colors = taxis[0].taxi_colors
         const types = taxis[0].taxi_types
