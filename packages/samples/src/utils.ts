@@ -102,9 +102,14 @@ export const trainLeaveAfter = (trains: Train[], leaveAfter: string): Train | nu
     return bestTrain
 }
 
-export const parseTime = (time: string): number => {
-    const parts = time.split(":")
-    return (parseInt(parts[0]) * 60) + parseInt(parts[1])
+export const parseTime = (timeString: string): number => {
+    var cleanTime = timeString.replace(/[^0-9.:]/g, "");
+    const parts = cleanTime.split(":")
+    let time = parseInt(parts[0]) * 60;
+    if (parts.length > 1) {
+        time = time + parseInt(parts[1])
+    }
+    return time;
 }
 
 export const ActivityResultToString = (activityResult: DB.ActivityResult): string => {

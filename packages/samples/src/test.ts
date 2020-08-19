@@ -129,7 +129,7 @@ export class TestResult {
  
     public static ShortName(fileName: string): string 
     {
-        return fileName.trimLeft().substring(0, fileName.length - 6);
+        return fileName.trimLeft().substring(0, fileName.length - 5);
     }
 
     public SaveName(): string {
