@@ -189,7 +189,7 @@ export const expandedResults = (dialogActs: string[], entities: string[]): strin
         else if (entity == "none") {
             results.push([act, domain, entity, "none"])
         }
-        else if (entity == "ref") {
+        else if (entity == "ref" && domain == "train") {
             results.push([act, domain, entity, makeId(8)])
         }
         else {

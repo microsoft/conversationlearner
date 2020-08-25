@@ -45,10 +45,9 @@ export enum TrainSlot {
   TICKET_COUNT = "train-ticket-count",
   ID = "train-id",
   ID_COUNT = "train-id-count",
-  CHOICE = "train-choice",
+  CHOICE_ONE = "train-choice1",
   CHOICE_NONE = "train-choice0",
-  CHOICE_TWO = "train-choice2",
-  CHOICE_MANY = "train-choiceM",
+  CHOICE_MANY = "train-choice",
 
 }
 
@@ -70,10 +69,9 @@ export enum RestaurantSlot {
   PRICERANGE_COUNT = "restaurant-pricerange-count",
   TIME = "restaurant-book-time",
   DAY = "restaurant-book-day",
-  CHOICE = "restaurant-choice",
+  CHOICE_ONE = "restaurant-choice1",
   CHOICE_NONE = "restaurant-choice0",
-  CHOICE_TWO = "restaurant-choice2",
-  CHOICE_MANY = "restaurant-choiceM",
+  CHOICE_MANY = "restaurant-choice",
   PICK_ONE = "restaurant-pickone"
 }
 
@@ -102,10 +100,9 @@ export enum HotelSlot {
   STARS = "hotel-semi-stars",
   STARS_COUNT = "hotel-stars-count",
   STAY = "hotel-book-stay",
-  CHOICE = "hotel-choice",
+  CHOICE_ONE = "hotel-choice1",
   CHOICE_NONE = "hotel-choice0",
-  CHOICE_TWO = "hotel-choice2",
-  CHOICE_MANY = "hotel-choiceM",
+  CHOICE_MANY = "hotel-choice",
   PICK_ONE = "hotel-pickone"
 }
 
@@ -128,10 +125,9 @@ export enum AttractionSlot {
   NAME_COUNT = "attraction-name-count",
   TYPE = "attraction-semi-type",
   TYPE_COUNT = "attraction-type-count",
-  CHOICE = "attraction-choice",
+  CHOICE_ONE = "attraction-choice1",
   CHOICE_NONE = "attraction-choice0",
-  CHOICE_TWO = "attraction-choice2",
-  CHOICE_MANY = "attraction-choiceM",
+  CHOICE_MANY = "attraction-choice",
   PICK_ONE = "attraction-pickone"
 }
 
@@ -154,10 +150,9 @@ export enum TaxiSlot {
   ID_COUNT = "taxi-id-count",
   CAR = "taxi-car",
   PHONE = "taxi-phone",
-  CHOICE = "taxi-choice",
+  CHOICE_ONE = "taxi-choice1",
   CHOICE_NONE = "taxi-choice0",
-  CHOICE_TWO = "taxi-choice2",
-  CHOICE_MANY = "taxi-choiceM",
+  CHOICE_MANY = "taxi-choice",
   PICK_ONE = "taxi-pickone"
 }
 
