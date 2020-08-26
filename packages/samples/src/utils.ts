@@ -173,10 +173,13 @@ const findEntity = (domain: string, shortName: string, entities: string[]) => {
         fullEntityName = `${pName}`;
         foundEntity = entities.find(e => e.split(":")[0] == fullEntityName)
     }
-    if (foundEntity == null)
+    if (foundEntity == null && domain == "booking")
     {
-        fullEntityName = `book-${pName}`;
-        foundEntity = entities.find(e => e.split(":")[0].endsWith(fullEntityName))
+        foundEntity = entities.find(e => e.split(":")[0].endsWith(pName))
+    }
+    if (foundEntity == null && domain == "booking")
+    {
+        foundEntity = entities.find(e => e.split(":")[0].endsWith(shortName))
     }
     if (foundEntity == null)
     {
