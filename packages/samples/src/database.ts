@@ -578,11 +578,11 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
             if (memoryManager.Get(HotelSlot.PEOPLE, ClientMemoryManager.AS_VALUE_LIST).length == 1
                 && memoryManager.Get(HotelSlot.DAY, ClientMemoryManager.AS_VALUE_LIST).length == 1
                 && memoryManager.Get(HotelSlot.STAY, ClientMemoryManager.AS_VALUE_LIST).length == 1) {
-                memoryManager.Set(TrainSlot.BOOK_READY, true)
+                memoryManager.Set(HotelSlot.BOOK_READY, true)
             }
         }
         else {
-            memoryManager.Set(TrainSlot.CHOICE_MANY, hotels.length)
+            memoryManager.Set(HotelSlot.CHOICE_MANY, hotels.length)
         }
     }
     if (domainFilter == "attraction") {
