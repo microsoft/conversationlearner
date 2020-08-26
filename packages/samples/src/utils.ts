@@ -155,6 +155,11 @@ const findEntity = (domain: string, shortName: string, entities: string[]) => {
     }
     if (foundEntity == null)
     {
+        fullEntityName = `booking-book-${pName}`
+        foundEntity = entities.find(e => e.split(":")[0] == fullEntityName)
+    }
+    if (foundEntity == null)
+    {
         fullEntityName = `${domainName}-inform-${pName}`
         foundEntity = entities.find(e => e.split(":")[0] == fullEntityName)
     }
@@ -167,6 +172,11 @@ const findEntity = (domain: string, shortName: string, entities: string[]) => {
     {
         fullEntityName = `${pName}`;
         foundEntity = entities.find(e => e.split(":")[0] == fullEntityName)
+    }
+    if (foundEntity == null)
+    {
+        fullEntityName = `book-${pName}`;
+        foundEntity = entities.find(e => e.split(":")[0].endsWith(fullEntityName))
     }
     if (foundEntity == null)
     {
@@ -188,9 +198,6 @@ export const expandedResults = (dialogActs: string[], entities: string[]): strin
         }
         else if (entity == "none") {
             results.push([act, domain, entity, "none"])
-        }
-        else if (entity == "ref" && domain == "train") {
-            results.push([act, domain, entity, makeId(8)])
         }
         else {
             const kv = findEntity(domain, entity, entities)

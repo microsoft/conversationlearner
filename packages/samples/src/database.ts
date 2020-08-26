@@ -497,12 +497,18 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
         memoryManager.Delete(RestaurantSlot.CHOICE_NONE)
         memoryManager.Delete(RestaurantSlot.CHOICE_ONE)
         memoryManager.Delete(RestaurantSlot.CHOICE_MANY)
+        memoryManager.Delete(RestaurantSlot.BOOK_READY)
 
         if (restaurants.length == 0) {
             memoryManager.Set(RestaurantSlot.CHOICE_NONE, true)
         }
         else if (restaurants.length == 1) {
             memoryManager.Set(RestaurantSlot.CHOICE_ONE, true)
+            if (memoryManager.Get(RestaurantSlot.PEOPLE, ClientMemoryManager.AS_VALUE_LIST).length == 1
+                && memoryManager.Get(RestaurantSlot.DAY, ClientMemoryManager.AS_VALUE_LIST).length == 1
+                && memoryManager.Get(RestaurantSlot.TIME, ClientMemoryManager.AS_VALUE_LIST).length == 1) {
+            memoryManager.Set(RestaurantSlot.BOOK_READY, true)
+        }
         }
         else {
             memoryManager.Set(RestaurantSlot.CHOICE_MANY, restaurants.length)
@@ -561,15 +567,22 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
         memoryManager.Delete(HotelSlot.CHOICE_NONE)
         memoryManager.Delete(HotelSlot.CHOICE_ONE)
         memoryManager.Delete(HotelSlot.CHOICE_MANY)
+        memoryManager.Delete(HotelSlot.BOOK_READY)
+
 
         if (hotels.length == 0) {
             memoryManager.Set(HotelSlot.CHOICE_NONE, true)
         }
         else if (hotels.length == 1) {
             memoryManager.Set(HotelSlot.CHOICE_ONE, true)
+            if (memoryManager.Get(HotelSlot.PEOPLE, ClientMemoryManager.AS_VALUE_LIST).length == 1
+                && memoryManager.Get(HotelSlot.DAY, ClientMemoryManager.AS_VALUE_LIST).length == 1
+                && memoryManager.Get(HotelSlot.STAY, ClientMemoryManager.AS_VALUE_LIST).length == 1) {
+                memoryManager.Set(TrainSlot.BOOK_READY, true)
+            }
         }
         else {
-            memoryManager.Set(HotelSlot.CHOICE_MANY, hotels.length)
+            memoryManager.Set(TrainSlot.CHOICE_MANY, hotels.length)
         }
     }
     if (domainFilter == "attraction") {
@@ -708,12 +721,16 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
         memoryManager.Delete(TrainSlot.CHOICE_NONE)
         memoryManager.Delete(TrainSlot.CHOICE_ONE)
         memoryManager.Delete(TrainSlot.CHOICE_MANY)
+        memoryManager.Delete(TrainSlot.BOOK_READY)
 
         if (trains.length == 0) {
             memoryManager.Set(TrainSlot.CHOICE_NONE, true)
         }
         else if (trains.length == 1) {
             memoryManager.Set(TrainSlot.CHOICE_ONE, true)
+            if (memoryManager.Get(TrainSlot.PEOPLE, ClientMemoryManager.AS_VALUE_LIST).length == 1) {
+                memoryManager.Set(TrainSlot.BOOK_READY, true)
+            }
         }
         else {
             memoryManager.Set(TrainSlot.CHOICE_MANY, trains.length)
@@ -742,21 +759,19 @@ export const getEntities = (domain: Domain, memoryManager: ClientMemoryManager) 
 const trainEntities = (memoryManager: ReadOnlyClientMemoryManager): string[] => {
     let entities: string[] = []
 
-    let failInfo: { [id: string]: string } = {}
-    if (Test.TestGoal) {
-        failInfo = { ...Test.TestGoal.restaurant.fail_book, ...Test.TestGoal.restaurant.fail_info }
+    // Set reference
+    const names = memoryManager.Get("train-id", ClientMemoryManager.AS_STRING_LIST);
+    if (names.length == 1) {
+        var train = TrainDb().find(r => r.trainID == names[0])
+        if (train) {
+            entities.push(`booking-book-ref: ${train.ref}`)
+        }
     }
-
-    const [trains, ] = TrainOptions(memoryManager, failInfo)
 
     Object.values(TrainSlot).map((entityName: string) => {
         const value = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING_LIST)
         if (value) {
             entities.push(`${entityName}: ${value}`)
-        }
-        else if (trains.length == 1) {
-            const key = Utils.propertyName(entityName, Domain.TRAIN) as keyof Train
-            entities.push(`${entityName}: ${trains[0][key]}`)
         }
     })
     return entities
@@ -765,24 +780,19 @@ const trainEntities = (memoryManager: ReadOnlyClientMemoryManager): string[] => 
 const restaurantEntities = (memoryManager: ReadOnlyClientMemoryManager): string[] => {
     let entities: string[] = []
 
-    let failInfo: { [id: string]: string } = {}
-    if (Test.TestGoal) {
-        failInfo = { ...Test.TestGoal.restaurant.fail_book, ...Test.TestGoal.restaurant.fail_info }
-    }
-
-    const restaurants = RestaurantOptions(memoryManager, failInfo)[0]
-    if (restaurants.length == 1) {
-        entities.push(`restaurant-ref: ${restaurants[0].id}`)
+    // Set reference
+    const names = memoryManager.Get("restaurant-semi-name", ClientMemoryManager.AS_STRING_LIST);
+    if (names.length == 1) {
+        var restaurant = RestaurantDb().find(r => r.name == names[0])
+        if (restaurant) {
+            entities.push(`booking-book-ref: ${restaurant.ref}`)
+        }
     }
 
     Object.values(RestaurantSlot).map(entityName => {
         const value = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING_LIST)
         if (value) {
             entities.push(`${entityName}: ${value}`)
-        }
-        else if (restaurants.length == 1) {
-            const key = Utils.propertyName(entityName, Domain.RESTAURANT) as keyof Restaurant
-            entities.push(`${entityName}: ${restaurants[0][key]}`)
         }
     })
     return entities
@@ -791,24 +801,19 @@ const restaurantEntities = (memoryManager: ReadOnlyClientMemoryManager): string[
 const hotelEntities = (memoryManager: ReadOnlyClientMemoryManager): string[] => {
     let entities: string[] = []
 
-    let failInfo: { [id: string]: string } = {}
-    if (Test.TestGoal) {
-        failInfo = { ...Test.TestGoal.restaurant.fail_book, ...Test.TestGoal.restaurant.fail_info }
-    }
-
-    const [hotels, ] = HotelOptions(memoryManager, failInfo)
-    if (hotels.length == 1) {
-        entities.push(`hotel-ref: ${hotels[0].id}`)
+    // Set reference
+    const names = memoryManager.Get("hotel-semi-name", ClientMemoryManager.AS_STRING_LIST);
+    if (names.length == 1) {
+        var hotel = HotelDb().find(r => r.name == names[0])
+        if (hotel) {
+            entities.push(`booking-book-ref: ${hotel.ref}`)
+        }
     }
 
     Object.values(HotelSlot).map(entityName => {
         const value = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING_LIST)
         if (value) {
             entities.push(`${entityName}: ${value}`)
-        }
-        else if (hotels.length == 1) {
-            const key = Utils.propertyName(entityName, Domain.HOTEL) as keyof Hotel
-            entities.push(`${entityName}: ${hotels[0][key]}`)
         }
     })
 
@@ -818,24 +823,19 @@ const hotelEntities = (memoryManager: ReadOnlyClientMemoryManager): string[] => 
 const attractionEntities = (memoryManager: ReadOnlyClientMemoryManager): string[] => {
     let entities: string[] = []
 
-    let failInfo: { [id: string]: string } = {}
-    if (Test.TestGoal) {
-        failInfo = { ...Test.TestGoal.restaurant.fail_book, ...Test.TestGoal.restaurant.fail_info }
-    }
-
-    const [attractions,] = AttractionOptions(memoryManager, failInfo)
-    if (attractions.length == 1) {
-        entities.push(`attraction-ref: ${attractions[0].id}`)
+    // Set reference
+    const names = memoryManager.Get("attraction-semi-name", ClientMemoryManager.AS_STRING_LIST);
+    if (names.length == 1) {
+        var attraction = AttractionDb().find(r => r.name == names[0])
+        if (attraction) {
+            entities.push(`booking-book-ref: ${attraction.ref}`)
+        }
     }
 
     Object.values(AttractionSlot).map(entityName => {
         const values = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING_LIST)
         if (values) {
             entities.push(`${entityName}: ${values}`)
-        }
-        else if (attractions.length == 1) {
-            const key = Utils.propertyName(entityName, Domain.ATTRACTION) as keyof Attraction
-            entities.push(`${entityName}: ${attractions[0][key]}`)
         }
     })
     return entities
@@ -1125,7 +1125,11 @@ let _dialogActs: string[]
 const RestaurantDb = (): Restaurant[] => {
     if (_restaurantDb.length == 0) {
         _restaurantDb = LoadDataBase("restaurant_db")
+        for (var index in _restaurantDb) {
+            _restaurantDb[index].ref = index.padStart(8,"0");
+        }
     }
+
     return _restaurantDb
 }
 const AttractionDb = (): Attraction[] => {
@@ -1137,12 +1141,18 @@ const AttractionDb = (): Attraction[] => {
                 attraction.entrancefee = "unknown"
             }
         }
+        for (var index in _attractionDb) {
+            _attractionDb[index].ref = index.padStart(8,"0");
+        }
     }
     return _attractionDb
 }
 const HotelDb = (): Hotel[] => {
     if (_hotelDb.length == 0) {
         _hotelDb = LoadDataBase("hotel_db")
+        for (var index in _hotelDb) {
+            _hotelDb[index].ref = index.padStart(8,"0");
+        }
     }
     return _hotelDb
 }
@@ -1155,6 +1165,9 @@ const TaxiDb = (): Taxi[] => {
 const TrainDb = (): Train[] => {
     if (_trainDb.length == 0) {
         _trainDb = LoadDataBase("train_db")
+        for (var index in _trainDb) {
+            _trainDb[index].ref = index.padStart(8,"0");
+        }
     }
     return _trainDb
 }

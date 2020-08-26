@@ -48,7 +48,7 @@ export enum TrainSlot {
   CHOICE_ONE = "train-choice1",
   CHOICE_NONE = "train-choice0",
   CHOICE_MANY = "train-choice",
-
+  BOOK_READY = "train-bookready",
 }
 
 export enum RestaurantSlot {
@@ -72,6 +72,7 @@ export enum RestaurantSlot {
   CHOICE_ONE = "restaurant-choice1",
   CHOICE_NONE = "restaurant-choice0",
   CHOICE_MANY = "restaurant-choice",
+  BOOK_READY = "restaurant-bookready",
   PICK_ONE = "restaurant-pickone"
 }
 
@@ -103,6 +104,7 @@ export enum HotelSlot {
   CHOICE_ONE = "hotel-choice1",
   CHOICE_NONE = "hotel-choice0",
   CHOICE_MANY = "hotel-choice",
+  BOOK_READY = "hotel-bookready",
   PICK_ONE = "hotel-pickone"
 }
 
@@ -176,6 +178,7 @@ export interface Restaurant {
   postcode: string
   pricerange: string
   _type: string
+  ref: string
 }
 
 export interface Attraction {
@@ -191,6 +194,7 @@ export interface Attraction {
   postcode: string
   pricerange: string
   _type: string
+  ref: string
 }
 
 export interface Price {
@@ -214,6 +218,7 @@ export interface Hotel {
   stars: string
   takesbookings: string
   _type: string
+  ref: string
 }
 
 export interface Train {
@@ -225,6 +230,7 @@ export interface Train {
   leaveAt: string
   price: string
   trainID: string
+  ref: string
 }
 
 export interface Taxi {
