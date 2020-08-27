@@ -266,6 +266,11 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
     const stars = memoryManager.Get(LuisSlot.STARS, ClientMemoryManager.AS_STRING)
     const type_ = memoryManager.Get(LuisSlot.TYPE, ClientMemoryManager.AS_STRING)
 
+    // Handle bad match where both are set
+    if (leave && leave == arrive) {
+        memoryManager.Delete(LuisSlot.ARRIVE_BY);
+    }
+
     if (time) {
         time = Utils.ProcessTime(time)
     }
@@ -391,6 +396,8 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
         }
     }
     if (domainFilter === "taxi") {
+
+
         if (arrive) {
             memoryManager.Delete(TaxiSlot.ARRIVE_BY)
             memoryManager.Set(TaxiSlot.ARRIVE_BY, arrive)
