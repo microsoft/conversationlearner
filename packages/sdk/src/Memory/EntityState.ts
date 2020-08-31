@@ -71,9 +71,18 @@ export class EntityState {
     public async UpdateFromMemoryManagerAsync(memoryManager: ClientMemoryManager): Promise<void> {
 
         await this.FilledEntityMap()
+
+        // Clear globals
+        Object.keys(this.filledEntityMap.map).forEach(key => {
+            if (key.startsWith("global-")) {
+                delete this.filledEntityMap.map[key]
+            }
+        })
+
         Object.keys(memoryManager.curMemories.map).forEach(key => {
             this.filledEntityMap.map[key] = memoryManager.curMemories.map[key]
         })
+
         await this.Set()
     }
 

@@ -2,12 +2,11 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
-import { ConversationLearner, ConversationLearnerFactory, ClientMemoryManager } from 'clwoz-sdk'
-import { LuisSlot, Domain, DONTCARE, PICK_ONE } from './dataTypes'
+import { ConversationLearner, ConversationLearnerFactory, ClientMemoryManager, IGlobalCallbackValues } from 'clwoz-sdk'
+import { LuisSlot, Domain, DONTCARE, PICK_ONE, ASK_TYPES, RestaurantSlot, HotelSlot, AttractionSlot, TrainSlot, TaxiSlot } from './dataTypes'
 import * as crypto from 'crypto'
 import * as DB from './database'
 import * as Utils from './utils'
-//import * as Combined from './combined'
 
 let ActivityResultsQueue: DB.ActivityResult[] = []
 let OutputMap = new Map<string, string>()
@@ -15,90 +14,289 @@ let OutputMap = new Map<string, string>()
 //=================================
 // dontcare
 //=================================
-export const apiDontCareArea = {
+export const apiDontCareRestaurantArea = {
     name: "dontcare-area",
     logic: async (memoryManager: ClientMemoryManager) => {
         memoryManager.Set(LuisSlot.AREA, DONTCARE)
+
+        memoryManager.Delete(RestaurantSlot.AREA)
+        memoryManager.Delete(RestaurantSlot.AREA_COUNT)
+
+        memoryManager.Set(RestaurantSlot.AREA, DONTCARE)
+
         DB.UpdateEntities(memoryManager)
     }
 }
 
-export const apiDontCarePrice = {
+export const apiDontCareHotelArea = {
+    name: "dontcare-area",
+    logic: async (memoryManager: ClientMemoryManager) => {
+        memoryManager.Set(LuisSlot.AREA, DONTCARE)
+
+        memoryManager.Delete(HotelSlot.AREA)
+        memoryManager.Delete(HotelSlot.AREA_COUNT)
+
+        memoryManager.Set(HotelSlot.AREA, DONTCARE)
+
+        DB.UpdateEntities(memoryManager)
+    }
+}
+
+export const apiDontCareAttractionArea = {
+    name: "dontcare-area",
+    logic: async (memoryManager: ClientMemoryManager) => {
+        memoryManager.Set(LuisSlot.AREA, DONTCARE)
+
+        memoryManager.Delete(AttractionSlot.AREA)
+        memoryManager.Delete(AttractionSlot.AREA_COUNT)
+
+        memoryManager.Set(AttractionSlot.AREA, DONTCARE)
+
+        DB.UpdateEntities(memoryManager)
+    }
+}
+
+export const apiDontCareRestaurantPrice = {
     name: "dontcare-price",
     logic: async (memoryManager: ClientMemoryManager) => {
         memoryManager.Set(LuisSlot.PRICE, DONTCARE)
+
+        memoryManager.Delete(RestaurantSlot.PRICERANGE)
+        memoryManager.Delete(RestaurantSlot.PRICERANGE_COUNT)
+
+        memoryManager.Set(RestaurantSlot.PRICERANGE, DONTCARE)
+
         DB.UpdateEntities(memoryManager)
     }
 }
 
-export const apiDontCareFood = {
+export const apiDontCareHotelPrice = {
+    name: "dontcare-price",
+    logic: async (memoryManager: ClientMemoryManager) => {
+        memoryManager.Set(LuisSlot.PRICE, DONTCARE)
+
+        memoryManager.Delete(HotelSlot.PRICERANGE)
+        memoryManager.Delete(HotelSlot.PRICERANGE_COUNT)
+
+        memoryManager.Set(HotelSlot.PRICERANGE, DONTCARE)
+
+        DB.UpdateEntities(memoryManager)
+    }
+}
+
+export const apiDontCareAttractionPrice = {
+    name: "dontcare-price",
+    logic: async (memoryManager: ClientMemoryManager) => {
+        memoryManager.Set(LuisSlot.PRICE, DONTCARE)
+
+        memoryManager.Delete(AttractionSlot.PRICERANGE)
+        memoryManager.Delete(AttractionSlot.PRICERANGE_COUNT)
+
+        memoryManager.Set(AttractionSlot.PRICERANGE, DONTCARE)
+
+        DB.UpdateEntities(memoryManager)
+    }
+}
+export const apiDontCareRestaurantFood = {
     name: "dontcare-food",
     logic: async (memoryManager: ClientMemoryManager) => {
         memoryManager.Set(LuisSlot.FOOD, DONTCARE)
+
+        memoryManager.Delete(RestaurantSlot.FOOD)
+        memoryManager.Delete(RestaurantSlot.FOOD_COUNT)
+
+        memoryManager.Set(RestaurantSlot.FOOD, DONTCARE)
         DB.UpdateEntities(memoryManager)
     }
 }
 
-export const apiDontCareArrive = {
+export const apiDontCareTrainArrive = {
     name: "dontcare-arrive",
     logic: async (memoryManager: ClientMemoryManager) => {
         memoryManager.Set(LuisSlot.ARRIVE_BY, DONTCARE)
+
+        memoryManager.Delete(TrainSlot.ARRIVE_BY)
+        memoryManager.Delete(TrainSlot.ARRIVE_BY_COUNT)
+
+        memoryManager.Set(TrainSlot.ARRIVE_BY, DONTCARE)
+
         DB.UpdateEntities(memoryManager)
     }
 }
 
-export const apiDontCareLeave = {
+export const apiDontCareTaxiArrive = {
+    name: "dontcare-arrive",
+    logic: async (memoryManager: ClientMemoryManager) => {
+        memoryManager.Set(LuisSlot.ARRIVE_BY, DONTCARE)
+
+        memoryManager.Delete(TaxiSlot.ARRIVE_BY)
+        memoryManager.Delete(TaxiSlot.ARRIVE_BY_COUNT)
+
+        memoryManager.Set(TaxiSlot.ARRIVE_BY, DONTCARE)
+
+        DB.UpdateEntities(memoryManager)
+    }
+}
+
+export const apiDontCareTaxiLeave = {
     name: "dontcare-leave",
     logic: async (memoryManager: ClientMemoryManager) => {
         memoryManager.Set(LuisSlot.LEAVE_AT, DONTCARE)
+
+        memoryManager.Delete(TaxiSlot.LEAVE_AT)
+        memoryManager.Delete(TaxiSlot.LEAVE_AT_COUNT)
+
+        memoryManager.Set(TaxiSlot.LEAVE_AT, DONTCARE)
+
         DB.UpdateEntities(memoryManager)
     }
 }
 
-export const apiDontCarePeople = {
+export const apiDontCareTrainLeave = {
+    name: "dontcare-leave",
+    logic: async (memoryManager: ClientMemoryManager) => {
+        memoryManager.Set(LuisSlot.LEAVE_AT, DONTCARE)
+
+        memoryManager.Delete(TrainSlot.LEAVE_AT)
+        memoryManager.Delete(TrainSlot.LEAVE_AT_COUNT)
+
+        memoryManager.Set(TrainSlot.LEAVE_AT, DONTCARE)
+
+        DB.UpdateEntities(memoryManager)
+    }
+}
+
+// This is a weird one, but it's training data
+export const apiDontCareTrainPeople = {
     name: "dontcare-people",
     logic: async (memoryManager: ClientMemoryManager) => {
         memoryManager.Set(LuisSlot.PEOPLE, DONTCARE)
+
+        memoryManager.Delete(TrainSlot.PEOPLE)
+        memoryManager.Set(TrainSlot.PEOPLE, DONTCARE)
+
         DB.UpdateEntities(memoryManager)
     }
 }
 
-export const apiDontCareType = {
+export const apiDontCareAttractionType = {
     name: "dontcare-type",
     logic: async (memoryManager: ClientMemoryManager) => {
         memoryManager.Set(LuisSlot.TYPE, DONTCARE)
+
+        memoryManager.Delete(AttractionSlot.TYPE)
+        memoryManager.Delete(AttractionSlot.TYPE_COUNT)
+
+        memoryManager.Set(AttractionSlot.TYPE, DONTCARE)
+
         DB.UpdateEntities(memoryManager)
     }
 }
 
-export const apiDontCareName = {
+export const apiDontCareHotelType = {
+    name: "dontcare-type",
+    logic: async (memoryManager: ClientMemoryManager) => {
+        memoryManager.Set(LuisSlot.TYPE, DONTCARE)
+
+        memoryManager.Delete(HotelSlot.TYPE)
+        memoryManager.Delete(HotelSlot.TYPE_COUNT)
+
+        memoryManager.Set(HotelSlot.TYPE, DONTCARE)
+
+        DB.UpdateEntities(memoryManager)
+    }
+}
+
+export const apiDontCareRestaurantName = {
     name: "dontcare-name",
     logic: async (memoryManager: ClientMemoryManager) => {
         memoryManager.Set(LuisSlot.NAME, DONTCARE)
+
+        memoryManager.Delete(RestaurantSlot.NAME)
+        memoryManager.Delete(RestaurantSlot.NAME_COUNT)
+
+        memoryManager.Set(RestaurantSlot.NAME, DONTCARE)
         DB.UpdateEntities(memoryManager)
     }
 }
 
-export const apiDontCareStars = {
+export const apiDontCareAttractionName = {
+    name: "dontcare-name",
+    logic: async (memoryManager: ClientMemoryManager) => {
+        memoryManager.Set(LuisSlot.NAME, DONTCARE)
+
+        memoryManager.Delete(AttractionSlot.NAME)
+        memoryManager.Delete(AttractionSlot.NAME_COUNT)
+
+        memoryManager.Set(AttractionSlot.NAME, DONTCARE)
+        DB.UpdateEntities(memoryManager)
+    }
+}
+
+export const apiDontCareHotelName = {
+    name: "dontcare-name",
+    logic: async (memoryManager: ClientMemoryManager) => {
+        memoryManager.Set(LuisSlot.NAME, DONTCARE)
+
+        memoryManager.Delete(HotelSlot.NAME)
+        memoryManager.Delete(HotelSlot.NAME_COUNT)
+
+        memoryManager.Set(HotelSlot.NAME, DONTCARE)
+        DB.UpdateEntities(memoryManager)
+    }
+}
+
+export const apiDontCareHotelStars = {
     name: "dontcare-stars",
     logic: async (memoryManager: ClientMemoryManager) => {
         memoryManager.Set(LuisSlot.STARS, DONTCARE)
+
+        memoryManager.Delete(HotelSlot.STARS)
+        memoryManager.Delete(HotelSlot.STARS_COUNT)
+
+        memoryManager.Set(HotelSlot.STARS, DONTCARE)
+
         DB.UpdateEntities(memoryManager)
     }
 }
 
-export const apiDontCareDay = {
+export const apiDontCareHotelDay = {
     name: "dontcare-day",
     logic: async (memoryManager: ClientMemoryManager) => {
         memoryManager.Set(LuisSlot.DAY, DONTCARE)
+
+        memoryManager.Delete(HotelSlot.DAY)
+        memoryManager.Delete(HotelSlot.DAY_COUNT)
+
+        memoryManager.Set(HotelSlot.DAY, DONTCARE)
+
         DB.UpdateEntities(memoryManager)
     }
 }
 
-// Do nothing. Handle bad label
-export const apiDontCareAddr = {
+// A bit of a weird one to have day on restaurant but it's in the data
+export const apiDontCareRestaurantDay = {
+    name: "dontcare-day",
+    logic: async (memoryManager: ClientMemoryManager) => {
+        memoryManager.Set(LuisSlot.DAY, DONTCARE)
+
+        memoryManager.Delete(RestaurantSlot.DAY)
+
+        memoryManager.Set(RestaurantSlot.DAY, DONTCARE)
+        DB.UpdateEntities(memoryManager)
+    }
+}
+
+export const apiDontCareRestaurantAddr = {
     name: "dontcare-addr",
     logic: async (memoryManager: ClientMemoryManager) => {
+        memoryManager.Set(RestaurantSlot.DAY, DONTCARE)
+
+        memoryManager.Delete(RestaurantSlot.ADDRESS)
+        memoryManager.Delete(RestaurantSlot.ADDRESS_COUNT)
+
+        memoryManager.Set(RestaurantSlot.ADDRESS, DONTCARE)
+        DB.UpdateEntities(memoryManager)
     }
 }
 
@@ -117,7 +315,7 @@ const initDispatchModel = (clFactory: ConversationLearnerFactory) => {
 
     clDispatch.AddCallback({
         name: "Dispatch",
-        logicWithSet: async (memoryManager: ClientMemoryManager, setGlobalCallback: (entityName: string, value: string) => void, activityId: string, domainNameString: string) => {
+        logicWithSet: async (memoryManager: ClientMemoryManager, setGlobalCallback: (globalCallbackValues: IGlobalCallbackValues[]) => Promise<void>, activityId: string, domainNameString: string) => {
 
             var domainNames = domainNameString.split(",")
 
@@ -143,21 +341,35 @@ const initDispatchModel = (clFactory: ConversationLearnerFactory) => {
             // Now await the result
             const result = await getActivityResultString(activityId)
 
+            let globalCallbackValues : IGlobalCallbackValues[] = []
+
             // Extract any globals
             const resultObj: string[][] = JSON.parse(result)
             const hotelName = resultObj.find(r => r[1] == "hotel" && r[2] == "name")
             if (hotelName) {
-                setGlobalCallback(`global-hotel`, hotelName[3])
+                globalCallbackValues.push({ entityName: 'global-hotel', entityValue: hotelName[3] })
             }
             const restaurantName = resultObj.find(r => r[1] == "restaurant" && r[2] == "name")
             if (restaurantName) {
-                setGlobalCallback(`global-restaurant`, restaurantName[3])
+                globalCallbackValues.push({ entityName: 'global-restaurant', entityValue: restaurantName[3] })
             }
             const attractionName = resultObj.find(r => r[1] == "attraction" && r[2] == "name")
             if (attractionName) {
-                setGlobalCallback(`global-attraction`, attractionName[3])
+                globalCallbackValues.push({ entityName: 'global-attraction', entityValue: attractionName[3] })
+            }
+            for (var ask of ASK_TYPES) 
+            {
+                if (resultObj.find(r => r[0] == "request" && r[2] == ask)) {
+                    globalCallbackValues.push({ entityName: `global-ask-${ask}`, entityValue: "true" })
+                }
+                else {
+                    globalCallbackValues.push({ entityName: `global-ask-${ask}`, entityValue: null })
+                }
             }
 
+            if (globalCallbackValues.length > 0) {
+                await setGlobalCallback(globalCallbackValues);
+            }
 
             OutputMap.set(activityId, result)
         }
@@ -179,7 +391,12 @@ const getDomainDispatchCL = (domain: Domain, clFactory: ConversationLearnerFacto
     })
 
     domainDispatchModel.EntityDetectionCallback = async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
-        DB.UpdateEntities(memoryManager, domain)
+        try {
+            DB.UpdateEntities(memoryManager, domain)
+        }
+        catch (e) {
+            console.log(e)
+        }
     }
 
     // Add callback for agent picking a database entry
@@ -212,6 +429,8 @@ const getDomainDispatchCL = (domain: Domain, clFactory: ConversationLearnerFacto
                 var domainName = Utils.domainNameFromDialogAct(dialogActName)
                 activityResult.modelResults.delete(domainName)
             }
+
+            DB.ClearAsks(memoryManager, domain);
             // DEBUG
             //debugActivityResultsQueue("MODEL");
         }
@@ -261,37 +480,35 @@ const AddSameName = (domainDispatchModel: ConversationLearner, domain: string): 
 const AddDontCare = (domainDispatchModel: ConversationLearner, domain: string): void => {
 
     if (domain === "restaurant") {
-        domainDispatchModel.AddCallback(apiDontCareArea)
-        domainDispatchModel.AddCallback(apiDontCarePrice)
-        domainDispatchModel.AddCallback(apiDontCareFood)
-        domainDispatchModel.AddCallback(apiDontCareType)
-        domainDispatchModel.AddCallback(apiDontCareName)
-        domainDispatchModel.AddCallback(apiDontCareStars)
-        domainDispatchModel.AddCallback(apiDontCareDay)
-        domainDispatchModel.AddCallback(apiDontCareAddr)
+        domainDispatchModel.AddCallback(apiDontCareRestaurantArea)
+        domainDispatchModel.AddCallback(apiDontCareRestaurantPrice)
+        domainDispatchModel.AddCallback(apiDontCareRestaurantFood)
+        domainDispatchModel.AddCallback(apiDontCareRestaurantName)
+        domainDispatchModel.AddCallback(apiDontCareRestaurantDay)
+        domainDispatchModel.AddCallback(apiDontCareRestaurantAddr)
     }
     else if (domain === "train") {
-        domainDispatchModel.AddCallback(apiDontCareArrive)
-        domainDispatchModel.AddCallback(apiDontCareLeave)
-        domainDispatchModel.AddCallback(apiDontCarePeople)
+        domainDispatchModel.AddCallback(apiDontCareTrainArrive)
+        domainDispatchModel.AddCallback(apiDontCareTrainLeave)
+        domainDispatchModel.AddCallback(apiDontCareTrainPeople)
     }
     else if (domain === "hotel") {
-        domainDispatchModel.AddCallback(apiDontCareArea)
-        domainDispatchModel.AddCallback(apiDontCarePrice)
-        domainDispatchModel.AddCallback(apiDontCareType)
-        domainDispatchModel.AddCallback(apiDontCareName)
-        domainDispatchModel.AddCallback(apiDontCareStars)
-        domainDispatchModel.AddCallback(apiDontCareDay)
+        domainDispatchModel.AddCallback(apiDontCareHotelArea)
+        domainDispatchModel.AddCallback(apiDontCareHotelPrice)
+        domainDispatchModel.AddCallback(apiDontCareHotelType)
+        domainDispatchModel.AddCallback(apiDontCareHotelName)
+        domainDispatchModel.AddCallback(apiDontCareHotelStars)
+        domainDispatchModel.AddCallback(apiDontCareHotelDay)
     }
     else if (domain === "taxi") {
-        domainDispatchModel.AddCallback(apiDontCareArrive)
-        domainDispatchModel.AddCallback(apiDontCareLeave)
+        domainDispatchModel.AddCallback(apiDontCareTaxiArrive)
+        domainDispatchModel.AddCallback(apiDontCareTaxiLeave)
     }
     else if (domain === "attraction") {
-        domainDispatchModel.AddCallback(apiDontCareArea)
-        domainDispatchModel.AddCallback(apiDontCarePrice)
-        domainDispatchModel.AddCallback(apiDontCareType)
-        domainDispatchModel.AddCallback(apiDontCareName)
+        domainDispatchModel.AddCallback(apiDontCareAttractionArea)
+        domainDispatchModel.AddCallback(apiDontCareAttractionPrice)
+        domainDispatchModel.AddCallback(apiDontCareAttractionType)
+        domainDispatchModel.AddCallback(apiDontCareAttractionName)
     }
 }
 
@@ -350,7 +567,6 @@ const getDialogActCL = (dialogActName: string, clFactory: ConversationLearnerFac
 
             }
 
-            //LARS const dialogActs = memoryManager.Get(OUTPUT, ClientMemoryManager.AS_STRING_LIST)
             if (intent) {
                 const dialogActs = intent.split(",")
                 const entities = DB.getEntities(domain as Domain, memoryManager)

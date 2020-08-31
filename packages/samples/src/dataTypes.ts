@@ -5,6 +5,7 @@
 import * as BB from 'botbuilder'
 export var DONTCARE = "dontcare"
 export var PICK_ONE = "pickone"
+export var ASK_TYPES =  ["arrive", "leave","food", "price", "stars", "type", "area", "name"];
 
 export enum LuisSlot {
   DAY = "day",
@@ -25,6 +26,22 @@ export enum LuisSlot {
   PARKING_YES = "parking-yes",
   STARS = "stars",
   TYPE = "type",
+  DEPARTMENT = "department"
+}
+
+export enum HospitalSlot {
+  ADDRESS = "hospital-address",
+  ADDRESS_COUNT = "hospital-address-count",
+  NAME = "hospital-semi-name",
+  NAME_COUNT = "hospital-name-count",
+  PHONE = "hospital-phone",
+  PHONE_COUNT = "hospital-phone-count",
+  POSTCODE = "hospital-postcode",
+  POSTCODE_COUNT = "hospital-postcode-count",
+  CHOICE_ONE = "hospital-choice1",
+  CHOICE_NONE = "hospital-choice0",
+  CHOICE_MANY = "hospital-choice",
+  PICK_ONE = "hospital-pickone"
 }
 
 export enum TrainSlot {

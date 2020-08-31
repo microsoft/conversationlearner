@@ -11,7 +11,7 @@ import { RedisStorage } from './RedisStorage'
 import { FileStorage } from './FileStorage'
 import uiRouter from './uiRouter'
 import { SessionEndState, MemoryValue, AppList } from 'clwoz-models'
-import { EntityDetectionCallback, OnSessionStartCallback, OnSessionEndCallback, LogicCallback, RenderCallback, ICallbackInput } from './CLRunner'
+import { EntityDetectionCallback, OnSessionStartCallback, OnSessionEndCallback, LogicCallback, RenderCallback, ICallbackInput, IGlobalCallbackValues } from './CLRunner'
 import { ILogStorage } from './Memory/ILogStorage'
 import { CosmosLogStorage } from './CosmosLogStorage'
 
@@ -33,6 +33,7 @@ export {
     MemoryValue,
     RenderCallback,
     ICallbackInput,
+    IGlobalCallbackValues,
     // Interface for custom log storage
     ILogStorage,
     // Sample implementation of ILogStorage using CosmosDB

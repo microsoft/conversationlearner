@@ -93,7 +93,7 @@ export type OnSessionEndCallback = (context: BB.TurnContext, memoryManager: Clie
  * Called when the associated action in your bot is sent.
  * Common use cases are to call external APIs to gather data and save into entities for usage later.
  */
-export type LogicSetCallback<T> = (memoryManager: ClientMemoryManager, setGlobalCallback: ((entityName: string, entityValue: string) => Promise<void>), ...args: string[]) => Promise<T | void>
+export type LogicSetCallback<T> = (memoryManager: ClientMemoryManager, setGlobalCallback: ((globalCallbackValues: IGlobalCallbackValues[]) => Promise<void>), ...args: string[]) => Promise<T | void>
 
 export type LogicCallback<T> = (memoryManager: ClientMemoryManager, ...args: string[]) => Promise<T | void>
 
@@ -105,11 +105,16 @@ export const defaultLogicCallback = async () => { }
  */
 export type RenderCallback<T> = (logicResult: T, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => Promise<Partial<BB.Activity> | string>
 
+export interface IGlobalCallbackValues {
+    entityName: string,
+    entityValue: string | null
+}
+
 export interface ICallbackInput<T> {
     name: string
     logic?: LogicCallback<T>
     logicWithSet?: LogicSetCallback<T>
-    render?: RenderCallback<T> 
+    render?: RenderCallback<T>
     mockResults?: CLM.CallbackResult[]
 }
 
@@ -710,7 +715,7 @@ export class CLRunner {
 
             if (parentMemory) {
                 // Filter to entities that only exist on the dispatch model (this one)
-                parentMemory?.Filter(entities);
+                parentMemory?.Filter(entities)
                 if (replaceMemory) {
                     await state.EntityState.RestoreFromMemoryManagerAsync(parentMemory)
                 }
@@ -718,7 +723,6 @@ export class CLRunner {
                     await state.EntityState.UpdateFromMemoryManagerAsync(parentMemory)
                 }
             }
-
 
             errorContext = `${errorContext}: ScoreActions`
             const scoredAction = await this.Score(
@@ -1253,9 +1257,16 @@ export class CLRunner {
                         // Do not await for MultiWoz.  Logic will block on sub-model response
                         if (dispatchCallback.logicWithSet) {
                             dispatchCallback.logicWithSet(memoryManager,
-                                async (entityName: string, entityValue: string) => {
+                                async (globalCallbackValues: IGlobalCallbackValues[]) => {
                                     const setMemoryManager = await this.CreateMemoryManagerAsync(clRecognizeResult.state, clRecognizeResult.clEntities)
-                                    setMemoryManager.Set(entityName, entityValue)
+                                    for (const globalCallbackValue of globalCallbackValues) {
+                                        if (globalCallbackValue.entityValue) {
+                                            setMemoryManager.Set(globalCallbackValue.entityName, globalCallbackValue.entityValue)
+                                        }
+                                        else {
+                                            setMemoryManager.Delete(globalCallbackValue.entityName)
+                                        }
+                                    }
                                     await clRecognizeResult.state.EntityState.RestoreFromMemoryManagerAsync(setMemoryManager)
                                 },
                                 clRecognizeResult.state.turnContext!.activity.id!, dispatchAction.modelName)

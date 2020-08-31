@@ -242,6 +242,41 @@ export const UpdateEntities = (memoryManager: ClientMemoryManager, domainFilter?
     UpdateDB(memoryManager, domainFilter)
 }
 
+export const ClearAsks = (memoryManager: ClientMemoryManager, domainFilter?: string): void => {
+
+    if (domainFilter == "restaurant") {
+        memoryManager.Delete("global-ask-food")
+        memoryManager.Delete("global-ask-price")
+        memoryManager.Delete("global-ask-area")
+        memoryManager.Delete("global-ask-day")
+        memoryManager.Delete("global-ask-addr")
+        memoryManager.Delete("global-ask-name")
+    }
+    if (domainFilter == "hotel") {
+        memoryManager.Delete("global-ask-price")
+        memoryManager.Delete("global-ask-stars")
+        memoryManager.Delete("global-ask-type")
+        memoryManager.Delete("global-ask-area")
+        memoryManager.Delete("global-ask-name")
+        memoryManager.Delete("global-ask-day")
+    }
+    if (domainFilter == "attraction") {
+        memoryManager.Delete("global-ask-type")
+        memoryManager.Delete("global-ask-name")
+        memoryManager.Delete("global-ask-area")
+        memoryManager.Delete("global-ask-price")
+    }
+    if (domainFilter == "taxi") {
+        memoryManager.Delete("global-ask-leave")
+        memoryManager.Delete("global-ask-arrive")
+    }
+    if (domainFilter == "train") {
+        memoryManager.Delete("global-ask-leave")
+        memoryManager.Delete("global-ask-arrive")
+        memoryManager.Delete("global-ask-people")
+    }
+}
+
 // Move items from general to domain specific and then clear general
 const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string): void => {
 
@@ -505,6 +540,7 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
         memoryManager.Delete(RestaurantSlot.CHOICE_ONE)
         memoryManager.Delete(RestaurantSlot.CHOICE_MANY)
         memoryManager.Delete(RestaurantSlot.BOOK_READY)
+     //LARS TODO   memoryManager.Delete("global-ask-food");
 
         if (restaurants.length == 0) {
             memoryManager.Set(RestaurantSlot.CHOICE_NONE, true)
