@@ -135,8 +135,15 @@ export const ResolveItem = (name: string, values: string[]) => {
         return name
     }
 
+    // Try exact match
+    let match = values.find(h => h == name)
+    if (match != null) {
+        return match
+    }
+
+        
     // Try containment
-    const match = values.find(h => h.indexOf(name) >= 0)
+    match = values.find(h => h.indexOf(name) >= 0)
     if (match != null) {
         return match
     }
