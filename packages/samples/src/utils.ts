@@ -12,20 +12,25 @@ export const ApplyEntitySubstitutions = (memoryManager: ClientMemoryManager, dom
         try {
             const value = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING)
             if (value) {
-                const substitution = DB.EntitySubstitutions()[value]
-                if (substitution) {
-                    memoryManager.Set(entityName, substitution)
-                    return substitution
+                if (value == "the restaurant" || value == "the hotel" || value == "the taxi") {
+                    memoryManager.Delete(entityName);
                 }
-                else if (domainFilter) {
-                    const newValue = DB.ResolveEntityValue(value, entityName, domainFilter)
-                    if (newValue && newValue != value) {
-                        memoryManager.Set(entityName, newValue)
+                else {
+                    const substitution = DB.EntitySubstitutions()[value]
+                    if (substitution) {
+                        memoryManager.Set(entityName, substitution)
                         return substitution
                     }
-                }
-                if (value.startsWith("the ")) {
-                    value.substring("the ".length)
+                    else if (domainFilter) {
+                        const newValue = DB.ResolveEntityValue(value, entityName, domainFilter)
+                        if (newValue && newValue != value) {
+                            memoryManager.Set(entityName, newValue)
+                            return substitution
+                        }
+                    }
+                    if (value.startsWith("the ")) {
+                        value.substring("the ".length)
+                    }
                 }
             }
         }
