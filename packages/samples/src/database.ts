@@ -433,8 +433,11 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
             memoryManager.Set(HotelSlot.STARS, stars)
         }
         if (type_) {
-            memoryManager.Delete(HotelSlot.TYPE)
-            memoryManager.Set(HotelSlot.TYPE, type_)
+            var hoteltype = Utils.MemoryHotelValue(LuisSlot.TYPE, memoryManager)
+            if (hoteltype) {
+                memoryManager.Delete(HotelSlot.TYPE)
+                memoryManager.Set(HotelSlot.TYPE, hoteltype)
+            }
         }
     }
     if (domainFilter === "taxi") {
@@ -1026,7 +1029,7 @@ const HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryM
     //const parking_no =  Utils.MemoryValue(LuisSlot.PARKING_NO,  memoryManager)
     const pricerange = Utils.MemoryValue(LuisSlot.PRICE,  memoryManager)
     const stars = Utils.MemoryValue(LuisSlot.STARS,  memoryManager)
-    const _type = Utils.MemoryValue(LuisSlot.TYPE,  memoryManager)
+    const _type = Utils.MemoryHotelValue(LuisSlot.TYPE,  memoryManager)
 
     // Non-filtered options
     const people = Utils.MemoryValue(LuisSlot.PEOPLE, memoryManager)

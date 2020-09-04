@@ -67,12 +67,26 @@ export const BaseString = (text: string): string => {
 }
 
 export const MemoryValue = (slot: any, memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): string | null => {
+
     const value = memoryManager.Get(slot, ClientMemoryManager.AS_STRING)
 
     if (value !== "none" && value !== "dontcare" && value != null) {
         return BaseString(value)
     }
     return null
+}
+
+// Special case hotel as it can mean guesthouse or hotel.  Pick guesthouse if mutiple
+export const MemoryHotelValue = (slot: any, memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): string | null => {
+
+    const values = memoryManager.Get(slot, ClientMemoryManager.AS_STRING_LIST) as string[]
+    if (values.includes("guesthouse") || values.includes("Guesthouse")) {
+        return "guesthouse";
+    }
+    if (values.includes("hotel") || values.includes("Hotel")) {
+        return "hotel";
+    }
+    return null;
 }
 
 export const trainArriveBefore = (trains: Train[], arriveBefore: string): Train | null => {
