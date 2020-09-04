@@ -1,5 +1,5 @@
 import { ClientMemoryManager, ReadOnlyClientMemoryManager } from 'clwoz-sdk'
-import { Train, RestaurantSlot, HotelSlot, AttractionSlot, TaxiSlot, TrainSlot, LuisSlot, Domain, NameSubstitutionMap } from './dataTypes'
+import { Train, RestaurantSlot, HotelSlot, AttractionSlot, TaxiSlot, TrainSlot, PoliceSlot, HospitalSlot, LuisSlot, Domain, NameSubstitutionMap } from './dataTypes'
 import * as DB from './database'
 import * as BB from 'botbuilder'
 
@@ -267,6 +267,10 @@ export const getSlotNames = (domain: Domain) => {
             return Object.values(TaxiSlot)
         case Domain.TRAIN:
             return Object.values(TrainSlot)
+        case Domain.POLICE:
+            return Object.values(PoliceSlot)
+        case Domain.HOSPITAL:
+            return Object.values(HospitalSlot)
     }
 }
 

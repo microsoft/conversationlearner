@@ -4,7 +4,7 @@
  */
 import * as path from 'path'
 import { ClientMemoryManager, ReadOnlyClientMemoryManager } from 'clwoz-sdk'
-import { Restaurant, Hotel, Attraction, Taxi, Train, LuisSlot, RestaurantSlot, HotelSlot, AttractionSlot, TaxiSlot, TrainSlot, Domain, PICK_ONE } from './dataTypes'
+import { Restaurant, Hotel, Attraction, Taxi, Train, Hospital, Police, LuisSlot, RestaurantSlot, HotelSlot, AttractionSlot, TaxiSlot, TrainSlot, HospitalSlot, PoliceSlot, Domain, PICK_ONE } from './dataTypes'
 import * as fs from 'fs'
 import * as Utils from './utils'
 import * as Test from './test'
@@ -282,6 +282,7 @@ export const ClearAsks = (memoryManager: ClientMemoryManager, domainFilter?: str
         memoryManager.Delete("global-ask-arrive")
         memoryManager.Delete("global-ask-people")
     }
+    // TODO HP?
 }
 
 // Move items from general to domain specific and then clear general
@@ -307,6 +308,7 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
     const parkingNo = memoryManager.Get(LuisSlot.PARKING_NO, ClientMemoryManager.AS_STRING)
     const stars = memoryManager.Get(LuisSlot.STARS, ClientMemoryManager.AS_STRING)
     const type_ = memoryManager.Get(LuisSlot.TYPE, ClientMemoryManager.AS_STRING)
+    const department = memoryManager.Get(LuisSlot.DEPARTMENT, ClientMemoryManager.AS_STRING)
 
     // Handle bad match where both are set
     if (leave && leave == arrive) {
@@ -332,6 +334,12 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
         }
         else if (memoryManager.Get(Domain.ATTRACTION, ClientMemoryManager.AS_STRING)) {
             domainFilter = "attraction"
+        }
+        else if (memoryManager.Get(Domain.HOSPITAL, ClientMemoryManager.AS_STRING)) {
+            domainFilter = "hospital"
+        }
+        else if (memoryManager.Get(Domain.POLICE, ClientMemoryManager.AS_STRING)) {
+            domainFilter = "police"
         }
         else {
             return
@@ -441,8 +449,6 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
         }
     }
     if (domainFilter === "taxi") {
-
-
         if (arrive) {
             memoryManager.Delete(TaxiSlot.ARRIVE_BY)
             memoryManager.Set(TaxiSlot.ARRIVE_BY, arrive)
@@ -473,6 +479,20 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
         if (type_) {
             memoryManager.Delete(AttractionSlot.TYPE)
             memoryManager.Set(AttractionSlot.TYPE, type_)
+        }
+        return
+    }
+    if (domainFilter === "hospital") {
+        if (department) {
+            memoryManager.Delete(HospitalSlot.DEPARTMENT)
+            memoryManager.Set(HospitalSlot.DEPARTMENT, department)
+        }
+        return
+    }
+    if (domainFilter === "police") {
+        if (name) {
+            memoryManager.Delete(PoliceSlot.NAME)
+            memoryManager.Set(PoliceSlot.NAME, name)
         }
         return
     }
@@ -789,6 +809,56 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
             memoryManager.Set(TrainSlot.CHOICE_MANY, trains.length)
         }
     }
+    if (domainFilter == "police") {
+
+        const police = PoliceOptions(memoryManager)
+        
+        // There's always a police
+        memoryManager.Set(PoliceSlot.CHOICE_ONE, true)
+
+        memoryManager.Delete(PoliceSlot.NAME)
+        memoryManager.Delete(PoliceSlot.ADDRESS)
+        memoryManager.Delete(PoliceSlot.PHONE)
+        memoryManager.Delete(PoliceSlot.POSTCODE)
+        memoryManager.Delete(PoliceSlot.ID)
+        memoryManager.Set(PoliceSlot.NAME, police[0].name)
+        memoryManager.Set(PoliceSlot.ADDRESS, police[0].address)
+        memoryManager.Set(PoliceSlot.PHONE, police[0].phone)
+        memoryManager.Set(PoliceSlot.POSTCODE, police[0].postcode)
+        memoryManager.Set(PoliceSlot.ID, police[0].id)
+    }
+    if (domainFilter == "hospital") {
+        var hospitals = HospitalOptions(memoryManager)
+
+        const addresss = [... new Set(hospitals.map(a => a.address))]
+        SetEntities(addresss, null, HospitalSlot.ADDRESS, HospitalSlot.ADDRESS_COUNT, memoryManager)
+
+        const departments = [... new Set(hospitals.map(a => a.department))]
+        SetEntities(departments, LuisSlot.NAME, HospitalSlot.DEPARTMENT, HospitalSlot.DEPARTMENT_COUNT, memoryManager)
+
+        const postcodes = [... new Set(hospitals.map(a => a.postcode))]
+        SetEntities(postcodes, null, HospitalSlot.POSTCODE, HospitalSlot.POSTCODE_COUNT, memoryManager)
+
+        const phones = [... new Set(hospitals.map(a => a.phone))]
+        SetEntities(phones, null, HospitalSlot.PHONE, HospitalSlot.PHONE_COUNT, memoryManager)
+
+        const ids = [... new Set(hospitals.map(a => a.id))]
+        SetEntities(ids, null, HospitalSlot.ID, HospitalSlot.ID_COUNT, memoryManager)
+
+        memoryManager.Delete(HospitalSlot.CHOICE_NONE)
+        memoryManager.Delete(HospitalSlot.CHOICE_ONE)
+        memoryManager.Delete(HospitalSlot.CHOICE_MANY)
+
+        if (hospitals.length == 0) {
+            memoryManager.Set(HospitalSlot.CHOICE_NONE, true)
+        }
+        else if (hospitals.length == 1) {
+            memoryManager.Set(HospitalSlot.CHOICE_ONE, true)
+        }
+        else {
+            memoryManager.Set(HospitalSlot.CHOICE_MANY, hospitals.length)
+        }
+    }
 }
 
 //=================================
@@ -806,6 +876,10 @@ export const getEntities = (domain: Domain, memoryManager: ClientMemoryManager) 
             return trainEntities(memoryManager)
         case Domain.TAXI:
             return taxiEntities(memoryManager)
+        case Domain.HOSPITAL:
+            return hospitalEntities(memoryManager)
+        case Domain.POLICE:
+            return policeEntities(memoryManager)
     }
 }
 
@@ -897,6 +971,28 @@ const attractionEntities = (memoryManager: ReadOnlyClientMemoryManager): string[
 const taxiEntities = (memoryManager: ReadOnlyClientMemoryManager): string[] => {
     let entities: string[] = []
     Object.values(TaxiSlot).map(entityName => {
+        const value = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING_LIST)
+        if (value) {
+            entities.push(`${entityName}: ${value}`)
+        }
+    })
+    return entities
+}
+
+const policeEntities = (memoryManager: ReadOnlyClientMemoryManager): string[] => {
+    let entities: string[] = []
+    Object.values(PoliceSlot).map(entityName => {
+        const value = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING_LIST)
+        if (value) {
+            entities.push(`${entityName}: ${value}`)
+        }
+    })
+    return entities
+}
+
+const hospitalEntities = (memoryManager: ReadOnlyClientMemoryManager): string[] => {
+    let entities: string[] = []
+    Object.values(HospitalSlot).map(entityName => {
         const value = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING_LIST)
         if (value) {
             entities.push(`${entityName}: ${value}`)
@@ -1142,6 +1238,22 @@ const TaxiOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryMa
     return TaxiDb()
 }
 
+const PoliceOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Police[] => {
+    return PoliceDb()
+}
+
+const HospitalOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): Hospital[] => {
+
+    const department = Utils.MemoryValue(LuisSlot.DEPARTMENT, memoryManager)
+
+    let hospitals = HospitalDb()
+    if (department) {
+        hospitals = hospitals.filter(r => department === Utils.BaseString(r.department))
+    }
+
+    return hospitals.slice(0, 1)
+}
+
 const FilterFails = (items: any[], failInfo: { [id: string]: string }, checks: Map<string, string | null>) => {
     if (Object.keys(failInfo).length == 0) {
         return items
@@ -1172,6 +1284,8 @@ let _attractionDb: Attraction[] = []
 let _hotelDb: Hotel[] = []
 let _taxiDb: Taxi[] = []
 let _trainDb: Train[] = []
+let _policeDb: Police[] = []
+let _hospitalDb: Hospital[] = []
 let _entitySubstitutions: { [key: string]: string }
 let _dialogActs: string[]
 
@@ -1224,7 +1338,18 @@ const TrainDb = (): Train[] => {
     }
     return _trainDb
 }
-
+const PoliceDb = (): Police[] => {
+    if (_policeDb.length == 0) {
+        _policeDb = LoadDataBase("police_db")
+    }
+    return _policeDb
+}
+const HospitalDb = (): Hospital[] => {
+    if (_hospitalDb.length == 0) {
+        _hospitalDb = LoadDataBase("hospital_db")
+    }
+    return _hospitalDb
+}
 const LoadDataBase = (databaseName: string): any => {
     const filename = path.join(GetDirectory(DBDirectory), `${databaseName}.json`)
     const templateString = fs.readFileSync(filename, 'utf-8')

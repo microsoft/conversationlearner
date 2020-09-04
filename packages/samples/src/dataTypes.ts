@@ -29,19 +29,31 @@ export enum LuisSlot {
   DEPARTMENT = "department"
 }
 
+export enum PoliceSlot {
+  ADDRESS = "police-address",
+  NAME = "police-name",
+  PHONE = "police-phone",
+  ID = "police-id",
+  POSTCODE = "police-postcode",
+  CHOICE_ONE = "police-choice1",
+  CHOICE_NONE = "police-choice0",
+  CHOICE_MANY = "police-choice",
+}
+
 export enum HospitalSlot {
   ADDRESS = "hospital-address",
   ADDRESS_COUNT = "hospital-address-count",
-  NAME = "hospital-semi-name",
-  NAME_COUNT = "hospital-name-count",
+  DEPARTMENT = "hospital-semi-department",
+  DEPARTMENT_COUNT = "hospital-department-count",
   PHONE = "hospital-phone",
   PHONE_COUNT = "hospital-phone-count",
+  ID = "hospital-id",
+  ID_COUNT = "hospital-id-count",
   POSTCODE = "hospital-postcode",
   POSTCODE_COUNT = "hospital-postcode-count",
   CHOICE_ONE = "hospital-choice1",
   CHOICE_NONE = "hospital-choice0",
   CHOICE_MANY = "hospital-choice",
-  PICK_ONE = "hospital-pickone"
 }
 
 export enum TrainSlot {
@@ -181,6 +193,8 @@ export enum Domain {
   HOTEL = "hotel",
   ATTRACTION = "attraction",
   RESTAURANT = "restaurant",
+  HOSPITAL = "hospital",
+  POLICE = "police"
 }
 
 export interface Restaurant {
@@ -212,6 +226,22 @@ export interface Attraction {
   pricerange: string
   _type: string
   ref: string
+}
+
+export interface Police {
+  name: string
+  address: string
+  id: string
+  phone: string
+  postcode: string
+}
+
+export interface Hospital {
+  department: string
+  address: string
+  id: string
+  phone: string
+  postcode: string
 }
 
 export interface Price {

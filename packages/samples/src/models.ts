@@ -593,6 +593,8 @@ export let clHotel: ConversationLearner
 export let clRestaurant: ConversationLearner
 export let clTaxi: ConversationLearner
 export let clTrain: ConversationLearner
+export let clHospital: ConversationLearner
+export let clPolice: ConversationLearner
 const clDialogActsMap = new Map<string, ConversationLearner>()
 
 export const createModels = async (clFactory: ConversationLearnerFactory, modelId?: string, authKey?: string) => {
@@ -613,6 +615,8 @@ export const createModels = async (clFactory: ConversationLearnerFactory, modelI
         clRestaurant = getDomainDispatchCL(Domain.RESTAURANT, clFactory)
         clTaxi = getDomainDispatchCL(Domain.TAXI, clFactory)
         clTrain = getDomainDispatchCL(Domain.TRAIN, clFactory)
+        clHospital = getDomainDispatchCL(Domain.HOSPITAL, clFactory)
+        clPolice = getDomainDispatchCL(Domain.POLICE, clFactory)
 
         var dacts = DB.DialogActs()
         for (var dialogAct of dacts) {
