@@ -134,7 +134,7 @@ class Container extends React.Component<Props, ComponentState> {
             // If modal is being opened
             if (this.props.open === false) {
                 // Build entity options based on current model locale
-                const currentAppLocale = nextProps.app.locale
+                const currentAppLocale = nextProps.app.locale.toLowerCase()
                 const preBuiltLocale = PreBuiltEntities.find(entitiesList => entitiesList.locale === currentAppLocale)
                 if (!preBuiltLocale) {
                     throw new Error(`Could not find locale: ${currentAppLocale} within list of supported locales: ${PreBuiltEntities.map(e => e.locale).join(', ')}`)

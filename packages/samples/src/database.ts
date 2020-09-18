@@ -1156,6 +1156,10 @@ const HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryM
     if (stars) {
         hotels = hotels.filter(r => stars === Utils.BaseString(r.stars))
     }
+    if (_type) { 
+        hotels = hotels.filter(r => _type === Utils.BaseString(r._type))
+    }
+    /*
     // "hotel" can be interpreted as "hotel" + "guesthouse" or as a filter so try both
     if (_type) { 
         // Only use as filter if it doesn't zero out possibilities
@@ -1164,6 +1168,7 @@ const HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryM
             hotels = hotelsOnly;
         }
     }
+    */
 
     var failed = false;
     if (failInfo != undefined && hotels.length === 1) {
