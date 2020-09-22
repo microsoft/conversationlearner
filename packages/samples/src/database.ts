@@ -888,8 +888,14 @@ const trainEntities = (memoryManager: ReadOnlyClientMemoryManager): string[] => 
 
     // Set reference
     const names = memoryManager.Get("train-id", ClientMemoryManager.AS_STRING_LIST);
+
     if (names.length == 1) {
-        var train = TrainDb().find(r => r.trainID == names[0])
+        const destination = memoryManager.Get("train-semi-destination", ClientMemoryManager.AS_STRING);
+        const departure = memoryManager.Get("train-semi-departure", ClientMemoryManager.AS_STRING);
+        var train = TrainDb().find(r => 
+            r.trainID == names[0]
+            && r.destination == destination
+            && r.departure == departure)
         if (train) {
             entities.push(`booking-book-ref: ${train.ref}`)
         }
@@ -1223,15 +1229,19 @@ const TrainOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryM
     // Can't provide times unless I know where I'm going
     if (departure && destination && day) {
         const leaveAt = memoryManager.Get(LuisSlot.LEAVE_AT, ClientMemoryManager.AS_STRING)
-        if (leaveAt && !isNaN(Utils.parseTime(leaveAt))) {
-            const bestTrain = Utils.trainLeaveAfter(trains, leaveAt)
-            trains = bestTrain ? [bestTrain] : []
-        }
         const arriveBy = memoryManager.Get(LuisSlot.ARRIVE_BY, ClientMemoryManager.AS_STRING)
-        if (arriveBy && !isNaN(Utils.parseTime(arriveBy))) {
-            const bestTrain = Utils.trainArriveBefore(trains, arriveBy)
-            trains = bestTrain ? [bestTrain] : []
+        var bestTrain = null;
+        if (leaveAt && !isNaN(Utils.parseTime(leaveAt)) && arriveBy && !isNaN(Utils.parseTime(arriveBy)))
+        {
+            bestTrain = Utils.trainBetween(trains, leaveAt, arriveBy)
         }
+        if (bestTrain == null && leaveAt && !isNaN(Utils.parseTime(leaveAt))) {
+            bestTrain = Utils.trainLeaveAfter(trains, leaveAt)
+        }
+        if (bestTrain == null && arriveBy && !isNaN(Utils.parseTime(arriveBy))) {
+            bestTrain = Utils.trainArriveBefore(trains, arriveBy)
+        }
+        trains = bestTrain ? [bestTrain] : []
     }
     // Only pick one if I know where I'm going
     if (departure && destination) {

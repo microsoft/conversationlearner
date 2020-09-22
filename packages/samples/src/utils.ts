@@ -89,14 +89,37 @@ export const MemoryHotelValue = (slot: any, memoryManager: ClientMemoryManager |
     return null;
 }
 
+export const trainBetween = (trains: Train[], leaveAfter: string, arriveBefore: string): Train | null => {
+
+    const arriveBeforeTime = parseTime(arriveBefore)
+    const leaveAfterTime = parseTime(leaveAfter)
+
+    trains.forEach(train => {
+        const trainLeave = parseTime(train.leaveAt)
+        const trainArrive = parseTime(train.arriveBy)
+        if (trainArrive < arriveBeforeTime  && trainLeave > leaveAfterTime ) {
+            return train;
+        }
+    })
+    // Try exact matches
+    trains.forEach(train => {
+        const trainLeave = parseTime(train.leaveAt)
+        const trainArrive = parseTime(train.arriveBy)
+        if (trainArrive <= arriveBeforeTime && trainLeave >= leaveAfterTime ) {
+            return train;
+        }
+    })
+    return null;
+}
+
 export const trainArriveBefore = (trains: Train[], arriveBefore: string): Train | null => {
 
     const arriveBeforeTime = parseTime(arriveBefore)
     let bestTime = Number.MAX_VALUE
     let bestTrain: Train | null = null
     trains.forEach(train => {
-        const trainLeave = parseTime(train.arriveBy)
-        const diff = arriveBeforeTime - trainLeave
+        const trainArrive = parseTime(train.arriveBy)
+        const diff = arriveBeforeTime - trainArrive
         if (diff > 0 && diff < bestTime) {
             bestTrain = train
             bestTime = diff
