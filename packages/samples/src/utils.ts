@@ -247,7 +247,12 @@ export const expandedResults = (dialogActs: string[], entities: string[]): strin
         else {
             const kv = findEntity(domain, entity, entities)
             // "attraction-semi-area: east,centre,south,west,north"
-            const values = kv ? kv.split(": ")[1].split(",") : ["MISSING"]
+            let values = kv ? kv.split(": ")[1].split(",") : ["MISSING"]
+
+            // Fix for police as it has a comma
+            if (domain == "police" && entity == "addr") {
+                values = [values.join(",")];
+            }
             for (const value of values) {
                 results.push([act, domain, entity, value])
             }
