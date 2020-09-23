@@ -317,6 +317,14 @@ const initDispatchModel = (clFactory: ConversationLearnerFactory) => {
         name: "Dispatch",
         logicWithSet: async (memoryManager: ClientMemoryManager, setGlobalCallback: (globalCallbackValues: IGlobalCallbackValues[]) => Promise<void>, activityId: string, domainNameString: string) => {
 
+            // Clear mention entities
+            memoryManager.Delete('mention-police');
+            memoryManager.Delete('mention-hospital');
+            memoryManager.Delete('mention-taxi');
+            memoryManager.Delete('mention-restaurant');
+            memoryManager.Delete('mention-hotel');
+            memoryManager.Delete('mention-train');
+            
             var domainNames = domainNameString.split(",")
 
             // Add domain to queue
@@ -411,6 +419,9 @@ const getDomainDispatchCL = (domain: Domain, clFactory: ConversationLearnerFacto
     domainDispatchModel.AddCallback({
         name: "Dispatch",
         logic: async (memoryManager: ClientMemoryManager, activityId: string, dialogActNameString: string) => {
+
+            // Same entity should only last one turn
+            memoryManager.Delete('same');
 
             var dialogActNames = dialogActNameString.split(",")
 
