@@ -421,7 +421,7 @@ const getDomainDispatchCL = (domain: Domain, clFactory: ConversationLearnerFacto
         logic: async (memoryManager: ClientMemoryManager, activityId: string, dialogActNameString: string) => {
 
             // Same entity should only last one turn
-            memoryManager.Delete('same');
+            memoryManager.Delete(`${domain}-same`);
 
             var dialogActNames = dialogActNameString.split(",")
 
