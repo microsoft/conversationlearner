@@ -10,7 +10,7 @@
             "name": "Empty Bot",
             "program": "${workspaceFolder}/lib/server.js",
             "outFiles": [
-                "${workspaceFolder}/**/*.js"
+                "${workspaceFolder}/lib/*.js"
             ],
             "runtimeArgs": [
                 "--preserve-symlinks"

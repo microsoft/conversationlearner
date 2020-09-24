@@ -101,7 +101,8 @@ export const trainBetween = (trains: Train[], leaveAfter: string, arriveBefore: 
             return train;
         }
     })
-    // Try exact matches
+
+    // Allow exact matches
     trains.forEach(train => {
         const trainLeave = parseTime(train.leaveAt)
         const trainArrive = parseTime(train.arriveBy)

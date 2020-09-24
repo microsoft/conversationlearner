@@ -895,7 +895,8 @@ const trainEntities = (memoryManager: ReadOnlyClientMemoryManager): string[] => 
         var train = TrainDb().find(r => 
             r.trainID == names[0]
             && r.destination == destination
-            && r.departure == departure)
+            && r.departure == departure
+            )
         if (train) {
             entities.push(`booking-book-ref: ${train.ref}`)
         }
@@ -1162,18 +1163,20 @@ const HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryM
     if (stars) {
         hotels = hotels.filter(r => stars === Utils.BaseString(r.stars))
     }
-    /*
-    if (_type) { 
-        hotels = hotels.filter(r => _type === Utils.BaseString(r._type))
-    }
-    */
-    
+
     // "hotel" can be interpreted as "hotel" + "guesthouse" or as a filter so try both
     if (_type) { 
-        // Only use as filter if it doesn't zero out possibilities
-        let hotelsOnly = hotels.filter(r => _type === Utils.BaseString(r._type))
-        if (hotelsOnly.length > 0) {
-            hotels = hotelsOnly;
+
+        // Always filter on guesthouse
+        if (_type == "guesthouse") {
+            hotels = hotels.filter(r => _type === Utils.BaseString(r._type))    
+        }
+        // Only use "hotel" as filter if it doesn't zero out possibilities
+        else {
+            let hotelsOnly = hotels.filter(r => _type === Utils.BaseString(r._type))
+            if (_type == "hotel" && hotelsOnly.length > 0) {
+                hotels = hotelsOnly;
+            }
         }
     }
 
