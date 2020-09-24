@@ -317,14 +317,6 @@ const initDispatchModel = (clFactory: ConversationLearnerFactory) => {
         name: "Dispatch",
         logicWithSet: async (memoryManager: ClientMemoryManager, setGlobalCallback: (globalCallbackValues: IGlobalCallbackValues[]) => Promise<void>, activityId: string, domainNameString: string) => {
 
-            // Clear mention entities
-            memoryManager.Delete('mention-police');
-            memoryManager.Delete('mention-hospital');
-            memoryManager.Delete('mention-taxi');
-            memoryManager.Delete('mention-restaurant');
-            memoryManager.Delete('mention-hotel');
-            memoryManager.Delete('mention-train');
-            
             var domainNames = domainNameString.split(",")
 
             // Add domain to queue
