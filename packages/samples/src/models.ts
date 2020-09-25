@@ -414,6 +414,8 @@ const getDomainDispatchCL = (domain: Domain, clFactory: ConversationLearnerFacto
 
             // Same entity should only last one turn
             memoryManager.Delete(`${domain}-same`);
+            memoryManager.Delete(`${domain}-dontcare`);
+            memoryManager.Delete(`${domain}-bye`);
 
             var dialogActNames = dialogActNameString.split(",")
 

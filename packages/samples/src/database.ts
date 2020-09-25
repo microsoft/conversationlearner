@@ -176,6 +176,10 @@ const ResolveName = (name: string, items: any[], preString: string, postString: 
     let before = `${preString} `
     let after = ` ${postString}`
 
+    if (name == "dontcare") {
+        return name
+    }
+    
     // First check raw name
     if (items.find(h => h.name == name)) {
         return name

@@ -1273,6 +1273,7 @@ export class CLRunner {
                                     setMemoryManager.Delete('mention-restaurant');
                                     setMemoryManager.Delete('mention-hotel');
                                     setMemoryManager.Delete('mention-train');
+                                    setMemoryManager.Delete('mention-attraction');
                                     await clRecognizeResult.state.EntityState.RestoreFromMemoryManagerAsync(setMemoryManager)
                                 },
                                 clRecognizeResult.state.turnContext!.activity.id!, dispatchAction.modelName)
