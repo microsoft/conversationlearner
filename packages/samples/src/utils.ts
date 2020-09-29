@@ -267,8 +267,14 @@ export const expandedResults = (dialogActs: string[], entities: string[]): strin
                 bookingBookNone = true;
             }
         }
+        else if (domain == "train" && act == "offerbook") {
+            bookingBook = true;
+            if (entity == "none") {
+                bookingBookNone = true;
+            }
+        }
     }
-
+//LARS
     // Force ref on all non-none booking-books
     if (bookingBook && !bookingBookNone) {
         const kv = findEntity("booking", "ref", entities)

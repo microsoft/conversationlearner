@@ -769,15 +769,11 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
             trains = TrainOptions(memoryManager, failInfo)[0]
         }
 
-        const arriveBys = [... new Set(trains.map(a => a.arriveBy))]
-        // Null LUIS slot as times are diff
-        SetEntities(arriveBys, null, TrainSlot.ARRIVE_BY, TrainSlot.ARRIVE_BY_COUNT, memoryManager)
-
         const days = [... new Set(trains.map(a => a.day))]
         SetEntities(days, null, TrainSlot.DAY, TrainSlot.DAY_COUNT, memoryManager)
 
         const departures = [... new Set(trains.map(a => a.departure))]
-        SetEntities(departures, LuisSlot.DESTINATION, TrainSlot.DEPART, TrainSlot.DEPART_COUNT, memoryManager)
+        SetEntities(departures, LuisSlot.DEPART, TrainSlot.DEPART, TrainSlot.DEPART_COUNT, memoryManager)
 
         const destinations = [... new Set(trains.map(a => a.destination))]
         SetEntities(destinations, LuisSlot.DESTINATION, TrainSlot.DESTINATION, TrainSlot.DESTINATION_COUNT, memoryManager)
@@ -785,10 +781,25 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
         const durations = [... new Set(trains.map(a => a.duration))]
         SetEntities(durations, null, TrainSlot.DURATION, TrainSlot.DURATION_COUNT, memoryManager)
 
-        const leaveAts = [... new Set(trains.map(a => a.leaveAt))]
-        // Null LUIS slot as times are diff
-        SetEntities(leaveAts, null, TrainSlot.LEAVE_AT, TrainSlot.LEAVE_AT_COUNT, memoryManager)
+        // Only set times after destination / departure have been chosen
+        if (memoryManager.Get(TrainSlot.DEPART, ClientMemoryManager.AS_STRING_LIST).length == 1 
+        && memoryManager.Get(TrainSlot.DESTINATION, ClientMemoryManager.AS_STRING_LIST).length == 1 
+        && memoryManager.Get(TrainSlot.DAY, ClientMemoryManager.AS_STRING_LIST).length == 1)  {
+            const arriveBys = [... new Set(trains.map(a => a.arriveBy))]
+            // Null LUIS slot as times are diff
+            SetEntities(arriveBys, null, TrainSlot.ARRIVE_BY, TrainSlot.ARRIVE_BY_COUNT, memoryManager)
 
+            const leaveAts = [... new Set(trains.map(a => a.leaveAt))]
+            // Null LUIS slot as times are diff
+            SetEntities(leaveAts, null, TrainSlot.LEAVE_AT, TrainSlot.LEAVE_AT_COUNT, memoryManager)
+        }
+        else {
+            memoryManager.Delete(TrainSlot.ARRIVE_BY)
+            memoryManager.Delete(TrainSlot.ARRIVE_BY_COUNT)
+            memoryManager.Delete(TrainSlot.LEAVE_AT)
+            memoryManager.Delete(TrainSlot.LEAVE_AT_COUNT)
+        }
+        
         const prices = [... new Set(trains.map(a => a.price))]
         SetEntities(prices, null, TrainSlot.TICKET, TrainSlot.TICKET_COUNT, memoryManager)
 
@@ -805,7 +816,10 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
         }
         else if (trains.length == 1) {
             memoryManager.Set(TrainSlot.CHOICE_ONE, true)
-            if (memoryManager.Get(TrainSlot.PEOPLE, ClientMemoryManager.AS_VALUE_LIST).length == 1) {
+            if (memoryManager.Get(TrainSlot.PEOPLE, ClientMemoryManager.AS_VALUE_LIST).length == 1
+                && memoryManager.Get(TrainSlot.DAY, ClientMemoryManager.AS_VALUE_LIST).length == 1
+                && memoryManager.Get(TrainSlot.DESTINATION, ClientMemoryManager.AS_VALUE_LIST).length == 1
+                && memoryManager.Get(TrainSlot.DEPART, ClientMemoryManager.AS_VALUE_LIST).length == 1) {
                 memoryManager.Set(TrainSlot.BOOK_READY, true)
             }
         }
@@ -1234,7 +1248,9 @@ const TrainOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryM
     }
     // Filter on times based on LUIS slot is set (because not exact match)
     // Can't provide times unless I know where I'm going
-    if (departure && destination && day) {
+    if ((departure || [...new Set(trains.map(t => t.departure))].length == 1)
+        && (destination || [...new Set(trains.map(t => t.destination))].length == 1)
+        && (day || [...new Set(trains.map(t => t.day))].length == 1)) {
         const leaveAt = memoryManager.Get(LuisSlot.LEAVE_AT, ClientMemoryManager.AS_STRING)
         const arriveBy = memoryManager.Get(LuisSlot.ARRIVE_BY, ClientMemoryManager.AS_STRING)
         var bestTrain = null;
