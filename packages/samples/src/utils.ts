@@ -233,6 +233,8 @@ const findEntity = (domain: string, shortName: string, entities: string[]) => {
 
 export const expandedResults = (dialogActs: string[], entities: string[]): string[][] => {
     const results: string[][] = []
+    let bookingBook = false;
+    let bookingBookNone = false;
     for (let dialogAct of dialogActs) {
         const parts = dialogAct.split('-')
         const domain = parts[0]
@@ -258,6 +260,20 @@ export const expandedResults = (dialogActs: string[], entities: string[]): strin
                 results.push([act, domain, entity, value])
             }
         }
+
+        if (domain == "booking" && act == "book") {
+            bookingBook = true;
+            if (entity == "none") {
+                bookingBookNone = true;
+            }
+        }
+    }
+
+    // Force ref on all non-none booking-books
+    if (bookingBook && !bookingBookNone) {
+        const kv = findEntity("booking", "ref", entities)
+        let values = kv ? kv.split(": ")[1].split(",") : ["MISSING"]
+        results.push(["booking", "book", "ref", values[0]]);
     }
     return results
 }
