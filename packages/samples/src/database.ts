@@ -4,7 +4,7 @@
  */
 import * as path from 'path'
 import { ClientMemoryManager, ReadOnlyClientMemoryManager } from 'clwoz-sdk'
-import { Restaurant, Hotel, Attraction, Taxi, Train, Hospital, Police, LuisSlot, RestaurantSlot, HotelSlot, AttractionSlot, TaxiSlot, TrainSlot, HospitalSlot, PoliceSlot, Domain, PICK_ONE } from './dataTypes'
+import { Restaurant, Hotel, Attraction, Taxi, Train, Hospital, Police, LuisSlot, RestaurantSlot, HotelSlot, AttractionSlot, TaxiSlot, TrainSlot, HospitalSlot, PoliceSlot, Domain, PICK_ONE, DONTCARE } from './dataTypes'
 import * as fs from 'fs'
 import * as Utils from './utils'
 import * as Test from './test'
@@ -132,7 +132,7 @@ export const ResolveEntityValue = (entityValue: string, entityName: string, doma
 export const ResolveItem = (name: string, values: string[]) => {
 
     if (name == "dontcare") {
-        return name
+        return null
     }
 
     // Try exact match
@@ -177,7 +177,7 @@ const ResolveName = (name: string, items: any[], preString: string, postString: 
     let after = ` ${postString}`
 
     if (name == "dontcare") {
-        return name
+        return null
     }
     
     // First check raw name
@@ -350,101 +350,101 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
         }
     }
     if (domainFilter === "restaurant") {
-        if (day) {
+        if (day && day != DONTCARE) {
             memoryManager.Delete(RestaurantSlot.DAY)
             memoryManager.Set(RestaurantSlot.DAY, day)
         }
-        if (people) {
+        if (people && people != DONTCARE) {
             memoryManager.Delete(RestaurantSlot.PEOPLE)
             memoryManager.Set(RestaurantSlot.PEOPLE, people)
         }
-        if (time) {
+        if (time && time != DONTCARE) {
             memoryManager.Delete(RestaurantSlot.TIME)
             memoryManager.Set(RestaurantSlot.TIME, time)
         }
-        if (area) {
+        if (area && area != DONTCARE) {
             memoryManager.Delete(RestaurantSlot.AREA)
             memoryManager.Set(RestaurantSlot.AREA, area)
         }
-        if (food) {
+        if (food && food != DONTCARE) {
             memoryManager.Delete(RestaurantSlot.FOOD)
             memoryManager.Set(RestaurantSlot.FOOD, food)
         }
-        if (name) {
+        if (name && name != DONTCARE) {
             memoryManager.Delete(RestaurantSlot.NAME)
             memoryManager.Set(RestaurantSlot.NAME, name)
         }
-        if (price) {
+        if (price && price != DONTCARE) {
             memoryManager.Delete(RestaurantSlot.PRICERANGE)
             memoryManager.Set(RestaurantSlot.PRICERANGE, price)
         }
         return
     }
     if (domainFilter === "train") {
-        if (people) {
+        if (people && people != DONTCARE) {
             memoryManager.Delete(TrainSlot.PEOPLE)
             memoryManager.Set(TrainSlot.PEOPLE, people)
         }
-        if (day) {
+        if (day && day != DONTCARE) {
             memoryManager.Delete(TrainSlot.DAY)
             memoryManager.Set(TrainSlot.DAY, day)
         }
-        if (depart) {
+        if (depart && depart != DONTCARE) {
             memoryManager.Delete(TrainSlot.DEPART)
             memoryManager.Set(TrainSlot.DEPART, depart)
         }
-        if (dest) {
+        if (dest && dest != DONTCARE) {
             memoryManager.Delete(TrainSlot.DESTINATION)
             memoryManager.Set(TrainSlot.DESTINATION, dest)
         }
         return
     }
     if (domainFilter === "hotel") {
-        if (day) {
+        if (day && day != DONTCARE) {
             memoryManager.Delete(HotelSlot.DAY)
             memoryManager.Set(HotelSlot.DAY, day)
         }
-        if (people) {
+        if (people && people != DONTCARE) {
             memoryManager.Delete(HotelSlot.PEOPLE)
             memoryManager.Set(HotelSlot.PEOPLE, people)
         }
-        if (stay) {
+        if (stay && stay != DONTCARE) {
             memoryManager.Delete(HotelSlot.STAY)
             memoryManager.Set(HotelSlot.STAY, stay)
         }
-        if (area) {
+        if (area && area != DONTCARE) {
             memoryManager.Delete(HotelSlot.AREA)
             memoryManager.Set(HotelSlot.AREA, area)
         }
-        if (internetYes) {
+        if (internetYes && internetYes != DONTCARE) {
             memoryManager.Delete(HotelSlot.INTERNET)
             memoryManager.Set(HotelSlot.INTERNET, "yes")
         }
-        if (internetNo) {
+        if (internetNo && internetNo != DONTCARE) {
             memoryManager.Delete(HotelSlot.INTERNET)
             memoryManager.Set(HotelSlot.INTERNET, "no")
         }
-        if (name) {
+        if (name && name != DONTCARE) {
             memoryManager.Delete(HotelSlot.NAME)
             memoryManager.Set(HotelSlot.NAME, name)
         }
-        if (parkingYes) {
+        if (parkingYes && parkingYes != DONTCARE) {
             memoryManager.Delete(HotelSlot.PARKING)
             memoryManager.Set(HotelSlot.PARKING, "yes")
         }
-        if (parkingNo) {
+        if (parkingNo && parkingNo != DONTCARE) {
             memoryManager.Delete(HotelSlot.PARKING)
             memoryManager.Set(HotelSlot.PARKING, "no")
         }
-        if (price) {
+        if (price && price != DONTCARE) {
             memoryManager.Delete(HotelSlot.PRICERANGE)
             memoryManager.Set(HotelSlot.PRICERANGE, price)
         }
-        if (stars) {
+        if (stars && stars != DONTCARE) {
             memoryManager.Delete(HotelSlot.STARS)
             memoryManager.Set(HotelSlot.STARS, stars)
         }
-        if (type_) {
+        if (type_ && type_ != DONTCARE) {
             var hoteltype = Utils.MemoryHotelValue(LuisSlot.TYPE, memoryManager)
             if (hoteltype) {
                 memoryManager.Delete(HotelSlot.TYPE)
@@ -453,34 +453,34 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
         }
     }
     if (domainFilter === "taxi") {
-        if (arrive) {
+        if (arrive && arrive != DONTCARE) {
             memoryManager.Delete(TaxiSlot.ARRIVE_BY)
             memoryManager.Set(TaxiSlot.ARRIVE_BY, arrive)
         }
-        if (depart) {
+        if (depart && depart != DONTCARE) {
             memoryManager.Delete(TaxiSlot.DEPART)
             memoryManager.Set(TaxiSlot.DEPART, depart)
         }
-        if (dest) {
+        if (dest && dest != DONTCARE) {
             memoryManager.Delete(TaxiSlot.DESTINATION)
             memoryManager.Set(TaxiSlot.DESTINATION, dest)
         }
-        if (leave) {
+        if (leave && leave != DONTCARE) {
             memoryManager.Delete(TaxiSlot.LEAVE_AT)
             memoryManager.Set(TaxiSlot.LEAVE_AT, leave)
         }
         return
     }
     if (domainFilter === "attraction") {
-        if (area) {
+        if (area && area != DONTCARE) {
             memoryManager.Delete(AttractionSlot.AREA)
             memoryManager.Set(AttractionSlot.AREA, area)
         }
-        if (name) {
+        if (name && name != DONTCARE) {
             memoryManager.Delete(AttractionSlot.NAME)
             memoryManager.Set(AttractionSlot.NAME, name)
         }
-        if (type_) {
+        if (type_ && type_ != DONTCARE) {
             memoryManager.Delete(AttractionSlot.TYPE)
             memoryManager.Set(AttractionSlot.TYPE, type_)
         }
@@ -505,23 +505,23 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
 const SetEntities = (items: string[], luisSlotName: any, slotName: any, countSlotName: any, memoryManager: ClientMemoryManager) => {
 
     // If LUIS hasn't already filled this entity, don't use database value
-    if (!luisSlotName || !memoryManager.Get(luisSlotName, ClientMemoryManager.AS_STRING)) {
-
-        memoryManager.Delete(slotName)
-        // Remove 
-        const values = items.filter(i => i !== "?" && i !== "" && i != undefined)//LARS TEMP.map(s => s ? s : "")
-        if (values.length == 1) {
-            memoryManager.Set(slotName, values)
-            memoryManager.Delete(countSlotName)
-        }
-        else if (values.length > 1) {
-            memoryManager.Set(slotName, values.slice(0, Utils.MAX_MULTI_VALUE))
-            memoryManager.Set(countSlotName, values.length)
-        }
-        else 
-        {
-            memoryManager.Delete(countSlotName)
-        }
+    var luisValue = luisSlotName ? memoryManager.Get(luisSlotName, ClientMemoryManager.AS_STRING) : undefined;
+    if (!luisValue || luisValue == DONTCARE) {
+            memoryManager.Delete(slotName)
+            // Remove 
+            const values = items.filter(i => i !== "?" && i !== "" && i != undefined)//LARS TEMP.map(s => s ? s : "")
+            if (values.length == 1) {
+                memoryManager.Set(slotName, values)
+                memoryManager.Delete(countSlotName)
+            }
+            else if (values.length > 1) {
+                memoryManager.Set(slotName, values.slice(0, Utils.MAX_MULTI_VALUE))
+                memoryManager.Set(countSlotName, values.length)
+            }
+            else 
+            {
+                memoryManager.Delete(countSlotName)
+            }
     }
     else {
         memoryManager.Delete(countSlotName)

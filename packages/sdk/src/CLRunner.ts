@@ -1280,6 +1280,7 @@ export class CLRunner {
                         }
                         else if (dispatchCallback.logic) {
                             dispatchCallback.logic(memoryManager, clRecognizeResult.state.turnContext!.activity.id!, dispatchAction.modelName)
+                            await clRecognizeResult.state.EntityState.RestoreFromMemoryManagerAsync(memoryManager)
                         }
 
                         // Dispatch level only augments memory, all other replace memory

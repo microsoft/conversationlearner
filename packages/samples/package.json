@@ -32,7 +32,7 @@
   "author": "Microsoft Conversation Learner Team",
   "license": "MIT",
   "dependencies": {
-    "clwoz-sdk": "0.600.0925",
+    "clwoz-sdk": "0.600.0928",
     "body-parser": "^1.19.0",
     "botbuilder": "4.7.1",
     "botframework-directlinejs": "^0.11.6",

@@ -17,12 +17,15 @@ let OutputMap = new Map<string, string>()
 export const apiDontCareRestaurantArea = {
     name: "dontcare-area",
     logic: async (memoryManager: ClientMemoryManager) => {
+        if (memoryManager.Get(RestaurantSlot.AREA) && !memoryManager.Get(RestaurantSlot.AREA_COUNT)) {
+            return
+        }
         memoryManager.Set(LuisSlot.AREA, DONTCARE)
 
         memoryManager.Delete(RestaurantSlot.AREA)
         memoryManager.Delete(RestaurantSlot.AREA_COUNT)
 
-        memoryManager.Set(RestaurantSlot.AREA, DONTCARE)
+        //memoryManager.Set(RestaurantSlot.AREA, DONTCARE)
 
         DB.UpdateEntities(memoryManager)
     }
@@ -31,12 +34,15 @@ export const apiDontCareRestaurantArea = {
 export const apiDontCareHotelArea = {
     name: "dontcare-area",
     logic: async (memoryManager: ClientMemoryManager) => {
+        if (memoryManager.Get(HotelSlot.AREA) && !memoryManager.Get(HotelSlot.AREA_COUNT)) {
+            return
+        }
         memoryManager.Set(LuisSlot.AREA, DONTCARE)
 
         memoryManager.Delete(HotelSlot.AREA)
         memoryManager.Delete(HotelSlot.AREA_COUNT)
 
-        memoryManager.Set(HotelSlot.AREA, DONTCARE)
+        //memoryManager.Set(HotelSlot.AREA, DONTCARE)
 
         DB.UpdateEntities(memoryManager)
     }
@@ -45,12 +51,15 @@ export const apiDontCareHotelArea = {
 export const apiDontCareAttractionArea = {
     name: "dontcare-area",
     logic: async (memoryManager: ClientMemoryManager) => {
+        if (memoryManager.Get(AttractionSlot.AREA) && !memoryManager.Get(AttractionSlot.AREA_COUNT)) {
+            return
+        }
         memoryManager.Set(LuisSlot.AREA, DONTCARE)
 
         memoryManager.Delete(AttractionSlot.AREA)
         memoryManager.Delete(AttractionSlot.AREA_COUNT)
 
-        memoryManager.Set(AttractionSlot.AREA, DONTCARE)
+        //memoryManager.Set(AttractionSlot.AREA, DONTCARE)
 
         DB.UpdateEntities(memoryManager)
     }
@@ -59,12 +68,15 @@ export const apiDontCareAttractionArea = {
 export const apiDontCareRestaurantPrice = {
     name: "dontcare-price",
     logic: async (memoryManager: ClientMemoryManager) => {
+        if (memoryManager.Get(RestaurantSlot.PRICERANGE) && !memoryManager.Get(RestaurantSlot.PRICERANGE_COUNT)) {
+            return
+        }
         memoryManager.Set(LuisSlot.PRICE, DONTCARE)
 
         memoryManager.Delete(RestaurantSlot.PRICERANGE)
         memoryManager.Delete(RestaurantSlot.PRICERANGE_COUNT)
 
-        memoryManager.Set(RestaurantSlot.PRICERANGE, DONTCARE)
+        //memoryManager.Set(RestaurantSlot.PRICERANGE, DONTCARE)
 
         DB.UpdateEntities(memoryManager)
     }
@@ -73,12 +85,15 @@ export const apiDontCareRestaurantPrice = {
 export const apiDontCareHotelPrice = {
     name: "dontcare-price",
     logic: async (memoryManager: ClientMemoryManager) => {
+        if (memoryManager.Get(HotelSlot.PRICERANGE) && !memoryManager.Get(HotelSlot.PRICERANGE_COUNT)) {
+            return
+        }
         memoryManager.Set(LuisSlot.PRICE, DONTCARE)
 
         memoryManager.Delete(HotelSlot.PRICERANGE)
         memoryManager.Delete(HotelSlot.PRICERANGE_COUNT)
 
-        memoryManager.Set(HotelSlot.PRICERANGE, DONTCARE)
+        //memoryManager.Set(HotelSlot.PRICERANGE, DONTCARE)
 
         DB.UpdateEntities(memoryManager)
     }
@@ -87,12 +102,15 @@ export const apiDontCareHotelPrice = {
 export const apiDontCareAttractionPrice = {
     name: "dontcare-price",
     logic: async (memoryManager: ClientMemoryManager) => {
+        if (memoryManager.Get(AttractionSlot.PRICERANGE) && !memoryManager.Get(AttractionSlot.PRICERANGE_COUNT)) {
+            return
+        }
         memoryManager.Set(LuisSlot.PRICE, DONTCARE)
 
         memoryManager.Delete(AttractionSlot.PRICERANGE)
         memoryManager.Delete(AttractionSlot.PRICERANGE_COUNT)
 
-        memoryManager.Set(AttractionSlot.PRICERANGE, DONTCARE)
+        //memoryManager.Set(AttractionSlot.PRICERANGE, DONTCARE)
 
         DB.UpdateEntities(memoryManager)
     }
@@ -100,12 +118,15 @@ export const apiDontCareAttractionPrice = {
 export const apiDontCareRestaurantFood = {
     name: "dontcare-food",
     logic: async (memoryManager: ClientMemoryManager) => {
+        if (memoryManager.Get(RestaurantSlot.FOOD) && !memoryManager.Get(RestaurantSlot.FOOD_COUNT)) {
+            return
+        }
         memoryManager.Set(LuisSlot.FOOD, DONTCARE)
 
         memoryManager.Delete(RestaurantSlot.FOOD)
         memoryManager.Delete(RestaurantSlot.FOOD_COUNT)
 
-        memoryManager.Set(RestaurantSlot.FOOD, DONTCARE)
+        //memoryManager.Set(RestaurantSlot.FOOD, DONTCARE)
         DB.UpdateEntities(memoryManager)
     }
 }
@@ -113,12 +134,15 @@ export const apiDontCareRestaurantFood = {
 export const apiDontCareTrainArrive = {
     name: "dontcare-arrive",
     logic: async (memoryManager: ClientMemoryManager) => {
+        if (memoryManager.Get(TrainSlot.ARRIVE_BY) && !memoryManager.Get(TrainSlot.ARRIVE_BY_COUNT)) {
+            return
+        }
         memoryManager.Set(LuisSlot.ARRIVE_BY, DONTCARE)
 
         memoryManager.Delete(TrainSlot.ARRIVE_BY)
         memoryManager.Delete(TrainSlot.ARRIVE_BY_COUNT)
 
-        memoryManager.Set(TrainSlot.ARRIVE_BY, DONTCARE)
+        //memoryManager.Set(TrainSlot.ARRIVE_BY, DONTCARE)
 
         DB.UpdateEntities(memoryManager)
     }
@@ -127,12 +151,15 @@ export const apiDontCareTrainArrive = {
 export const apiDontCareTaxiArrive = {
     name: "dontcare-arrive",
     logic: async (memoryManager: ClientMemoryManager) => {
+        if (memoryManager.Get(TaxiSlot.ARRIVE_BY) && !memoryManager.Get(TaxiSlot.ARRIVE_BY_COUNT)) {
+            return
+        }
         memoryManager.Set(LuisSlot.ARRIVE_BY, DONTCARE)
 
         memoryManager.Delete(TaxiSlot.ARRIVE_BY)
         memoryManager.Delete(TaxiSlot.ARRIVE_BY_COUNT)
 
-        memoryManager.Set(TaxiSlot.ARRIVE_BY, DONTCARE)
+        //memoryManager.Set(TaxiSlot.ARRIVE_BY, DONTCARE)
 
         DB.UpdateEntities(memoryManager)
     }
@@ -141,12 +168,15 @@ export const apiDontCareTaxiArrive = {
 export const apiDontCareTaxiLeave = {
     name: "dontcare-leave",
     logic: async (memoryManager: ClientMemoryManager) => {
+        if (memoryManager.Get(TaxiSlot.LEAVE_AT) && !memoryManager.Get(TaxiSlot.LEAVE_AT_COUNT)) {
+            return
+        }
         memoryManager.Set(LuisSlot.LEAVE_AT, DONTCARE)
 
         memoryManager.Delete(TaxiSlot.LEAVE_AT)
         memoryManager.Delete(TaxiSlot.LEAVE_AT_COUNT)
 
-        memoryManager.Set(TaxiSlot.LEAVE_AT, DONTCARE)
+        //memoryManager.Set(TaxiSlot.LEAVE_AT, DONTCARE)
 
         DB.UpdateEntities(memoryManager)
     }
@@ -155,12 +185,15 @@ export const apiDontCareTaxiLeave = {
 export const apiDontCareTrainLeave = {
     name: "dontcare-leave",
     logic: async (memoryManager: ClientMemoryManager) => {
+        if (memoryManager.Get(TrainSlot.LEAVE_AT) && !memoryManager.Get(TrainSlot.LEAVE_AT_COUNT)) {
+            return
+        }
         memoryManager.Set(LuisSlot.LEAVE_AT, DONTCARE)
 
         memoryManager.Delete(TrainSlot.LEAVE_AT)
         memoryManager.Delete(TrainSlot.LEAVE_AT_COUNT)
 
-        memoryManager.Set(TrainSlot.LEAVE_AT, DONTCARE)
+        //memoryManager.Set(TrainSlot.LEAVE_AT, DONTCARE)
 
         DB.UpdateEntities(memoryManager)
     }
@@ -170,10 +203,13 @@ export const apiDontCareTrainLeave = {
 export const apiDontCareTrainPeople = {
     name: "dontcare-people",
     logic: async (memoryManager: ClientMemoryManager) => {
+        if (memoryManager.Get(TrainSlot.PEOPLE)) {
+            return
+        }
         memoryManager.Set(LuisSlot.PEOPLE, DONTCARE)
 
         memoryManager.Delete(TrainSlot.PEOPLE)
-        memoryManager.Set(TrainSlot.PEOPLE, DONTCARE)
+        //memoryManager.Set(TrainSlot.PEOPLE, DONTCARE)
 
         DB.UpdateEntities(memoryManager)
     }
@@ -182,12 +218,15 @@ export const apiDontCareTrainPeople = {
 export const apiDontCareAttractionType = {
     name: "dontcare-type",
     logic: async (memoryManager: ClientMemoryManager) => {
+        if (memoryManager.Get(AttractionSlot.TYPE) && !memoryManager.Get(AttractionSlot.TYPE_COUNT)) {
+            return
+        }
         memoryManager.Set(LuisSlot.TYPE, DONTCARE)
 
         memoryManager.Delete(AttractionSlot.TYPE)
         memoryManager.Delete(AttractionSlot.TYPE_COUNT)
 
-        memoryManager.Set(AttractionSlot.TYPE, DONTCARE)
+        //memoryManager.Set(AttractionSlot.TYPE, DONTCARE)
 
         DB.UpdateEntities(memoryManager)
     }
@@ -196,12 +235,15 @@ export const apiDontCareAttractionType = {
 export const apiDontCareHotelType = {
     name: "dontcare-type",
     logic: async (memoryManager: ClientMemoryManager) => {
+        if (memoryManager.Get(HotelSlot.TYPE) && !memoryManager.Get(HotelSlot.TYPE_COUNT)) {
+            return
+        }
         memoryManager.Set(LuisSlot.TYPE, DONTCARE)
 
         memoryManager.Delete(HotelSlot.TYPE)
         memoryManager.Delete(HotelSlot.TYPE_COUNT)
 
-        memoryManager.Set(HotelSlot.TYPE, DONTCARE)
+        //memoryManager.Set(HotelSlot.TYPE, DONTCARE)
 
         DB.UpdateEntities(memoryManager)
     }
@@ -210,12 +252,15 @@ export const apiDontCareHotelType = {
 export const apiDontCareRestaurantName = {
     name: "dontcare-name",
     logic: async (memoryManager: ClientMemoryManager) => {
+        if (memoryManager.Get(RestaurantSlot.NAME) && !memoryManager.Get(RestaurantSlot.NAME_COUNT)) {
+            return
+        }
         memoryManager.Set(LuisSlot.NAME, DONTCARE)
 
         memoryManager.Delete(RestaurantSlot.NAME)
         memoryManager.Delete(RestaurantSlot.NAME_COUNT)
 
-        memoryManager.Set(RestaurantSlot.NAME, DONTCARE)
+        //memoryManager.Set(RestaurantSlot.NAME, DONTCARE)
         DB.UpdateEntities(memoryManager)
     }
 }
@@ -223,12 +268,15 @@ export const apiDontCareRestaurantName = {
 export const apiDontCareAttractionName = {
     name: "dontcare-name",
     logic: async (memoryManager: ClientMemoryManager) => {
+        if (memoryManager.Get(AttractionSlot.NAME) && !memoryManager.Get(AttractionSlot.NAME_COUNT)) {
+            return
+        }
         memoryManager.Set(LuisSlot.NAME, DONTCARE)
 
         memoryManager.Delete(AttractionSlot.NAME)
         memoryManager.Delete(AttractionSlot.NAME_COUNT)
 
-        memoryManager.Set(AttractionSlot.NAME, DONTCARE)
+        //memoryManager.Set(AttractionSlot.NAME, DONTCARE)
         DB.UpdateEntities(memoryManager)
     }
 }
@@ -236,12 +284,15 @@ export const apiDontCareAttractionName = {
 export const apiDontCareHotelName = {
     name: "dontcare-name",
     logic: async (memoryManager: ClientMemoryManager) => {
+        if (memoryManager.Get(HotelSlot.NAME) && !memoryManager.Get(HotelSlot.NAME_COUNT)) {
+            return
+        }
         memoryManager.Set(LuisSlot.NAME, DONTCARE)
 
         memoryManager.Delete(HotelSlot.NAME)
         memoryManager.Delete(HotelSlot.NAME_COUNT)
 
-        memoryManager.Set(HotelSlot.NAME, DONTCARE)
+        //memoryManager.Set(HotelSlot.NAME, DONTCARE)
         DB.UpdateEntities(memoryManager)
     }
 }
@@ -249,12 +300,15 @@ export const apiDontCareHotelName = {
 export const apiDontCareHotelStars = {
     name: "dontcare-stars",
     logic: async (memoryManager: ClientMemoryManager) => {
+        if (memoryManager.Get(HotelSlot.STARS) && !memoryManager.Get(HotelSlot.STARS_COUNT)) {
+            return
+        }
         memoryManager.Set(LuisSlot.STARS, DONTCARE)
 
         memoryManager.Delete(HotelSlot.STARS)
         memoryManager.Delete(HotelSlot.STARS_COUNT)
 
-        memoryManager.Set(HotelSlot.STARS, DONTCARE)
+        //memoryManager.Set(HotelSlot.STARS, DONTCARE)
 
         DB.UpdateEntities(memoryManager)
     }
@@ -263,12 +317,15 @@ export const apiDontCareHotelStars = {
 export const apiDontCareHotelDay = {
     name: "dontcare-day",
     logic: async (memoryManager: ClientMemoryManager) => {
+        if (memoryManager.Get(HotelSlot.DAY) && !memoryManager.Get(HotelSlot.DAY_COUNT)) {
+            return
+        }
         memoryManager.Set(LuisSlot.DAY, DONTCARE)
 
         memoryManager.Delete(HotelSlot.DAY)
         memoryManager.Delete(HotelSlot.DAY_COUNT)
 
-        memoryManager.Set(HotelSlot.DAY, DONTCARE)
+        //memoryManager.Set(HotelSlot.DAY, DONTCARE)
 
         DB.UpdateEntities(memoryManager)
     }
@@ -278,11 +335,14 @@ export const apiDontCareHotelDay = {
 export const apiDontCareRestaurantDay = {
     name: "dontcare-day",
     logic: async (memoryManager: ClientMemoryManager) => {
+        if (memoryManager.Get(RestaurantSlot.DAY)) {
+            return
+        }
         memoryManager.Set(LuisSlot.DAY, DONTCARE)
 
         memoryManager.Delete(RestaurantSlot.DAY)
 
-        memoryManager.Set(RestaurantSlot.DAY, DONTCARE)
+        //memoryManager.Set(RestaurantSlot.DAY, DONTCARE)
         DB.UpdateEntities(memoryManager)
     }
 }
@@ -290,12 +350,15 @@ export const apiDontCareRestaurantDay = {
 export const apiDontCareRestaurantAddr = {
     name: "dontcare-addr",
     logic: async (memoryManager: ClientMemoryManager) => {
-        memoryManager.Set(RestaurantSlot.DAY, DONTCARE)
+        if (memoryManager.Get(RestaurantSlot.ADDRESS) && !memoryManager.Get(RestaurantSlot.ADDRESS_COUNT)) {
+            return
+        }
+        memoryManager.Set(RestaurantSlot.ADDRESS, DONTCARE)
 
         memoryManager.Delete(RestaurantSlot.ADDRESS)
         memoryManager.Delete(RestaurantSlot.ADDRESS_COUNT)
 
-        memoryManager.Set(RestaurantSlot.ADDRESS, DONTCARE)
+        //memoryManager.Set(RestaurantSlot.ADDRESS, DONTCARE)
         DB.UpdateEntities(memoryManager)
     }
 }
