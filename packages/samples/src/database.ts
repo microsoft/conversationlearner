@@ -145,7 +145,7 @@ export const ResolveItem = (name: string, values: string[]): [string | null, num
     // Try containment
     match = values.find(h => h.indexOf(name) >= 0)
     if (match != null) {
-        return [match, 0]
+        return [match, 50]
     }
 
     // Try phrase similarity
@@ -227,7 +227,7 @@ const ResolveName = (name: string, items: any[], preString: string, postString: 
     // Try containment
     const match = items.find(h => h.name.indexOf(name) >= 0)
     if (match != null) {
-        return [match.name, 0]
+        return [match.name, 50]
     }
 
     // Try phrase similarity
