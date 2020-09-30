@@ -778,13 +778,13 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
         const destinations = [... new Set(trains.map(a => a.destination))]
         SetEntities(destinations, LuisSlot.DESTINATION, TrainSlot.DESTINATION, TrainSlot.DESTINATION_COUNT, memoryManager)
 
-        const durations = [... new Set(trains.map(a => a.duration))]
-        SetEntities(durations, null, TrainSlot.DURATION, TrainSlot.DURATION_COUNT, memoryManager)
+        var bookready = 
+            memoryManager.Get(TrainSlot.DEPART, ClientMemoryManager.AS_STRING_LIST).length == 1 
+            && memoryManager.Get(TrainSlot.DESTINATION, ClientMemoryManager.AS_STRING_LIST).length == 1 
+            && memoryManager.Get(TrainSlot.DAY, ClientMemoryManager.AS_STRING_LIST).length == 1
 
         // Only set times & trainId after destination / departure / day have been chosen
-        if (memoryManager.Get(TrainSlot.DEPART, ClientMemoryManager.AS_STRING_LIST).length == 1 
-        && memoryManager.Get(TrainSlot.DESTINATION, ClientMemoryManager.AS_STRING_LIST).length == 1 
-        && memoryManager.Get(TrainSlot.DAY, ClientMemoryManager.AS_STRING_LIST).length == 1)  {
+        if (bookready)  {
             const arriveBys = [... new Set(trains.map(a => a.arriveBy))]
             // Null LUIS slot as times are diff
             SetEntities(arriveBys, null, TrainSlot.ARRIVE_BY, TrainSlot.ARRIVE_BY_COUNT, memoryManager)
@@ -805,8 +805,25 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
             memoryManager.Delete(TrainSlot.ID_COUNT)
         }
         
+        // Only set prices if bookready or all prices are the same
         const prices = [... new Set(trains.map(a => a.price))]
+        if (bookready || prices.length == 1) {
         SetEntities(prices, null, TrainSlot.TICKET, TrainSlot.TICKET_COUNT, memoryManager)
+        }
+        else {
+            memoryManager.Delete(TrainSlot.TICKET)
+            memoryManager.Delete(TrainSlot.TICKET_COUNT)
+        }
+
+        // Only set duration if bookready or all prices are the same
+        const durations = [... new Set(trains.map(a => a.duration))]
+        if (bookready || durations.length == 1) {
+            SetEntities(durations, null, TrainSlot.DURATION, TrainSlot.DURATION_COUNT, memoryManager)
+        }
+        else {
+            memoryManager.Delete(TrainSlot.DURATION)
+            memoryManager.Delete(TrainSlot.DURATION_COUNT)
+        }
 
         memoryManager.Delete(TrainSlot.CHOICE_NONE)
         memoryManager.Delete(TrainSlot.CHOICE_ONE)
