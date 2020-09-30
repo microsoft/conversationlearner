@@ -363,6 +363,17 @@ export const apiDontCareRestaurantAddr = {
     }
 }
 
+const mentionEntities = 
+{
+    taxi: ["taxi"],
+    train: ["trains", "train"],
+    restaurant: ["foods", "food", "restaurants", "restaurant", "eat"],
+    hotel: ["hotels", "hotel", "stay", "guesthouses", "guesthouse", "room"],
+    police: ["police"],
+    hospital: ["hospital", "doctor"],
+    attraction: ["tourist attraction", "attractions", "attraction"]
+}
+
 //=================================
 // Initialize Models
 //=================================
@@ -373,6 +384,34 @@ const initDispatchModel = (clFactory: ConversationLearnerFactory) => {
     clDispatch = clFactory.create(modelId)
 
     clDispatch.EntityDetectionCallback = async (text: string, memoryManager: ClientMemoryManager): Promise<void> => {
+
+        // Override LUIS result 
+        for (const [key, values] of Object.entries(mentionEntities)) 
+        {
+            var entityName = `mention-${key}`;
+            memoryManager.Delete(entityName);
+            for (var value of values)
+            {
+                var startIndex = text.indexOf(value);
+
+                if (value == "train" && text.indexOf("train station") >= 0)
+                {
+                    continue;
+                }
+                if (startIndex > -1)
+                {
+                    var endIndex = startIndex + value.length - 1;
+                    // Enforce that matches are whole token
+                    if ((startIndex == 0 || text[startIndex - 1] == ' ' || text[startIndex - 1] == '.')
+                        && (endIndex == text.length - 1 || text[endIndex + 1] == ' ' || text[endIndex + 1] == '.' || text[endIndex + 1] == '?'))
+                    {
+                        memoryManager.Set(entityName, key);
+                        break;
+                    }
+                }
+            }
+        }
+
         Utils.ApplyEntitySubstitutions(memoryManager)
     }
 
