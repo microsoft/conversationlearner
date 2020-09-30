@@ -10,27 +10,50 @@ export const MAX_MULTI_VALUE = 3
 export const ApplyEntitySubstitutions = (memoryManager: ClientMemoryManager, domainFilter?: string): void => {
     Object.values(LuisSlot).map(entityName => {
         try {
-            const value = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING)
-            if (value) {
-                if (value == "the restaurant" || value == "the hotel" || value == "the taxi") {
-                    memoryManager.Delete(entityName);
+            let rawValues = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING_LIST)
+            rawValues = rawValues.filter(v =>
+                (v != "the restaurant" && v != "the hotel" && v != "the taxi"))
+            
+            var values : (string | null)[] = []
+            var matches : number[] = []
+            for (var i in rawValues)
+            {
+                const substitution = DB.EntitySubstitutions()[rawValues[i]]
+                if (substitution) {
+                    values.push(substitution);
+                    matches.push(0);
                 }
-                else {
-                    const substitution = DB.EntitySubstitutions()[value]
-                    if (substitution) {
-                        memoryManager.Set(entityName, substitution)
-                        return substitution
-                    }
-                    else if (domainFilter) {
-                        const newValue = DB.ResolveEntityValue(value, entityName, domainFilter)
-                        if (newValue && newValue != value) {
-                            memoryManager.Set(entityName, newValue)
-                            return substitution
-                        }
-                    }
-                    if (value.startsWith("the ")) {
-                        value.substring("the ".length)
-                    }
+                else if (domainFilter) {
+                    const result = DB.ResolveEntityValue(rawValues[i], entityName, domainFilter)
+                    values.push(result[0]);
+                    matches.push(result[1]);
+                }
+            }
+
+            memoryManager.Delete(entityName)
+
+            if (values.length == 0)
+            {
+                return;
+            }
+            else if (values.length == 1 && values[0] != null)
+            {
+                memoryManager.Set(entityName, values[0])
+            }
+
+            // Special case hotel / guesthouse
+            else if (values.includes("guesthouse") || values.includes("Guesthouse"))
+            {
+                memoryManager.Set(entityName, "guesthouse")
+            }
+            else if (values.includes("hotel") || values.includes("Hotel"))
+            {
+                memoryManager.Set(entityName, "hotel")
+            }
+            else {
+                var minIndex = IndexOfMin(matches);
+                if (values[minIndex] != null) {
+                    memoryManager.Set(entityName, values[minIndex]!)
                 }
             }
         }
@@ -38,6 +61,22 @@ export const ApplyEntitySubstitutions = (memoryManager: ClientMemoryManager, dom
             return "ERROR";  // LARS TEMP
         }
     })
+}
+
+export const IndexOfMin = (self: number[]): number => {
+    var min: number = self[0];
+    var minIndex: number = 0;
+
+    for (var i = 1; i < self.length; ++i)
+    {
+        if (self[i] < min)
+        {
+            min = self[i];
+            minIndex = i;
+        }
+    }
+
+    return minIndex;
 }
 
 export const ExpandTime = (time: string, addHours: number = 0): string => {
@@ -68,25 +107,12 @@ export const BaseString = (text: string): string => {
 
 export const MemoryValue = (slot: any, memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): string | null => {
 
-    const value = memoryManager.Get(slot, ClientMemoryManager.AS_STRING)
+    const value = memoryManager.Get(slot, ClientMemoryManager.AS_STRING_LIST)
 
-    if (value !== "none" && value !== "dontcare" && value != null) {
-        return BaseString(value)
+    if (value[0] !== "none" && value[0] !== "dontcare" && value[0] != null) {
+        return BaseString(value[0])
     }
     return null
-}
-
-// Special case hotel as it can mean guesthouse or hotel.  Pick guesthouse if mutiple
-export const MemoryHotelValue = (slot: any, memoryManager: ClientMemoryManager | ReadOnlyClientMemoryManager): string | null => {
-
-    const values = memoryManager.Get(slot, ClientMemoryManager.AS_STRING_LIST) as string[]
-    if (values.includes("guesthouse") || values.includes("Guesthouse")) {
-        return "guesthouse";
-    }
-    if (values.includes("hotel") || values.includes("Hotel")) {
-        return "hotel";
-    }
-    return null;
 }
 
 export const trainBetween = (trains: Train[], leaveAfter: string, arriveBefore: string): Train | null => {

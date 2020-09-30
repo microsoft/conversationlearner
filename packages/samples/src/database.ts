@@ -97,7 +97,7 @@ export const DialogActs = (): string[] => {
     return _dialogActs
 }
 
-export const ResolveEntityValue = (entityValue: string, entityName: string, domainName: string) => {
+export const ResolveEntityValue = (entityValue: string, entityName: string, domainName: string): [string | null, number] => {
     // Remove extra space added before apostrophe
     const cleanValue = entityValue.replace(" '", "'")
 
@@ -126,26 +126,26 @@ export const ResolveEntityValue = (entityValue: string, entityName: string, doma
     else if (entityName == "food") {
         return ResolveItem(cleanValue, SlotTypes().get("food")!)
     }
-    return cleanValue
+    return [cleanValue, 100]
 }
 
-export const ResolveItem = (name: string, values: string[]) => {
+export const ResolveItem = (name: string, values: string[]): [string | null, number] => {
 
     if (name == "dontcare") {
-        return null
+        return [null, 0]
     }
 
     // Try exact match
     let match = values.find(h => h == name)
     if (match != null) {
-        return match
+        return [match, 0]
     }
 
         
     // Try containment
     match = values.find(h => h.indexOf(name) >= 0)
     if (match != null) {
-        return match
+        return [match, 0]
     }
 
     // Try phrase similarity
@@ -165,38 +165,38 @@ export const ResolveItem = (name: string, values: string[]) => {
         }
     }
     if (best != null) {
-        return best
+        return [best, bestDist]
     }
     else {
-        return name
+        return [name, 100]
     }
 }
 
-const ResolveName = (name: string, items: any[], preString: string, postString: string) => {
+const ResolveName = (name: string, items: any[], preString: string, postString: string) : [string | null, number] => {
     let before = `${preString} `
     let after = ` ${postString}`
 
     if (name == "dontcare") {
-        return null
+        return [null, 0]
     }
     
     // First check raw name
     if (items.find(h => h.name == name)) {
-        return name
+        return [name, 0]
     }
 
     // i.e. " hotel"
     if (name.indexOf(after) >= 0) {
         const shortName = name.replace(after, "")
         if (items.find(h => h.name == shortName)) {
-            return shortName
+            return [shortName, 0]
         }
     }
     else {
         // Otherwise try adding " hotel"
         const longName = `{name}{after}`
         if (HotelDb().find(h => h.name == longName)) {
-            return longName
+            return [longName, 0]
         }
     }
 
@@ -204,14 +204,14 @@ const ResolveName = (name: string, items: any[], preString: string, postString: 
     if (name.indexOf(before) >= 0) {
         const shortName = name.replace(before, "")
         if (items.find(h => h.name == shortName)) {
-            return shortName
+            return [shortName, 0]
         }
     }
     else {
         // Otherwise try adding "the "
         const longName = `{before}{name}`
         if (items.find(h => h.name == longName)) {
-            return longName
+            return [longName, 0]
         }
     }
 
@@ -220,14 +220,14 @@ const ResolveName = (name: string, items: any[], preString: string, postString: 
         let shortName = name.replace(before, "")
         shortName = shortName.replace(after, "")
         if (items.find(h => h.name == shortName)) {
-            return shortName
+            return [shortName, 0]
         }
     }
 
     // Try containment
     const match = items.find(h => h.name.indexOf(name) >= 0)
     if (match != null) {
-        return match.name
+        return [match.name, 0]
     }
 
     // Try phrase similarity
@@ -241,10 +241,10 @@ const ResolveName = (name: string, items: any[], preString: string, postString: 
         }
     }
     if (best) {
-        return best
+        return [best, bestDist]
     }
     else {
-        return name
+        return [name, 0]
     }
 }
 
@@ -445,7 +445,7 @@ const UpdateDomain = (memoryManager: ClientMemoryManager, domainFilter?: string)
             memoryManager.Set(HotelSlot.STARS, stars)
         }
         if (type_ && type_ != DONTCARE) {
-            var hoteltype = Utils.MemoryHotelValue(LuisSlot.TYPE, memoryManager)
+            var hoteltype = Utils.MemoryValue(LuisSlot.TYPE, memoryManager)
             if (hoteltype) {
                 memoryManager.Delete(HotelSlot.TYPE)
                 memoryManager.Set(HotelSlot.TYPE, hoteltype)
@@ -1169,7 +1169,7 @@ const HotelOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryM
     //const parking_no =  Utils.MemoryValue(LuisSlot.PARKING_NO,  memoryManager)
     const pricerange = Utils.MemoryValue(LuisSlot.PRICE,  memoryManager)
     const stars = Utils.MemoryValue(LuisSlot.STARS,  memoryManager)
-    const _type = Utils.MemoryHotelValue(LuisSlot.TYPE,  memoryManager)
+    const _type = Utils.MemoryValue(LuisSlot.TYPE,  memoryManager)
 
     // Non-filtered options
     const people = Utils.MemoryValue(LuisSlot.PEOPLE, memoryManager)
