@@ -781,7 +781,7 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
         const durations = [... new Set(trains.map(a => a.duration))]
         SetEntities(durations, null, TrainSlot.DURATION, TrainSlot.DURATION_COUNT, memoryManager)
 
-        // Only set times after destination / departure have been chosen
+        // Only set times & trainId after destination / departure / day have been chosen
         if (memoryManager.Get(TrainSlot.DEPART, ClientMemoryManager.AS_STRING_LIST).length == 1 
         && memoryManager.Get(TrainSlot.DESTINATION, ClientMemoryManager.AS_STRING_LIST).length == 1 
         && memoryManager.Get(TrainSlot.DAY, ClientMemoryManager.AS_STRING_LIST).length == 1)  {
@@ -792,19 +792,21 @@ export const UpdateDB = (memoryManager: ClientMemoryManager, domainFilter?: stri
             const leaveAts = [... new Set(trains.map(a => a.leaveAt))]
             // Null LUIS slot as times are diff
             SetEntities(leaveAts, null, TrainSlot.LEAVE_AT, TrainSlot.LEAVE_AT_COUNT, memoryManager)
+
+            const trainIDs = [... new Set(trains.map(a => a.trainID))]
+            SetEntities(trainIDs, null, TrainSlot.ID, TrainSlot.ID_COUNT, memoryManager)
         }
         else {
             memoryManager.Delete(TrainSlot.ARRIVE_BY)
             memoryManager.Delete(TrainSlot.ARRIVE_BY_COUNT)
             memoryManager.Delete(TrainSlot.LEAVE_AT)
             memoryManager.Delete(TrainSlot.LEAVE_AT_COUNT)
+            memoryManager.Delete(TrainSlot.ID)
+            memoryManager.Delete(TrainSlot.ID_COUNT)
         }
         
         const prices = [... new Set(trains.map(a => a.price))]
         SetEntities(prices, null, TrainSlot.TICKET, TrainSlot.TICKET_COUNT, memoryManager)
-
-        const trainIDs = [... new Set(trains.map(a => a.trainID))]
-        SetEntities(trainIDs, null, TrainSlot.ID, TrainSlot.ID_COUNT, memoryManager)
 
         memoryManager.Delete(TrainSlot.CHOICE_NONE)
         memoryManager.Delete(TrainSlot.CHOICE_ONE)
