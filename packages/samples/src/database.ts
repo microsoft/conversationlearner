@@ -249,6 +249,17 @@ const ResolveName = (name: string, items: any[], preString: string, postString: 
 }
 
 export const UpdateEntities = (memoryManager: ClientMemoryManager, domainFilter?: string): void => {
+
+    // Clear old memories in case user changes their mind
+    Object.values(LuisSlot).forEach(entityName => {
+        var curMemory = memoryManager.Get(entityName, ClientMemoryManager.AS_STRING_LIST)
+        var prevMemory = memoryManager.GetPrevious(entityName, ClientMemoryManager.AS_STRING_LIST)
+        if (curMemory.length > 1 && prevMemory.length > 0) {
+            var newMemory = curMemory.filter(v => prevMemory.indexOf(v) == -1);
+            memoryManager.Delete(entityName);
+            memoryManager.Set(entityName, newMemory);
+        }
+    })
     UpdateDomain(memoryManager, domainFilter)
     UpdateDB(memoryManager, domainFilter)
 }
