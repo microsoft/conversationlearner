@@ -30,27 +30,29 @@ export const ApplyEntitySubstitutions = (memoryManager: ClientMemoryManager, dom
                 }
             }
 
-            memoryManager.Delete(entityName)
-
             if (values.length == 0)
             {
                 return;
             }
             else if (values.length == 1 && values[0] != null)
             {
+                memoryManager.Delete(entityName)
                 memoryManager.Set(entityName, values[0])
             }
 
             // Special case hotel / guesthouse
             else if (values.includes("guesthouse") || values.includes("Guesthouse"))
             {
+                memoryManager.Delete(entityName)
                 memoryManager.Set(entityName, "guesthouse")
             }
             else if (values.includes("hotel") || values.includes("Hotel"))
             {
+                memoryManager.Delete(entityName)
                 memoryManager.Set(entityName, "hotel")
             }
             else {
+                memoryManager.Delete(entityName)
                 var minIndex = IndexOfMin(matches);
                 if (values[minIndex] != null) {
                     memoryManager.Set(entityName, values[minIndex]!)
@@ -58,7 +60,8 @@ export const ApplyEntitySubstitutions = (memoryManager: ClientMemoryManager, dom
             }
         }
         catch (e) {
-            return "ERROR";  // LARS TEMP
+            // Looping through all LUIS entities, so ok if model doesn't contain entity
+            return;
         }
     })
 }
