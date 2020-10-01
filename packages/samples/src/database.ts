@@ -25,12 +25,17 @@ const ExractAllowedValues = () => {
     let priceTypes = []
     let areaTypes = []
     let foodTypes = []
+    let trainLocations = []
     for (const attraction of AttractionDb()) {
         attractionTypes.push(attraction._type)
         if (attraction.pricerange != "?") {
             priceTypes.push(attraction.pricerange)
         }
         areaTypes.push(attraction.area)
+    }
+    for (const train of TrainDb()) {
+        trainLocations.push(train.destination)
+        trainLocations.push(train.destination)
     }
     for (const restaurant of RestaurantDb()) {
         foodTypes.push(restaurant.food)
@@ -61,12 +66,14 @@ const ExractAllowedValues = () => {
     priceTypes = [...new Set(priceTypes)]
     areaTypes = [...new Set(areaTypes)]
     foodTypes = [...new Set(foodTypes)]
+    trainLocations = [...new Set(trainLocations)]
 
     _slotTypes = new Map<string, string[]>()
     _slotTypes.set("attractiontype", attractionTypes)
     _slotTypes.set("pricerange", priceTypes)
     _slotTypes.set("area", areaTypes)
     _slotTypes.set("food", foodTypes)
+    _slotTypes.set("trainlocations", trainLocations)
 }
 
 
@@ -116,6 +123,12 @@ export const ResolveEntityValue = (entityValue: string, entityName: string, doma
         if (domainName == "attraction") {
             return ResolveItem(cleanValue, SlotTypes().get("attractiontype")!)
         }
+    }
+    else if (entityName == "dest") {
+        return ResolveItem(cleanValue, SlotTypes().get("trainlocations")!)
+    }
+    else if (entityName == "depart") {
+        return ResolveItem(cleanValue, SlotTypes().get("trainlocations")!)
     }
     else if (entityName == "pricerange" && cleanValue != "?") {
         return ResolveItem(cleanValue, SlotTypes().get("pricerange")!)
