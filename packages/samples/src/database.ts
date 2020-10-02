@@ -1300,14 +1300,16 @@ const TrainOptions = (memoryManager: ClientMemoryManager | ReadOnlyClientMemoryM
         if (leaveAt && !isNaN(Utils.parseTime(leaveAt)) && arriveBy && !isNaN(Utils.parseTime(arriveBy)))
         {
             bestTrain = Utils.trainBetween(trains, leaveAt, arriveBy)
+            trains = bestTrain ? [bestTrain] : []
         }
         if (bestTrain == null && leaveAt && !isNaN(Utils.parseTime(leaveAt))) {
             bestTrain = Utils.trainLeaveAfter(trains, leaveAt)
+            trains = bestTrain ? [bestTrain] : []
         }
         if (bestTrain == null && arriveBy && !isNaN(Utils.parseTime(arriveBy))) {
             bestTrain = Utils.trainArriveBefore(trains, arriveBy)
-        }
-        trains = bestTrain ? [bestTrain] : []
+            trains = bestTrain ? [bestTrain] : []
+        }  
     }
     // Only pick one if I know where I'm going
     if (departure && destination) {

@@ -303,13 +303,25 @@ export const expandedResults = (dialogActs: string[], entities: string[]): strin
             }
         }
     }
-//LARS
-    // Force ref on all non-none booking-books
+
+    // Force ref on all non-none booking-books if not already injected
+    if (results.find(r => r[0] == "book" && r[1] == 'booking' && r[2] == "ref")) {
+        bookingBook = false;
+    }
     if (bookingBook && !bookingBookNone) {
         const kv = findEntity("booking", "ref", entities)
         let values = kv ? kv.split(": ")[1].split(",") : ["MISSING"]
         results.push(["booking", "book", "ref", values[0]]);
     }
+
+    // Add choice if more than one train option
+    if (!results.find(r => r[0] == "train" && r[1] == 'inform' && r[2] == "choice")) {
+        var match = entities.find(e => e.indexOf("train-choice:") >= 0)
+        if (match != 'train-choice: ') {
+            results.push(["inform", "train", "choice", "several"]);
+        }
+    }
+
     return results
 }
 
