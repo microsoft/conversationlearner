@@ -188,6 +188,33 @@ export const ActivityResultToString = (activityResult: DB.ActivityResult): strin
     let dialogActs: string[] = []
     let entities: string[] = []
     let output: string[][] = []
+
+    // Should I add train choice
+    let isTrain = false;
+    let haveChoice = false;
+    let needChoice = false;
+    activityResult.modelResults.forEach(dr => {
+        if (dr) {
+
+            if  (dr.dialogActs.find(r => r.indexOf("train") >= 0)) {
+                isTrain = true;
+            }
+
+            if (dr.dialogActs.find(r => r == "train-inform-choice")) {
+                haveChoice = true;
+            }
+
+            
+            var match = dr.entities.find(e => e.indexOf("train-choice:") >= 0)
+            if (match && match != 'train-choice: ') {
+                needChoice = true;
+            }
+        }
+    })
+    if (isTrain && needChoice && !haveChoice) {
+        output.push(['inform', 'train', 'choice', 'several'])
+    }
+
     activityResult.modelResults.forEach(dr => {
         if (dr) {
             dialogActs = [...dialogActs, ...dr.dialogActs]
@@ -312,14 +339,6 @@ export const expandedResults = (dialogActs: string[], entities: string[]): strin
         const kv = findEntity("booking", "ref", entities)
         let values = kv ? kv.split(": ")[1].split(",") : ["MISSING"]
         results.push(["booking", "book", "ref", values[0]]);
-    }
-
-    // Add choice if more than one train option
-    if (!results.find(r => r[0] == "train" && r[1] == 'inform' && r[2] == "choice")) {
-        var match = entities.find(e => e.indexOf("train-choice:") >= 0)
-        if (match != 'train-choice: ') {
-            results.push(["inform", "train", "choice", "several"]);
-        }
     }
 
     return results
