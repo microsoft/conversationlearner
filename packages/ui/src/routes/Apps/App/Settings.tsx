@@ -195,6 +195,7 @@ class Settings extends React.Component<Props, ComponentState> {
             ...app,
             appName: this.state.appNameVal,
             metadata: {
+                skipClEntityExtractor: app.metadata.skipClEntityExtractor,
                 botFrameworkApps: this.state.botFrameworkAppsVal,
                 markdown: this.state.markdownVal,
                 video: this.state.videoVal,

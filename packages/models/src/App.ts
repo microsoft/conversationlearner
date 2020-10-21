@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 export interface AppMetaData {
+  skipClEntityExtractor?: boolean
   botFrameworkApps: string[]
   markdown?: string
   video?: string

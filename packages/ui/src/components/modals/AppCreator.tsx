@@ -123,6 +123,9 @@ class AppCreator extends React.Component<Props, ComponentState> {
             appName: this.state.appNameVal.trim(),
             locale: this.state.localeVal,
             metadata: {
+                // PVA has it's own entity detection, it does not need LUIS
+                // For PVA use all programmatic entities and do not use LUIS
+                skipClEntityExtractor: true,
                 botFrameworkApps: [],
                 markdown: undefined,
                 video: undefined,
