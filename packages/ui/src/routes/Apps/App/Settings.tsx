@@ -13,6 +13,7 @@ import ExportChoice from '../../../components/modals/ExportChoice'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import HelpIcon from '../../../components/HelpIcon'
 import { connect } from 'react-redux'
+import { FeatureStrings } from '../../../types/const'
 import { State, AppCreatorType } from '../../../types'
 import { Expando, AppCreator, TextboxRestrictable, PackageCreator, ErrorInjectionEditor, PackageTable } from '../../../components/modals'
 import { bindActionCreators } from 'redux'
@@ -291,8 +292,18 @@ class Settings extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onConfirmDeleteApp() {
+    onConfirmDeleteApp(pattern?: string) {
+        if (pattern && Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.CCI)) {
+            const filter = pattern.replace("*","");
+            for (let app of this.props.apps) {
+                if (pattern === "*" || app.appName.indexOf(filter) >= 0) {
+                    this.props.onDeleteApp(app.appId)        
+                }
+            }
+        }
+        else {
         this.props.onDeleteApp(this.props.app.appId)
+        }
         this.setState({
             isConfirmDeleteAppModalOpen: false
         })
@@ -593,7 +604,8 @@ const mapStateToProps = (state: State) => {
         apps: state.apps.all,
         trainDialogs: state.trainDialogs,
         entities: state.entities,
-        actions: state.actions
+        actions: state.actions,
+        settings: state.settings
     }
 }
 

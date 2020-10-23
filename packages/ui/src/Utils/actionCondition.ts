@@ -100,7 +100,13 @@ export const findNumberFromMemory = (memory: CLM.Memory, isMultivalue: boolean):
         return memory.entityValues.length
     }
 
-    const valueString: string | undefined = (memory?.entityValues?.[0]?.resolution as any).value
+    let valueString: string | undefined = memory?.entityValues?.[0]?.resolution
+        ? (memory.entityValues[0].resolution as any).value
+        : undefined
+
+    if (!valueString && memory?.entityValues?.[0]?.userText) {
+        valueString = memory?.entityValues?.[0]?.userText
+    }
 
     return valueString
         ? parseFloat(valueString)

@@ -4,11 +4,13 @@
  */
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
+import * as Util from '../../Utils/util'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { autobind } from 'core-decorators'
+import { FeatureStrings } from '../../types/const'
 
 interface ComponentState {
     value: string
@@ -27,6 +29,9 @@ class TextboxRestrictableModal extends React.Component<Props, ComponentState> {
     }
 
     isContinueDisabled() {
+        if (Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.CCI) && this.state.value.indexOf("*") >= 0) {
+            return false;
+        }
         return (this.props.matchedText != null) && this.props.matchedText !== this.state.value
     }
 
@@ -35,7 +40,10 @@ class TextboxRestrictableModal extends React.Component<Props, ComponentState> {
         this.setState({
             value: ""
         })
-        this.props.onOK(this.state.value)
+        if (Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.CCI) && this.state.value.indexOf("*") >= 0) {
+            this.props.onOK(this.state.value)
+        }
+        this.props.onOK()
     }
 
     @autobind
@@ -106,7 +114,8 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        apps: state.apps.all
+        apps: state.apps.all,
+        settings: state.settings,
     }
 }
 
@@ -117,7 +126,7 @@ export interface ReceivedProps {
     matchedText: any
     buttonOk: string
     buttonCancel: string
-    onOK: (userInput: string) => void
+    onOK: (pattern?: string) => void
     onCancel: () => void
 }
 

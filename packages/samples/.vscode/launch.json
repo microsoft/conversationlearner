@@ -16,6 +16,19 @@
                 "--preserve-symlinks"
             ],
             "sourceMaps": true
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Quick",
+            "program": "${workspaceFolder}/lib/server.js",
+            "outFiles": [
+                "${workspaceFolder}/lib/*.js"
+            ],
+            "runtimeArgs": [
+                "--preserve-symlinks"
+            ],
+            "sourceMaps": true
         }
     ]
 }

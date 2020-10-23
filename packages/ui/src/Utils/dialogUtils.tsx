@@ -611,7 +611,7 @@ export function hasInternalLabelConflict(originalTrainDialog: CLM.TrainDialog, n
     return false
 }
 
-function doLabelledEntitiesMatch(labelEntities1: CLM.LabeledEntity[], labelEntities2: CLM.LabeledEntity[]): boolean {
+function doLabelledEntitiesMatch(labelEntities1: CLM.LabeledEntity[] = [], labelEntities2: CLM.LabeledEntity[] = []): boolean {
 
     // Get unique ids
     const entityIds1 = labelEntities1.map(le => le.entityId).filter((item, i, ar) => ar.indexOf(item) === i)
@@ -631,9 +631,14 @@ function doLabelledEntitiesMatch(labelEntities1: CLM.LabeledEntity[], labelEntit
 }
 
 function doesExtractorStepMatch(extractorStep1: CLM.TrainExtractorStep, extractorStep2: CLM.TrainExtractorStep): boolean {
+
+    if (extractorStep1.type !== extractorStep2.type) {
+        return false;
+    }
+    
     // Only need to test the 1st Text Variation as they are equivalent w/in a round
-    const labelEntities1 = extractorStep1.textVariations[0].labelEntities
-    const labelEntities2 = extractorStep2.textVariations[0].labelEntities
+    const labelEntities1 = extractorStep1.textVariations[0]?.labelEntities
+    const labelEntities2 = extractorStep2.textVariations[0]?.labelEntities
 
     return doLabelledEntitiesMatch(labelEntities1, labelEntities2)
 }
