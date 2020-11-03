@@ -55,8 +55,13 @@ class ExportChoice extends React.Component<Props, ComponentState> {
     simplifyPayload(appDefinition: CLM.AppDefinition) {
         for (const action of appDefinition.actions) {
             const json = JSON.parse(action.payload)["json"];
-            let slateValueFromJson = Value.fromJSON(json)
-            const payloadAsText = Plain.serialize(slateValueFromJson);
+            const slateValueFromJson = Value.fromJSON(json)
+            let payloadAsText = Plain.serialize(slateValueFromJson);
+
+            // Now substitute entity names for entity IDs
+            for (let entity of appDefinition.entities) {
+                payloadAsText = payloadAsText.replace(`$${entity.entityName}`,`{${entity.entityId}}`);
+            }
             json["simplePayload"] = payloadAsText;
 
             action.payload = JSON.stringify(json);
