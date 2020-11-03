@@ -1103,9 +1103,9 @@ export class CLRunner {
                 this.SaveLogicResult(clRecognizeResult, actionResult, apiAction.actionId, conversationReference)
             }
         }
-        else if (CLM.ActionBase.isPVAContent(clRecognizeResult.scoredAction)) {
-            const pvaAction = new CLM.PVAAction(clRecognizeResult.scoredAction as any)
-            const response = await this.TakePVAAction(pvaAction, filledEntityMap)
+        else if (CLM.ActionBase.useSimplePayload(clRecognizeResult.scoredAction)) {
+            const simpleAction = new CLM.SimpleAction(clRecognizeResult.scoredAction as any)
+            const response = await this.TakeSimpleAction(simpleAction, filledEntityMap)
             actionResult = {
                 logicResult: undefined,
                 response
@@ -1735,8 +1735,8 @@ export class CLRunner {
             })
     }
 
-    public async TakePVAAction(pvaAction: CLM.PVAAction, filledEntityMap: CLM.FilledEntityMap): Promise<Partial<BB.Activity> | string> {
-        return Promise.resolve(pvaAction.renderValue(CLM.getEntityDisplayValueMap(filledEntityMap)))
+    public async TakeSimpleAction(simpleAction: CLM.SimpleAction, filledEntityMap: CLM.FilledEntityMap): Promise<Partial<BB.Activity> | string> {
+        return Promise.resolve(simpleAction.renderValue(CLM.getEntityDisplayValueMap(filledEntityMap)))
     }
 
     public async TakeTextAction(textAction: CLM.TextAction, filledEntityMap: CLM.FilledEntityMap): Promise<Partial<BB.Activity> | string> {
@@ -2051,7 +2051,7 @@ export class CLRunner {
                                 const filledIdMap = filledEntityMap.EntityMapToIdMap()
                                 const actionResult = await this.TakeAPIAction(apiAction, filledIdMap, state, entities, true, actionInput)
                                 scorerStep.logicResult = actionResult.logicResult
-                            } else if (curAction.actionType === CLM.ActionTypes.END_SESSION && !CLM.ActionBase.isPVAContent(curAction)) {
+                            } else if (curAction.actionType === CLM.ActionTypes.END_SESSION && !CLM.ActionBase.useSimplePayload(curAction)) {
                                 const sessionAction = new CLM.SessionAction(curAction)
                                 const filledIdMap = filledEntityMap.EntityMapToIdMap()
                                 await this.TakeSessionAction(sessionAction, filledIdMap, true, state, null, null)
@@ -2361,9 +2361,9 @@ export class CLRunner {
                                 replayError = replayError ?? new CLM.ReplayErrorAPIPlaceholder()
                                 replayErrors.push(replayError)
                             }
-                            else if (CLM.ActionBase.isPVAContent(curAction)) {
-                                const pvaAction = new CLM.PVAAction(curAction)
-                                const response = await this.TakePVAAction(pvaAction, filledEntityMap)
+                            else if (CLM.ActionBase.useSimplePayload(curAction)) {
+                                const simpleAction = new CLM.SimpleAction(curAction)
+                                const response = await this.TakeSimpleAction(simpleAction, filledEntityMap)
                                 botResponse = {
                                     logicResult: undefined,
                                     response: response

@@ -38,10 +38,10 @@ export function actionListViewRenderer(
 
     const defaultEntityMap = Util.getDefaultEntityMap(entities)
 
-    if (CLM.ActionBase.isPVAContent(action)) {
-        const pvaAction = new CLM.PVAAction(action)
+    if (CLM.ActionBase.useSimplePayload(action)) {
+        const simpleAction = new CLM.SimpleAction(action)
         const entityMap = Util.getDefaultEntityMap(entities)
-        return pvaAction.renderValue(entityMap)
+        return simpleAction.renderValue(entityMap)
     }
     else if (action.actionType === CLM.ActionTypes.TEXT) {
         const textAction = new CLM.TextAction(action)

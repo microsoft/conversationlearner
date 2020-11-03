@@ -103,9 +103,9 @@ export class ActionBase {
   // TODO: Remove ScoredAction since it doesn't have payload
   static GetPayload(action: ActionBase | ScoredBase, entityValues: Map<string, string>): string {
     
-    if (this.isPVAContent(action)) {
-      let pvaAction = new PVAAction(action as ActionBase)
-      return pvaAction.renderValue(entityValues)
+    if (this.useSimplePayload(action)) {
+      let simpleAction = new SimpleAction(action as ActionBase)
+      return simpleAction.renderValue(entityValues)
     }
     
     switch (action.actionType) {
@@ -166,13 +166,16 @@ export class ActionBase {
     return false
   }
 
-   // Return true if action should be rendered as PVA content
-  static isPVAContent(action: Partial<ActionBase> | undefined): boolean {
-    if (!action) {
+   // Return true if text action contains simple payload and no slate document
+  static useSimplePayload(action: Partial<ActionBase> | undefined): boolean {
+    if (action === undefined) {
       return false
     }
-    if (action.payload && JSON.parse(action.payload).isPVAContent) {
-      return true
+    if (action.payload !== undefined && action.actionType === ActionTypes.TEXT) {
+      const json = JSON.parse(action.payload)
+      if (json.nodes == null && json.simplePayload != null) {
+        return true
+      }
     }
     return false
   }
@@ -392,18 +395,18 @@ export class SessionAction extends ActionBase {
   }
 }
 
-export class PVAAction extends ActionBase {
+export class SimpleAction extends ActionBase {
   value: string 
 
   constructor(action: ActionBase) {
     super(action)
 
     const payload = JSON.parse(this.payload)
-    if (!payload.isPVAContent) {
-      throw new Error(`You attempted to create PVA action for non-PVA content`)
+    if (!payload.simplePayload) {
+      throw new Error(`You attempted to create simple action for item without simplePayload`)
     }
 
-    this.value = payload.value
+    this.value = payload.simplePayload
   }
 
   renderValue(entityValues: Map<string, string>): string {

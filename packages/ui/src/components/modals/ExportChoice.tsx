@@ -29,13 +29,13 @@ enum ExportType {
 
 interface ComponentState {
     exportType: ExportType
-    useSimplePayload: boolean
+    includeSimplePayload: boolean
 }
 
 class ExportChoice extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         exportType: ExportType.CL,
-        useSimplePayload: false
+        includeSimplePayload: false
     }
 
     @autobind
@@ -57,16 +57,14 @@ class ExportChoice extends React.Component<Props, ComponentState> {
             const json = JSON.parse(action.payload)["json"];
             let slateValueFromJson = Value.fromJSON(json)
             const payloadAsText = Plain.serialize(slateValueFromJson);
-            const payload = {
-                "isPVAContent": true,
-                value: payloadAsText
-            }
-            action.payload = JSON.stringify(payload);
+            json["simplePayload"] = payloadAsText;
+
+            action.payload = JSON.stringify(json);
         }
     }
     async onExportCL() {
         const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<CLM.AppDefinition>)
-        if (this.state.useSimplePayload) {
+        if (this.state.includeSimplePayload) {
             this.simplifyPayload(appDefinition);
         }
         const blob = new Blob([JSON.stringify(appDefinition)], { type: "text/plain;charset=utf-8" })
@@ -76,7 +74,7 @@ class ExportChoice extends React.Component<Props, ComponentState> {
 
     async onExportTranscripts() {
         const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<CLM.AppDefinition>)
-        if (this.state.useSimplePayload) {
+        if (this.state.includeSimplePayload) {
             this.simplifyPayload(appDefinition);
         }
         const transcripts = await OBIUtil.toTranscripts(appDefinition, this.props.app.appId, this.props.user, this.props.fetchActivitiesThunkAsync as any)
@@ -101,7 +99,7 @@ class ExportChoice extends React.Component<Props, ComponentState> {
     @autobind
     onTogglePayloadType() {
         this.setState({
-            useSimplePayload: !this.state.useSimplePayload
+            includeSimplePayload: !this.state.includeSimplePayload
         })
     }
 
@@ -148,8 +146,8 @@ class ExportChoice extends React.Component<Props, ComponentState> {
                     </div>
                     <div className="cl-entity-creator-checkbox">
                         <OF.Checkbox
-                            label={"Use PVA Payload"}
-                            checked={this.state.useSimplePayload}
+                            label={"Include Simple Payload"}
+                            checked={this.state.includeSimplePayload}
                             onChange={this.onTogglePayloadType}
                         />
                     </div>

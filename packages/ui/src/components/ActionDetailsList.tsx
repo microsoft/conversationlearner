@@ -244,10 +244,10 @@ type Props = stateProps & ReceivedProps & InjectedIntlProps
 export default connect<stateProps, {}, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ActionDetailsList) as any)
 
 function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetailsList, isValidationError: boolean) {
-    if (CLM.ActionBase.isPVAContent(action)) {
-        const pvaAction = new CLM.PVAAction(action)
+    if (CLM.ActionBase.useSimplePayload(action)) {
+        const simpleAction = new CLM.SimpleAction(action)
         const entityMap = Util.getDefaultEntityMap(component.props.entities)
-        return pvaAction.renderValue(entityMap)
+        return simpleAction.renderValue(entityMap)
     }
     else if (action.actionType === CLM.ActionTypes.TEXT) {
         const textAction = new CLM.TextAction(action)
@@ -377,9 +377,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 const entityMap = Util.getDefaultEntityMap(component.props.entities)
 
                 try {
-                    if (CLM.ActionBase.isPVAContent(action)) {
-                        const pvaAction = new CLM.PVAAction(action)
-                        return pvaAction.renderValue(entityMap)
+                    if (CLM.ActionBase.useSimplePayload(action)) {
+                        const simpleAction = new CLM.SimpleAction(action)
+                        return simpleAction.renderValue(entityMap)
                     }
                     switch (action.actionType) {
                         case CLM.ActionTypes.TEXT: {
@@ -421,7 +421,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 }
             },
             render: (action, component) => {
-                const isValidationError = !CLM.ActionBase.isPVAContent(action) && component.validationError(action)
+                const isValidationError = !CLM.ActionBase.useSimplePayload(action) && component.validationError(action)
                 const payloadRenderer = getActionPayloadRenderer(action, component, isValidationError)
                 return (
                     <span>
