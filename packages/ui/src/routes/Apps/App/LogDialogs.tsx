@@ -279,7 +279,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onCloseChatSessionWindow() {
+    async onCloseChatSessionWindow() {
+        // fetch all actions and entities for dynamically generated actions by generative predictor
+        await ((this.props.fetchAllEntitiesThunkAsync(this.props.app.appId) as any) as Promise<void>)
+        await ((this.props.fetchAllActionsThunkAsync(this.props.app.appId) as any) as Promise<void>)
         this.setState({
             chatSession: null,
             isChatSessionWindowOpen: false,
@@ -548,7 +551,9 @@ const mapDispatchToProps = (dispatch: any) => {
         createChatSessionThunkAsync: actionTypes.chat.createChatSessionThunkAsync,
         deleteLogDialogsThunkAsync: actionTypes.log.deleteLogDialogsThunkAsync,
         fetchLogDialogAsync: actionTypes.log.fetchLogDialogThunkAsync,
-        fetchLogDialogsThunkAsync: actionTypes.log.fetchLogDialogsThunkAsync
+        fetchLogDialogsThunkAsync: actionTypes.log.fetchLogDialogsThunkAsync,
+        fetchAllActionsThunkAsync: actionTypes.action.fetchAllActionsThunkAsync,
+        fetchAllEntitiesThunkAsync: actionTypes.entity.fetchAllEntitiesThunkAsync
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {
