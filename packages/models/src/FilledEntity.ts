@@ -245,11 +245,17 @@ export class FilledEntityMap {
 
     const displayText = builtinType && resolution ? ModelUtils.PrebuiltDisplayText(builtinType, resolution, entityValue) : entityValue
 
+    let reso = resolution
+    if (!reso && !isNaN(Number(entityValue))) {
+      resolution = { subtype:'decimal', value: Number(entityValue) }
+    }
+
+
     const newFilledEntityValue: MemoryValue = {
       userText: entityValue,
       displayText,
       builtinType,
-      resolution,
+      resolution: resolution ? resolution : Number(entityValue),
       enumValueId
     }
 

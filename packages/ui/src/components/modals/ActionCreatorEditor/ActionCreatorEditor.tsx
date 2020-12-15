@@ -461,7 +461,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                 const slateValuesMap = {}
                 const secondarySlateValuesMap = {}
-                if (!CLM.ActionBase.isPVAContent(action)) {
+                if (!CLM.ActionBase.useSimplePayload(action)) {
 
                     if (action.actionType === CLM.ActionTypes.TEXT) {
                         const textAction = new CLM.TextAction(action)
@@ -1801,13 +1801,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 return true
             })
 
-        let pvaAction: CLM.PVAAction | null = null
+        let simpleAction: CLM.SimpleAction | null = null
         const defaultEntityMap = Util.getDefaultEntityMap(this.props.entities)
-        if (this.props.action && CLM.ActionBase.isPVAContent(this.props.action)) {
-            pvaAction = new CLM.PVAAction(this.props.action)
+        if (this.props.action && CLM.ActionBase.useSimplePayload(this.props.action)) {
+            simpleAction = new CLM.SimpleAction(this.props.action)
         }
 
-        const pvastyle = {
+        const simplaActionStyle = {
             padding: "10px",
             border: "#3e3e3e",
             borderWidth: "1px",
@@ -2105,13 +2105,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             </div>
                         }
 
-                        {pvaAction &&
-                            <div style={pvastyle}>
-                                {pvaAction.renderValue(defaultEntityMap)}
+                        {simpleAction &&
+                            <div style={simplaActionStyle}>
+                                {simpleAction.renderValue(defaultEntityMap)}
                             </div>
                         }
                         {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.TEXT && this.props.open &&
-                            (this.props.action == null || !pvaAction)
+                            (this.props.action == null || !simpleAction)
                             && (<div className={(payloadError ? 'editor--error' : '')}>
                                 <div data-testid="action-text-response">
                                     <OF.Label className="cl-label">Bot's response...
@@ -2207,7 +2207,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.SET_ENTITY
                             && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.DISPATCH
                             && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.CHANGE_MODEL
-                            && !pvaAction
+                            && !simpleAction
                             && (<div className="cl-action-creator--expected-entity">
                                 <TC.TagPicker
                                     data-testid="action-expected-entity"
@@ -2233,11 +2233,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         {this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.DISPATCH
                             && <>
                             <div className="cl-action-creator--required-entities">
-                                {pvaAction !== null 
+                                {simpleAction !== null 
                                     ? <div>
                                         <OF.Label>Required Conditions</OF.Label>
-                                        <div style={pvastyle}>
-                                            {renderConditions(pvaAction.requiredEntities, pvaAction.requiredConditions, this.props.entities, true)}
+                                        <div style={simplaActionStyle}>
+                                            {renderConditions(simpleAction.requiredEntities, simpleAction.requiredConditions, this.props.entities, true)}
                                         </div>
                                     </div>
                                     :   <CLTagPicker
@@ -2263,11 +2263,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 </div>
 
                                 <div className="cl-action-creator--disqualifying-entities">
-                                {pvaAction !== null
+                                {simpleAction !== null
                                     ? <div >
                                         <OF.Label>Disqualifying Conditions</OF.Label>
-                                        <div style={pvastyle}>
-                                            {renderConditions(pvaAction.negativeEntities, pvaAction.negativeConditions, this.props.entities, true)}
+                                        <div style={simplaActionStyle}>
+                                            {renderConditions(simpleAction.negativeEntities, simpleAction.negativeConditions, this.props.entities, true)}
                                         </div>
                                     </div>
                                     :   <TC.TagPicker
@@ -2313,7 +2313,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     onChange={this.onChangeRepromptCheckbox}
                                     disabled={
                                         !this.state.isTerminal
-                                        || pvaAction != null
+                                        || simpleAction != null
                                         || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)
                                         // Expected Entity and Reprompt can't both be in use
                                         || this.state.expectedEntityTags.length > 0
@@ -2323,7 +2323,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 {this.state.shouldReprompt &&
                                     <RepromptAction
                                         intl={intl}
-                                        disabled={pvaAction != null}
+                                        disabled={simpleAction != null}
                                         action={repromptAction}
                                         selfprompt={this.isSelfReprompt(this.state.repromptActionId)}
                                         entities={this.props.entities}
@@ -2338,7 +2338,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_ENTRY_NODE_LABEL)}
                                         checked={this.state.isEntryNode}
                                         onChange={this.onChangeIsEntryNodeCheckbox}
-                                        disabled={pvaAction != null || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
+                                        disabled={simpleAction != null || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
                                         tipType={ToolTip.TipType.ACTION_IS_ENTRY_NODE}
                                     />
                                 }
@@ -2376,7 +2376,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     <div className="cl-modal-buttons_primary">
                         <OF.PrimaryButton
                             data-testid="action-creator-create-button"
-                            disabled={this.saveDisabled() || pvaAction !== null}
+                            disabled={this.saveDisabled() || simpleAction !== null}
                             onClick={this.onClickSaveCreate}
                             ariaDescription={this.state.isEditing ?
                                 Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION) :
