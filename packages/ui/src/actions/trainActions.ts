@@ -630,6 +630,7 @@ export const fetchActivitiesThunkAsync = (
     userName: string,
     userId: string,
     useMarkdown: boolean = true,
+    includePredictedEntities: boolean = false,
     noSpinnerDisplay: boolean = false,
 ) => {
     return async (dispatch: Dispatch<any>) => {
@@ -637,7 +638,7 @@ export const fetchActivitiesThunkAsync = (
         dispatch(fetchActivitiesAsync(noSpinnerDisplay))
 
         try {
-            const teachWithActivities = await clClient.trainDialogActivities(appId, trainDialog, userName, userId, useMarkdown)
+            const teachWithActivities = await clClient.trainDialogActivities(appId, trainDialog, userName, userId, useMarkdown, includePredictedEntities)
             dispatch(fetchActivitiesFulfilled(teachWithActivities))
             return teachWithActivities
         } catch (e) {

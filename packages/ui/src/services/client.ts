@@ -459,10 +459,10 @@ export default class ClClient {
         return response.data.appList.apps
     }
 
-    async trainDialogActivities(appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean): Promise<CLM.TeachWithActivities> {
+    async trainDialogActivities(appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean, includePredictedEntities: boolean): Promise<CLM.TeachWithActivities> {
         const response = await this.send<CLM.TeachWithActivities>({
             method: 'post',
-            url: `/app/${appId}/activities?username=${userName}&userid=${userId}&useMarkdown=${useMarkdown}`,
+            url: `/app/${appId}/activities?username=${userName}&userid=${userId}&useMarkdown=${useMarkdown}&includePredictedEntities=${includePredictedEntities}`,
             data: trainDialog
         })
         return response.data

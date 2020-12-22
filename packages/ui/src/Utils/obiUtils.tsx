@@ -12,13 +12,12 @@ import { REPROMPT_SELF } from '../types/const'
 import { ImportedAction } from '../types/models'
 import { Case } from '../types/obiTypes'
 import { User } from '../types'
-import { ExtractorStepType } from '@conversationlearner/models'
 
 export async function toTranscripts(
     appDefinition: CLM.AppDefinition,
     appId: string,
     user: User,
-    fetchActivitiesAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithActivities>
+    fetchActivitiesAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean, includePredictedEntities: boolean, noSpinnerDisplay: boolean) => Promise<CLM.TeachWithActivities>
 ): Promise<BB.Transcript[]> {
 
     const definitions = {
@@ -48,7 +47,7 @@ export async function getLogDialogActivities(
     conversationId: string | undefined,
     channelId: string | undefined,
     fetchLogDialogThunkAsync: (appId: string, logDialogId: string, replaceLocal: boolean, nullOnNotFound: boolean, noSpinnerDisplay: boolean) => Promise<CLM.LogDialog>,
-    fetchActivitiesThunkAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean, noSpinnerDisplay: boolean) => Promise<CLM.TeachWithActivities>
+    fetchActivitiesThunkAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean, includePredictedEntities: boolean, noSpinnerDisplay: boolean) => Promise<CLM.TeachWithActivities>
 ): Promise<Util.RecursivePartial<BB.Activity>[]> {
 
     // Fetch the LogDialog
@@ -61,7 +60,7 @@ export async function getLogDialogActivities(
     const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, actions, entities)
 
     // Return activities
-    const teachWithActivities = await fetchActivitiesThunkAsync(appId, trainDialog, user.name, user.id, false, true)
+    const teachWithActivities = await fetchActivitiesThunkAsync(appId, trainDialog, user.name, user.id, false, true, true)
     const activities = teachWithActivities.activities
     if (conversationId || channelId) {
         addActivityReferences(activities, conversationId, channelId)
@@ -82,12 +81,12 @@ function addActivityReferences(activities: Util.RecursivePartial<BB.Activity>[],
 }
 
 async function getActivities(appId: string, trainDialog: CLM.TrainDialog, user: User, definitions: CLM.AppDefinition,
-    fetchActivitiesAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithActivities>
+    fetchActivitiesAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean, includePredictedEntities: boolean, noSpinned: boolean) => Promise<CLM.TeachWithActivities>
 ): Promise<BB.Transcript> {
     const newTrainDialog = Util.deepCopy(trainDialog)
     newTrainDialog.definitions = definitions
 
-    const teachWithActivities = await fetchActivitiesAsync(appId, newTrainDialog, user.name, user.id, false)
+    const teachWithActivities = await fetchActivitiesAsync(appId, newTrainDialog, user.name, user.id, false, true, false)
     return { activities: teachWithActivities.activities }
 }
 
@@ -239,7 +238,7 @@ export async function trainDialogFromTranscriptImport(
             if (activity.from.role === "user") {
                 const textVariations: CLM.TextVariation[] = [{
                     text: activity.text,
-                    labelEntities: []
+                    labelEntities: activity.channelData?.PredictedEntities || []
                 }]
                 if (activity.channelData?.textVariations) {
                     activity.channelData.textVariations.forEach((tv: any) => {
@@ -256,13 +255,32 @@ export async function trainDialogFromTranscriptImport(
                 }
                 let extractorStep: CLM.TrainExtractorStep = {
                     textVariations: textVariations,
-                    type: ExtractorStepType.USER_INPUT
+                    type: CLM.ExtractorStepType.USER_INPUT
                 }
                 curRound = {
                     extractorStep,
                     scorerSteps: []
                 }
                 trainDialog.rounds.push(curRound)
+
+                // If I had predicted entities, updated nextfilledentities
+                if (activity.channelData?.PredictedEntities) {
+                    nextFilledEntities = Util.deepCopy(nextFilledEntities)
+
+                    for (const predictedEntity  of activity.channelData?.PredictedEntities as CLM.PredictedEntity[]) {
+                        const memoryValue: CLM.MemoryValue = {
+                            userText: predictedEntity.entityText,
+                            displayText: predictedEntity.entityText,
+                            builtinType: null,
+                            resolution: predictedEntity.resolution
+                        }
+                        const filledEntity: CLM.FilledEntity = {
+                            entityId: predictedEntity.entityId,
+                            values: [memoryValue]
+                        }
+                        nextFilledEntities.push(filledEntity)
+                    }
+                }
             }
             else if (activity.from.role === "bot") {
                 let action = findMatchedAction(activity, entities, actions, nextFilledEntities)

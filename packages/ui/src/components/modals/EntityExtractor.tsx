@@ -13,7 +13,7 @@ import actions from '../../actions'
 import HelpIcon from '../HelpIcon'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { EditDialogType } from '../../types/const'
+import { EditDialogType, FeatureStrings } from '../../types/const'
 import { FM } from '../../react-intl-messages'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -492,6 +492,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                                     onClickNewEntity={this.onNewEntity}
                                     onOpenPicker={() => this.onOpenPicker(extractResponse)}
                                     onClosePicker={(onlyCloseOthers: boolean = false) => this.onClosePicker(extractResponse, onlyCloseOthers)}
+                                    canLabelProgrammatic={Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.CCI)}
                                 />
                             }
                             entities={this.props.entities}
@@ -676,6 +677,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
         entities: state.entities,
         trainDialogs: state.trainDialogs,
         teachSession: state.teachSession.teach,
+        settings: state.settings,
     }
 }
 

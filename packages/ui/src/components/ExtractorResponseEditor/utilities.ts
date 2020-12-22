@@ -647,8 +647,8 @@ export const convertGenericEntityToPredictedEntity = (entities: CLM.EntityBase[]
 }
 
 export const convertExtractorResponseToEditorModels = (extractResponse: CLM.ExtractResponse, entities: CLM.EntityBase[]): models.IEditorProps => {
+    
     const options = entities
-        .filter(e => e.entityType === CLM.EntityType.LUIS)
         .map<models.IOption>(e =>
             ({
                 id: e.entityId,

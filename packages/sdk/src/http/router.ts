@@ -1218,15 +1218,16 @@ export const getRouter = (
         try {
             const key = getMemoryKey(req)
             const appId = req.params.appId
-            const { username: userName, userid: userId, useMarkdown: useMarkdownString } = getQuery(req)
+            const { username: userName, userid: userId, useMarkdown: useMarkdownString, includePredictedEntities: includePredictedEntitiesString  } = getQuery(req)
             const useMarkdown = useMarkdownString === "true"
+            const includePredictedEntities = includePredictedEntitiesString === "true"
             const trainDialog: CLM.TrainDialog = req.body
 
             const state = stateFactory.get(key)
             const clRunner = CLRunner.GetRunnerForUI(appId)
             validateBot(req, clRunner.botChecksum())
 
-            const teachWithActivities = await clRunner.GetActivities(trainDialog, userName, userId, state, useMarkdown)
+            const teachWithActivities = await clRunner.GetActivities(trainDialog, userName, userId, state, useMarkdown, includePredictedEntities)
 
             // Clear bot memory generated with this
             await state.EntityState.ClearAsync()
@@ -1269,6 +1270,9 @@ export const getRouter = (
                 return
             }
 
+            // Close any open session from previous test that may have terminated without EndSession
+            await state.EntityState.ClearAsync()
+
             // Start new session
             const sessionCreateParams: CLM.SessionCreateParams = {
                 saveToLog: true,
@@ -1307,6 +1311,10 @@ export const getRouter = (
                 const turnContext = new BB.TurnContext(clRunner.adapter!, activity)
 
                 try {
+                    // If forcing extractor results (rather than using LUIS), include in channel data
+                    if (turnValidation.predictedEntities) {
+                        turnContext.activity.channelData["PredictedEntities"] = turnValidation.predictedEntities;
+                    }
                     const result = await clRunner.recognize(turnContext)
 
                     if (result) {
@@ -1328,16 +1336,16 @@ export const getRouter = (
 
                         // Trigger next action if non-terminal
                         let bestAction = result.scoredAction
-                        let curHashIndex = 0
+                        let actionIndex = 0
 
                         // Server enforces max number of non-terminal actions, so no endless loop here
                         while (!bestAction.isTerminal) {
-                            curHashIndex = curHashIndex + 1
+                            actionIndex = actionIndex + 1
                             bestAction = await clRunner.Score(appId, sessionId, result.state, '', [], result.clEntities, false, true)
                             result.scoredAction = bestAction
 
                             // Include apiResults when taking action so result will be the same when testing
-                            await clRunner.TakeActionAsync(conversationReference, result, null, turnValidation.apiResults[curHashIndex])
+                            await clRunner.TakeActionAsync(conversationReference, result, null, turnValidation.apiResults[actionIndex])
                         }
                     }
                     else {
@@ -1359,6 +1367,7 @@ export const getRouter = (
                     return
                 }
             }
+            await clRunner.EndSessionAsync(state, CLM.SessionEndState.COMPLETED)
             res.send(logDialogId)
         } catch (error) {
             HandleError(res, error)

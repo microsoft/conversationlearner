@@ -46,7 +46,7 @@ export class ConversationLearner {
             }
         }
 
-        const result = await activeModel.clRunner.recognize(turnContext, force)
+        const result = await activeModel.clRunner.recognize(turnContext)
 
         return result
     }
