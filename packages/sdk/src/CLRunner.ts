@@ -2255,9 +2255,9 @@ export class CLRunner {
             // Validate scorer step
             replayError = this.GetTrainDialogRoundErrors(round, roundIndex, curAction, trainDialog, entities, filledEntities, replayErrors)
 
-            let includedPredictedEntities: CLM.PredictedEntity[] | null = null;
+            let calculatedPredictedEntities: CLM.PredictedEntity[] | null = null;
             if (includePredictedEntities && round.scorerSteps.length > 0) {
-                includedPredictedEntities = this.PredictedEntitiesFromRound(round);
+                calculatedPredictedEntities = this.PredictedEntitiesFromRound(round);
             }
 
             // Generate activity.  Add markdown to highlight labelled entities
@@ -2281,7 +2281,11 @@ export class CLRunner {
             userActivity.channelId = "PVA"
 
             if (includePredictedEntities) {
-                userActivity.channelData["PredictedEntities"] = includedPredictedEntities
+                userActivity.channelData["PredictedEntities"] = calculatedPredictedEntities
+                
+                if (roundIndex == 0 && trainDialog.initialFilledEntities) {
+                    userActivity.channelData["InitialFilledEntities"] = trainDialog.initialFilledEntities
+                }
             }
 
             activities.push(userActivity)
@@ -2586,7 +2590,9 @@ export class CLRunner {
             } 
         }
         // Now update labelled entities
-        round.extractorStep.textVariations[0].labelEntities = predictedEntities
+        if (round.extractorStep.textVariations.length > 0) {
+            round.extractorStep.textVariations[0].labelEntities = predictedEntities
+        }
         return predictedEntities
     }
 

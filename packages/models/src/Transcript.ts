@@ -5,6 +5,11 @@
 import { PredictedEntity } from './Entity';
 import { FilledEntity } from './FilledEntity'
 
+export interface TranscriptValidationTest {
+    initialFilledEntities: FilledEntity[]
+    turnValidations: TranscriptValidationTurn[]
+}
+
 export interface TranscriptValidationTurn {
     inputText: string
     // API placeholder results following input

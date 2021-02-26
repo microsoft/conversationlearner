@@ -654,7 +654,7 @@ export default class ClClient {
     }
 
     // AT.FETCH_TRANSCRIPT_VALIDATION_ASYNC
-    async validateTranscript(appId: string, packageId: string, testId: string, transcriptValidationTurns: CLM.TranscriptValidationTurn[]): Promise<string | null> {
+    async validateTranscript(appId: string, packageId: string, testId: string, transcriptValidationTurns: CLM.TranscriptValidationTest): Promise<string | null> {
         const response = await this.send<string | null>({
             method: 'post',
             url: `/app/${appId}/validatetranscript?testId=${testId}&packageId=${packageId}`,

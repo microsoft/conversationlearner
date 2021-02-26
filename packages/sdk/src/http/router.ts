@@ -1254,7 +1254,7 @@ export const getRouter = (
         try {
             const { appId } = req.params
             const { packageId, testId } = getQuery(req)
-            const turnValidations: CLM.TranscriptValidationTurn[] = req.body
+            const validationTest: CLM.TranscriptValidationTest = req.body
             const clRunner = CLRunner.GetRunnerForUI(appId)
             const app = await client.GetApp(appId)
 
@@ -1277,7 +1277,7 @@ export const getRouter = (
             const sessionCreateParams: CLM.SessionCreateParams = {
                 saveToLog: true,
                 packageId,
-                initialFilledEntities: []
+                initialFilledEntities: validationTest.initialFilledEntities
             }
             const session = await clRunner.CreateSessionAsync(state, null, appId, SessionStartFlags.IN_TEST, sessionCreateParams) as CLM.Session
             const logDialogId = session.logDialogId
@@ -1298,7 +1298,7 @@ export const getRouter = (
                 aadObjectId: ''
             }
 
-            for (const turnValidation of turnValidations) {
+            for (const turnValidation of validationTest.turnValidations) {
                 const activity = {
                     id: CLM.ModelUtils.generateGUID(),
                     conversation,
