@@ -6,13 +6,12 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as CLM from '@conversationlearner/models'
 import * as Util from '../../Utils/util'
+import * as DialogUtils from '../../Utils/dialogUtils'
 import * as AdmZip from 'adm-zip'
 import * as OBIUtil from '../../Utils/obiUtils'
 import actions from '../../actions'
 import FormattedMessageId from '../FormattedMessageId'
 import HelpIcon from '../HelpIcon'
-import Plain from 'slate-plain-serializer'
-import { Value } from 'slate'
 import { saveAs } from 'file-saver'
 import { TipType } from '../ToolTips/ToolTips'
 import { bindActionCreators } from 'redux'
@@ -52,25 +51,10 @@ class ExportChoice extends React.Component<Props, ComponentState> {
         this.props.onClose()
     }
 
-    simplifyPayload(appDefinition: CLM.AppDefinition) {
-        for (const action of appDefinition.actions) {
-            const json = JSON.parse(action.payload)["json"];
-            const slateValueFromJson = Value.fromJSON(json)
-            let payloadAsText = Plain.serialize(slateValueFromJson);
-
-            // Now substitute entity names for entity IDs
-            for (let entity of appDefinition.entities) {
-                payloadAsText = payloadAsText.replace(`$${entity.entityName}`,`{${entity.entityId}}`);
-            }
-            json["simplePayload"] = payloadAsText;
-
-            action.payload = JSON.stringify(json);
-        }
-    }
     async onExportCL() {
         const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<CLM.AppDefinition>)
         if (this.state.includeSimplePayload) {
-            this.simplifyPayload(appDefinition);
+            DialogUtils.simplifyPayloads(appDefinition);
         }
         const blob = new Blob([JSON.stringify(appDefinition)], { type: "text/plain;charset=utf-8" })
         saveAs(blob, `${this.props.app.appName}.cl`)
@@ -80,7 +64,7 @@ class ExportChoice extends React.Component<Props, ComponentState> {
     async onExportTranscripts() {
         const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<CLM.AppDefinition>)
         if (this.state.includeSimplePayload) {
-            this.simplifyPayload(appDefinition);
+            DialogUtils.simplifyPayloads(appDefinition);
         }
         const transcripts = await OBIUtil.toTranscripts(appDefinition, this.props.app.appId, this.props.user, this.props.fetchActivitiesThunkAsync as any)
 
