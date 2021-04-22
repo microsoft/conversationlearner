@@ -2257,7 +2257,12 @@ export class CLRunner {
 
             let calculatedPredictedEntities: CLM.PredictedEntity[] | null = null;
             if (includePredictedEntities && round.scorerSteps.length > 0) {
-                calculatedPredictedEntities = this.PredictedEntitiesFromRound(round);
+
+                let previousRound = roundIndex > 0 
+                    ? trainDialog.rounds[roundIndex -1 ]
+                    : null;
+
+                calculatedPredictedEntities = this.PredictedEntitiesFromRound(round, previousRound, entities);
             }
 
             // Generate activity.  Add markdown to highlight labelled entities
@@ -2558,41 +2563,55 @@ export class CLRunner {
     }
 
     // Calculate predicted entities from filled entities and extractor step
-    // Used when LUIS is bypassed. 
-    public PredictedEntitiesFromRound(round: CLM.TrainRound)
+    public PredictedEntitiesFromRound(round: CLM.TrainRound, previousRound: CLM.TrainRound | null, entities: CLM.EntityBase[])
     {
         const predictedEntities : CLM.PredictedEntity[] = []
-        if (round.scorerSteps.length > 0)
-        {
-            const userText =  round.extractorStep.type == CLM.ExtractorStepType.OUT_OF_DOMAIN
-                ? CLM.OUT_OF_DOMAIN_INPUT
-                : round.extractorStep.textVariations[0].text
 
-            const filledEntities = round.scorerSteps[0].input.filledEntities;
-            for (const filledEntity of filledEntities)
+        if (round.scorerSteps.length == 0) {
+            return predictedEntities
+        }
+
+        const userText =  round.extractorStep.type == CLM.ExtractorStepType.OUT_OF_DOMAIN
+            ? CLM.OUT_OF_DOMAIN_INPUT
+            : round.extractorStep.textVariations[0].text
+
+        const filledEntities = round.scorerSteps[0].input.filledEntities;
+        const previousFilledEntities = previousRound
+            ? previousRound.scorerSteps[previousRound.scorerSteps.length -1 ].input.filledEntities
+            : []
+
+        // Only want to update changed entities 
+        const changedFilledEntities = filledEntities.filter(fe =>  
             {
-                const value = filledEntity.values[0]
-                const startCharIndex = userText.indexOf(userText)
-                if (startCharIndex >= 0 && filledEntity.entityId)
+                let preFE = previousFilledEntities.find(pve => pve.entityId == fe.entityId)
+                return (!preFE || preFE.values[0].userText != fe.values[0].userText)
+            })
+
+        for (const filledEntity of changedFilledEntities)
+        {
+            const value = filledEntity.values[0]
+            if (value.userText && filledEntity.entityId && userText.includes(value.userText))
+            {
+                let startCharIndex = userText.indexOf(value.userText);
+                const predictedEntity : CLM.PredictedEntity = 
                 {
-                    const predictedEntity : CLM.PredictedEntity = 
-                    {
-                        entityId: filledEntity.entityId,
-                        startCharIndex: startCharIndex,
-                        endCharIndex: startCharIndex + userText.length,
-                        entityText: userText,
-                        resolution: value.resolution,
-                        builtinType: value.builtinType!,
-                        score: 1.0
-                    };
-                    predictedEntities.push(predictedEntity)
-                }
-            } 
-        }
+                    entityId: filledEntity.entityId,
+                    startCharIndex: startCharIndex,
+                    endCharIndex: startCharIndex + userText.length,
+                    entityText: userText,
+                    resolution: value.resolution,
+                    builtinType: value.builtinType!,
+                    score: 1.0
+                };
+                predictedEntities.push(predictedEntity)
+            }
+        } 
+
         // Now update labelled entities
-        if (round.extractorStep.textVariations.length > 0) {
-            round.extractorStep.textVariations[0].labelEntities = predictedEntities
+        if (predictedEntities.length > 0) {
+            round.extractorStep.textVariations[0].labelEntities = round.extractorStep.textVariations[0].labelEntities.concat(predictedEntities)
         }
+
         return predictedEntities
     }
 

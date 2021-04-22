@@ -142,7 +142,13 @@ export class TestSet {
         for (const file of transcriptFiles) {
             let fileContent = await Util.readFileAsync(file)
 
-            const transcript: BB.Activity[] = JSON.parse(fileContent)
+            const inputData = JSON.parse(fileContent)
+
+            // File could be list of Activities or Activity list in Transcript property
+            const transcript: BB.Activity[] = inputData.Transcript 
+                ? inputData.Transcript
+                : inputData
+
             let transcriptUsesLG = OBIUtils.usesLG(transcript)
             const sourceName = this.sourceName(transcript)
             const conversationId = this.conversationId(transcript)
