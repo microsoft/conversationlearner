@@ -15,6 +15,7 @@ import { User } from '../types'
 
 export async function toTranscripts(
     appDefinition: CLM.AppDefinition,
+    exportedDialogs: CLM.TrainDialog[],
     appId: string,
     user: User,
     fetchActivitiesAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean, includePredictedEntities: boolean, noSpinnerDisplay: boolean) => Promise<CLM.TeachWithActivities>
@@ -26,7 +27,7 @@ export async function toTranscripts(
         trainDialogs: []
     }
 
-    return Promise.all(appDefinition.trainDialogs.map(td => getActivities(appId, td, user, definitions, fetchActivitiesAsync)))
+    return Promise.all(exportedDialogs.map(td => getActivities(appId, td, user, definitions, fetchActivitiesAsync)))
 }
 
 export interface OBIImportData {

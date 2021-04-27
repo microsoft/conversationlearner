@@ -226,7 +226,8 @@ export const getRouter = (
                 templates,
                 checksum: clRunner.botChecksum(),
                 validationError: validationError,
-                banner: banner
+                banner: banner,
+                service: options.CONVERSATION_LEARNER_SERVICE_URI
             }
             res.send(botInfo)
         } catch (error) {
@@ -1218,7 +1219,7 @@ export const getRouter = (
         try {
             const key = getMemoryKey(req)
             const appId = req.params.appId
-            const { username: userName, userid: userId, useMarkdown: useMarkdownString, includePredictedEntities: includePredictedEntitiesString  } = getQuery(req)
+            const { username: userName, userid: userId, useMarkdown: useMarkdownString, includePredictedEntities: includePredictedEntitiesString } = getQuery(req)
             const useMarkdown = useMarkdownString === "true"
             const includePredictedEntities = includePredictedEntitiesString === "true"
             const trainDialog: CLM.TrainDialog = req.body
@@ -1313,7 +1314,7 @@ export const getRouter = (
                 try {
                     // If forcing extractor results (rather than using LUIS), include in channel data
                     if (turnValidation.predictedEntities) {
-                        turnContext.activity.channelData["PredictedEntities"] = turnValidation.predictedEntities;
+                        turnContext.activity.channelData["PredictedEntities"] = turnValidation.predictedEntities
                     }
                     const result = await clRunner.recognize(turnContext)
 

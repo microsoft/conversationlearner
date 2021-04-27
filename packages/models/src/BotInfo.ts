@@ -19,4 +19,5 @@ export interface BotInfo {
   validationError: string | null
   checksum: string
   banner: Banner | null
+  service: string
 }

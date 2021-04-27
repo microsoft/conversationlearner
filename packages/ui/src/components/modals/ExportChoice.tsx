@@ -23,7 +23,8 @@ import { autobind } from 'core-decorators'
 
 enum ExportType {
     CL = ".cl",
-    TRANSCRIPT = '.transcript'
+    TRAIN_TRANSCRIPTS = 'Train .transcripts',
+    LOG_TRANSCRIPTS = 'Log .transcrips'
 }
 
 interface ComponentState {
@@ -40,8 +41,11 @@ class ExportChoice extends React.Component<Props, ComponentState> {
     @autobind
     async onClickExport() {
         switch (this.state.exportType) {
-            case ExportType.TRANSCRIPT:
-                await this.onExportTranscripts()
+            case ExportType.TRAIN_TRANSCRIPTS:
+                await this.onExportTranscripts(false)
+                break
+            case ExportType.LOG_TRANSCRIPTS:
+                await this.onExportTranscripts(true)
                 break
             case ExportType.CL:
                 await this.onExportCL()
@@ -61,12 +65,17 @@ class ExportChoice extends React.Component<Props, ComponentState> {
         this.props.onClose()
     }
 
-    async onExportTranscripts() {
+    async onExportTranscripts(logTranscripts: boolean) {
         const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<CLM.AppDefinition>)
         if (this.state.includeSimplePayload) {
             DialogUtils.simplifyPayloads(appDefinition);
         }
-        const transcripts = await OBIUtil.toTranscripts(appDefinition, this.props.app.appId, this.props.user, this.props.fetchActivitiesThunkAsync as any)
+
+        const exportedDialogs = logTranscripts
+            ? this.props.logDialogs.map(ld => CLM.ModelUtils.ToTrainDialog(ld, this.props.actions, this.props.entities))
+            : appDefinition.trainDialogs;
+
+        const transcripts = await OBIUtil.toTranscripts(appDefinition, exportedDialogs, this.props.app.appId, this.props.user, this.props.fetchActivitiesThunkAsync as any)
 
         const zip = new AdmZip()
         transcripts.forEach(t => {
@@ -124,8 +133,12 @@ class ExportChoice extends React.Component<Props, ComponentState> {
                                     text: ExportType.CL
                                 },
                                 {
-                                    key: ExportType.TRANSCRIPT,
-                                    text: ExportType.TRANSCRIPT
+                                    key: ExportType.TRAIN_TRANSCRIPTS,
+                                    text: ExportType.TRAIN_TRANSCRIPTS
+                                },
+                                {
+                                    key: ExportType.LOG_TRANSCRIPTS,
+                                    text: ExportType.LOG_TRANSCRIPTS
                                 }
                             ]}
                             selectedKey={this.state.exportType}
@@ -180,7 +193,8 @@ const mapStateToProps = (state: State) => {
         user: state.user.user,
         apps: state.apps.all,
         actions: state.actions,
-        entities: state.entities
+        entities: state.entities,
+        logDialogs: state.logDialogState.logDialogs,
     }
 }
 
