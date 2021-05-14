@@ -6,13 +6,12 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as CLM from '@conversationlearner/models'
 import * as Util from '../../Utils/util'
+import * as DialogUtils from '../../Utils/dialogUtils'
 import * as AdmZip from 'adm-zip'
 import * as OBIUtil from '../../Utils/obiUtils'
 import actions from '../../actions'
 import FormattedMessageId from '../FormattedMessageId'
 import HelpIcon from '../HelpIcon'
-import Plain from 'slate-plain-serializer'
-import { Value } from 'slate'
 import { saveAs } from 'file-saver'
 import { TipType } from '../ToolTips/ToolTips'
 import { bindActionCreators } from 'redux'
@@ -24,7 +23,8 @@ import { autobind } from 'core-decorators'
 
 enum ExportType {
     CL = ".cl",
-    TRANSCRIPT = '.transcript'
+    TRAIN_TRANSCRIPTS = 'Train .transcripts',
+    LOG_TRANSCRIPTS = 'Log .transcrips'
 }
 
 interface ComponentState {
@@ -41,8 +41,11 @@ class ExportChoice extends React.Component<Props, ComponentState> {
     @autobind
     async onClickExport() {
         switch (this.state.exportType) {
-            case ExportType.TRANSCRIPT:
-                await this.onExportTranscripts()
+            case ExportType.TRAIN_TRANSCRIPTS:
+                await this.onExportTranscripts(false)
+                break
+            case ExportType.LOG_TRANSCRIPTS:
+                await this.onExportTranscripts(true)
                 break
             case ExportType.CL:
                 await this.onExportCL()
@@ -52,37 +55,27 @@ class ExportChoice extends React.Component<Props, ComponentState> {
         this.props.onClose()
     }
 
-    simplifyPayload(appDefinition: CLM.AppDefinition) {
-        for (const action of appDefinition.actions) {
-            const json = JSON.parse(action.payload)["json"];
-            const slateValueFromJson = Value.fromJSON(json)
-            let payloadAsText = Plain.serialize(slateValueFromJson);
-
-            // Now substitute entity names for entity IDs
-            for (let entity of appDefinition.entities) {
-                payloadAsText = payloadAsText.replace(`$${entity.entityName}`,`{${entity.entityId}}`);
-            }
-            json["simplePayload"] = payloadAsText;
-
-            action.payload = JSON.stringify(json);
-        }
-    }
     async onExportCL() {
         const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<CLM.AppDefinition>)
         if (this.state.includeSimplePayload) {
-            this.simplifyPayload(appDefinition);
+            DialogUtils.simplifyPayloads(appDefinition);
         }
         const blob = new Blob([JSON.stringify(appDefinition)], { type: "text/plain;charset=utf-8" })
         saveAs(blob, `${this.props.app.appName}.cl`)
         this.props.onClose()
     }
 
-    async onExportTranscripts() {
+    async onExportTranscripts(logTranscripts: boolean) {
         const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<CLM.AppDefinition>)
         if (this.state.includeSimplePayload) {
-            this.simplifyPayload(appDefinition);
+            DialogUtils.simplifyPayloads(appDefinition);
         }
-        const transcripts = await OBIUtil.toTranscripts(appDefinition, this.props.app.appId, this.props.user, this.props.fetchActivitiesThunkAsync as any)
+
+        const exportedDialogs = logTranscripts
+            ? this.props.logDialogs.map(ld => CLM.ModelUtils.ToTrainDialog(ld, this.props.actions, this.props.entities))
+            : appDefinition.trainDialogs;
+
+        const transcripts = await OBIUtil.toTranscripts(appDefinition, exportedDialogs, this.props.app.appId, this.props.user, this.props.fetchActivitiesThunkAsync as any)
 
         const zip = new AdmZip()
         transcripts.forEach(t => {
@@ -140,8 +133,12 @@ class ExportChoice extends React.Component<Props, ComponentState> {
                                     text: ExportType.CL
                                 },
                                 {
-                                    key: ExportType.TRANSCRIPT,
-                                    text: ExportType.TRANSCRIPT
+                                    key: ExportType.TRAIN_TRANSCRIPTS,
+                                    text: ExportType.TRAIN_TRANSCRIPTS
+                                },
+                                {
+                                    key: ExportType.LOG_TRANSCRIPTS,
+                                    text: ExportType.LOG_TRANSCRIPTS
                                 }
                             ]}
                             selectedKey={this.state.exportType}
@@ -196,7 +193,8 @@ const mapStateToProps = (state: State) => {
         user: state.user.user,
         apps: state.apps.all,
         actions: state.actions,
-        entities: state.entities
+        entities: state.entities,
+        logDialogs: state.logDialogState.logDialogs,
     }
 }
 

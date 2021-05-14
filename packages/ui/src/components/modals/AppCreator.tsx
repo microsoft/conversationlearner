@@ -17,6 +17,7 @@ import { AT } from '../../types/ActionTypes'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { autobind } from 'core-decorators'
 import { OBIImportData } from '../../Utils/obiUtils'
+import { EntityType } from '@conversationlearner/models'
 
 interface ComponentState {
     appNameVal: string
@@ -26,7 +27,8 @@ interface ComponentState {
     obiFiles: File[] | null
     autoCreate: boolean
     autoMerge: boolean
-    autoActionMatch: boolean
+    autoActionMatch: boolean,
+    convertProgrammaticEntitiesToLUIS: boolean
 }
 
 class AppCreator extends React.Component<Props, ComponentState> {
@@ -38,7 +40,8 @@ class AppCreator extends React.Component<Props, ComponentState> {
         obiFiles: null,
         autoCreate: true,
         autoMerge: true,
-        autoActionMatch: true
+        autoActionMatch: true,
+        convertProgrammaticEntitiesToLUIS: false
     }
 
     private fileInput: any
@@ -230,6 +233,98 @@ class AppCreator extends React.Component<Props, ComponentState> {
                     throw new Error("String Expected")
                 }
                 const source = JSON.parse(reader.result) as CLM.AppDefinition
+
+                // Convert all entites from Programmatic to LUIS
+                if (this.state.convertProgrammaticEntitiesToLUIS) {
+
+                    // Find out which entities are numeric by looking at conditions
+                    var numericEntityIds: Set<string> = new Set<string>()
+                    source.actions.forEach(action => {
+                        action.negativeConditions.forEach(c => {
+                            if (c.value) {
+                                numericEntityIds.add(c.entityId)
+                            }
+                        })
+                        action.requiredConditions.forEach(c => {
+                            if (c.value) {
+                                numericEntityIds.add(c.entityId)
+                            }
+                        })
+                    })
+
+                    var builtinEntityId = CLM.ModelUtils.generateGUID();
+
+                    // First change entity types
+                    source.entities.forEach(e => {
+                        e.entityType = EntityType.LUIS
+                        if (numericEntityIds.has(e.entityId)) {
+                            e.resolverType = "number"
+                            e.isResolutionRequired = true
+                        }
+                    })
+
+                    // If there is a numerical entity create build in entity
+                    if (numericEntityIds.size > 0) {
+                        // Has to be any as don't have all required fields available
+                        var builtinNumberEntity: any = {
+                            doNotMemorize: true,
+                            entityId: builtinEntityId,
+                            createdDateTime: "2021-04-13T22:03:53.7879643+00:00",
+                            entityName: "builtin-number",
+                            entityType: "number",
+                            isMultivalue: false,
+                            isNegatible: false,
+                            isResolutionRequired: false
+                        }
+                        source.entities.push(builtinNumberEntity);
+                    }
+
+                    // Add label entities to Train dialogs
+                    source.trainDialogs.forEach(td => {
+                        td.rounds.forEach(round => {
+                            var userInput = round.extractorStep.textVariations[0].text
+                            round.extractorStep.textVariations[0].labelEntities
+                            var labelEntities: CLM.LabeledEntity[]  = []
+                            // Get entities from first scorer step
+                            var filledEntities = round.scorerSteps[0].input.filledEntities
+
+                            filledEntities.forEach(fe => {
+                                // Assume only one value
+                                var entityText = fe.values[0].userText;
+                                if (entityText && userInput.includes(entityText)) {
+
+                                    var labelEntity: CLM.LabeledEntity = {
+                                        entityId: fe.entityId!,
+                                        startCharIndex: userInput.indexOf(entityText),
+                                        endCharIndex: userInput.indexOf(entityText) + entityText.length - 1,
+                                        entityText,
+                                        resolution: {},
+                                        builtinType: "LUIS"
+                                    }
+                                    labelEntities.push(labelEntity);
+
+                                    // If was numeric entity need to add built in too
+                                    if (numericEntityIds.has(fe.entityId!)) {
+                                        var builtinLabelEntity: CLM.LabeledEntity = {
+                                            entityId: builtinEntityId,
+                                            startCharIndex: labelEntity.startCharIndex,
+                                            endCharIndex: labelEntity.endCharIndex,
+                                            entityText: labelEntity.entityText,
+                                            resolution: { "value": entityText, "subtype": "integer" },
+                                            builtinType: "builtin.number"
+                                        }
+                                        labelEntities.push(builtinLabelEntity);
+
+                                        // Update Filled entity with builtin
+                                        fe.values[0].builtinType = "builtin.number"
+                                        fe.values[0].resolution = { "value": entityText, "subtype": "integer" }
+                                    }
+                                }
+                            })
+                            round.extractorStep.textVariations[0].labelEntities = labelEntities;
+                        })
+                    })
+                }
                 const appInput = this.getAppInput()
                 this.props.onSubmit(appInput, source)
             }
@@ -282,6 +377,14 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 return false
         }
     }
+
+    @autobind
+    onToggleLUISConversion() {
+        this.setState({
+            convertProgrammaticEntitiesToLUIS: !this.state.convertProgrammaticEntitiesToLUIS
+        })
+    }
+
     render() {
         const { intl } = this.props
         return (
@@ -342,6 +445,13 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                         ? this.state.clFile.name
                                         : ''}
                                 />
+                                <div className="cl-entity-creator-checkbox">
+                                <OF.Checkbox
+                                    label={"LUIS Conversion"}
+                                    checked={this.state.convertProgrammaticEntitiesToLUIS}
+                                    onChange={this.onToggleLUISConversion}
+                                />
+                    </div>
                             </div>
                         </div>
                     }

@@ -8,11 +8,14 @@ import * as OF from 'office-ui-fabric-react'
 import * as Util from '../Utils/util'
 import * as BB from 'botbuilder'
 import TagsReadOnly from '../components/TagsReadOnly'
+import Plain from 'slate-plain-serializer'
+import { Value } from 'slate'
 import { compareTwoStrings } from 'string-similarity'
 import { deepCopy, getDefaultEntityMap } from './util'
 import { ImportedAction } from '../types/models'
 import { getValueConditionName, findNumberFromMemory, findStringFromMemory, isValueConditionTrue, isEnumConditionTrue, isStringConditionTrue, getStringConditionName } from './actionCondition'
 import { fromLogTag } from '../types'
+import { ActionTypes } from '@conversationlearner/models'
 
 const MAX_SAMPLE_INPUT_LENGTH = 150
 
@@ -996,4 +999,24 @@ export function bestTemplateMatch(importedAction: ImportedAction, templates: CLM
     }
 
     return bestTemplate
+}
+
+// Add simple payload to action
+export function addSimplePayload(action: CLM.ActionBase, entities: CLM.EntityBase[]) {
+    if (action.actionType == ActionTypes.TEXT) {
+        const json = JSON.parse(action.payload)["json"];
+
+        if (!json["simplePayload"]) {
+            const slateValueFromJson = Value.fromJSON(json)
+            json["simplePayload"] = Plain.serialize(slateValueFromJson);
+            action.payload = `{"json":${JSON.stringify(json)}}`;
+        }
+    }
+}
+
+// Add simple payload to all actions
+export function simplifyPayloads(appDefinition: CLM.AppDefinition) {
+    for (const action of appDefinition.actions) {
+        addSimplePayload(action, appDefinition.entities);
+    }
 }

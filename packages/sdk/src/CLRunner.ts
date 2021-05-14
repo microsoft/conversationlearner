@@ -240,11 +240,11 @@ export class CLRunner {
     }
 
     public async onTurn(turnContext: BB.TurnContext, next: (result: CLRecognizerResult | null) => Promise<void>): Promise<void> {
-        const recognizerResult = await this.recognize(turnContext, true)
+        const recognizerResult = await this.recognize(turnContext)
         return next(recognizerResult)
     }
 
-    public async recognize(turnContext: BB.TurnContext, force?: boolean): Promise<CLRecognizerResult | null> {
+    public async recognize(turnContext: BB.TurnContext): Promise<CLRecognizerResult | null> {
         // Add input to queue
         const res = await this.AddInput(turnContext)
         return res
@@ -671,6 +671,9 @@ export class CLRunner {
 
             const extractResponse = await this.SessionExtract(app.appId, sessionId, userInput)
 
+            // If LUIS is being bypassed, predicted entities will be included in channel data
+            let predictedEntities = turnContext.activity.channelData["PredictedEntities"] || extractResponse.predictedEntities;
+                
             entities = extractResponse.definitions.entities
             errorContext = 'Score Actions'
             const scoredAction = await this.Score(
@@ -678,7 +681,7 @@ export class CLRunner {
                 sessionId,
                 state,
                 extractResponse.text,
-                extractResponse.predictedEntities,
+                predictedEntities,
                 entities,
                 false
             )
@@ -907,7 +910,8 @@ export class CLRunner {
     public async CallEntityDetectionCallback(text: string, predictedEntities: CLM.PredictedEntity[], state: CLState, allEntities: CLM.EntityBase[], skipEntityDetectionCallBack: boolean = false): Promise<CLM.ScoreInput> {
 
         // Entities before processing
-        let prevMemories = new CLM.FilledEntityMap(await state.EntityState.FilledEntityMap())
+        const filledEntityMap = await state.EntityState.FilledEntityMap();
+        let prevMemories = new CLM.FilledEntityMap(filledEntityMap)
 
         // Update memory with predicted entities
         await this.ProcessPredictedEntities(text, state.EntityState, predictedEntities, allEntities)
@@ -2190,7 +2194,7 @@ export class CLRunner {
             // Check action availability
             if (!this.isActionAvailable(curAction, scoreFilledEntities, entities)) {
                 replayError = new CLM.ReplayErrorActionUnavailable(userText)
-                replayErrors.push(replayError)
+                replayErrors.push(replayError) 
             }
         }
 
@@ -2212,7 +2216,7 @@ export class CLRunner {
      * Return any errors in TrainDialog
      * NOTE: Will set bot memory to state at end of activities
      */
-    public async GetActivities(trainDialog: CLM.TrainDialog, userName: string, userId: string, state: CLState, useMarkdown: boolean = true): Promise<CLM.TeachWithActivities | null> {
+    public async GetActivities(trainDialog: CLM.TrainDialog, userName: string, userId: string, state: CLState, useMarkdown: boolean = true, includePredictedEntities: boolean = false): Promise<CLM.TeachWithActivities | null> {
 
         let entities: CLM.EntityBase[] = trainDialog.definitions ? trainDialog.definitions.entities : []
         let actions: CLM.ActionBase[] = trainDialog.definitions ? trainDialog.definitions.actions : []
@@ -2233,6 +2237,15 @@ export class CLRunner {
         const userAccount: BB.ChannelAccount = { id: userId, name: userName, role: BB.RoleTypes.User, aadObjectId: '' }
         const botAccount: BB.ChannelAccount = { id: `BOT-${userId}`, name: CLM.CL_USER_NAME_ID, role: BB.RoleTypes.Bot, aadObjectId: '' }
 
+        const conversation: BB.ConversationAccount = {
+            id: CLM.ModelUtils.generateGUID(),
+            isGroup: false,
+            name: "",
+            tenantId: "",
+            aadObjectId: "",
+            role: BB.RoleTypes.User,
+            conversationType: ""
+        }
 
         for (let [roundIndex, round] of trainDialog.rounds.entries()) {
 
@@ -2241,6 +2254,16 @@ export class CLRunner {
 
             // Validate scorer step
             replayError = this.GetTrainDialogRoundErrors(round, roundIndex, curAction, trainDialog, entities, filledEntities, replayErrors)
+
+            let calculatedPredictedEntities: CLM.PredictedEntity[] | null = null;
+            if (includePredictedEntities && round.scorerSteps.length > 0) {
+
+                let previousRound = roundIndex > 0 
+                    ? trainDialog.rounds[roundIndex -1 ]
+                    : null;
+
+                calculatedPredictedEntities = this.PredictedEntitiesFromRound(round, previousRound, entities);
+            }
 
             // Generate activity.  Add markdown to highlight labelled entities
             let userText = CLM.ModelUtils.userText(round.extractorStep, excludedEntities, useMarkdown)
@@ -2259,6 +2282,16 @@ export class CLRunner {
             userActivity.from = userAccount
             userActivity.recipient = botAccount
             userActivity.textFormat = 'markdown'
+            userActivity.conversation = conversation
+            userActivity.channelId = "PVA"
+
+            if (includePredictedEntities) {
+                userActivity.channelData["PredictedEntities"] = calculatedPredictedEntities
+                
+                if (roundIndex == 0 && trainDialog.initialFilledEntities) {
+                    userActivity.channelData["InitialFilledEntities"] = trainDialog.initialFilledEntities
+                }
+            }
 
             activities.push(userActivity)
 
@@ -2465,6 +2498,8 @@ export class CLRunner {
                     }
 
                     if (botActivity) {
+                        botActivity.conversation = conversation
+                        botActivity.channelId = "PVA"
                         activities.push(botActivity)
                     }
                 }
@@ -2525,6 +2560,68 @@ export class CLRunner {
         }
 
         return teachWithActivities
+    }
+
+    // Calculate predicted entities from filled entities and extractor step
+    public PredictedEntitiesFromRound(round: CLM.TrainRound, previousRound: CLM.TrainRound | null, entities: CLM.EntityBase[])
+    {
+        const predictedEntities : CLM.PredictedEntity[] = []
+
+        if (round.scorerSteps.length == 0) {
+            return predictedEntities
+        }
+
+        const userText =  round.extractorStep.type == CLM.ExtractorStepType.OUT_OF_DOMAIN
+            ? CLM.OUT_OF_DOMAIN_INPUT
+            : round.extractorStep.textVariations[0].text
+
+        const filledEntities = round.scorerSteps[0].input.filledEntities;
+        const previousFilledEntities = previousRound
+            ? previousRound.scorerSteps[previousRound.scorerSteps.length -1 ].input.filledEntities
+            : []
+
+        // Only want to update changed entities 
+        const changedFilledEntities = filledEntities.filter(fe =>  
+            {
+                let preFE = previousFilledEntities.find(pve => pve.entityId == fe.entityId)
+                return (!preFE || preFE.values[0].userText != fe.values[0].userText)
+            })
+
+        for (const filledEntity of changedFilledEntities)
+        {
+            const value = filledEntity.values[0]
+            if (value.userText && filledEntity.entityId && userText.includes(value.userText))
+            {
+                let startCharIndex = userText.indexOf(value.userText);
+                const predictedEntity : CLM.PredictedEntity = 
+                {
+                    entityId: filledEntity.entityId,
+                    startCharIndex: startCharIndex,
+                    endCharIndex: startCharIndex + userText.length,
+                    entityText: userText,
+                    resolution: value.resolution,
+                    builtinType: value.builtinType!,
+                    score: 1.0
+                };
+                predictedEntities.push(predictedEntity)
+            }
+        } 
+
+        // Now update labelled entities
+        if (predictedEntities.length > 0) {
+            round.extractorStep.textVariations[0].labelEntities = round.extractorStep.textVariations[0].labelEntities.concat(predictedEntities)
+        }
+
+        return predictedEntities
+    }
+
+    public UserText(extractorStep: CLM.TrainExtractorStep): string
+    {
+        if (extractorStep.type == CLM.ExtractorStepType.OUT_OF_DOMAIN)
+        {
+            return CLM.OUT_OF_DOMAIN_INPUT; 
+        }
+        return extractorStep.textVariations[0].text;
     }
 
     private async SaveLogicResult(clRecognizeResult: CLRecognizerResult, actionResult: IActionResult, actionId: string, conversationReference: Partial<BB.ConversationReference>): Promise<void> {

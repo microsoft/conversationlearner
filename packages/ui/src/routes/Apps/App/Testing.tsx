@@ -187,12 +187,17 @@ class Testing extends React.Component<Props, ComponentState> {
             }
             const conversationId = testItem.conversationId
 
-            const transcriptValidationTurns: CLM.TranscriptValidationTurn[] = []
+            const turnValidations: CLM.TranscriptValidationTurn[] = []
             let transcriptValidationTurn: CLM.TranscriptValidationTurn = { inputText: "", apiResults: [] }
             let invalidTranscript = false
+            var initialFilledEntities: CLM.FilledEntity[] = []
             let apiResults: CLM.FilledEntity[] = []
 
             for (let activity of testItem.transcript) {
+
+                if (activity.channelData["InitialFilledEntities"]) {
+                    initialFilledEntities = activity.channelData["InitialFilledEntities"]
+                }
                 // TODO: Handle conversation updates
                 if (!activity.type || activity.type === "message") {
                     if (activity.text === "END_SESSION") {
@@ -201,9 +206,9 @@ class Testing extends React.Component<Props, ComponentState> {
                     if (activity.from.role === "user") {
                         // If already have user input push it
                         if (transcriptValidationTurn.inputText !== "") {
-                            transcriptValidationTurns.push(transcriptValidationTurn)
+                            turnValidations.push(transcriptValidationTurn)
                         }
-                        transcriptValidationTurn = { inputText: activity.text, apiResults: [] }
+                        transcriptValidationTurn = { inputText: activity.text, apiResults: [], predictedEntities: activity.channelData["PredictedEntities"]} 
                     }
                     else if (activity.from.role === "bot") {
                         if (transcriptValidationTurn) {
@@ -226,7 +231,7 @@ class Testing extends React.Component<Props, ComponentState> {
             }
             // Add last turn
             if (transcriptValidationTurn) {
-                transcriptValidationTurns.push(transcriptValidationTurn)
+                turnValidations.push(transcriptValidationTurn)
             }
 
             const sourceName = `${this.props.app.appName} (${testItem.sourceName})`
@@ -241,7 +246,11 @@ class Testing extends React.Component<Props, ComponentState> {
                 }
             }
             else {
-                const logDialogId = await ((this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, testId, transcriptValidationTurns) as any) as Promise<string | null>)
+                const transcriptValidationTest: CLM.TranscriptValidationTest = {
+                    turnValidations,
+                    initialFilledEntities
+                }
+                const logDialogId = await ((this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, testId, transcriptValidationTest) as any) as Promise<string | null>)
                 let resultTranscript: BB.Activity[] | undefined
 
                 // If log was retrieved and I'm not done

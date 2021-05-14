@@ -459,10 +459,10 @@ export default class ClClient {
         return response.data.appList.apps
     }
 
-    async trainDialogActivities(appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean): Promise<CLM.TeachWithActivities> {
+    async trainDialogActivities(appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean, includePredictedEntities: boolean): Promise<CLM.TeachWithActivities> {
         const response = await this.send<CLM.TeachWithActivities>({
             method: 'post',
-            url: `/app/${appId}/activities?username=${userName}&userid=${userId}&useMarkdown=${useMarkdown}`,
+            url: `/app/${appId}/activities?username=${userName}&userid=${userId}&useMarkdown=${useMarkdown}&includePredictedEntities=${includePredictedEntities}`,
             data: trainDialog
         })
         return response.data
@@ -654,7 +654,7 @@ export default class ClClient {
     }
 
     // AT.FETCH_TRANSCRIPT_VALIDATION_ASYNC
-    async validateTranscript(appId: string, packageId: string, testId: string, transcriptValidationTurns: CLM.TranscriptValidationTurn[]): Promise<string | null> {
+    async validateTranscript(appId: string, packageId: string, testId: string, transcriptValidationTurns: CLM.TranscriptValidationTest): Promise<string | null> {
         const response = await this.send<string | null>({
             method: 'post',
             url: `/app/${appId}/validatetranscript?testId=${testId}&packageId=${packageId}`,

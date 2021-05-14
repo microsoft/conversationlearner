@@ -5,14 +5,15 @@
 import * as React from 'react'
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
-import * as Utils from '../../../Utils/util'
+import * as Util from '../../../Utils/util'
+import * as DialogUtils from '../../../Utils/dialogUtils'
 import actions from '../../../actions'
 import ActionDetailsList from '../../../components/ActionDetailsList'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { ActionCreatorEditor } from '../../../components/modals'
-import { State } from '../../../types'
+import { State, FeatureStrings } from '../../../types'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { autobind } from 'core-decorators'
@@ -76,7 +77,7 @@ class Actions extends React.Component<Props, ComponentState> {
 
     @autobind
     async onClickDeleteActionEditor(action: CLM.ActionBase, removeFromDialogs: boolean) {
-        await Utils.setStateAsync(this, {
+        await Util.setStateAsync(this, {
             isActionEditorOpen: false,
             actionSelected: null
         })
@@ -88,11 +89,15 @@ class Actions extends React.Component<Props, ComponentState> {
     @autobind
     async onClickSubmitActionEditor(action: CLM.ActionBase) {
         const wasEditing = this.state.actionSelected
-        await Utils.setStateAsync(this, {
+        await Util.setStateAsync(this, {
             isActionEditorOpen: false,
             actionSelected: null
         })
 
+        // If in CCI mode, add simple payload
+        if (Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.CCI)) {
+            DialogUtils.addSimplePayload(action, this.props.entities)
+        }
         const apiFunc = wasEditing
             ? () => this.props.editActionThunkAsync(this.props.app.appId, action)
             : () => this.props.createActionThunkAsync(this.props.app.appId, action)
@@ -234,7 +239,8 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State) => {
     return {
         actions: state.actions,
-        entities: state.entities
+        entities: state.entities,
+        settings: state.settings
     }
 }
 

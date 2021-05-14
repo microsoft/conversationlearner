@@ -3,24 +3,23 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import {
-  BrowserRouter as Router, Redirect, Route, NavLink, Switch
-} from 'react-router-dom'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { State } from '../types'
 import AppsIndex from './Apps/AppsIndex'
+import * as OF from 'office-ui-fabric-react'
+import * as Util from '../Utils/util'
+import HelpPanel from '../components/HelpPanel'
 import Settings from './Settings'
 import NoMatch from './NoMatch'
-import { Banner } from '@conversationlearner/models'
-import HelpPanel from '../components/HelpPanel'
-import * as OF from 'office-ui-fabric-react'
-import { SpinnerWindow, ErrorPanel } from '../components/modals'
-import './App.css'
 import FormattedMessageId from '../components/FormattedMessageId'
+import { Banner } from '@conversationlearner/models'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { State, FeatureStrings } from '../types'
+import { SpinnerWindow, ErrorPanel } from '../components/modals'
+import { BrowserRouter as Router, Redirect, Route, NavLink, Switch } from 'react-router-dom'
 import { FM } from '../react-intl-messages'
 import { fetchBotInfoThunkAsync } from '../actions/botActions'
 import { clearBanner } from '../actions/displayActions'
+import './App.css'
 
 enum LoadingState {
   NEUTRAL,
@@ -98,6 +97,18 @@ class App extends React.Component<Props, ComponentState> {
 
   render() {
     const banner = this.props.botInfo ? this.props.botInfo.banner : null
+    let service: string | null = null;
+    if (Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.CCI) && this.props.botInfo) {
+      if (this.props.botInfo.service.includes("scratch")) {
+        service = "(LSTM)"
+      }
+      else if (this.props.botInfo.service.includes("blisservicenetcore")) {
+        service = "(SOLOIST)"
+      }
+      else {
+        service = "(??)"
+      }
+  }
     return (
       <Router basename={process.env.PUBLIC_URL}>
         <>
@@ -109,7 +120,12 @@ class App extends React.Component<Props, ComponentState> {
                 <span className="cl-header-text">
                   <img className="cl-header-icon" src="icon.svg" alt="ConversationLearner Logo" />
                   Project Conversation Learner
-              </span>
+                </span>
+                {service &&
+                    <span className = "cl-app_service">
+                      {service}
+                    </span>
+                }
                 <NavLink to="/home">
                   <FormattedMessageId id={FM.APP_HEADER_MODELS} />
                 </NavLink>
@@ -202,7 +218,8 @@ const mapStateToProps = (state: State) => {
   return {
     browserId: state.bot.browserId,
     botInfo: state.bot.botInfo,
-    clearedBanner: state.display.clearedBanner
+    clearedBanner: state.display.clearedBanner,
+    settings: state.settings
   }
 }
 

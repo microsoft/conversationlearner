@@ -97,6 +97,13 @@ This causes deviation from traditional BEM naming for remaining .cl-app-* classe
     padding: 2em 0;
 }
 
+.cl-app_service {
+    font-size: 12px;
+    position: relative;
+    left: -93px;
+    top: 42px;
+}
+
 .cl-header {
     display: grid;
     grid-template-columns: 1fr min-content;

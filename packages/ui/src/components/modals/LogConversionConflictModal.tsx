@@ -139,6 +139,7 @@ class LogConversionConflictModal extends React.Component<Props, State> {
                                                     isPickerVisible={false}
                                                     onOpenPicker={() => { }}
                                                     onClosePicker={() => { }}
+                                                    canLabelProgrammatic={false}
                                                 />
                                             }
                                             entities={this.props.entities}
@@ -165,6 +166,7 @@ class LogConversionConflictModal extends React.Component<Props, State> {
                                                     isPickerVisible={false}
                                                     onOpenPicker={() => { }}
                                                     onClosePicker={() => { }}
+                                                    canLabelProgrammatic={false}
                                                 />
                                             }
                                             entities={this.props.entities}

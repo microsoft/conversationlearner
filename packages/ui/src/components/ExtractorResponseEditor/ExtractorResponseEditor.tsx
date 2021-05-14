@@ -22,6 +22,7 @@ export type SlateValue = any
 interface Props {
     readOnly: boolean
     status: ExtractorStatus,
+    canLabelProgrammatic: boolean,
     options: IOption[]
     text: string
     entities: CLM.EntityBase[]
@@ -535,8 +536,11 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     }
 
     render() {
-        const filteredOptions = this.props.options
-            .filter(option => option.type === CLM.EntityType.LUIS)
+        const options = this.props.canLabelProgrammatic
+            ?  this.props.options
+            : this.props.options.filter(option => option.type === CLM.EntityType.LUIS)
+
+        const filteredOptions = options
             .sort((a, b) => {
                 const nameCompare = (x: IOption, y: IOption) => x.name > y.name ? 1 : (x.name < y.name ? -1 : 0)
                 if (a.resolverType === this.state.builtInTypeFilter) {

@@ -65,6 +65,7 @@ const ReadOnlyOkExtractionEditor: React.FC<ReadOnlyEditorProps> = ({ entities, e
                 isPickerVisible={false}
                 onOpenPicker={noOp}
                 onClosePicker={noOp}
+                canLabelProgrammatic={false}
             />
         }
         entities={entities}

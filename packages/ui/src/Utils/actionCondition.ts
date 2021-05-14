@@ -18,7 +18,7 @@ export const conditionDisplay: Record<CLM.ConditionType, string> = {
     [CLM.ConditionType.GREATER_THAN_OR_EQUAL]: '>=',
     [CLM.ConditionType.LESS_THAN]: '<',
     [CLM.ConditionType.LESS_THAN_OR_EQUAL]: '<=',
-    [CLM.ConditionType.STRING_EQUAL]: 'Matches exactly'
+    [CLM.ConditionType.STRING_EQUAL]: '==='
 }
 
 export const comparisonTypeDisplay: Record<CLM.ComparisonType, string> = {
