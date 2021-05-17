@@ -1387,6 +1387,7 @@ export const getRouter = (
             proxyReq.setHeader(constants.luisSubscriptionKeyHeader, options.LUIS_SUBSCRIPTION_KEY ?? '')
             proxyReq.setHeader(constants.apimSubscriptionIdHeader, options.LUIS_AUTHORING_KEY ?? '')
             proxyReq.setHeader(constants.apimSubscriptionKeyHeader, options.APIM_SUBSCRIPTION_KEY ?? '')
+            proxyReq.setHeader(constants.luisSkipAuthentication, 'true')
 
             /**
              * TODO: Find more elegant solution with middleware ordering.
