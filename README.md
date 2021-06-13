@@ -9,6 +9,12 @@ This repo contains 5 major components:
 1. **WebChat** - Custom fork of standard [WebChat](https://github.com/Microsoft/BotFramework-WebChat) which adds ability to load existing activities and show editing controls.
 1. **Models** - Contains shared code between the SDK and UI such as types and utilities.
 
+# Active branches
+
+1. `master` - stable branch
+1. `pva-content` - for use with models and logs generated via Conversion Service / PVA
+1. `multi-woz` - for use with the GTG project
+
 # Getting started
 
 1. Clone and build the repo
