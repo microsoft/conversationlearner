@@ -102,12 +102,12 @@ export class ActionBase {
   // safety for those places which should require it.
   // TODO: Remove ScoredAction since it doesn't have payload
   static GetPayload(action: ActionBase | ScoredBase, entityValues: Map<string, string>): string {
-    
+
     if (this.useSimplePayload(action)) {
       let simpleAction = new SimpleAction(action as ActionBase)
       return simpleAction.renderValue(entityValues)
     }
-    
+
     switch (action.actionType) {
       case ActionTypes.TEXT: {
         /**
@@ -122,8 +122,7 @@ export class ActionBase {
         } catch (e) {
           const error = e as Error
           throw new Error(
-            `Error when attempting to parse text action payload. This might be an old action which was saved as a string.  Please create a new action. ${
-            error.message
+            `Error when attempting to parse text action payload. This might be an old action which was saved as a string.  Please create a new action. ${error.message
             }`
           )
         }
@@ -166,7 +165,7 @@ export class ActionBase {
     return false
   }
 
-   // Return true if text action contains simple payload and no slate document
+  // Return true if text action contains simple payload and no slate document
   static useSimplePayload(action: Partial<ActionBase> | undefined): boolean {
     if (action === undefined) {
       return false
@@ -396,7 +395,7 @@ export class SessionAction extends ActionBase {
 }
 
 export class SimpleAction extends ActionBase {
-  value: string 
+  value: string
 
   constructor(action: ActionBase) {
     super(action)
@@ -411,9 +410,8 @@ export class SimpleAction extends ActionBase {
 
   renderValue(entityValues: Map<string, string>): string {
     let output = this.value
-    entityValues.forEach((value: string, key: string) =>
-    {
-      output = output.replace(`{${key}}`, value)
+    entityValues.forEach((value: string, key: string) => {
+      output = output.replace(new RegExp(`{${key}}`, 'g'), value)
     })
     return output
   }
