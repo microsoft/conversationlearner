@@ -658,7 +658,8 @@ export default class ClClient {
         const response = await this.send<string | null>({
             method: 'post',
             url: `/app/${appId}/validatetranscript?testId=${testId}&packageId=${packageId}`,
-            data: transcriptValidationTurns
+            data: transcriptValidationTurns,
+            timeout: 1000000
         })
         return response.data
     }

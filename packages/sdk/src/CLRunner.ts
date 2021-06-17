@@ -2597,8 +2597,8 @@ export class CLRunner {
                 {
                     entityId: filledEntity.entityId,
                     startCharIndex: startCharIndex,
-                    endCharIndex: startCharIndex + userText.length,
-                    entityText: userText,
+                    endCharIndex: startCharIndex + value.userText.length - 1,
+                    entityText: value.userText,
                     resolution: value.resolution,
                     builtinType: value.builtinType!,
                     score: 1.0

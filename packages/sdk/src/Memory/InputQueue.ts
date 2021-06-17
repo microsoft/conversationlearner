@@ -135,7 +135,9 @@ export class InputQueue {
             this.log(`NO  MUTEX`, conversationId, activity.id)
         }
         else if (processedInput.activityId !== activity.id) {
-            CLDebug.Error("Input Queue: Handle called for different input than one being processed")
+            let errorString = "Input Queue: Handle called for different input than one being processed"
+            CLDebug.Error(errorString)
+            throw new Error(errorString)
         }
         else {
             this.log(`HANDLED  `, conversationId, processedInput.activityId)

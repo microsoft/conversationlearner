@@ -1364,7 +1364,8 @@ export const getRouter = (
                     else {
                         await client.DeleteLogDialog(appId, logDialogId)
                     }
-                    res.send(null)
+                    HandleError(res, error)  // FOR PVA
+                   // res.send(null)         // FOR Release
                     return
                 }
             }
