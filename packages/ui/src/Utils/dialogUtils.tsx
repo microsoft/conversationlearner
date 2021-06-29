@@ -13,7 +13,7 @@ import { Value } from 'slate'
 import { compareTwoStrings } from 'string-similarity'
 import { deepCopy, getDefaultEntityMap } from './util'
 import { ImportedAction } from '../types/models'
-import { getValueConditionName, findNumberFromMemory, findStringFromMemory, isValueConditionTrue, isEnumConditionTrue, isStringConditionTrue, getStringConditionName } from './actionCondition'
+import { findNumberFromMemory, findStringFromMemory, isValueConditionTrue, isEnumConditionTrue, isStringConditionTrue, getValueConditionName, getStringConditionName } from './actionCondition'
 import { fromLogTag } from '../types'
 import { ActionTypes } from '@conversationlearner/models'
 
@@ -344,9 +344,13 @@ export function isActionAvailable(action: CLM.ActionBase, entities: CLM.EntityBa
         }
     }
     if (action.requiredConditions) {
-        for (const condition of action.requiredConditions) {
-            const result = convertToScorerCondition(condition, entities, memories)
-            if (!result.match) {
+        // RequiredConditions of the same entityID or OR'd together
+        var entityIds = new Set(action.requiredConditions.map(re => re.entityId));
+        for (const entityId of entityIds) 
+        {
+            const conditions = action.requiredConditions.filter(rc => rc.entityId == entityId)
+            const result = convertAnyToScorerCondition(conditions, entities, memories)
+            if (!result) {
                 return false
             }
         }
@@ -363,7 +367,11 @@ export function isActionAvailable(action: CLM.ActionBase, entities: CLM.EntityBa
 }
 
 export function convertToScorerCondition(condition: CLM.Condition, entities: CLM.EntityBase[], memories: CLM.Memory[]): { match: boolean, name: string } {
-    const entity = entities.find(e => e.entityId === condition.entityId)
+    return convertAnyToScorerCondition([condition], entities, memories);
+}
+
+export function convertAnyToScorerCondition(conditions: CLM.Condition[], entities: CLM.EntityBase[], memories: CLM.Memory[]): { match: boolean, name: string } {
+    const entity = entities.find(e => e.entityId === conditions[0].entityId)
 
     // If entity is null - there's a bug somewhere
     if (!entity) {
@@ -371,57 +379,55 @@ export function convertToScorerCondition(condition: CLM.Condition, entities: CLM
     }
 
     const memory = memories.find(m => m.entityName === entity.entityName)
+    let match = false
+    let name = ""
 
-    // If EnumCondition
-    if (condition.valueId) {
-        const enumValue = entity.enumValues?.find(ev => ev.enumValueId === condition.valueId)
-        const value = enumValue
-            ? enumValue.enumValue
-            : "NOT FOUND"
+    // Multiple conditions for the same entity are treated as an OR
+    for (let i = 0; i<conditions.length; i++) {
+        const condition = conditions[i]
 
-        const match = memory !== undefined
-            && isEnumConditionTrue(condition, memory)
+        // If EnumCondition
+        if (condition.valueId) {
+            const enumValue = entity.enumValues?.find(ev => ev.enumValueId === condition.valueId)
+            const value = enumValue
+                ? enumValue.enumValue
+                : "NOT FOUND"
 
-        return {
-            match,
-            name: `${entity.entityName} == ${value}`
+            if (memory !== undefined && isEnumConditionTrue(condition, memory)) {
+                match = true
+            }
+
+            name += value
         }
-    }
-    // If ValueCondition
-    else if (condition.value) {
-        const name = getValueConditionName(entity, condition)
-        let match = false
-        if (memory) {
-            const numberValue = findNumberFromMemory(memory, entity.isMultivalue)
-            if (numberValue) {
-                match = isValueConditionTrue(condition, numberValue)
+        // If ValueCondition
+        else if (condition.value) {
+            name += i === 0 ? getValueConditionName(entity, condition) : `/ "${condition.value}"`
+            if (memory) {
+                const numberValue = findNumberFromMemory(memory, entity.isMultivalue)
+                if (numberValue && isValueConditionTrue(condition, numberValue)) {
+                    match = true
+                }
             }
         }
-
-        return {
-            match,
-            name
+        else if (condition.stringValue) {
+            name += i === 0 ? getStringConditionName(entity, condition) :` / "${condition.stringValue}"`
+            if (memory) {
+                const value = findStringFromMemory(memory)
+                if (isStringConditionTrue(condition, value)) {
+                    match = true
+                }
+            }
+        }
+        // Other conditions
+        else {
+            name += ` Unknown Condition Type`
+            match = false
         }
     }
-    else if (condition.stringValue) {
-        const name = getStringConditionName(entity, condition)
-        let match = false
-        if (memory) {
-            const value = findStringFromMemory(memory)
-            match = isStringConditionTrue(condition, value)
-        }
 
-        return {
-            match,
-            name
-        }
-    }
-    // Other conditions
-    else {
-        return {
-            match: false,
-            name: `Unknown Condition Type`
-        }
+    return {
+        match,
+        name
     }
 }
 

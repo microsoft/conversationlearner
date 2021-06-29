@@ -608,12 +608,15 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 neg: true,
                 type: found.match
                     ? 'cl-entity cl-entity--mismatch'
-                    : 'cl-entity cl-entity--match',
+                    : 'cl-entity cl-entity--match'
             })
         }
         if (action.requiredConditions) {
-            for (const condition of action.requiredConditions) {
-                const result = DialogUtils.convertToScorerCondition(condition, this.props.entities, this.props.memories)
+            var entityIds = new Set(action.requiredConditions.map(re => re.entityId));
+            // Check conditions for each entity
+            for (const entityId of entityIds) { 
+                const conditions = action.requiredConditions.filter(rc => rc.entityId == entityId)
+                const result = DialogUtils.convertAnyToScorerCondition(conditions, this.props.entities, this.props.memories)
                 items.push({
                     name: result.name,
                     neg: false,

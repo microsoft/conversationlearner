@@ -1806,9 +1806,9 @@ export class CLRunner {
 
     // Returns true if Action is available given Entities in Memory
     public isActionAvailable(action: CLM.ActionBase, filledEntities: CLM.FilledEntity[], entities: CLM.EntityBase[]): boolean {
-        const areRequiredConditionsTrue = action.requiredConditions.every(condition => Utils.isConditionTrue(condition, filledEntities, entities))
-        if (areRequiredConditionsTrue === false) {
-            return false
+        
+        if (!this.AreRequiredConditionMet(action.requiredConditions, filledEntities, entities)) {
+            return false;
         }
 
         const areNegativeConditionsTrue = action.negativeConditions.every(condition => !Utils.isConditionTrue(condition, filledEntities, entities))
@@ -1829,6 +1829,25 @@ export class CLRunner {
             }
         }
         return true
+    }
+
+    /// <summary>
+    /// There can be multiple required conditions for a given entities.  We do an OR comparison
+    /// between to them to determine if the condition is met for that entity
+    /// </summary>
+    private AreRequiredConditionMet(requiredConditions: CLM.Condition[], filledEntities: CLM.FilledEntity[], entities: CLM.EntityBase[]): boolean {
+        // Get list of unique entities
+        const entityIds = new Set(requiredConditions.map(rc => rc.entityId));
+
+        for (const entityId of entityIds)
+        {
+            // At least one condition must be met for that entity
+            const entityConditions = requiredConditions.filter(rc => rc.entityId == entityId);
+            if (entityConditions.filter(rc => Utils.isConditionTrue(rc, filledEntities, entities)).length == 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     // Convert list of filled entities into a filled entity map lookup table
