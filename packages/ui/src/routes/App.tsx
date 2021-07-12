@@ -99,11 +99,14 @@ class App extends React.Component<Props, ComponentState> {
     const banner = this.props.botInfo ? this.props.botInfo.banner : null
     let service: string | null = null;
     if (Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.CCI) && this.props.botInfo) {
-      if (this.props.botInfo.service.includes("scratch")) {
+      if (this.props.botInfo.service.includes("blis-service-scratch")) {
         service = "(LSTM)"
       }
-      else if (this.props.botInfo.service.includes("blisservicenetcore")) {
+      else if (this.props.botInfo.service.includes("soloist-service-scratch")) {
         service = "(SOLOIST)"
+      }
+      else if (this.props.botInfo.service.includes("westus.api")) {
+        service = "(PROD)"
       }
       else {
         service = "(??)"
