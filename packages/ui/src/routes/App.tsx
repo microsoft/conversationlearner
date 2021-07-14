@@ -108,6 +108,9 @@ class App extends React.Component<Props, ComponentState> {
       else if (this.props.botInfo.service.includes("westus.api")) {
         service = "(PROD)"
       }
+      else if (this.props.botInfo.service.includes("localhost")) {
+        service = "(LOCALHOST)"
+      }
       else {
         service = "(??)"
       }
