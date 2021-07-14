@@ -350,7 +350,7 @@ export function isActionAvailable(action: CLM.ActionBase, entities: CLM.EntityBa
         {
             const conditions = action.requiredConditions.filter(rc => rc.entityId == entityId)
             const result = convertAnyToScorerCondition(conditions, entities, memories)
-            if (!result) {
+            if (!result.match) {
                 return false
             }
         }
