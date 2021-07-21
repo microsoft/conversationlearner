@@ -227,13 +227,13 @@ export const isConditionTrue = (
     filledEntities: CLM.FilledEntity[],
     entities: CLM.EntityBase[]
 ): boolean => {
-    if (condition.stringValue) {
+    if (!isNullOrUndefined(condition.stringValue)) {
         return isStringConditionTrue(condition, filledEntities)
     }
-    else if (condition.valueId) {
+    else if (!isNullOrUndefined(condition.valueId)) {
         return isEnumConditionTrue(condition, filledEntities)
     }
-    else if (condition.value) {
+    else if (!isNullOrUndefined(condition.value)) {
         return isValueConditionTrue(condition, filledEntities, entities)
     }
     // Unknown condition type, assume false
@@ -246,7 +246,7 @@ const isStringConditionTrue = (
     condition: CLM.Condition,
     filledEntities: CLM.FilledEntity[]
 ): boolean => {
-    if (condition.stringValue && condition.condition === CLM.ConditionType.STRING_EQUAL) {
+    if (!isNullOrUndefined(condition.stringValue) && condition.condition === CLM.ConditionType.STRING_EQUAL) {
         const filledEntity = filledEntities.find(e => e.entityId === condition.entityId)
         const stringValue = filledEntity && filledEntity.values.length > 0 && filledEntity.values[0].userText
         if (stringValue === condition.stringValue) {
@@ -261,7 +261,7 @@ const isEnumConditionTrue = (
     condition: CLM.Condition,
     filledEntities: CLM.FilledEntity[]
 ): boolean => {
-    if (condition.valueId) {
+    if (!isNullOrUndefined(condition.valueId)) {
         const filledEntity = filledEntities.find(e => e.entityId === condition.entityId)
         const enumValueId = filledEntity && filledEntity.values.length > 0 && filledEntity.values[0].enumValueId
         if (enumValueId === condition.valueId) {
@@ -277,7 +277,7 @@ const isValueConditionTrue = (
     filledEntities: CLM.FilledEntity[],
     entities: CLM.EntityBase[]
 ): boolean => {
-    if (!condition.value) {
+    if (isNullOrUndefined(condition.value)) {
         return false
     }
 
@@ -294,10 +294,10 @@ const isValueConditionTrue = (
 
     return (condition.condition === CLM.ConditionType.EQUAL && numberValue == condition.value)
         || (condition.condition === CLM.ConditionType.NOT_EQUAL && numberValue != condition.value)
-        || (condition.condition === CLM.ConditionType.GREATER_THAN && numberValue > condition.value)
-        || (condition.condition === CLM.ConditionType.GREATER_THAN_OR_EQUAL && numberValue >= condition.value)
-        || (condition.condition === CLM.ConditionType.LESS_THAN && numberValue < condition.value)
-        || (condition.condition === CLM.ConditionType.LESS_THAN_OR_EQUAL && numberValue <= condition.value)
+        || (condition.condition === CLM.ConditionType.GREATER_THAN && numberValue > condition.value!)
+        || (condition.condition === CLM.ConditionType.GREATER_THAN_OR_EQUAL && numberValue >= condition.value!)
+        || (condition.condition === CLM.ConditionType.LESS_THAN && numberValue < condition.value!)
+        || (condition.condition === CLM.ConditionType.LESS_THAN_OR_EQUAL && numberValue <= condition.value!)
 }
 
 const findNumberFromFilledEntity = (filledEntity: CLM.FilledEntity, isMultivalue: boolean): number | undefined => {
@@ -312,4 +312,9 @@ const findNumberFromFilledEntity = (filledEntity: CLM.FilledEntity, isMultivalue
         : undefined
 
     return value
+}
+
+export function isNullOrUndefined(object: any) {
+    return object === null || object === undefined
+
 }

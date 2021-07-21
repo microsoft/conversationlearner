@@ -6,6 +6,7 @@ import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
 import produce from 'immer'
 import { PreBuilts } from '../types'
+import { isNullOrUndefined } from './util'
 
 export interface IConditionalTag extends OF.ITag {
     condition: CLM.Condition | null
@@ -123,7 +124,7 @@ export const findStringFromMemory = (memory: CLM.Memory): string | undefined => 
 
 
 export const isStringConditionTrue = (condition: CLM.Condition, stringValue: string | undefined): boolean => {
-    if (condition.stringValue) {
+    if (!isNullOrUndefined(condition.stringValue)) {
         return condition.condition == CLM.ConditionType.STRING_EQUAL && stringValue === condition.stringValue
     }
     return false
@@ -132,13 +133,13 @@ export const isStringConditionTrue = (condition: CLM.Condition, stringValue: str
 export const isValueConditionTrue = (condition: CLM.Condition, numberValue: number): boolean => {
     let isTrue = false
 
-    if (condition.value) {
+    if (!isNullOrUndefined(condition.value)) {
         isTrue = (condition.condition === CLM.ConditionType.EQUAL && numberValue === condition.value)
             || (condition.condition === CLM.ConditionType.NOT_EQUAL && numberValue !== condition.value)
-            || (condition.condition === CLM.ConditionType.GREATER_THAN && numberValue > condition.value)
-            || (condition.condition === CLM.ConditionType.GREATER_THAN_OR_EQUAL && numberValue >= condition.value)
-            || (condition.condition === CLM.ConditionType.LESS_THAN && numberValue < condition.value)
-            || (condition.condition === CLM.ConditionType.LESS_THAN_OR_EQUAL && numberValue <= condition.value)
+            || (condition.condition === CLM.ConditionType.GREATER_THAN && numberValue > condition.value!)
+            || (condition.condition === CLM.ConditionType.GREATER_THAN_OR_EQUAL && numberValue >= condition.value!)
+            || (condition.condition === CLM.ConditionType.LESS_THAN && numberValue < condition.value!)
+            || (condition.condition === CLM.ConditionType.LESS_THAN_OR_EQUAL && numberValue <= condition.value!)
     }
 
     return isTrue

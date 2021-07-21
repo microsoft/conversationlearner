@@ -697,7 +697,7 @@ function setMemoryStateForApiActionWithSwitch(
  * @throws if the entity referenced in any `Condition` is not a valid enum.
  */
 function getEnumConditionData(entities: CLM.EntityBase[], condition: CLM.Condition): EnumDataFromCondition {
-    if (!condition.valueId) {
+    if (Util.isNullOrUndefined(condition.valueId)) {
         // This should not happen; conditions created from conditions in .dialog import should always reference enum entities.
         throw new Error(`Action condition doesn't reference an entity`)
     }
@@ -717,7 +717,7 @@ function getEnumConditionData(entities: CLM.EntityBase[], condition: CLM.Conditi
     }
     return {
         enumEntityId: condition.entityId,
-        enumValueId: condition.valueId,
+        enumValueId: condition.valueId!,
         enumValueText: enumValue.enumValue,
     }
 }

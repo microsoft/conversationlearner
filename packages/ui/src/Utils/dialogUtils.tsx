@@ -387,7 +387,7 @@ export function convertAnyToScorerCondition(conditions: CLM.Condition[], entitie
         const condition = conditions[i]
 
         // If EnumCondition
-        if (condition.valueId) {
+        if (!Util.isNullOrUndefined(condition.valueId)) {
             const enumValue = entity.enumValues?.find(ev => ev.enumValueId === condition.valueId)
             const value = enumValue
                 ? enumValue.enumValue
@@ -400,7 +400,7 @@ export function convertAnyToScorerCondition(conditions: CLM.Condition[], entitie
             name += value
         }
         // If ValueCondition
-        else if (condition.value) {
+        else if (!Util.isNullOrUndefined(condition.value)) {
             name += i === 0 ? getValueConditionName(entity, condition) : `/ "${condition.value}"`
             if (memory) {
                 const numberValue = findNumberFromMemory(memory, entity.isMultivalue)
@@ -409,7 +409,7 @@ export function convertAnyToScorerCondition(conditions: CLM.Condition[], entitie
                 }
             }
         }
-        else if (condition.stringValue) {
+        else if (!Util.isNullOrUndefined(condition.stringValue)) {
             name += i === 0 ? getStringConditionName(entity, condition) :` / "${condition.stringValue}"`
             if (memory) {
                 const value = findStringFromMemory(memory)

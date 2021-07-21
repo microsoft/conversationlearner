@@ -282,14 +282,14 @@ const Component: React.FC<Props> = (props) => {
             setSelectedOperatorOption(matchOperatorOption)
         }
 
-        if (condition.valueId) {
+        if (!Util.isNullOrUndefined(condition.valueId)) {
             const matchingEnumOption = enumValueOptions.find(o => o.data.enumValueId === condition.valueId)
             if (matchingEnumOption) {
                 setSelectedEnumValueOption(matchingEnumOption)
             }
         }
 
-        if (condition.value) {
+        if (!Util.isNullOrUndefined(condition.value)) {
             setNumberValue(Number(condition.value))
         }
     }, [props.condition])

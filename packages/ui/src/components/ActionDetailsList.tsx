@@ -343,13 +343,13 @@ export function renderConditions(entityIds: string[], conditions: CLM.Condition[
             if (!entity) {
                 name = `Error - Missing Entity ID: ${condition.entityId}`
             }
-            else if (condition.valueId) {
+            else if (!Util.isNullOrUndefined(condition.valueId)) {
                 const enumValue = entity.enumValues ? entity.enumValues.find(eid => eid.enumValueId === condition.valueId) : undefined
                 name = !enumValue
                     ? `Error - Missing Enum: ${condition.valueId}`
                     : getEnumConditionName(entity, enumValue)
             }
-            else if (condition.stringValue) {
+            else if (!Util.isNullOrUndefined(condition.stringValue)) {
                 name = getStringConditionName(entity, condition)
             }
             else {
