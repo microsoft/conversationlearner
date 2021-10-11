@@ -648,6 +648,7 @@ export enum FM {
     TRANSCRIPTLIST_BUTTON_ADD_LG = 'TranscriptList.button.add',
     TRANSCRIPTLIST_BUTTON_VIEW = 'TranscriptList.button.view',
     TRANSCRIPTLIST_BUTTON_ADD_TRANSCRIPTS = 'TranscriptList.button.AddTranscripts',
+    TRANSCRIPTLIST_TEXTFIELD_SOURCE_NAME = 'TranscriptList.textInput.sourceName',
     TRANSCRIPTLIST_BUTTON_TEST_MODEL = 'TranscriptList.button.NewTest',
 
     // TranscriptTestPicker
@@ -1320,6 +1321,7 @@ export default {
         [FM.TRANSCRIPTLIST_BUTTON_ADD_LG]: 'Add LG',
         [FM.TRANSCRIPTLIST_BUTTON_VIEW]: 'View Transcripts',
         [FM.TRANSCRIPTLIST_BUTTON_ADD_TRANSCRIPTS]: 'Add Transcripts',
+        [FM.TRANSCRIPTLIST_TEXTFIELD_SOURCE_NAME]: 'Source Name',
         [FM.TRANSCRIPTLIST_BUTTON_TEST_MODEL]: 'Test Model',
 
         // TranscriptTestPicker

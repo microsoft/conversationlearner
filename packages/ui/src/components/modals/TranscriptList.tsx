@@ -15,6 +15,7 @@ import './TranscriptRatings.css'
 
 interface ComponentState {
     transcriptColumns: IRenderableColumn[]
+    importSourceName: string
 }
 
 interface RenderData {
@@ -77,6 +78,7 @@ class TranscriptList extends React.Component<Props, ComponentState> {
         super(props)
         this.state = {
             transcriptColumns: getColumns(this.props.intl),
+            importSourceName: ''
         }
     }
 
@@ -93,12 +95,26 @@ class TranscriptList extends React.Component<Props, ComponentState> {
 
     @autobind
     async onLoadTranscriptFiles(files: any): Promise<void> {
-        await this.props.onLoadTranscriptFiles(files)
+        await this.props.onLoadTranscriptFiles(files, this.state.importSourceName)
+
+        // Reset source name
+        this.setState({
+            importSourceName: ''
+        })
 
         // If still open, clear input so user can reload same file
         let fileInput = (this.loadTranscriptsFileInput as HTMLInputElement)
         {
             fileInput.value = ""
+        }
+    }
+
+    @autobind
+    onChangeSourceName(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newValue: string): void {
+        if (typeof newValue === 'string') {
+            this.setState({
+                importSourceName: newValue
+            })
         }
     }
 
@@ -184,6 +200,12 @@ class TranscriptList extends React.Component<Props, ComponentState> {
                                 iconProps={{ iconName: 'BulkUpload' }}
                                 onClick={() => this.loadLGFileInput.click()}
                             />
+                            <OF.TextField
+                                label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_TEXTFIELD_SOURCE_NAME)}
+                                value={this.state.importSourceName}
+                                onChange={this.onChangeSourceName}
+                                styles={{ wrapper: { display: 'flex', gridGap: '0.5rem', width: '200px', alignItems: 'baseline' } }}
+                            />
                         </div>
                         <div className="cl-modal-buttons_primary">
                             <OF.DefaultButton
@@ -211,7 +233,7 @@ class TranscriptList extends React.Component<Props, ComponentState> {
 export interface ReceivedProps {
     testSet: Test.TestSet | undefined
     onView: (compareType: Test.ComparisonResultType, comparePivot?: string, compareSource?: string) => void
-    onLoadTranscriptFiles: (transcriptFiles: any) => Promise<void>
+    onLoadTranscriptFiles: (transcriptFiles: any, importSourceName?: string) => Promise<void>
     onLoadLGFiles: (lgFiles: any) => Promise<void>
     onTest: () => Promise<void>
 }

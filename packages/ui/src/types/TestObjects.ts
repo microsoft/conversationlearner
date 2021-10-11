@@ -138,19 +138,21 @@ export class TestSet {
         this.lgItems = await OBIUtils.lgMapFromLGFiles(lgFiles, this.lgItems)
     }
 
-    async addTranscriptFiles(transcriptFiles: File[]): Promise<void> {
+    async addTranscriptFiles(transcriptFiles: File[], importSourceName?: string): Promise<void> {
         for (const file of transcriptFiles) {
             let fileContent = await Util.readFileAsync(file)
 
             const inputData = JSON.parse(fileContent)
 
             // File could be list of Activities or Activity list in Transcript property
-            const transcript: BB.Activity[] = inputData.Transcript 
+            const transcript: BB.Activity[] = inputData.Transcript
                 ? inputData.Transcript
                 : inputData
 
             let transcriptUsesLG = OBIUtils.usesLG(transcript)
-            const sourceName = this.sourceName(transcript)
+            const sourceName = (typeof importSourceName === 'string' && importSourceName !== '')
+                ? importSourceName
+                : this.sourceName(transcript)
             const conversationId = this.conversationId(transcript)
 
             const item: TestItem = {
