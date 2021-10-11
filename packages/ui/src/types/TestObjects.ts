@@ -244,7 +244,8 @@ export class TestSet {
                                         ? ComparisonResultType.REPRODUCED
                                         : ComparisonResultType.CHANGED
                                 }
-                                catch {
+                                catch (e) {
+                                    console.error(`Error when comparing all transcripts: `, e)
                                     result = ComparisonResultType.INVALID_TRANSCRIPT
                                 }
 
