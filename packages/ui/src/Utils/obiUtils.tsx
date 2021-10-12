@@ -268,7 +268,7 @@ export async function trainDialogFromTranscriptImport(
                 if (activity.channelData?.PredictedEntities) {
                     nextFilledEntities = Util.deepCopy(nextFilledEntities)
 
-                    for (const predictedEntity  of activity.channelData?.PredictedEntities as CLM.PredictedEntity[]) {
+                    for (const predictedEntity of activity.channelData?.PredictedEntities as CLM.PredictedEntity[]) {
                         const memoryValue: CLM.MemoryValue = {
                             userText: predictedEntity.entityText,
                             displayText: predictedEntity.entityText,
@@ -858,7 +858,7 @@ export function findActionFromHashText(hashText: string, actions: CLM.ActionBase
     return matchedActions[0]
 }
 
-// Transcripts are partials of partials of BB.Activity, so RecusivePartial
+// Transcripts are partials of partials of BB.Activity, so RecursivePartial
 export function areTranscriptsEqual(transcript1: Util.RecursivePartial<BB.Activity>[], transcript2: Util.RecursivePartial<BB.Activity>[], excessOk: boolean = false): boolean {
     if (!excessOk && transcript1.length !== transcript2.length) {
         return false
@@ -870,11 +870,11 @@ export function areTranscriptsEqual(transcript1: Util.RecursivePartial<BB.Activi
         throw new Error("Not a valid transcript. Conversation not defined")
     }
     if (transcript1[0].conversation.id !== transcript2[0].conversation.id) {
-        throw new Error("Not a valid comparison.  ConversationIds do not match.")
+        throw new Error("Not a valid comparison. ConversationIds do not match.")
     }
-    if (transcript1[0].channelId === transcript2[0].channelId) {
-        throw new Error("Not a valid comparison.  Same channel.")
-    }
+    // if (transcript1[0].channelId === transcript2[0].channelId) {
+    //     throw new Error("Not a valid comparison. Same channel.")
+    // }
     for (let i = 0; i < Math.min(transcript1.length, transcript2.length); i = i + 1) {
         const activity1 = transcript1[i]
         const activity2 = transcript2[i]

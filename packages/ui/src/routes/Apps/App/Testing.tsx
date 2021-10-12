@@ -11,7 +11,7 @@ import * as OBIUtils from '../../../Utils/obiUtils'
 import * as Test from '../../../types/TestObjects'
 import actions from '../../../actions'
 import TranscriptRatings from '../../../components/modals/TranscriptRatings'
-import TranscriptComparisions from '../../../components/modals/TranscriptComparisons'
+import TranscriptComparisons from '../../../components/modals/TranscriptComparisons'
 import TranscriptList from '../../../components/modals/TranscriptList'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import CompareDialogsModal from '../../../components/modals/CompareDialogsModal'
@@ -102,7 +102,7 @@ class Testing extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onLoadTranscriptFiles(transcriptFiles: any): Promise<void> {
+    async onLoadTranscriptFiles(transcriptFiles: any, importSourceName?: string): Promise<void> {
         if (transcriptFiles.length > 0) {
 
             try {
@@ -111,7 +111,7 @@ class Testing extends React.Component<Props, ComponentState> {
                     : this.newTestSet()
 
                 this.props.spinnerAdd()
-                await testSet.addTranscriptFiles(transcriptFiles)
+                await testSet.addTranscriptFiles(transcriptFiles, importSourceName)
 
                 await Util.setStateAsync(this, { testSet })
 
@@ -195,9 +195,8 @@ class Testing extends React.Component<Props, ComponentState> {
 
             for (let activity of testItem.transcript) {
 
-                if (activity.channelData["InitialFilledEntities"]) {
-                    initialFilledEntities = activity.channelData["InitialFilledEntities"]
-                }
+                initialFilledEntities = activity.channelData?.InitialFilledEntities ?? []
+
                 // TODO: Handle conversation updates
                 if (!activity.type || activity.type === "message") {
                     if (activity.text === "END_SESSION") {
@@ -643,7 +642,7 @@ class Testing extends React.Component<Props, ComponentState> {
                         <OF.PivotItem
                             linkText={Util.formatMessageId(this.props.intl, FM.TESTING_PIVOT_COMPARISON)}
                         >
-                            <TranscriptComparisions
+                            <TranscriptComparisons
                                 testSet={this.state.testSet}
                                 onCompare={this.onCompare}
                                 onView={this.onView}
