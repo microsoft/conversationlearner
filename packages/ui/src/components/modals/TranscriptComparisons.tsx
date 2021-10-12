@@ -132,11 +132,13 @@ class TranscriptComparisons extends React.Component<Props, ComponentState> {
                                     : -1
                                 }
                                 onChange={this.onChangeCompareSource}
-                                options={(this.props.testSet?.sourceNames ?? [])
-                                    .map<OF.IDropdownOption>((tag, i) => ({
-                                        key: i,
-                                        text: tag
-                                    }))
+                                options={this.props.testSet
+                                    ? this.props.testSet.sourceNames
+                                        .map<OF.IDropdownOption>((tag, i) => ({
+                                            key: i,
+                                            text: tag
+                                        }))
+                                    : []
                                 }
                             />
                         </div>
