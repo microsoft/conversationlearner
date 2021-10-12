@@ -188,6 +188,13 @@ class TranscriptList extends React.Component<Props, ComponentState> {
                     }
                     <div className="cl-modal-buttons cl-modal_footer">
                         <div className="cl-modal-buttons_secondary">
+                            <OF.TextField
+                                label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_TEXTFIELD_SOURCE_NAME)}
+                                placeholder={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_TEXTFIELD_SOURCE_NAME_PLACEHOLDER)}
+                                value={this.state.importSourceName}
+                                onChange={this.onChangeSourceName}
+                                styles={{ wrapper: { display: 'flex', gridGap: '0.5rem', width: '200px', alignItems: 'baseline' } }}
+                            />
                             <OF.PrimaryButton
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_BUTTON_ADD_TRANSCRIPTS)}
                                 text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_BUTTON_ADD_TRANSCRIPTS)}
@@ -199,12 +206,6 @@ class TranscriptList extends React.Component<Props, ComponentState> {
                                 text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_BUTTON_ADD_LG)}
                                 iconProps={{ iconName: 'BulkUpload' }}
                                 onClick={() => this.loadLGFileInput.click()}
-                            />
-                            <OF.TextField
-                                label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_TEXTFIELD_SOURCE_NAME)}
-                                value={this.state.importSourceName}
-                                onChange={this.onChangeSourceName}
-                                styles={{ wrapper: { display: 'flex', gridGap: '0.5rem', width: '200px', alignItems: 'baseline' } }}
                             />
                         </div>
                         <div className="cl-modal-buttons_primary">
