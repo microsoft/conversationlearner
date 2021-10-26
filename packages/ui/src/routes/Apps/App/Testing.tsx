@@ -207,7 +207,8 @@ class Testing extends React.Component<Props, ComponentState> {
                         if (transcriptValidationTurn.inputText !== "") {
                             turnValidations.push(transcriptValidationTurn)
                         }
-                        transcriptValidationTurn = { inputText: activity.text, apiResults: [], predictedEntities: activity.channelData["PredictedEntities"]} 
+                        var predictedEntities = activity.channelData && (activity.channelData as Object).hasOwnProperty("PredictedEntities") ? activity.channelData["PredictedEntities"] : [];
+                        transcriptValidationTurn = { inputText: activity.text, apiResults: [], predictedEntities} 
                     }
                     else if (activity.from.role === "bot") {
                         if (transcriptValidationTurn) {
