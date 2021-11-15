@@ -12,6 +12,7 @@ import { REPROMPT_SELF } from '../types/const'
 import { ImportedAction } from '../types/models'
 import { Case } from '../types/obiTypes'
 import { User } from '../types'
+import { compareTwoStrings } from 'string-similarity'
 
 export async function toTranscripts(
     appDefinition: CLM.AppDefinition,
@@ -887,17 +888,30 @@ export function areTranscriptsEqual(transcript1: Util.RecursivePartial<BB.Activi
         if (activity1.from.role !== activity2.from.role) {
             return false
         }
-        if (activity1.text !== activity2.text) {
-            // If different user input, not a valid comparison
-            if (activity1.from.role === "user") {
-                throw new Error("Not a valid comparison.  Inconsistent User Input")
+        // If both texts are strings, but do not match
+        if (typeof activity1.text === 'string'
+            && typeof activity2.text === 'string') {
+            // We use similarity match because some of the bots actions were updated after the transcripts were created so they don't exactly match
+            // The longer text message the closer the threshold should be to satisfy match
+            let similarityThreshold = 0.9
+            if (activity1.text.length > 1000) {
+                similarityThreshold = 0.95
             }
-            // If different bot reponse, transcripts are different
-            else {
-                return false
+
+            // activity1.text.localeCompare(activity2.text, 'en', { sensitivity: 'base' }) !== 0
+            if (compareTwoStrings(activity1.text, activity2.text) < similarityThreshold) {
+                // If different user input, not a valid comparison
+                if (activity1.from.role === "user") {
+                    throw new Error("Not a valid comparison.  Inconsistent User Input")
+                }
+                // If different bot response, transcripts are different
+                else {
+                    return false
+                }
             }
         }
     }
+
     return true
 }
 
